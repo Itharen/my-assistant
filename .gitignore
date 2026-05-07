@@ -1,0 +1,12 @@
+# my-assistant — nincs build kimenet, de általános ignore-ok
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.local
+
+# editor / IDE
+.vscode/
+.idea/
+*.swp
