@@ -1,0 +1,9 @@
+{
+  "subprojects": [
+    "cli",
+    "client",
+    "server"
+  ],
+  "generatedConstantFiles": [],
+  "gitAdd": true
+}

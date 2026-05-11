@@ -1,0 +1,14 @@
+<div class="app-shell">
+  <header class="app-header">
+    <h1>{{ title }}</h1>
+    <nav>
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/status" routerLinkActive="active">Status</a>
+    </nav>
+  </header>
+  <main class="app-main">
+    <router-outlet></router-outlet>
+  </main>
+  <!-- Global feedback system FAB (M3 generic shell + M4 feedback plugin registered in App_Module). -->
+  <dynx-fab-shell></dynx-fab-shell>
+</div>
