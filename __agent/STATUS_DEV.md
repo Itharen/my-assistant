@@ -2,31 +2,29 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 6                                  # Cycle 6 lezárva; következő cycle 7 lesz
+cycle: 7                                  # Cycle 7 lezárva; következő cycle 8 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 6 lezárva 2026-05-12 — LDP watch coverage bővítés (tsconfig/spec/workspace-yaml
-  + pipeline.config.json self) + workflow doc-ok LDP-first átdolgozása (02-audit,
-  08-verify-local, WORKFLOW_DEV 22. alapelv).
-  Commit db23d62 (a commit message tévesen "cycle 5"-öt mond — chat párhuzamos
-  cycle 5 miatt számolási elcsúszás). Lásd log/cycles/cycle-6.md.
+  Cycle 7 lezárva 2026-05-12 — LDP tsc-cli TS5011 fix (cli/tsconfig.json rootDirs +
+  cli/bin/ma.js path update). Foreign-pending takeover authorized (cycles_persisted: 3).
+  Commit 3d22143. CLI tsc (emit) + jasmine + smoke mind zöld.
+  Lásd log/cycles/cycle-7.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 6
+  cycle_id: 7
   phase_completed: close-cycle
   files_modified:
-    - pipeline.config.json
-    - __agent/WORKFLOW_DEV.md
-    - __agent/phases/dev/02-audit.md
-    - __agent/phases/dev/08-verify-local.md
-    - __agent/log/cycles/cycle-6.md
+    - cli/tsconfig.json
+    - cli/bin/ma.js
+    - __agent/log/cycles/cycle-7.md
   fr_status_changes: []
-  plan_steps_marked_done: []
-  commit_sha: "db23d62"
+  plan_steps_marked_done:
+    - { planPath: __agent/plans/ssot-server-esm-migration.plan.md, stepRef: "Phase 3.2 (CLI type-extraction emit fix)" }
+  commit_sha: "3d22143"
   build_status: success
-  test_status: not-re-run                  # LDP needs manual dc ldp restart for config reload
+  test_status: success                     # CLI 21 spec, jasmine zöld; smoke ma --help OK
 
 foreign_pending:
   first_seen_cycle: 4
@@ -41,7 +39,7 @@ foreign_pending:
     - cli/tsconfig.json (mod)
     - client/tsconfig.json (mod)
   fingerprint: "chat-esm-migration-in-progress-2026-05-12"
-  cycles_persisted: 3                      # cycle 4 / 5 / 6 — 3+ → takeover potenciál a cycle 7-ben ha még pending
+  cycles_persisted: 4                      # cycle 4/5/6/7 — Phase 3.2 cycle 7-ben takeover-elve. Maradék (Phase 5-6) még chat-felelős.
 
 # Plan-folytatás tracking
 active_plan:
