@@ -38,6 +38,6 @@ export const paths = {
   status: () => path.join(projectRoot(), '__agent', 'STATUS.md'),
   userInput: () => path.join(projectRoot(), '__agent', 'USER_INPUT.md'),
   state: () => path.join(projectRoot(), '__agent', 'state'),
-  agentTickJson: () => path.join(projectRoot(), '__agent', 'state', 'agent-tick.json'),
+  agentTickJson: () => path.join(projectRoot(), '__agent', 'state', 'assistant-agent-cron-tick.json'),
   actionLogDir: () => path.join(projectRoot(), '__agent', 'log', 'actions'),
 };

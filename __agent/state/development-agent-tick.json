@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "lastTickAt": null,
+  "tickCounter": 0,
+  "currentDay": null,
+  "dailyTickCount": 0,
+  "lastVerdict": null,
+  "lastReason": null,
+  "agent": "development"
+}

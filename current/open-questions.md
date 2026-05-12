@@ -263,6 +263,37 @@
 | Q-bmode-3 | Failure handling: 1× hiba = email / 3× = notify? | `B-mode-scripted-automation.plan.md` | low | open |
 | Q-bmode-4 | Build-ki: én vagy másik agent? | `B-mode-scripted-automation.plan.md` | high | open |
 
+### Z) 2.5-agent rendszer 🤖🤖
+
+| Q# | Kérdés | Kontextus | Fontosság | Status |
+|---|---|---|---|---|
+| Q-2agent-1 | Dev-agent tick-frekvencia (event/cron/user)? | `two-agent-system.plan.md` | high | open |
+| Q-2agent-2 | Dev-agent tier-rendszer (mit önállóan vs user-OK)? | `two-agent-system.plan.md` | high | open |
+| Q-2agent-3 | Két agent összehangolt (build-trigger vs notify)? | `two-agent-system.plan.md` | medium | open |
+| Q-2agent-4 | Chat session triggereli az agent-ticket vagy csak observer? | `two-agent-system.plan.md` | medium | open |
+| Q-2agent-5 | Shared state szabályok (file-lock / ütközés)? | `two-agent-system.plan.md` | medium | open |
+| Q-2agent-6 | Worker-agent külön agent vagy dev-agent sub-feladat? | `two-agent-system.plan.md` + `worker-agent-cronjob.md` | high | open |
+
+### X) CCAP-CLI integráció 🔌
+
+| Q# | Kérdés | Kontextus | Fontosság | Status |
+|---|---|---|---|---|
+| Q-ccap-cli-1 | Mikor érkezik az eszköz? | `ccap-cli-integration.md` | medium | open |
+| Q-ccap-cli-2 | Milyen parancsok várhatóak (subcommand-tree)? | `ccap-cli-integration.md` | medium | open |
+| Q-ccap-cli-3 | Auth (lokál bearer / OAuth / nincs)? | `ccap-cli-integration.md` | medium | open |
+| Q-ccap-cli-4 | Leírás-generátor formátuma (md/JSON/OpenAPI)? | `ccap-cli-integration.md` | low | open |
+
+### Y) Worker-agent + kanban 🧑‍💻
+
+| Q# | Kérdés | Kontextus | Fontosság | Status |
+|---|---|---|---|---|
+| Q-worker-1 | Összeolvasszuk a B-mode plan-vel, vagy külön? | `worker-agent-cronjob.md` | high | open |
+| Q-worker-2 | Worker-agent ki futtatja (CCAP / lokál / saját)? | `worker-agent-cronjob.md` | high | open |
+| Q-worker-3 | Drag-and-drop pontos viselkedés? | `worker-agent-cronjob.md` | medium | open |
+| Q-worker-4 | Plan-approval: minden task / csak Tier 2+? | `worker-agent-cronjob.md` | medium | open |
+| Q-worker-5 | Tier-rendszerbe illeszkedés? | `worker-agent-cronjob.md` | medium | open |
+| Q-worker-6 | Organizer task-rendszerhez kapcsolódás? | `worker-agent-cronjob.md` | medium | open |
+
 ### W) Review tool rollout 🔍
 
 | Q# | Kérdés | Kontextus | Fontosság | Status |

@@ -1,7 +1,7 @@
 {
   "name": "agent-handlers",
   "version": "0.1.0",
-  "description": "Action-handler dispatcher for the my-assistant A-mode agent (CCAP runtime calls this with the agent's JSON output).",
+  "description": "Action-handler dispatcher for the my-assistant Assistant Agent Cron Job (CCAP runtime calls this with the agent's JSON output). See current/principles/system-components.md.",
   "type": "module",
   "private": true,
   "scripts": {

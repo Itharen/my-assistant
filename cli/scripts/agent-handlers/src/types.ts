@@ -1,6 +1,6 @@
 // scripts/agent-handlers/src/types.ts
-// Type definitions for the A-mode agent output JSON.
-// Source of truth: __agent/triggers/A-mode-entrypoint.md "Output" section.
+// Type definitions for the Assistant Agent Cron Job output JSON.
+// Source of truth: __agent/triggers/assistant-agent-cron-entrypoint.md "Output" section.
 
 export enum Verdict { urgens = 'urgens', softNudge = 'soft-nudge', noAction = 'no-action' }
 

@@ -151,11 +151,21 @@ DB-séma 8 tábla (lásd `current/feature-requests/server-app-architecture.md`).
 
 ### L5 — Agent runtime (CCAP)
 
-| Mode | Mit | Status |
+> **Kanonikus névhasználat**: `current/principles/system-components.md`. Az
+> alábbi 3 sor a 7-komponens közül a #5, #6, #7-re vonatkozik.
+
+| Komponens | Mit | Status |
 |---|---|---|
-| **A) Intelligens periodikus** | óránként Claude API hívás, állapot-check, action-set kibocsátás | ✅ MVP shipped (file fallback) → bekötve a server `/tick`-be |
-| **B) Scripted automatizmus** | LLM nélkül cron-task-ok (recurring miss-detect, log rotálás, diary-template, stb.) | 🟡 plan v1, NEM épült |
-| **C) Élő chat** | én (most ez) | ✅ él |
+| **Assistant Agent Cron Job** (#6, ex-"A-mode") | óránként Claude API hívás, állapot-check, action-set kibocsátás | ✅ MVP shipped (file fallback) → bekötve a server `/tick`-be |
+| **Assistant Agent automatizmus scriptek** (#7, ex-"B-mode") | LLM nélkül cron-task-ok (recurring miss-detect, log rotálás, diary-template) | 🟡 plan v1, NEM épült |
+| **Assistant Agent** (#5, chat = én) | élő user-beszélgetés | ✅ él |
+| **Development Agent** (#1, új) | Domén 2 fejlesztés (FR-process, plan-step, test-run) | 🟡 entrypoint+plan v1 vázlat 2026-05-11, Phase 1 user-OK-ra vár |
+
+Részletes plan-ek:
+- `__agent/plans/assistant-agent-cron.plan.md`
+- `__agent/plans/assistant-agent-automation-scripts.plan.md`
+- `__agent/plans/development-agent.plan.md`
+- `__agent/plans/two-agent-system.plan.md` (összesítő, system-components-re mutat)
 
 **Belépési fájl A-mode-hoz:** `__agent/triggers/A-mode-entrypoint.md`
 

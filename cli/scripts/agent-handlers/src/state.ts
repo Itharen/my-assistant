@@ -1,5 +1,5 @@
 // scripts/agent-handlers/src/state.ts
-// Reads/writes __agent/state/agent-tick.json with file-locking.
+// Reads/writes __agent/state/assistant-agent-cron-tick.json with file-locking.
 
 import { promises as fs } from 'node:fs';
 import * as path from 'node:path';

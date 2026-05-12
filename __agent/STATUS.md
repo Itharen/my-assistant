@@ -4,12 +4,15 @@
 state: idle
 active_flow: null
 active_phase: null
-last_event: 2026-05-08T15:30:00+02:00
-last_event_type: tri-tier-refactor-shipped
-next_action: "Tri-tier refactor (cli/server/client) sikerült — 48 specs zöld minden szinten. Architektúra: __agent/references/architecture.md. Következő: server live-be tétele (start-clean + Phase 2 dual-write a Claude hookoknál) + client fejlesztés (actions, user-input modulok). Phase 1.5 cast-notifier Spotify OAuth még user-tesztelésre vár."
+last_event: 2026-05-11T14:30:00+02:00
+last_event_type: ccap-skill-doc-generated-plus-first-dev-frs
+next_action: "CCAP CLI elérhető — skill-doc generálva (__agent/references/ccap/). Két új első fejlesztési FR a Dev Agentnek: (1) communication-forms.md (ccap notify integráció + 12 kommunikációs forma), (2) automatic-status-recording.md (STATUS+plan+FR auto-frissítés). Cron-setup vázlat: __agent/triggers/cron-setup.md (user maga állítja be a CCAP-side cron-t)."
 
 active_plans:
-  - "__agent/plans/triggering-A-mode-health-check.plan.md"  # v2 — Phase 1 MVP shipped (file-based)
+  - "__agent/plans/assistant-agent-cron.plan.md"  # ex-"A-mode" — Phase 1 MVP shipped
+  - "__agent/plans/assistant-agent-automation-scripts.plan.md"  # ex-"B-mode" — v1 plan, NEM épült
+  - "__agent/plans/development-agent.plan.md"  # 🆕 v1 vázlat, Phase 1 user-OK-ra vár
+  - "__agent/plans/two-agent-system.plan.md"  # felülírja a system-components.md kanonikus névvel
   - "__agent/plans/refactor-tri-tier.plan.md"  # ✅ SHIPPED 2026-05-08
 
 # IMPORTANT: A finomabb history-t lásd: __agent/log/actions/YYYY-MM-DD.jsonl

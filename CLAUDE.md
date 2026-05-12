@@ -310,6 +310,9 @@ megfogalmazása lesz a referencia.
 | `current/principles/no-paid-solutions.md` | **Univerzális hard rule**: SOHA ne ajánlj fizetős megoldást — ha létezik, lefejlesztjük magunknak |
 | `current/principles/build-it-ourselves.md` | **Univerzális default**: build-it-ourselves stance, FOSS / saját script preferred a heavy 3rd-party tooling helyett |
 | `current/principles/mvp-focus.md` | **MVP = pénzkeresés.** Top-level fókusz-emlékeztető, minden egyéb priorizálást kiegészít |
+| `current/principles/two-domains.md` | **Asszisztensi vs szoftverfejlesztési** feladatok elhatárolása — ne keveredjenek |
+| `current/principles/system-components.md` | **Kanonikus 7-komponens elhatárolás** (Development Agent, Server, Client, CLI, Assistant Agent, Cron Job, Automation Scripts) — minden hivatkozás ezekre a nevekre |
+| `current/principles/full-autonomy-expectation.md` | **Top-level cél**: teljes autonómia a rendszertől, chat-vezérelt vezénylés |
 | `current/principles/cast-notifier-defaults.md` | Cast-notifier operacionális default-ok: All Speakers target, férfi HU TTS, volume save→up→restore (NEM duck), Spotify resume |
 
 **Új alapelv kezelése:** ha a user új szabály-szerű dolgot mond, **soha ne csak

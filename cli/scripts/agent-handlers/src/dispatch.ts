@@ -106,7 +106,7 @@ async function main(): Promise<void> {
   await logAction({
     actor: 'agent-dispatcher',
     kind: 'flow-start',
-    summary: `A-mode tick: verdict=${output.verdict}, ${output.actions.length} action(s), sleeping=${isSleeping}`,
+    summary: `Assistant Agent Cron tick: verdict=${output.verdict}, ${output.actions.length} action(s), sleeping=${isSleeping}`,
     extra: {
       reason: output.reason,
       tickedAt: output.tickMeta.tickedAt,
@@ -175,7 +175,7 @@ async function main(): Promise<void> {
   await logAction({
     actor: 'agent-dispatcher',
     kind: 'flow-end',
-    summary: `A-mode tick done: ok=${result.succeeded}, failed=${result.failed}, skipped=${result.skipped}`,
+    summary: `Assistant Agent Cron tick done: ok=${result.succeeded}, failed=${result.failed}, skipped=${result.skipped}`,
     extra: { details: result.details },
   });
 

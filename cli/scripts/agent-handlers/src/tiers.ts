@@ -1,6 +1,6 @@
 // scripts/agent-handlers/src/tiers.ts
 // Tier-based action gating.
-// Source of truth: __agent/triggers/A-mode-entrypoint.md "Tier-szabályok"
+// Source of truth: __agent/triggers/assistant-agent-cron-entrypoint.md "Tier-szabályok"
 
 import type { Action, ActionTier } from './types.js';
 
