@@ -34,6 +34,7 @@ amikor szükség van rá, nem fix ütem) + stock-jellegű tételek a
 - [ ] **Póló**
 - [ ] **Kabát**
 - [ ] **Pulóver**
+- [ ] **Nadrág** (2026-05-12 hozzáadva)
 
 ---
 

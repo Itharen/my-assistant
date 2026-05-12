@@ -4,9 +4,9 @@
 state: idle
 active_flow: null
 active_phase: null
-last_event: 2026-05-11T14:30:00+02:00
-last_event_type: ccap-skill-doc-generated-plus-first-dev-frs
-next_action: "CCAP CLI elérhető — skill-doc generálva (__agent/references/ccap/). Két új első fejlesztési FR a Dev Agentnek: (1) communication-forms.md (ccap notify integráció + 12 kommunikációs forma), (2) automatic-status-recording.md (STATUS+plan+FR auto-frissítés). Cron-setup vázlat: __agent/triggers/cron-setup.md (user maga állítja be a CCAP-side cron-t)."
+last_event: 2026-05-12T17:30:00+02:00
+last_event_type: workflow-rebuild-on-ccap-pattern
+next_action: "Workflow átépítve a CCAP/Livirrium/Helocia minta szerint. WORKFLOW_DEV + WORKFLOW_ASSIST kanonikus belépők + 14 dev-phase + 6 assist-phase + 8 dev-event + 6 assist-event + STATUS_DEV/ASSIST YAML + log/cycles+log/ticks. User maga állítja be a 2 trigger szöveget a CCAP session-eire."
 
 active_plans:
   - "__agent/plans/assistant-agent-cron.plan.md"  # ex-"A-mode" — Phase 1 MVP shipped

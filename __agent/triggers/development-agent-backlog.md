@@ -26,6 +26,9 @@
 | 6 | Food tracking (Phase 1 hibrid prompt) | `current/feature-requests/food-tracking.md` |
 | 7 | Review tool rollout | `current/feature-requests/review-tool-rollout.md` |
 | 7b | CCAP auto-session monitoring | `current/feature-requests/ccap-session-monitoring.md` |
+| 7c | Overseer monitoring (fdp project-statuses input bekötés) | `current/feature-requests/overseer-monitoring.md` |
+| 7d | "Hey Google"-szerű voice-trigger research | `current/feature-requests/hey-google-like-voice-trigger.md` |
+| 7e | Per-device hangerő-cap impl (BathCom 50%) | `current/principles/cast-notifier-defaults.md` |
 
 ---
 

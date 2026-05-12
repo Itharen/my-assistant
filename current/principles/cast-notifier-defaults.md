@@ -9,6 +9,27 @@
 
 ---
 
+## 2026-05-12 — per-device hangerő-cap
+
+> a fürdőben lévő hangszórót azt sose emeljük 50% fölé.
+
+**Strukturált:**
+
+| Device | Max volume |
+|---|---|
+| **BathCom** (fürdő) | **0.50** (50%) — kemény cap, soha nem felül |
+| Egyéb | nincs explicit cap (operacionális default szerint) |
+
+A `notify` orchestration során a SAVE→UP→PLAY→RESTORE flow-ban az UP
+fázisban a per-device `--announcement-volume`-ot **clamp**-elni kell ezzel
+a cap-pel. BathCom esetén `min(announcement-volume, 0.50)`.
+
+→ Implementáció-feladat a Dev Agentnek: `cli/src/cast/notify.ts` (vagy
+megfelelő helye) per-device cap-térkép a `config/groups.json` mellé:
+pl. `config/device-volume-caps.json`.
+
+---
+
 ## 2026-05-07 — initial defaults declaration
 
 > Lehetőleg írjuk fel azt is, hogy általában a default az az all speakers
