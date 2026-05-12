@@ -2,29 +2,33 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 2                                  # Cycle 2 indul
-phase: implement                           # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 2                                  # Cycle 2 lezárva; következő cycle 3 lesz
+phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 2 — workflow-extension. User-OK 2026-05-12: 03-collect-tasks priority
-  bővítés (LDP > CDP > runtime > minden más). 3 új event-handler + 02-audit
-  placeholder + WORKFLOW_DEV event-tábla bővítés.
+  Cycle 2 lezárva 2026-05-12 — workflow-extension (LDP/CDP/runtime priority).
+  Commit efc4f28. 3 új event-handler + 03-collect-tasks priority table +
+  02-audit pipeline-state placeholder + WORKFLOW_DEV event-tábla.
+  Lásd log/cycles/cycle-2.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 1
+  cycle_id: 2
   phase_completed: close-cycle
   files_modified:
-    - client/src/app/_services/api-services/a-server.api-service.spec.ts
+    - __agent/events/dev/on-ldp-fail.md
+    - __agent/events/dev/on-cdp-fail.md
+    - __agent/events/dev/on-runtime-error.md
+    - __agent/phases/dev/02-audit.md
+    - __agent/phases/dev/03-collect-tasks.md
+    - __agent/WORKFLOW_DEV.md
     - __agent/STATUS_DEV.md
-    - __agent/state/development-agent-tick.json
-    - __agent/log/actions/2026-05-12.jsonl
-    - __agent/log/cycles/cycle-1.md
+    - __agent/log/cycles/cycle-2.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: "4d4504c"
+  commit_sha: "efc4f28"
   build_status: success
-  test_status: not-run                     # pnpm install protobufjs@7.5.7 ERR_PNPM_IGNORED_BUILDS
+  test_status: not-run                     # Q-package-1 továbbra is nyitva
 
 # 25. alapelv (persistencia-takeover) tracking
 foreign_pending:
