@@ -313,6 +313,8 @@ megfogalmazása lesz a referencia.
 | `current/principles/two-domains.md` | **Asszisztensi vs szoftverfejlesztési** feladatok elhatárolása — ne keveredjenek |
 | `current/principles/system-components.md` | **Kanonikus 7-komponens elhatárolás** (Development Agent, Server, Client, CLI, Assistant Agent, Cron Job, Automation Scripts) — minden hivatkozás ezekre a nevekre |
 | `current/principles/full-autonomy-expectation.md` | **Top-level cél**: teljes autonómia a rendszertől, chat-vezérelt vezénylés |
+| `current/principles/error-handling.md` | **Univerzális hard rule**: minden fejlesztésnél debug-level error handling, semmi csendes swallow |
+| `current/principles/ssot.md` | **Univerzális hard rule**: SSoT — egy adat = egy kanonikus forrás, többi cache/hivatkozás |
 | `current/principles/cast-notifier-defaults.md` | Cast-notifier operacionális default-ok: All Speakers target, férfi HU TTS, volume save→up→restore (NEM duck), Spotify resume |
 
 **Új alapelv kezelése:** ha a user új szabály-szerű dolgot mond, **soha ne csak

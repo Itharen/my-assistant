@@ -159,6 +159,30 @@ A prioritás-mátrix forrása:
 > a workspace-szintű triázs alapján van, nem feltétlenül a my-assistant prioritása.
 > A my-assistant scope-on belül az `organizer` + `organizer-cli` a legfontosabb
 > (a personal data backend).
+>
+> **⚠️ KRITIKUS scope-szabály (2026-05-12 user-megerősítés):**
+>
+> **A Dev Agent CSAK ÉS KIZÁRÓLAG a `my-assistant/` projektet fejleszti.**
+>
+> A teljes `LIVE-projects/` mappa — mind a 32 projekt — **NEM** a Dev
+> Agent feladata. Ezeket a user (és más agentek) dolgozzák. **Semmilyen**
+> autonóm file-edit / commit / push NE érintse őket.
+>
+> Olvasás referenciaként **megengedett** (`Read` / `Grep` / `Glob`):
+> - 04-investigate pattern-keresés
+> - 04-investigate spec-konzultáció (`__specifications/`)
+> - Architektúra-tanulás
+>
+> Extra **TILTOTT** projektek (más agent aktívan dolgozik rajta —
+> még olvasás-referenciaként is óvatosan):
+> - **`livirrium`**
+> - **`ccap-revisioned`**
+>
+> Lásd `__agent/WORKFLOW_DEV.md` 18. alapelv (Scope-restriction).
+>
+> **Overseer-poll célja:** az Assistant Agent Cron Job monitorozza
+> a **MAGAS-prio (HIGH)** projekteket (`fdp project-statuses` input). Lásd
+> `current/feature-requests/overseer-monitoring.md`.
 
 ---
 
@@ -190,8 +214,8 @@ A prioritás-mátrix forrása:
 | **organizer-cli** | ⭐ CLI (`fo` command) az organizer-hez | `E:\Programming\Own\CURSOR\LIVE-projects\organizer-cli\README.md` + `cli\__documentations\` |
 | **social-service** | Auth scaffolding, minimal | `E:\Programming\Own\CURSOR\LIVE-projects\social-service\README.md` |
 | **warbots-distribution-server** | Warbots game distribution (client + backend) | `E:\Programming\Own\CURSOR\LIVE-projects\warbots-distribution-server\__specifications\` |
-| **livirrium** | Simulation game (world, plants, performance) | `E:\Programming\Own\CURSOR\LIVE-projects\livirrium\__documentations\` + `__specifications\main.md` |
-| **ccap-revisioned** | `@futdevpro/ccap` Agent architecture (CLI + server + client + e2e) | `E:\Programming\Own\CURSOR\LIVE-projects\ccap-revisioned\__documentations\` + `__specifications\main.md` |
+| ⚠️ **livirrium** | Simulation game (world, plants, performance) — **TILTOTT** (más dolgozik) | `E:\Programming\Own\CURSOR\LIVE-projects\livirrium\__documentations\` + `__specifications\main.md` |
+| ⚠️ **ccap-revisioned** | `@futdevpro/ccap` Agent architecture (CLI + server + client + e2e) — **TILTOTT** (más dolgozik) | `E:\Programming\Own\CURSOR\LIVE-projects\ccap-revisioned\__documentations\` + `__specifications\main.md` |
 | **war-factory** | Factory-RTS hibrid (Factorio-szerű produkció + war) | `E:\Programming\Own\CURSOR\LIVE-projects\war-factory\__documentations\` + `__specifications\main.md` |
 
 ### 4.4 ⚪ NOT PRIORITY — shelved / archived

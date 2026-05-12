@@ -52,6 +52,21 @@
 
 A 2. útvonal a default a kisebb plan-eknél — mindig próbáljam először 3 pontba sűríteni.
 
+## 2026-05-12 — időpont-érzékenység (assistant-figyelmeztetés)
+
+A chat (én) **kerüljem a "este" / "reggel" / "délután" implicit
+becsléseket** ha a user-ciklus eltérhet az óra-óra rendszertől. A user
+**csúszó alvás-ciklusban** él (`sleep-system.md`) — neki a 18:00 lehet
+"reggel" (ha most kelt), és a 03:00 lehet "délben" (közbenső ébrenléti
+óra). Helyette:
+- Konkrét **óraérték** ("most 18:04")
+- VAGY a **user-ciklus-kontextus** alapján ("most-keltél óta ~1h" — ha a user
+  jelezte a wake-time-ot)
+- Soha ne mondjam "este pihenj" — semleges "ha pihennél, akkor…"
+
+(Hiba forrás: 2026-05-12-i chat-üzenet — "csendes este" megnevezést
+javított a user.)
+
 ## 2026-05-09 — KRITIKUS: NE mondd meg mit csináljon
 
 > Arra figyelj oda! Volt már róla szó, de jobban figyelj oda rá! Ne mondd

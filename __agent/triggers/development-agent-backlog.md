@@ -14,6 +14,9 @@
 | 1 | **Communication forms (3 csatorna)** | `current/feature-requests/communication-forms.md` | `ccap-notify` handler + `notify-cast` handler valódi shell-out |
 | 2 | **Automatic status recording** | `current/feature-requests/automatic-status-recording.md` | `fr-status-change` + `plan-step-mark-done` handler |
 | 3 | **Dev Agent Phase 1 self-bootstrap** | `__agent/plans/development-agent.plan.md` | dispatcher `agent` mező-support + Dev Agent log handler |
+| 3b | **Runtime error API — Dynamo Logs Service bevezetés** | `current/feature-requests/runtime-error-api.md` | server-side error-tracking + REST endpoint a Dev Agent audit-fázisához |
+| 3c | **IoT integráció — Google Home routine wake/sleep events** | `current/feature-requests/iot-integration-google-home-routine.md` | "Jó reggelt"/"Jó éjt" routine → server REST → sleep-state forrás |
+| 3d | **Tasks aggregated dashboard view (client/ + server/)** | `current/feature-requests/tasks-dashboard-aggregated-view.md` | aggregátor + UI + interaktív jelölgetés (✅/⏸/🚫/💬) |
 
 ---
 

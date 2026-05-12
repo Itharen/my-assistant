@@ -81,3 +81,18 @@ Minden új code change-nél átfutni:
 - [ ] HTTP error response server-side → DyFM_Error mezőkkel jön át?
 - [ ] Új throw → DyFM_Error errorCode-dal + additionalContent-tel?
 - [ ] `[object Object]` keresés a kódban → 0 match?
+
+---
+
+## 2026-05-12 — megerősítés + Runtime Error API
+
+> A runtime error API az amúgy a Dynamo rendszereknek alaprésze.
+> Elméletileg beépített feature, amit minél előbb működésre kell bírjunk,
+> illetve nagyon-nagyon extrém fontos mindig, mindig, minden fejlesztésnél
+> a nagyon alapos és debug-level error handling.
+
+**Következmény (assistant):**
+- A 2026-05-11-i univerzális szabály **megerősítve, kiemelten**
+- Új FR-ben formalizálva a server-side bevezetés: `current/feature-requests/runtime-error-api.md` (DyNTS_Logs_Service install + endpoint-ok)
+- Backlog 3b sor a Dev Agent 🟢 Most-fókusz listán
+- `__agent/WORKFLOW_DEV.md` 20a alapelv hivatkozik vissza ide

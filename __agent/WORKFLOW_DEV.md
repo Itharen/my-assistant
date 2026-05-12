@@ -96,16 +96,64 @@ default: `USER_INPUT.md [NEW] domain: dev kind: instruction/approval`.
 Foreign pending git changes / persisted error 3+ cycle után **te vagy a
 felelős** — investigate + befejezés / revert / log.
 
-### 18. TILTOTT projektek (KRITIKUS)
-`__agent/references/workspace-projects.md` listáz **tiltott projekteket**
-(jelenleg: `livirrium`, `ccap-revisioned`). **Semmilyen file-edit / commit /
-push NEM mehet** ezekbe. Csak olvasás referenciaként. Ha kétértelmű helyzet
-→ `events/dev/on-architecture-decision.md`.
+### 18. Scope-restriction (KRITIKUS — KIZÁRÓLAGOS)
+A Dev Agent **CSAK ÉS KIZÁRÓLAG** a my-assistant projektet fejleszti:
 
-### 19. Workspace-prio tudatosság
+✅ **Scope (file-edit / commit / push):**
+- `E:\Programming\Own\CURSOR\my-assistant\` — minden almappa:
+  `__agent/`, `current/`, `cli/`, `server/`, `client/`, `activity-monitor/`,
+  `scripts/` (ha lesz), `__documentations/`, `__specifications/`
+
+❌ **Out-of-scope (NEM Dev Agent feladata, soha):**
+- `E:\Programming\Own\CURSOR\LIVE-projects\` — bármely projekt (32 db)
+- `E:\Programming\Own\CURSOR\NPM-packages\`
+- `E:\Programming\Own\CURSOR\OGS-projects\`
+- `E:\Programming\Own\CURSOR\documentations\`
+- `E:\Programming\Own\CURSOR\CLAUDE.md` (globális workspace utasítások)
+- Bármely más workspace-szintű fájl
+
+Ezek a **user saját feladatai** — más agentek / a user maga dolgozik rajtuk.
+
+**A LIVE-projects** olvasható **pattern-referenciaként** (csak `Read` /
+`Grep` / `Glob`, soha `Write` / `Edit` / `git`). Lásd `__agent/references/workspace-projects.md`.
+
+Ha kétértelmű helyzet (pl. a my-assistant függ valamilyen workspace-szintű
+változtatástól) → `events/dev/on-architecture-decision.md` user-OK kérés.
+
+### 19. Pattern-referencia korlátok
 Cross-project pattern-keresésnél (04-investigate) **csak MAGAS / KÖZEPES**
 prio workspace-projektekből (lásd `workspace-projects.md`) vegyél mintát.
 NEM PRIO projektek elavult vagy nem-mérvadó mintákat tartalmazhatnak.
+
+### 20a. Debug-level error handling (KRITIKUS)
+Lásd `current/principles/error-handling.md`. Minden `06-implement` és
+`07-review` fázis explicit checklist-eleme:
+- Try/catch / Result-pattern minden hibapontnál
+- Soha csendes `catch {}` (kivéve explicit kommentált swallow)
+- Strukturált hiba (`code`, `message`, `details`, `context`)
+- Action-log emit + (server-side) `DyNTS_Logs_Service` hívás
+- Stack + file:line:col ha lehet
+
+### 20b. SSoT (Single Source Of Truth — KRITIKUS)
+Lásd `current/principles/ssot.md`. Minden adat-elemnek egy kanonikus
+forrásfájlja van; minden más csak hivatkozás/cache. Cycle-en belül
+ellenőrizd:
+- A módosított adat SoT-ja frissítve?
+- Cache-ek/hivatkozások karbantartva (drift-elkerülés)?
+
+### 21. Runtime error / action-log monitoring (új 2026-05-12)
+Minden cycle `02-audit` fázisban olvasd át:
+- `__agent/log/actions/<today>.jsonl` — a saját + Cron Job entries
+- Keress `kind: error` rekordokat — ez a runtime error forrás (egyelőre,
+  amíg a server-ben nincs dedicated error API)
+
+Prioritás-szabály:
+- Az error fix **felülírja** a normál candidate-pool prioritást
+- Ha 3+ error van utolsó 24h-ban → `urgens` candidate
+- Ha 10+ error → **dedikált cleanup cycle** (egész cycle erre megy)
+
+A jövőben (server Phase 2+) a `server/` REST-en lesz `/errors` endpoint —
+akkor azt is olvasd.
 
 ---
 
@@ -153,6 +201,9 @@ env. Amikor lesz, beépítjük.
 | Interrupt resume | `events/dev/on-interrupt-resume.md` | Széttört cycle: STATUS_DEV-ből rekonstruál |
 | Build fail | `events/dev/on-build-fail.md` | `pnpm typecheck` / `pnpm run build` failel |
 | Test fail | `events/dev/on-test-fail.md` | `pnpm test` failel |
+| **LDP fail** (Phase 2+) | `events/dev/on-ldp-fail.md` | `dc ldp` watch-pipeline step failel |
+| **CDP fail** (Phase 2+) | `events/dev/on-cdp-fail.md` | `dc cdp` / Overseer pipeline failel `git push` után |
+| **Runtime error** | `events/dev/on-runtime-error.md` | action-log `kind:"error"` / server errors-table |
 | Merge conflict | `events/dev/on-merge-conflict.md` | git merge / rebase ütközés |
 | Architecture decision | `events/dev/on-architecture-decision.md` | nagy architekturális elágazás → user kell |
 | Package issue | `events/dev/on-package-issue.md` | npm/pnpm dep konfliktus, missing module |

@@ -2,13 +2,13 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 1                                  # Cycle 1 lezárva; következő cycle 2 lesz
-phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 2                                  # Cycle 2 indul
+phase: implement                           # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 1 lezárva 2026-05-12T17:48+02:00 — bootstrap commit (4d4504c) +
-  client typecheck baseline-fix (a-server.api-service.spec.ts Observable→Promise).
-  Build zöld, test skipped (pnpm package-issue). Lásd log/cycles/cycle-1.md.
+  Cycle 2 — workflow-extension. User-OK 2026-05-12: 03-collect-tasks priority
+  bővítés (LDP > CDP > runtime > minden más). 3 új event-handler + 02-audit
+  placeholder + WORKFLOW_DEV event-tábla bővítés.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:

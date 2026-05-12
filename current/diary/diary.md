@@ -96,6 +96,16 @@ Ha jövőben átköltözünk az organizer-be, a leképezés:
 ### 📌 CCAP új verzió várakozóban
 - Pár hibára vár a friss CCAP-ből (manuális megfigyelés)
 
+### ✅ Mai elvégzett
+- **TERA-check ✅ megvolt** (heti recurring kedd) — `recurring-tasks.md` frissítve
+
+### ⏸ Csúsztatva
+- **Tesco-rendelés holnapra (2026-05-13)** — ma nem fér bele
+
+### 🆕 Új FR
+- **Tasks aggregated dashboard view** (`client/` + `server/`) → backlog 3d
+  — a chat-szerű prio-lista interaktívan a felületen (mark-done/snooze/drop/comment)
+
 ---
 
 ## 2026-05-10 — Vasárnap

@@ -44,7 +44,7 @@ Strukturált stock-tábla. Szabályok: `current/principles/stock-system.md`.
 
 | Name | currentQty | targetQty | reorderThreshold | reorderQty | unit | notes |
 |---|---|---|---|---|---|---|
-| Cigi | **0** (2026-05-09 elfogyott) | TBD | TBD | TBD | csomag/karton | 2026-05-09: elfogyott. preferredStore TBD (Tesco / dohánybolt / benzinkút?). Felvenni mint új stock-elem — defaultok pontosítandók. |
+| Cigi | **0** (2026-05-09 elfogyott) | TBD | TBD | TBD | csomag/karton | 2026-05-09: elfogyott. **preferredStore: Dohánybolt** (2026-05-12 megerősítve — NEM Tesco). 2026-05-12: a minap volt a dohányban, de a **kedvenc el volt fagyva** → új attempt szükséges. |
 
 ## Étel — kész 🍱
 

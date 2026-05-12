@@ -43,6 +43,8 @@ Szabályok: `current/principles/recurring-tasks.md` (2-3 hetente megrendelés) +
 ### Drogéria / higiénia 🧴
 - [ ] Aftershave
 
+> **Megjegyzés (2026-05-12):** cigi **NEM** Tesco-ból (dohánybolt) — eltávolítva.
+
 ---
 
 ## Megjegyzések
