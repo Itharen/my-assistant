@@ -2,32 +2,30 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 3                                  # Cycle 3 indul
-phase: audit                               # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 3                                  # Cycle 3 lezárva; következő cycle 4 lesz
+phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 3 indul 2026-05-12. Working tree clean (no foreign pending).
-  USER_INPUT [NEW] van de domain:meta (Assistant Cron, Domén 1) — skip.
-  Belépés: 02-audit (typecheck + runtime error scan).
+  Cycle 3 lezárva 2026-05-12 — Q-package-1 (protobufjs pnpm build-script approval) fix.
+  Commit 0f3c7a1. cli/pnpm-workspace.yaml + cli/README setup doc. CLI pnpm test
+  now green (21 specs). Új blocker: Q-package-2 (@futdevpro/ngx-dynamo-models 404 server-en).
+  Lásd log/cycles/cycle-3.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 2
+  cycle_id: 3
   phase_completed: close-cycle
   files_modified:
-    - __agent/events/dev/on-ldp-fail.md
-    - __agent/events/dev/on-cdp-fail.md
-    - __agent/events/dev/on-runtime-error.md
-    - __agent/phases/dev/02-audit.md
-    - __agent/phases/dev/03-collect-tasks.md
-    - __agent/WORKFLOW_DEV.md
+    - cli/pnpm-workspace.yaml
+    - cli/README.md
+    - current/open-questions.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-2.md
+    - __agent/log/cycles/cycle-3.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: "efc4f28"
+  commit_sha: "0f3c7a1"
   build_status: success
-  test_status: not-run                     # Q-package-1 továbbra is nyitva
+  test_status: success                     # CLI 21 specs, 0 failures (server/client skip)
 
 # 25. alapelv (persistencia-takeover) tracking
 foreign_pending:
