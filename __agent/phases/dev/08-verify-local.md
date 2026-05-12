@@ -1,21 +1,36 @@
 # Phase 08 — Verify local
 
-> Build / test / smoke a teljes érintett scope-on.
+> Build / test / smoke **az LDP `status.json`-on át** (22. alapelv).
 
 ## Mit csinálj
 
-1. **Pnpm typecheck** minden érintett projekten (cli/server/client):
+> **LDP-FIRST szabály:** A `06-implement` után a working tree változott. Az
+> LDP figyeli a fájlokat (`pipeline.config.json` `watch.paths`) és
+> automatikusan re-buildel + re-tesztel. **Olvasd a `status.json`-t**, ne
+> futtasd kézzel a parancsokat.
+
+1. **Várj az LDP-re** (max 60 sec a debounce + step időtartam után):
    ```
-   cd cli       && pnpm typecheck
-   cd server    && pnpm typecheck
-   cd client    && pnpm typecheck
+   cat logs/live-dev-pipeline/status.json
    ```
-2. **Pnpm test** (jasmine / karma):
-   ```
-   cd cli       && pnpm test
-   cd server    && pnpm test
-   cd client    && pnpm test
-   ```
+   - Friss `startedAt` (a `06-implement` óta)?
+   - `pipelineComplete: true` + `exitCode: 0` → ✅ kilépés `update-docs`-ra
+   - `pipelineComplete: false` + `phase: <running step>` → várj még
+   - `exitCode != 0` → lásd "Failing scenarios"
+
+2. **LDP NEM trigger-elt rá a változásra** (ritka):
+   - Ellenőrizd: a módosított fájl benne van-e a `pipeline.config.json`
+     `watch.paths`-ban? Ha nem → **`events/dev/on-architecture-decision.md`**
+     (bővítés user-OK-val).
+   - Ha igen, de a `startedAt` nem frissült → manuálisan trigger-elhető
+     (érintsd meg az egyik watch-fájlt) vagy fallback kézi parancsokkal:
+     ```
+     cd cli       && pnpm typecheck && pnpm test
+     cd server    && pnpm typecheck && npm run build-base && npx jasmine --config=spec/support/jasmine.json
+     cd client    && pnpm typecheck && npx ng test --watch=false --browsers=ChromeHeadless
+     ```
+     Jegyezd `phase_notes`-ba hogy fallback futott.
+
 3. **Coverage** (Phase 2 után automatikusan jegyezve):
    ```
    pnpm test:coverage

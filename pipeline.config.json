@@ -7,11 +7,19 @@
       "./cli/src",
       "./server/src",
       "./client/src",
+      "./cli/spec",
+      "./server/spec",
       "./cli/package.json",
       "./server/package.json",
-      "./client/package.json"
+      "./client/package.json",
+      "./cli/tsconfig.json",
+      "./server/tsconfig.json",
+      "./client/tsconfig.json",
+      "./cli/pnpm-workspace.yaml",
+      "./pnpm-workspace.yaml",
+      "./pipeline.config.json"
     ],
-    "extensions": ["ts", "json", "html", "scss"],
+    "extensions": ["ts", "json", "html", "scss", "yaml"],
     "ignore": [
       "node_modules",
       "build",

@@ -168,6 +168,32 @@ Prioritás-szabály:
 A jövőben (server Phase 2+) a `server/` REST-en lesz `/errors` endpoint —
 akkor azt is olvasd.
 
+### 22. LDP-first (KRITIKUS — új 2026-05-12)
+A build / typecheck / test állapot **kanonikus forrása** a
+**Live Development Pipeline** — `logs/live-dev-pipeline/status.json`. A LDP
+folyamatosan fut (`dc ldp`) és minden releváns file-change-re re-build-del.
+
+**NE futtass kézzel** `pnpm typecheck` / `pnpm test` / `ng test`-et a
+`02-audit` és `08-verify-local` fázisokban — duplázott munka + race
+condition az LDP-vel + STATUS_DEV.last_cycle.test_status drift.
+
+**Olvasd helyette:**
+```
+cat logs/live-dev-pipeline/status.json
+```
+Mezők: `phase`, `pipelineComplete`, `exitCode`, `steps[*].status`,
+`steps[*].errors[]`, `steps[*].testSummary`.
+
+**Fallback (LDP nem fut / nem trigger-elt rá a változásra):**
+- Ellenőrizd: a módosított fájl benne van-e `pipeline.config.json`
+  `watch.paths`-ban? Ha nem → bővítés szükséges (`events/dev/on-architecture-decision.md`).
+- Csak akkor futtass kézi parancsokat ha az LDP tényleg nem elérhető —
+  jegyezd `phase_notes`-ba.
+
+**LDP watch coverage** (`pipeline.config.json`): a `src/`, `spec/`,
+`package.json`, `tsconfig.json`, `pnpm-workspace.yaml`, és maga a
+`pipeline.config.json` mind watch-olva van. Új scope-ot oda kell felvenni.
+
 ---
 
 ## Fázis-mátrix (cycle-flow)

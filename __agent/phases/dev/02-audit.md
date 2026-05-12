@@ -1,21 +1,32 @@
 # Phase 02 — Audit
 
-> Build / typecheck / test baseline a working tree-n + runtime error scan.
+> Build / typecheck / test baseline **az LDP `status.json`-ból** + runtime error scan.
 
 ## Mit csinálj
 
-1. **Pnpm typecheck** mindhárom projekten:
+> **LDP-FIRST szabály (KRITIKUS — 22. alapelv):** A build/test állapot kanonikus
+> forrása a **`logs/live-dev-pipeline/status.json`**. A LDP (`dc ldp`)
+> folyamatosan fut és minden releváns file-change-re re-builddel. **NE futtass
+> kézzel `pnpm typecheck` / `pnpm test`-et**, ha az LDP elérhető — duplázott
+> munka + race condition.
+
+1. **LDP `status.json` olvasás** (elsődleges):
+   ```
+   cat logs/live-dev-pipeline/status.json
+   ```
+   Mezők: `phase`, `pipelineComplete`, `exitCode`, `steps[*].status`,
+   `steps[*].errors[]`, `steps[*].testSummary`. A `startedAt` mező megmondja
+   mennyire friss (ha >5 perc + a working tree azóta változott → re-trigger).
+
+2. **LDP nem fut / stale** (ritka, fallback):
    ```
    cd cli       && pnpm typecheck
    cd server    && pnpm typecheck
    cd client    && pnpm typecheck
    ```
-2. **Pnpm test** ahol releváns:
-   ```
-   cd cli       && pnpm test
-   cd server    && pnpm test
-   cd client    && pnpm test
-   ```
+   Tesztet csak ha tényleg muszáj — minden esetben jegyezzük a `phase_notes`-ban
+   hogy fallback futott (NEM a SoT-ot olvastuk).
+
 3. **Server health-check** (ha él):
    ```
    curl http://127.0.0.1:39200/healthz
