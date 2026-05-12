@@ -1,6 +1,6 @@
 {
   "name": "@my-assistant/server",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "private": true,
   "description": "my-assistant server — DyNTS + FDP framework, MongoDB-backed.",
   "type": "module",
@@ -14,6 +14,7 @@
     "start": "npm run prep && nodemon",
     "start-dev": "node ../node_modules/tsx/dist/cli.mjs ./src/index.ts",
     "build": "npm run build-base",
+    "start-prod": "node ./build/server/src/index.js",
     "build-base": "rimraf ./build && tsc",
     "build-clean": "rimraf ./build && rimraf pnpm-lock.yaml && rimraf ./node_modules && pnpm i && tsc",
     "typecheck": "tsc --noEmit",
