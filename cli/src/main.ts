@@ -4,9 +4,32 @@
 //
 // JSON envelope output stdout-ra; verbose log stderr-re.
 // Action-log emit minden subcommand kezdetén és végén (ok / error).
+// Global error handler: `uncaughtException` + `unhandledRejection` mindent
+// action-log-ba ír (semmi csendes swallow — `current/principles/error-handling.md`).
 
 import { logAction } from './action-log/action-log.client.js';
 import { fail, makeRequestId, writeEnvelope } from './output/envelope.js';
+
+// Global error handler-ek azonnal kötjük (NEM await, mert sync error-ok
+// import-time-on is fire-elhetnek). A logAction async — itt void-oljuk.
+process.on('uncaughtException', (err: Error) => {
+  process.stderr.write(`[ma] uncaughtException: ${err.stack ?? err.message}\n`);
+  void logAction({
+    kind: 'error',
+    summary: `ma uncaughtException: ${err.message}`,
+    extra: { stack: err.stack, name: err.name },
+  }).finally(() => process.exit(1));
+});
+
+process.on('unhandledRejection', (reason: unknown) => {
+  const err: Error = reason instanceof Error ? reason : new Error(String(reason));
+  process.stderr.write(`[ma] unhandledRejection: ${err.stack ?? err.message}\n`);
+  void logAction({
+    kind: 'error',
+    summary: `ma unhandledRejection: ${err.message}`,
+    extra: { stack: err.stack, name: err.name },
+  }).finally(() => process.exit(1));
+});
 
 import { runListInterfacesCommand } from './commands/list-interfaces.command.js';
 import { runDiscoverCommand } from './commands/discover.command.js';
@@ -170,7 +193,13 @@ function printGroupHelp(group: string): void {
   printHelp();
 }
 
-main().catch((err) => {
-  process.stderr.write(`[ma] FATAL: ${(err as Error).message}\n`);
+main().catch(async (err) => {
+  const e = err as Error;
+  process.stderr.write(`[ma] FATAL: ${e.stack ?? e.message}\n`);
+  await logAction({
+    kind: 'error',
+    summary: `ma FATAL (main rejection): ${e.message}`,
+    extra: { stack: e.stack, name: e.name },
+  });
   process.exit(1);
 });
