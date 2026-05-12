@@ -2,31 +2,28 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 11                                 # Cycle 11 lezárva; következő cycle 12 lesz
+cycle: 12                                 # Cycle 12 lezárva; következő cycle 13 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 11 lezárva 2026-05-12 — chat Phase 6 takeover: client-build NG5002 (i-google +
-  i-spotify @else if + @ karakter) + lint-client template/no-call-expression (eslint
-  config signal-friendly).
-  Commit 04ffe91. LDP várt: minden step ✅. Lásd log/cycles/cycle-11.md.
-  M1 grooming továbbra is defer → cycle 12 eleje.
+  Cycle 12 lezárva 2026-05-12 — postPipelineCommand server runtime ESM fix
+  (start-prod → tsx forrás-futtatás) + M1 grooming (backlog_snapshot + active_plan
+  mezők). Commit ed0b1f5. LDP várt: 10/10 step ✅ + postPipeline ✅.
+  Lásd log/cycles/cycle-12.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 11
+  cycle_id: 12
   phase_completed: close-cycle
   files_modified:
-    - client/eslint.config.js
-    - client/src/app/_modules/integrations/_components/i-google/i-google.component.html
-    - client/src/app/_modules/integrations/_components/i-spotify/i-spotify.component.html
-    - __agent/log/cycles/cycle-11.md
+    - server/package.json
+    - __agent/STATUS_DEV.md
+    - __agent/log/cycles/cycle-12.md
   fr_status_changes: []
-  plan_steps_marked_done:
-    - { planPath: __agent/plans/ssot-server-esm-migration.plan.md, stepRef: "Phase 6 client build/lint (i-google + i-spotify)" }
-  commit_sha: "04ffe91"
+  plan_steps_marked_done: []
+  commit_sha: "ed0b1f5"
   build_status: success
-  test_status: success                     # ng build BUILD=0, eslint exit 0 (35 warnings)
+  test_status: success                     # LDP 10/10 + start-prod no ESM error
 
 foreign_pending:
   first_seen_cycle: 4
@@ -45,16 +42,16 @@ foreign_pending:
 
 # Plan-folytatás tracking
 active_plan:
-  path: null                               # pl. __agent/plans/development-agent.plan.md
-  current_step: null                       # plan-szelet hivatkozás
-  steps_remaining: 0
+  path: __agent/plans/ssot-server-esm-migration.plan.md   # chat-led, dev-agent takeover-elte Phase 3.2 + Phase 6 LDP-fix-eit
+  current_step: "Phase 5-6 functional finalization + Phase 1-4 cleanup"   # build/lint zold; runtime + OAuth callback még user-akció
+  steps_remaining: 2                                      # Phase 5 (controllers tényleges) + Phase 6 (UI functional) — chat felelős
 
 # Backlog snapshot (a 03-collect-tasks frissíti)
 backlog_snapshot:
-  green_count: 0                           # 🟢 Most-fókusz sorok száma
-  yellow_count: 0                          # 🟡 Második/harmadik hullám
-  parked_count: 0                          # 🅿️ Parkolt
-  last_checked: null                       # ISO timestamp
+  green_count: 6                           # 🟢 Most-fókusz sorok száma (FR #1-3d)
+  yellow_count: 13                         # 🟡 Második/harmadik hullám
+  parked_count: 9                          # 🅿️ Parkolt
+  last_checked: "2026-05-12T23:20+02:00"   # M1 grooming cycle 12
 
 # Package (26. alapelv — related-cluster)
 package:
