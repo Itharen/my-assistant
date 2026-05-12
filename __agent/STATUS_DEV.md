@@ -2,26 +2,26 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 16                                 # Cycle 16 lezárva; következő cycle 17 lesz
+cycle: 17                                 # Cycle 17 lezárva; következő cycle 18 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 16 lezárva 2026-05-12 — user-kérdés "globál error handling": audit
-  (server ✅, client ✅, CLI ⚠️) → CLI fix: uncaughtException + unhandledRejection
-  + main.catch action-log. Commit 8c509bc. Lásd log/cycles/cycle-16.md.
+  Cycle 17 lezárva 2026-05-13 00:00+ — M2 daily report a 2026-05-12-re
+  (16 cycle, 30 own commit, LDP zöld baseline elérve). Lásd
+  __agent/reports/2026-05/2026-05-12.md + log/cycles/cycle-17.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 16
+  cycle_id: 17
   phase_completed: close-cycle
   files_modified:
-    - cli/src/main.ts
-    - __agent/log/cycles/cycle-16.md
+    - __agent/reports/2026-05/2026-05-12.md
+    - __agent/log/cycles/cycle-17.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: "8c509bc"
-  build_status: success                     # tsc + jasmine + smoke ✅
-  test_status: success                      # 21 specs, 0 failures
+  commit_sha: (cycle-close only)
+  build_status: success                     # LDP unchanged ✅
+  test_status: success                      # LDP unchanged ✅
 
 foreign_pending:
   first_seen_cycle: 4
