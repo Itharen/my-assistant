@@ -25,6 +25,7 @@
 | 5 | Sleep-aware notifications | `current/feature-requests/sleep-aware-notifications.md` |
 | 6 | Food tracking (Phase 1 hibrid prompt) | `current/feature-requests/food-tracking.md` |
 | 7 | Review tool rollout | `current/feature-requests/review-tool-rollout.md` |
+| 7b | CCAP auto-session monitoring | `current/feature-requests/ccap-session-monitoring.md` |
 
 ---
 

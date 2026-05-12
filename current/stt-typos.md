@@ -48,6 +48,7 @@
 | "monetizá... mon... monet..." | monetizációs | gazdasági | 2026-05-08 user önjavítás-küzdelem |
 | "majjá" | majdra / másnapra (kontextus-függő) | általános | 2026-05-08 |
 | "trekkelni" | tracking-elni / nyomon követni | tech | gyakori, OK |
+| "autószession" / "autószessionök" | auto-session(ök) / CCAP auto-session-ök | tech | 2026-05-12 |
 
 ---
 

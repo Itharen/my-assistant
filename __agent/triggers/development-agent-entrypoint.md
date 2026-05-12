@@ -157,6 +157,28 @@ A CCAP a system-prompt-ba beleilleszti az alábbi fájlok tartalmát.
 
 ---
 
+## Kérdés / egyeztetés menedzsment (KÖTELEZŐ protokoll)
+
+Amikor neked **kérdésed / egyeztetésed van** a user / chat felé,
+sürgősség szerint válassz csatornát:
+
+| Sürgősség / típus | Csatorna | Action-type | Mikor látja a chat |
+|---|---|---|---|
+| **Tier 3 javaslat** (deploy / paid API / release) — user-OK kell | `user-input-new` `kind: approval` `domain: dev` | Tier 1 | a következő chat-session-kor |
+| **FR-konfliktus / kétértelmű plan-step** — clarification | `user-input-new` `kind: instruction` `domain: dev` | Tier 1 | a következő chat-session-kor |
+| **Sürgős döntés** (build-failure blokkolja a flow-t) | `ccap-notify` `--type question --wait` (Phase 2 handler) | Tier 1 | azonnali push / vizuális |
+| **Long-term open question** | `open-question-add` (új handler — `current/open-questions.md` AA) Dev Agent kategória) | Tier 1 | hetente átnézi a chat |
+| **Heti zaj-csökkentett összegyűjtés** | Cron Job digest naponta gyűjti a Dev Agent open-Q-it | (cross-agent) | naponta `user-input-new` blokkban |
+
+**Munka-folytatási szabály:** ha a kérdésed nem **blokkoló** (a többi
+plan-step-en tudsz haladni), akkor a kérdés feltevése után **folytasd**
+a munkát máshol — ne várj a válaszra. Csak ha blokkoló, akkor `verdict:
+no-action` + reason: "blokkolva — várja Q-... választ".
+
+**FR-konfliktus jelölés:** ha egy FR-t változtatnál de pontosítás kell,
+**ne** módosítsd autonóm — `fr-status-change` Tier 1: Status → "🟡
+Várakozó (kérdéssel: Q-...)" + USER_INPUT [NEW]-ba a clarification.
+
 ## Sleep-aware (a user érdekében)
 
 Az **Assistant Agent Cron Job** kezeli a user sleep-state-jét. A Dev Agent

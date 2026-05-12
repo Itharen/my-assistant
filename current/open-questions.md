@@ -263,6 +263,16 @@
 | Q-bmode-3 | Failure handling: 1× hiba = email / 3× = notify? | `B-mode-scripted-automation.plan.md` | low | open |
 | Q-bmode-4 | Build-ki: én vagy másik agent? | `B-mode-scripted-automation.plan.md` | high | open |
 
+### AA) Development Agent kérdései 💻❓
+
+> A Dev Agent által felvetett kérdések (autonóm üzemben). Új sorokat
+> a `open-question-add` handler ad hozzá (Phase 2). A chat (#5) hetente
+> végigjárja.
+
+| Q# | Kérdés | Kontextus | Fontosság | Status |
+|---|---|---|---|---|
+| _(üres — Dev Agent még nem fut autonóm üzemben)_ | | | | |
+
 ### Z) 2.5-agent rendszer 🤖🤖
 
 | Q# | Kérdés | Kontextus | Fontosság | Status |
