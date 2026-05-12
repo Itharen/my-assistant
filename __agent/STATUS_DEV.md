@@ -2,27 +2,28 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 8                                  # Cycle 8 lezárva; következő cycle 9 lesz
+cycle: 9                                  # Cycle 9 lezárva; következő cycle 10 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 8 lezárva 2026-05-12 — LDP tsc-cli stubbornly TS5011 root-cause: global tsc 6.0.3
-  vs lokál tsc 5.9.3 (cli devDep). Fix: pipeline.config.json `tsc` → `npx tsc`
-  a tsc-cli/tsc-server step-ekben.
-  Commit 611d3e7. Lásd log/cycles/cycle-8.md.
+  Cycle 9 lezárva 2026-05-12 — nodemon watch rekurzivvá tétele (./src/* -> ./src) +
+  pipeline postPipelineCommand npm-script-routed (server/dist -> npm --prefix server run start-prod).
+  Commit ad3f26f. Lásd log/cycles/cycle-9.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 8
+  cycle_id: 9
   phase_completed: close-cycle
   files_modified:
+    - server/nodemon.json
+    - server/package.json
     - pipeline.config.json
-    - __agent/log/cycles/cycle-8.md
+    - __agent/log/cycles/cycle-9.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: "611d3e7"
+  commit_sha: "ad3f26f"
   build_status: success
-  test_status: success                     # npx tsc cli + server mind zöld
+  test_status: not-re-run                  # config-only change, no build impact
 
 foreign_pending:
   first_seen_cycle: 4
