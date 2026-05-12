@@ -2,24 +2,24 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 14                                 # Cycle 14 lezárva (no-op); következő cycle 15 lesz
+cycle: 15                                 # Cycle 15 lezárva (no-op #2); következő cycle 16 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 14 lezárva 2026-05-12 — #6 fallback no-op. Nincs candidate:
-  LDP 10/10 zöld, runtime errors küszöb alatt, plan-step chat-felelős
-  (Phase 5-6 functional), USER_INPUT [NEW] dev nincs, backlog 🟢 6 sora plan-szintű.
-  Lásd log/cycles/cycle-14.md. M2 daily report holnap (2026-05-13) reggel fog futni.
+  Cycle 15 lezárva 2026-05-12 — második egymás utáni #6 fallback no-op. State
+  változatlan: LDP zöld, plan-step chat-domain, backlog 🟢 plan-scope.
+  Új info: entertainment-integration.md FR a chat által (még nincs backlog-ban).
+  Érdemi munkához backlog 🟢 → active_plan emelés (B-mode) kell — user-OK alá.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 14
+  cycle_id: 15
   phase_completed: close-cycle
   files_modified:
-    - __agent/log/cycles/cycle-14.md
+    - __agent/log/cycles/cycle-15.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: null                          # no-op cycle, csak cycle-close commit
+  commit_sha: null                          # no-op cycle
   build_status: success                     # LDP unchanged ✅
   test_status: success                      # LDP unchanged ✅
 
