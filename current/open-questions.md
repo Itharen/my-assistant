@@ -271,7 +271,8 @@
 
 | Q# | Kérdés | Kontextus | Fontosság | Status |
 |---|---|---|---|---|
-| _(üres — Dev Agent még nem fut autonóm üzemben)_ | | | | |
+| Q-package-1 | `pnpm approve-builds` egy gépenként user-state — repo-szinten reprodukálható-e? Workspace-szintű `pnpm-workspace.yaml` `onlyBuiltDependencies` segíthet? | cycle 3, cli protobufjs build-script approval | m | answered |
+| Q-package-2 | `@futdevpro/ngx-dynamo-models@1.15.8` 404 az npm registry-n. Master-prompter is használja — privát publikálva? lokál tgz csak? Honnan installálható a my-assistant server/-en? | cycle 3, server `pnpm test` blocker | h | open |
 
 ### Z) 2.5-agent rendszer 🤖🤖
 

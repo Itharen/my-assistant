@@ -80,3 +80,5 @@
 {"ts":"2026-05-12T18:13:35+02:00","actor":"claude","kind":"ship","summary":"feature-requests/tasks-dashboard-aggregated-view.md - 8 forras aggregalva, REST endpoint, UI vazlat, kanban-opcio (worker-agent-FR overlap), 5 phase","ref":"current/feature-requests/tasks-dashboard-aggregated-view.md"}
 {"ts":"2026-05-12T18:13:35+02:00","actor":"claude","kind":"state-change","summary":"recurring-tasks.md TERA-row: utolso=2026-05-12, kovetkezo=2026-05-14 cs"}
 {"ts":"2026-05-12T18:13:35+02:00","actor":"claude","kind":"state-change","summary":"backlog 3d sor: tasks-aggregated-view a Most-fokuszba"}
+{"ts":"2026-05-12T18:24:42+02:00","actor":"user","kind":"decision","summary":"Pattern-forras default: master-prompter projekt (LIVE-projects/master-prompter/). Uj fejlesztesekhez ez a kanonikus minta."}
+{"ts":"2026-05-12T18:24:42+02:00","actor":"claude","kind":"ship","summary":"WORKFLOW_DEV 7. alapelv bovitve: master-prompter mint default pattern-forras (DEFAULT, organizer masodlagos). phases/dev/04-investigate.md is jelolve.","ref":"__agent/WORKFLOW_DEV.md"}

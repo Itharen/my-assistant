@@ -44,6 +44,19 @@ implementációs referencia. Minden új feature-nél **először** keresd a
 meglévő mintát (cast-notifier, organizer-cli, FDP-stack), és kövesd.
 Új minta KIVÁLASZTÁSA user-OK.
 
+**⭐ DEFAULT pattern-forrás (user-OK 2026-05-12):**
+**`master-prompter`** (`E:\Programming\Own\CURSOR\LIVE-projects\master-prompter\`).
+
+Új fejlesztésekhez ez a **kanonikus minta** — auth integráció, language
+service, interceptors, guards, FDP server+client szerkezet, naming-konvenciók.
+Lásd globális `CLAUDE.md` "Pattern-based Development" + "Auth integráció minta"
+szakaszok — mindegyik a master-prompter-re mutat.
+
+Ha valami nem világos a master-prompter-ből → másodlagos: `organizer` server
++ client minta. Csak akkor keress más projektet, ha ezek nem fednek le egy
+területet (pl. agent-szerű cycle a CCAP-revisioned, de **TILTOTT** — csak
+**olvasás-referencia**).
+
 ### 8. NO-CACHE olvasás (KRITIKUS)
 Minden tickkor frissen olvasd:
 - `WORKFLOW_DEV.md` (ezt)

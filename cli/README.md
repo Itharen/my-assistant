@@ -69,11 +69,17 @@ Naming convention követi az organizer-cli mintáját: `*.command.ts` egy-egy CL
 
 ```bash
 cd cli
-pnpm install
+pnpm install        # pnpm-workspace.yaml `allowBuilds: protobufjs: true` engedi a postinstall-t
 pnpm run build-base
-npm i -g --force      # install `ma` globally
+npm i -g --force    # install `ma` globally
 ma --help
 ```
+
+**Megjegyzés (pnpm 11+ build-script approval):** A `cli/pnpm-workspace.yaml`
+`allowBuilds` szakaszában `protobufjs: true` engedi a postinstall-t,
+ezért a `pnpm install` automatikusan working — nem kell `pnpm approve-builds`-ot
+manuálisan futtatni. Ha új build-script-es dep (esbuild / msedge-tts /
+grpc) érkezik, a `pnpm-workspace.yaml`-ban kapcsoljuk `true`-ra.
 
 Or in one-shot (matches FDP `build-n-test` pattern):
 

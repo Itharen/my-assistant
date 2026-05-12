@@ -2,14 +2,13 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 2                                  # Cycle 2 lezárva; következő cycle 3 lesz
-phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 3                                  # Cycle 3 indul
+phase: audit                               # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 2 lezárva 2026-05-12 — workflow-extension (LDP/CDP/runtime priority).
-  Commit efc4f28. 3 új event-handler + 03-collect-tasks priority table +
-  02-audit pipeline-state placeholder + WORKFLOW_DEV event-tábla.
-  Lásd log/cycles/cycle-2.md.
+  Cycle 3 indul 2026-05-12. Working tree clean (no foreign pending).
+  USER_INPUT [NEW] van de domain:meta (Assistant Cron, Domén 1) — skip.
+  Belépés: 02-audit (typecheck + runtime error scan).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
