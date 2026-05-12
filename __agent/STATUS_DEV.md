@@ -2,29 +2,27 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 7                                  # Cycle 7 lezárva; következő cycle 8 lesz
+cycle: 8                                  # Cycle 8 lezárva; következő cycle 9 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 7 lezárva 2026-05-12 — LDP tsc-cli TS5011 fix (cli/tsconfig.json rootDirs +
-  cli/bin/ma.js path update). Foreign-pending takeover authorized (cycles_persisted: 3).
-  Commit 3d22143. CLI tsc (emit) + jasmine + smoke mind zöld.
-  Lásd log/cycles/cycle-7.md.
+  Cycle 8 lezárva 2026-05-12 — LDP tsc-cli stubbornly TS5011 root-cause: global tsc 6.0.3
+  vs lokál tsc 5.9.3 (cli devDep). Fix: pipeline.config.json `tsc` → `npx tsc`
+  a tsc-cli/tsc-server step-ekben.
+  Commit 611d3e7. Lásd log/cycles/cycle-8.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 7
+  cycle_id: 8
   phase_completed: close-cycle
   files_modified:
-    - cli/tsconfig.json
-    - cli/bin/ma.js
-    - __agent/log/cycles/cycle-7.md
+    - pipeline.config.json
+    - __agent/log/cycles/cycle-8.md
   fr_status_changes: []
-  plan_steps_marked_done:
-    - { planPath: __agent/plans/ssot-server-esm-migration.plan.md, stepRef: "Phase 3.2 (CLI type-extraction emit fix)" }
-  commit_sha: "3d22143"
+  plan_steps_marked_done: []
+  commit_sha: "611d3e7"
   build_status: success
-  test_status: success                     # CLI 21 spec, jasmine zöld; smoke ma --help OK
+  test_status: success                     # npx tsc cli + server mind zöld
 
 foreign_pending:
   first_seen_cycle: 4
