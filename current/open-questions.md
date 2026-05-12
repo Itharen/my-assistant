@@ -263,6 +263,15 @@
 | Q-bmode-3 | Failure handling: 1× hiba = email / 3× = notify? | `B-mode-scripted-automation.plan.md` | low | open |
 | Q-bmode-4 | Build-ki: én vagy másik agent? | `B-mode-scripted-automation.plan.md` | high | open |
 
+### BB) Heti ciklus (munkanap-alapú) 📅
+
+| Q# | Kérdés | Kontextus | Fontosság | Status |
+|---|---|---|---|---|
+| Q-weekly-1 | `cleaning` (heti 1×, "szerda") — naptári szerda vagy 3. munkanap? | `weekly-rhythm.md` | medium | open |
+| Q-weekly-2 | `tera-check` (kedd+csü) — naptári vagy munkanap? | `weekly-rhythm.md` | medium | open |
+| Q-weekly-3 | `food-order` (csü deadline) — naptári vagy munkanap? | `weekly-rhythm.md` | medium | open |
+| Q-weekly-4 | Script ami a "logikai" napokat számolja (naptári + szabadság + munkaszüneti + event-input)? | `weekly-rhythm.md` | low | open |
+
 ### AA) Development Agent kérdései 💻❓
 
 > A Dev Agent által felvetett kérdések (autonóm üzemben). Új sorokat
@@ -273,6 +282,7 @@
 |---|---|---|---|---|
 | Q-package-1 | `pnpm approve-builds` egy gépenként user-state — repo-szinten reprodukálható-e? Workspace-szintű `pnpm-workspace.yaml` `onlyBuiltDependencies` segíthet? | cycle 3, cli protobufjs build-script approval | m | answered |
 | Q-package-2 | `@futdevpro/ngx-dynamo-models@1.15.8` 404 az npm registry-n. Master-prompter is használja — privát publikálva? lokál tgz csak? Honnan installálható a my-assistant server/-en? | cycle 3, server `pnpm test` blocker | h | open |
+| Q-ldp-1 | A `dc ldp` képes-e a `pipeline.config.json` config-reload-ra futás közben, vagy minden config-change után manuális restart kell? Ha igen, hogyan? | cycle 6, watch coverage bővítés után stale state | m | open |
 
 ### Z) 2.5-agent rendszer 🤖🤖
 
@@ -335,6 +345,30 @@
 | Q-fit-tanc-2 | Súlyzós tánc — milyen súlyok? (otthon megvannak vagy beszerzendő?) | `fit-system.md` | medium | open |
 | Q-fit-tanc-3 | Tánc-tracking: csak "csináltad-e" / időtartam / szívritmus? | `fit-system.md` | low | open |
 | Q-fit-tanc-4 | Tánc önmagában (otthon zenére) is opció, vagy csak séta-közben? | `fit-system.md` | low | open |
+
+### EE) Időjárás integráció 🌦️
+
+| Q# | Kérdés | Kontextus | Fontosság | Status |
+|---|---|---|---|---|
+| Q-weather-1 | Lokáció: csak Budapest, vagy több helyszín (utazáskor)? | `weather-integration.md` | medium | open |
+| Q-weather-2 | Open-Meteo elég-e első körben, vagy az idokep "feeling"-je is kritérium? | `weather-integration.md` | high | open |
+| Q-weather-3 | Alert-küszöbök: melyik OMSZ szintet hangosítsuk cast-en (csak orange+? csak red?)? | `weather-integration.md` | medium | open |
+| Q-weather-4 | Ingest gyakoriság: 15 perc / 30 perc / 1 óra? | `weather-integration.md` | low | open |
+| Q-weather-5 | History retention: 1 év / 3 év / végtelen? | `weather-integration.md` | low | open |
+| Q-weather-6 | Dashboard widget vagy külön weather route? | `weather-integration.md` | low | open |
+
+### FF) Szórakoztatási integráció 🎬🎮
+
+| Q# | Kérdés | Kontextus | Fontosság | Status |
+|---|---|---|---|---|
+| Q-ent-1 | Hol fut a Jellyfin? (lokál hálózat? remote? URL + auth?) | `entertainment-integration.md` | high | open |
+| Q-ent-2 | Steam profile public, vagy authed (OAuth) flow szükséges? | `entertainment-integration.md` | high | open |
+| Q-ent-3 | Webhook plugin (push) vagy polling (pull) Jellyfin felé? | `entertainment-integration.md` | medium | open |
+| Q-ent-4 | Ingest gyakoriság: Jellyfin recent + Steam recent → óránként? | `entertainment-integration.md` | medium | open |
+| Q-ent-5 | Library full-resync: napi / heti? | `entertainment-integration.md` | low | open |
+| Q-ent-6 | `media-tracking.md` FR-rel összevonjuk a kliens-oldali UI-t (Jellyfin = library forrás)? | `entertainment-integration.md` | medium | open |
+| Q-ent-7 | Steam achievements: dashboard kiemelt, vagy csak detail-view? | `entertainment-integration.md` | low | open |
+| Q-ent-8 | Egyéb szórakoztatási forrás később (Plex / GOG / Epic / YouTube history)? | `entertainment-integration.md` | low | open |
 
 ### N) Élelmezés / food-tracking 🍽️
 

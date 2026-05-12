@@ -2,26 +2,31 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 5                                  # Cycle 5 lezárva; következő cycle 6 lesz
+cycle: 6                                  # Cycle 6 lezárva; következő cycle 7 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 5 lezárva 2026-05-12 — Server typecheck unblock (rootDir törlés, Phase 5 @cli/* import).
-  Commit 0181845. cli/server/client typecheck mind ✅. Foreign pending cycles_persisted: 2.
-  Lásd log/cycles/cycle-5.md. Új info: 22. alapelv (LDP-FIRST audit) chat által bevezetve.
+  Cycle 6 lezárva 2026-05-12 — LDP watch coverage bővítés (tsconfig/spec/workspace-yaml
+  + pipeline.config.json self) + workflow doc-ok LDP-first átdolgozása (02-audit,
+  08-verify-local, WORKFLOW_DEV 22. alapelv).
+  Commit db23d62 (a commit message tévesen "cycle 5"-öt mond — chat párhuzamos
+  cycle 5 miatt számolási elcsúszás). Lásd log/cycles/cycle-6.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 5
+  cycle_id: 6
   phase_completed: close-cycle
   files_modified:
-    - server/tsconfig.json
-    - __agent/log/cycles/cycle-5.md
+    - pipeline.config.json
+    - __agent/WORKFLOW_DEV.md
+    - __agent/phases/dev/02-audit.md
+    - __agent/phases/dev/08-verify-local.md
+    - __agent/log/cycles/cycle-6.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: "0181845"
+  commit_sha: "db23d62"
   build_status: success
-  test_status: not-re-run                  # LDP stale, manual typecheck zöld
+  test_status: not-re-run                  # LDP needs manual dc ldp restart for config reload
 
 foreign_pending:
   first_seen_cycle: 4
@@ -36,7 +41,7 @@ foreign_pending:
     - cli/tsconfig.json (mod)
     - client/tsconfig.json (mod)
   fingerprint: "chat-esm-migration-in-progress-2026-05-12"
-  cycles_persisted: 1
+  cycles_persisted: 3                      # cycle 4 / 5 / 6 — 3+ → takeover potenciál a cycle 7-ben ha még pending
 
 # Plan-folytatás tracking
 active_plan:
