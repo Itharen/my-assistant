@@ -2,26 +2,26 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 15                                 # Cycle 15 lezárva (no-op #2); következő cycle 16 lesz
+cycle: 16                                 # Cycle 16 lezárva; következő cycle 17 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 15 lezárva 2026-05-12 — második egymás utáni #6 fallback no-op. State
-  változatlan: LDP zöld, plan-step chat-domain, backlog 🟢 plan-scope.
-  Új info: entertainment-integration.md FR a chat által (még nincs backlog-ban).
-  Érdemi munkához backlog 🟢 → active_plan emelés (B-mode) kell — user-OK alá.
+  Cycle 16 lezárva 2026-05-12 — user-kérdés "globál error handling": audit
+  (server ✅, client ✅, CLI ⚠️) → CLI fix: uncaughtException + unhandledRejection
+  + main.catch action-log. Commit 8c509bc. Lásd log/cycles/cycle-16.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 15
+  cycle_id: 16
   phase_completed: close-cycle
   files_modified:
-    - __agent/log/cycles/cycle-15.md
+    - cli/src/main.ts
+    - __agent/log/cycles/cycle-16.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: null                          # no-op cycle
-  build_status: success                     # LDP unchanged ✅
-  test_status: success                      # LDP unchanged ✅
+  commit_sha: "8c509bc"
+  build_status: success                     # tsc + jasmine + smoke ✅
+  test_status: success                      # 21 specs, 0 failures
 
 foreign_pending:
   first_seen_cycle: 4
