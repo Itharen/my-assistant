@@ -2,28 +2,31 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 10                                 # Cycle 10 lezárva; következő cycle 11 lesz
+cycle: 11                                 # Cycle 11 lezárva; következő cycle 12 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 10 lezárva 2026-05-12 — lint-server fix (server/eslint.config.js -> .cjs,
-  ESM utóhatás). Commit 24c4b31.
-  Megmaradt LDP fail: client-build + lint-client (chat Phase 6 i-google WIP) — defer.
-  M1 grooming triggerelve cycle 10-zel — átvinni cycle 11 elejére.
-  Lásd log/cycles/cycle-10.md.
+  Cycle 11 lezárva 2026-05-12 — chat Phase 6 takeover: client-build NG5002 (i-google +
+  i-spotify @else if + @ karakter) + lint-client template/no-call-expression (eslint
+  config signal-friendly).
+  Commit 04ffe91. LDP várt: minden step ✅. Lásd log/cycles/cycle-11.md.
+  M1 grooming továbbra is defer → cycle 12 eleje.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 10
+  cycle_id: 11
   phase_completed: close-cycle
   files_modified:
-    - server/eslint.config.cjs (renamed from .js)
-    - __agent/log/cycles/cycle-10.md
+    - client/eslint.config.js
+    - client/src/app/_modules/integrations/_components/i-google/i-google.component.html
+    - client/src/app/_modules/integrations/_components/i-spotify/i-spotify.component.html
+    - __agent/log/cycles/cycle-11.md
   fr_status_changes: []
-  plan_steps_marked_done: []
-  commit_sha: "24c4b31"
+  plan_steps_marked_done:
+    - { planPath: __agent/plans/ssot-server-esm-migration.plan.md, stepRef: "Phase 6 client build/lint (i-google + i-spotify)" }
+  commit_sha: "04ffe91"
   build_status: success
-  test_status: success                     # npx eslint src exit 0 (106 warnings)
+  test_status: success                     # ng build BUILD=0, eslint exit 0 (35 warnings)
 
 foreign_pending:
   first_seen_cycle: 4
