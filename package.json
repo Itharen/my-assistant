@@ -1,6 +1,6 @@
 {
   "name": "my-assistant",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "my-assistant — personal life-management ecosystem (cli + server + client). FDP-shaped, self-built, FOSS-only.",
   "private": true,
   "DyBu_settings": {
@@ -45,6 +45,7 @@
   "author": "itharen3@gmail.com",
   "license": "UNLICENSED",
   "devDependencies": {
-    "husky": "^9.1.7"
+    "husky": "^9.1.7",
+    "tsx": "^4.21.0"
   }
 }

@@ -1,8 +1,9 @@
 {
   "name": "@my-assistant/server",
-  "version": "0.2.0",
+  "version": "0.1.1",
   "private": true,
   "description": "my-assistant server — DyNTS + FDP framework, MongoDB-backed.",
+  "type": "module",
   "main": "index.ts",
   "DyBu_settings": {
     "packageType": "server",
@@ -11,13 +12,13 @@
   "scripts": {
     "prep": "npm i -g pnpm rimraf nodemon copyfiles jasmine typescript && pnpm i",
     "start": "npm run prep && nodemon",
-    "start-dev": "ts-node ./src/index.ts",
+    "start-dev": "node ../node_modules/tsx/dist/cli.mjs ./src/index.ts",
     "build": "npm run build-base",
     "build-base": "rimraf ./build && tsc",
     "build-clean": "rimraf ./build && rimraf pnpm-lock.yaml && rimraf ./node_modules && pnpm i && tsc",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf ./build && rimraf pnpm-lock.yaml && rimraf ./node_modules",
-    "nodemon-run": "ts-node ./src/index.ts",
+    "nodemon-run": "node ../node_modules/tsx/dist/cli.mjs ./src/index.ts",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "validate:imports": "dynamo-validate-imports",
