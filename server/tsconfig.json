@@ -2,9 +2,16 @@
   "compilerOptions": {
     "allowJs": true,
     "outDir": "./build",
-    "target": "es2022",
-    "module": "commonjs",
-    "lib": ["es6", "es2022", "dom"],
+    // FONTOS: NINCS rootDir — a `current/principles/ssot.md` cross-subproject
+    // pattern szerint a server `import`-tal veszi a CLI runtime moduljait
+    // (`@cli/...`), Phase 5 controller-eken (Google/Spotify). rootDir korlátozná
+    // ezt és TS6059-cel pukkanna (cli/src nem lenne 'src/' alatt).
+    // Analóg a cli/tsconfig.json komment-hez. Az emit struktúra a
+    // longest-common-path alapján alakul.
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "lib": ["es2022", "dom"],
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
@@ -14,7 +21,11 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
-    "types": ["node", "jasmine"]
+    "types": ["node", "jasmine"],
+    "paths": {
+      "@server/*": ["./src/*"],
+      "@cli/*":    ["./../cli/src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "build"]
