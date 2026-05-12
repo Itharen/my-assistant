@@ -1,0 +1,13 @@
+node_modules/
+dist/
+build/
+coverage/
+config/
+*.log
+.DS_Store
+pnpm-lock.yaml
+
+# secrets
+config/spotify.json
+.env
+.env.local

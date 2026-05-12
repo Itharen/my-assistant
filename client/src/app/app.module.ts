@@ -36,4 +36,5 @@ import { A_ErrorHandler_ControlService } from './_services/control-services/a-er
   ],
   bootstrap: [ AppComponent ],
 })
+/** Root NgModule — bootstrap-eli az AppComponent-et, regisztrálja az interceptorokat és error handler-t. */
 export class App_Module {}

@@ -1,0 +1,15 @@
+{
+  "exec": "npm run nodemon-run",
+  "restartable": "rs",
+  "delay": "1500",
+  "ext": "ts,json",
+  "verbose": false,
+  "watch": ["./src/*"],
+  "ignore": ["./node_modules", "./build", "./data"],
+  "events": {
+    "start": "echo 🚀 my-assistant server starting",
+    "restart": "echo 🔄 restart",
+    "crash": "echo 💥 crash",
+    "exit": "echo 🛑 stop"
+  }
+}

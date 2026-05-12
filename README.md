@@ -56,7 +56,7 @@ Az organizer CLI (`fo`) használatához:
 my-assistant/
 ├── CLAUDE.md              # projekt-szintű AI utasítások
 ├── README.md
-├── __agent/
+├── __agent/               # GOVERNANCE
 │   ├── CONTEXT.md         # scope
 │   ├── SOURCE_OF_TRUTH.md # élő modul-tábla (organizer vs lokál)
 │   ├── STATUS.md          # aktuális állapot, aktív flow
@@ -66,12 +66,18 @@ my-assistant/
 │   ├── domains/           # life-area definíciók
 │   ├── plans/             # ad-hoc terv dokumentumok
 │   ├── log/               # ciklus / session lezáró logok
-│   ├── references/        # külső rendszerek inventory (organizer, fo CLI, ...)
+│   ├── references/        # külső rendszerek + saját architecture (organizer, fo CLI, tri-tier)
 │   └── _archive/          # deprecated tartalom (history)
-├── current/               # lokál source-of-truth modulok
-│   └── diary/             # (jelenleg csak diary van itt — nincs MCP-je)
-└── scripts/               # AI-saját helper szkriptek (pl. update-fo.ps1)
+├── current/               # USER LIVE STATE — lokál source-of-truth modulok
+├── cli/                   # CODE — `@my-assistant/cli` (bin: `ma`); cast/spotify subcommandok
+│   └── scripts/           # project-helper scripts (update-fo, action-log writer trio, agent-handlers dispatcher)
+├── server/                # CODE — `@my-assistant/server`; Express + SQLite, tick-engine + action-log
+│   └── activity-monitor/  # PowerShell logger (Windows, ingests samples into this server)
+├── client/                # CODE — `@my-assistant/client`; Angular 18 UI
+└── pipeline.config.json   # workspace-level LDP (`dc ldp`) — coordinates cli + server + client builds
 ```
+
+**Tri-tier architektúra részletek:** [`__agent/references/architecture.md`](__agent/references/architecture.md)
 
 ## Migrációs terv
 

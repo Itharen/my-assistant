@@ -1,0 +1,34 @@
+<div class="panel-head">
+  <h3>💡 Amit észrevettem</h3>
+  <small class="muted">{{ rows.length }} nyitott</small>
+</div>
+
+@if (rows.length > 0) {
+  <ul class="insight-list">
+    @for (row of rows; track row.item._id) {
+      <li class="insight" [class.urgent]="row.isUrgent">
+        <span class="icon">{{ row.icon }}</span>
+        <span class="body">
+          <span class="message">{{ row.item.message }}</span>
+          <small class="meta">
+            @if (row.item.category) {
+              <span>[{{ row.item.category }}]</span>
+            }
+            <span>{{ row.item.__created | date:'MM-dd HH:mm' }}</span>
+          </small>
+        </span>
+        <button type="button"
+                class="dismiss"
+                [disabled]="busyId === row.item._id"
+                title="dismiss"
+                (click)="handleDismiss(row.item._id)">✕</button>
+      </li>
+    }
+  </ul>
+}
+
+@if (rows.length === 0) {
+  <p class="empty muted">
+    Nincs nyitott insight. Az agent itt fog jelezni, ha észrevesz valamit.
+  </p>
+}

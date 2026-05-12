@@ -41,15 +41,17 @@ import { Insight_Controller } from './_routes/insight/insight.controller';
 import { Capture_Controller } from './_routes/capture/capture.controller';
 import { Dashboard_Controller } from './_routes/dashboard/dashboard.controller';
 
+/** my-assistant App bootstrap. DyNTS_AppExtended-t terjeszti — Mongo + routes + static client + sockets. */
 export class App extends DyNTS_AppExtended {
 
   authService: Auth_ControlService = Auth_ControlService.getInstance();
 
+  /** App-szintű paramétereket állítja össze: dbName / dbUri / version / systemShortCode. */
   getAppParams(): DyNTS_App_Params {
     DyFM_Log.testInfo(`my-assistant server starting (env: ${process.env.FDP_ENV ?? 'local'})`);
 
-    const dbName = 'my-assistant';
-    const mongoBase = process.env.MA_MONGO_URL ?? process.env.MONGO_URL ?? 'mongodb://0.0.0.0:29017';
+    const dbName: string = 'my-assistant';
+    const mongoBase: string = process.env.MA_MONGO_URL ?? process.env.MONGO_URL ?? 'mongodb://0.0.0.0:29017';
 
     return new DyNTS_App_Params({
       name: 'my-assistant Server',
@@ -61,11 +63,13 @@ export class App extends DyNTS_AppExtended {
     });
   }
 
+  /** DyNTS globális log-beállítások override-ja — api_errors + setup log-okat bekapcsolja. */
   override overrideDynamoNTSGlobalSettings(): void {
     DyNTS_global_settings.log_settings.api_errors = true;
     DyNTS_global_settings.log_settings.setup = true;
   }
 
+  /** Az auth service, error handler, és a DB model registry-t adja vissza a DyNTS bootstrap-nek. */
   getGlobalServiceCollection(): DyNTS_GlobalService_Settings {
     return {
       authService: this.authService,
@@ -82,16 +86,19 @@ export class App extends DyNTS_AppExtended {
     };
   }
 
+  /** HTTP port beállítások — env override-olható `MA_SERVER_PORT`-tal. */
   getPortSettings(): DyNTS_Http_Settings {
     return {
       httpPort: Number(process.env.MA_SERVER_PORT ?? 39245),
     };
   }
 
+  /** A REST API base path-ja — minden route ez alá mount-olódik. */
   override getApiBasePath(): string {
     return '/api';
   }
 
+  /** Regisztrált routing modulok — wave / insight / capture / dashboard / errors / feedback. */
   override getRoutingModules(): DyNTS_RoutingModule[] {
     return [
       new DyNTS_RoutingModule({
@@ -121,8 +128,9 @@ export class App extends DyNTS_AppExtended {
     ];
   }
 
+  /** Static client (Angular dist) serving config — root path + SPA fallback. */
   override getStaticClientSettings(): DyNTS_StaticClient_Settings | undefined {
-    const clientDist = path.resolve(__dirname, '..', '..', 'client', 'dist', 'client', 'browser');
+    const clientDist: string = path.resolve(__dirname, '..', '..', 'client', 'dist', 'client', 'browser');
 
     return {
       root: clientDist,
@@ -132,15 +140,18 @@ export class App extends DyNTS_AppExtended {
     };
   }
 
-  // ccap-review-disable-line no-any-type — DyNTS_SocketServerService<T> requires T extends DyNTS_SocketPresence; `any` is the master-prompter convention.
-  getSocketServices(): DyNTS_SocketServerService<any>[] {
+  // DyNTS_SocketServerService<T> requires T extends DyNTS_SocketPresence;
+  // `any` is the master-prompter convention for empty socket-service tuples.
+  /** Socket szolgáltatások listája — jelenleg üres (nincs socket use-case). */
+  getSocketServices(): DyNTS_SocketServerService<any>[] { // eslint-disable-line @typescript-eslint/no-explicit-any
     return [];
   }
 
+  /** Globális error handler — minden unhandled error-t `Errors_DataService.handleInternalError`-ral perzisztál. */
   getGlobalErrorHandler(): DyNTS_GlobalErrorHandlerFn {
     return async (err: DyFM_AnyError, req?: Request, _res?: Response, issuer?: string): Promise<void> => {
-      const setIssuer = issuer ?? (req?.body)?.issuer ?? 'unknown';
-      const errors_DS = new Errors_DataService({ data: err, issuer: setIssuer });
+      const setIssuer: string = issuer ?? (req?.body)?.issuer ?? 'unknown';
+      const errors_DS: Errors_DataService = new Errors_DataService({ data: err, issuer: setIssuer });
 
       await errors_DS.handleInternalError(err, setIssuer, true);
     };

@@ -10,3 +10,18 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+.dynamo/logs/
+logs/
+
+# activity-monitor: lokál ablak/idle samples — nem pusholjuk (zajos, privát).
+# A lifecycle event-jei viszont az action-logba mennek (__agent/log/actions/),
+# az pusholva van. Lásd server/activity-monitor/README.md.
+server/activity-monitor/data/
+
+# Claude project-level local override (settings.json maga commitolt)
+.claude/settings.local.json
+
+# NPM auth tokens — soha ne pusholjuk
+.npmrc
+*/.npmrc

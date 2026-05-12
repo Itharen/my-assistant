@@ -1,0 +1,97 @@
+:host { display: block; color: var(--ma-fg); }
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 8px;
+
+  h3 { margin: 0; font-size: 1.05rem; color: var(--ma-fg); }
+
+  .mode-tabs {
+    display: flex;
+    gap: 4px;
+
+    button {
+      padding: 4px 10px;
+      border: 1px solid var(--ma-border-strong);
+      border-radius: 6px;
+      background: var(--ma-bg-elevated);
+      color: var(--ma-fg);
+      cursor: pointer;
+      font-size: 0.85em;
+
+      &.active {
+        background: var(--ma-accent);
+        color: var(--ma-fg-on-accent);
+        border-color: var(--ma-accent);
+      }
+      &:hover:not(.active) { background: var(--ma-bg-hover); }
+    }
+  }
+}
+
+.text-mode textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 0.95em;
+  padding: 8px;
+  border: 1px solid var(--ma-border-strong);
+  border-radius: 6px;
+  background: var(--ma-bg-input);
+  color: var(--ma-fg);
+
+  &::placeholder { color: var(--ma-fg-subtle); }
+  &:focus {
+    outline: none;
+    border-color: var(--ma-accent);
+  }
+}
+
+.energy-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    display: grid;
+    grid-template-columns: 90px 1fr 40px;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    color: var(--ma-fg);
+
+    .lbl { color: var(--ma-fg-muted); }
+    .val { color: var(--ma-accent); font-weight: 600; text-align: right; }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--ma-accent);
+    }
+  }
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+
+  .submit {
+    padding: 6px 14px;
+    border: 1px solid var(--ma-success);
+    background: var(--ma-success);
+    color: var(--ma-fg-on-accent);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+
+    &:hover:not(:disabled) { filter: brightness(1.1); }
+    &:disabled { opacity: 0.55; cursor: default; }
+  }
+
+  .ack { color: var(--ma-success); }
+  .error { color: var(--ma-error); }
+}

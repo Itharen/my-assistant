@@ -1,0 +1,50 @@
+{
+  "name": "my-assistant",
+  "version": "0.1.0",
+  "description": "my-assistant — personal life-management ecosystem (cli + server + client). FDP-shaped, self-built, FOSS-only.",
+  "private": true,
+  "DyBu_settings": {
+    "packageType": "monorepo",
+    "systemName": "my-assistant"
+  },
+  "scripts": {
+    "prep": "pnpm i ; cd cli ; pnpm i ; cd ../server ; pnpm i ; cd ../client ; pnpm i",
+    "start": "dc ldp",
+    "ldp": "dc ldp",
+    "start-server": "cd server && pnpm run start-dev",
+    "start-server-prod": "cd server && pnpm run start-prod",
+    "start-client": "cd client && pnpm start",
+    "start-cli": "cd cli && pnpm run build-base && cd .. && ma --help",
+    "build": "pnpm run build-cli ; pnpm run build-server ; pnpm run build-client",
+    "build-cli": "cd cli && pnpm run build-base",
+    "build-server": "cd server && pnpm run build-base",
+    "build-client": "cd client && pnpm run build-base",
+    "build-clean": "pnpm run clean ; pnpm run prep ; pnpm run build",
+    "test": "pnpm run test-cli ; pnpm run test-server ; pnpm run test-client",
+    "test-cli": "cd cli && pnpm test",
+    "test-server": "cd server && pnpm test",
+    "test-client": "cd client && pnpm test",
+    "test:coverage": "pnpm run test-cli:coverage ; pnpm run test-server:coverage ; pnpm run test-client:coverage",
+    "test-cli:coverage": "cd cli && pnpm run test:coverage",
+    "test-server:coverage": "cd server && pnpm run test:coverage",
+    "test-client:coverage": "cd client && pnpm run test:coverage",
+    "typecheck": "pnpm run typecheck-cli ; pnpm run typecheck-server",
+    "typecheck-cli": "cd cli && pnpm run typecheck",
+    "typecheck-server": "cd server && pnpm run typecheck",
+    "clean": "pnpm run clean-cli ; pnpm run clean-server ; pnpm run clean-client",
+    "clean-cli": "cd cli && pnpm run clean",
+    "clean-server": "cd server && pnpm run clean",
+    "clean-client": "cd client && pnpm run clean",
+    "update-fo": "powershell -NoProfile -ExecutionPolicy Bypass -File ./cli/scripts/update-fo.ps1",
+    "activity-monitor": "powershell -NoProfile -ExecutionPolicy Bypass -File ./server/activity-monitor/logger.ps1",
+    "prepare": "husky"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "author": "itharen3@gmail.com",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}

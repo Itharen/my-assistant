@@ -23,15 +23,35 @@ mások még csak lokál markdown-ban léteznek.
 
 Sorrendben olvasd:
 
-1. **`__agent/SOURCE_OF_TRUTH.md`** — modulonként ki vezeti az adatot (organizer vs lokál).
+1. **`current/architecture.md`** — átfogó rendszer-térkép (5 layer, FR-mapping,
+   adat-folyam). Új feature mindig innen indul: melyik layer, van-e FR rá.
+2. **`__agent/SOURCE_OF_TRUTH.md`** — modulonként ki vezeti az adatot (organizer vs lokál).
    Ez **élő dokumentum**, modulonként változhat. Sose feltételezd, hogy egy modul
    még ott van, ahol legutóbb. Mindig nézz rá.
-2. **`__agent/STATUS.md`** — aktuális állapot, futó flow, fázis.
-3. **`__agent/USER_INPUT.md`** — `[NEW]` blokkok feldolgozandóak.
-4. **`__agent/WORKFLOW.md`** — governance (event-ek, prioritás, authority).
+3. **`__agent/STATUS.md`** — aktuális állapot, futó flow, fázis (snapshot).
+4. **`__agent/log/actions/` legutóbbi 1–3 nap** — finomabb felbontású akció-log,
+   ezzel állítsd vissza a fonalat ha az előző session összeomlott. Lásd lentebb
+   a teljes "Action log" szakaszt.
+5. **`__agent/USER_INPUT.md`** — `[NEW]` blokkok feldolgozandóak.
+6. **`__agent/WORKFLOW.md`** — governance (event-ek, prioritás, authority).
 
 Ha aktív flow van → folytasd ott, ahol abbamaradt. Ha nincs → kérdezd a user-t,
 vagy futtass esedékes recurring flow-t.
+
+### Doksi-mátrix (mit hol találsz)
+
+| Mit keresel | Hol |
+|---|---|
+| Mit kell csinálnia a rendszernek (FDP-pattern üzleti spec) | `__specifications/main.md` + `modules/` + `features/` |
+| Hogyan van megépítve (architecture, decisions, changelog) | `__documentations/ARCHITECTURE.md`, `DECISIONS.md`, `CHANGELOG.md` |
+| Local dev env setup | `__documentations/dev/LOCAL_DEV_ENVIRONMENT.md` |
+| Dated session-doksik (mit csináltunk a múltban) | `__documentations/developments/` |
+| Workspace-szintű projektek (FDP / NPM / OGS inventory) | `__agent/references/workspace-projects.md` |
+| Tri-tier (cli/server/client) AI-quick-ref | `__agent/references/architecture.md` |
+| Pattern-megfelelőségi audit | `__agent/references/pattern-audit.md` |
+| Organizer integráció részletek | `__agent/references/organizer{,-modules,-cli-setup}.md` |
+| Az agent governance (workflow / status / plans) | `__agent/` |
+| User élő szövegek + kanonikus szabályai | `current/` |
 
 ---
 
@@ -123,6 +143,107 @@ elapsedMs, result|error}`).
 
 ---
 
+## Action log — KÖTELEZŐ (session-continuity)
+
+> **A létezésünk oka:** session-ek hirtelen összeomolhatnak. Egy explicit
+> "session-end checkpoint" nem véd ez ellen, mert nem tudjuk **mikor** fog
+> meghalni a session. Ezért **minden** akcióról folyamatosan, append-only
+> naplót vezetünk. Új session így vissza tudja venni a fonalat, és
+> hosszú távon vissza tudunk nézni hogy mi készült el / mi nem.
+
+### Hely + retention
+
+- **Fájl:** `__agent/log/actions/YYYY-MM-DD.jsonl` (Europe/Budapest naptári nap)
+- **Append-only** — soha ne írj felül vagy törölj sort
+- **Retention: végtelen** — minden commitolt és pusholt
+- **Format: JSONL** — gép által parse-olható
+- Schema részletek: `__agent/log/actions/README.md`
+
+### Ki mit ír
+
+| Forrás | Mit ír | Hogyan |
+|---|---|---|
+| **Claude (én)** automatikus | tool-call, file-edit, file-write, bash, user-msg, assistant-turn-end, session-start | `.claude/settings.json` hookjain át (`cli/scripts/action-log/hook.ps1`) |
+| **Claude (én)** manuális | `decision`, `flow-start`, `flow-end`, `state-change`, `ship`, `note`, `error` (a *miért*-et csak én tudom) | `cli/scripts/action-log/append.ps1` vagy direkt JSONL-append |
+| **Saját scriptek / projektek** (cli/cast, server/activity-monitor, jövőbeli) | `external-action`, `error` lifecycle + lényeges műveletek | Node: `cli/scripts/action-log/lib.ts`, PS: `cli/scripts/action-log/append.ps1` |
+
+### Mit NEM ír
+
+- **NEM** ír ide az `activity-monitor` percenkénti samples-je (ablak/idle) —
+  a `server/activity-monitor/data/`-ba megy, gitignored. Csak az activity-monitor
+  **lifecycle event-jei** (start/stop, error) jönnek ide.
+- **NEM** írunk ide titkokat / PII-t. A summary mező legyen tényszerű, de ne
+  szivárogtasson érzékenyt.
+- A `Read`/`Glob`/`Grep` tool-okat nem hookoljuk (zaj). Csak Edit/Write/Bash/
+  PowerShell/NotebookEdit/TodoWrite van wired.
+
+### Mikor írj manuálisan (én — Claude)
+
+A hookok automatikusan logolnak minden tool-callt, de a **szemantikus**
+információt csak én tudom. Az alábbi eseményeknél **kötelezően** írj egy
+manuális action-log sort (a hook által írt mellé):
+
+| Esemény | Kind | Példa summary |
+|---|---|---|
+| Új flow indul | `flow-start` | "daily-review flow indul" |
+| Flow lezárul | `flow-end` | "daily-review flow lezárva — 3 task created" |
+| Nem-trivial döntés (architektúra, stratégia, kompromisszum) | `decision` | "build-it-ourselves: cast-notifier saját PoC, nem Home Assistant" |
+| `STATUS.md` / `SOURCE_OF_TRUTH.md` állapot vált | `state-change` | "SOURCE_OF_TRUTH: tasks → organizer-verified" |
+| Egy fejlesztés / feature kész és commit-érett | `ship` | "cast-notifier Phase 1.5 ship — TTS + per-device save/up/restore" |
+| Hiba történt aminek tanulsága van | `error` | "msedge-tts ws connect timeout, retry-val ment át" |
+| Nyitott kérdés parkolva user-nek | `note` | "Q-am-7 felvéve: aggregáció timeline" |
+
+### Schema referencia (rövid)
+
+```json
+{
+  "ts": "2026-05-07T22:50:00+02:00",
+  "actor": "claude|cast-notifier|activity-monitor|user|...",
+  "kind": "<lásd kind enum a README-ben>",
+  "summary": "egy mondat",
+  "ref": "<opc — fájl/task ref/url>",
+  "session": "<opc — claude session id>",
+  "extra": { "<opc struktúrált payload>": "..." }
+}
+```
+
+### Resume protokoll (session-crash után / új session indul)
+
+1. **`STATUS.md`** — snapshot
+2. **`__agent/log/actions/`** legutóbbi nap (`Get-Content -Tail 100` vagy hasonló)
+   — ez mondja meg pontosan mit csináltam utoljára, mi volt félbehagyva
+3. **`USER_INPUT.md`** `[NEW]` blokkok
+4. **`SOURCE_OF_TRUTH.md`** ha modul-műveletre készülök
+5. Ha bizonytalan vagyok mit folytassak → **inkább kérdezz a usertől**, ne
+   találgass
+
+### Szabály új fejlesztésekre (KRITIKUS)
+
+> **Minden új script / projekt / feature, amelyiknek "akciója" van**
+> (CLI command, file-művelet, IO, deploy, lifecycle event), **kötelező az
+> action-logba emit-et beépíteni.**
+
+- Node/TS projektek: importáld `cli/scripts/action-log/lib.ts`-t (vagy ha
+  rootDir miatt nem megy, csinálj egy mini lokál writert mint
+  `cli/src/action-log/action-log.client.ts`)
+- PowerShell scriptek: hívd `cli/scripts/action-log/append.ps1`-t
+- Bármi más: emelj JSONL-t a megfelelő napi fájlba
+- **Lifecycle event-ek mindig:** start, normál stop, abnormális leállás (try/finally)
+- **Action event-ek:** minden user-facing CLI invocation + outcome (ok/error)
+
+### Pull-quote a usertől
+
+> "Ne legyen ennek határa, legyen végtelen, tartsunk meg mindent. Hogy jó
+> alaposan messzire vissza tudjunk nézni, mi készült el és mi nem. Csináld meg
+> nagyon alaposan, és kerüljön be mindenhova kell, illetve minden eddigi
+> fejlesztésünkben is, ahol valamilyen akció van, ott automatikusan
+> készüljenek róla ilyen logok, és azt is írjuk föl, hogy a jövőben, hogyha
+> készítünk fejlesztést, amiben van valami akció, akkor oda is bele kell
+> építsük ezt az automatikus logolást."
+> — user, 2026-05-07
+
+---
+
 ## Working style — user preferenciák (KRITIKUS)
 
 > A user explicit kérése. **Mindig így dolgozz.**
@@ -132,7 +253,14 @@ elapsedMs, result|error}`).
 - **Ne mondja meg neked, mit csinálj és mikor — inkább ötletelj.** Ha a user
   felvet egy témát, javasolj megközelítéseket / lehetőségeket, ne kérj tőle
   step-by-step instrukciót. A megfelelő irányt te dolgozd ki.
-- **Rövid, tömör üzenetek.** Ne magyarázz túl. Bullet > paragraph.
+- **Rövid, tömör üzenetek — KRITIKUS.** A user explicit szabálya:
+  > "mindig nagyon tömören írjá nekem... nagyon fontos, hogy mindig nagyon
+  > tömören, röviden fogalmazz, különben nem fogom tudni feldolgozni, amiket
+  > írsz." (2026-05-07)
+
+  Default: bullet-lista / táblázat / emoji-vizualizáció. **Hosszú paragráfusok
+  TILTOTTAK.** Ha egy összefoglaló hosszú lenne → headlines-t adj és kérdezd
+  meg melyik részbe menjünk mélyebbre. Tömörség > részletesség.
 - **Emojik használata OK** — sőt **kifejezetten kért**. Használj relevánsakat
   hangulat / státusz / kategória jelzésére (✅ ⚠️ 🔴 ⏰ 📌 🛒 🚶 🧹 stb.).
 - **STT-input → typo-tűrés.** A user STT-t (speech-to-text) használ az
@@ -170,19 +298,49 @@ megfogalmazása lesz a referencia.
 
 | Fájl | Mit fed le |
 |---|---|
-| `current/principles/working-style.md` | Hogyan dolgozzunk együtt (DoD, ötletelés, rövid+emoji) |
+| `current/principles/working-style.md` | Hogyan dolgozzunk együtt (DoD, ötletelés, rövid+emoji, next-action mindig alternatívákkal) |
 | `current/principles/priority-system.md` | Magasabb szám = magasabb prio, halogatás-szorzó, projekt-szorzó cross-project |
 | `current/principles/recurring-tasks.md` | Takarítás / séta / mosás / fürdés / bevásárlás / kaja-rendelés szabályok |
 | `current/principles/stock-system.md` | Itthoni készlet alapérték + újrarendelési küszöb elemenként |
 | `current/principles/sleep-system.md` | Csúszó alvás-ébrenlét ciklus (**18h fix** ébren / 8h alvás) + bedtime emlékeztető logika |
 | `current/principles/methodology-authority.md` | **A my-assistant a kanonikus minta**, az organizer ehhez alkalmazkodik (nem fordítva) |
 | `current/principles/shopping-lists.md` | Bolt-típus szerint szeparált bevásárló-listák (tesco / clothing / ikea / ...) |
+| `current/principles/fit-system.md` | Fit zóna: séta + Gellért-hegy edzés szabályok, heti horgonyok (szombat/péntek tilalmak) |
+| `current/principles/health-system.md` | Health zóna: napi 3× arc-mosás workflow + anti-deferral stratégia |
+| `current/principles/no-paid-solutions.md` | **Univerzális hard rule**: SOHA ne ajánlj fizetős megoldást — ha létezik, lefejlesztjük magunknak |
+| `current/principles/build-it-ourselves.md` | **Univerzális default**: build-it-ourselves stance, FOSS / saját script preferred a heavy 3rd-party tooling helyett |
+| `current/principles/mvp-focus.md` | **MVP = pénzkeresés.** Top-level fókusz-emlékeztető, minden egyéb priorizálást kiegészít |
+| `current/principles/cast-notifier-defaults.md` | Cast-notifier operacionális default-ok: All Speakers target, férfi HU TTS, volume save→up→restore (NEM duck), Spotify resume |
 
 **Új alapelv kezelése:** ha a user új szabály-szerű dolgot mond, **soha ne csak
 "vegyük tudomásul"** — minden esetben:
 1. Új vagy meglévő fájlba `current/principles/`-be (szó szerint)
 2. Ha univerzális (a working-style szintű), a CLAUDE.md-be is utalás
 3. Visszajelzés a user felé hogy hova került
+
+**Open kérdések kezelése (KRITIKUS):** amikor egy interakció során kérdést
+teszel fel a user-nek (clarification, döntés, opció), **NE CSAK A CHAT-BEN
+HAGYD**. A user explicit kérése (2026-05-07):
+
+> "ha kérdéseid vannak, ami tényleg választ vár, akkor azokat rakjuk be, ha
+> van valami kérdéslistánk... nem mindig nézem meg, hogy miket válaszolsz,
+> dobálom be az inputokat, és aztán időről időre... visszakérdezek...
+> sok-sok kérdés elsikkadna, ami most fontos lenne, úgyhogy ezért fontos...
+> ha kérdésed van, az kerüljön bele ebbe a kérdés logba, illetve akkor,
+> hogyha tényleg fontos."
+
+**Kötelező lépések minden kérdés-felvetésnél:**
+1. **Felvenni** `current/open-questions.md`-be új ID-vel (`Q-YYYY-MM-DD-NN`
+   vagy témakör-kódolt mint `Q-3x3-1`, `Q-life-2`, `Q-food-3`)
+2. Kategorizálni (STT / methodology / project / recurring / stock / FR /
+   process / meta / 3×3 / life / food / …)
+3. Fontosság-becslést adni (`l`/`m`/`h`) — magas csak ha a válasz tényleg
+   blokkol valamit
+4. A chat-ben felemlíteni rövid heads-up-pal, **de** a perzisztens hely a fájl
+5. **Új téma-kategóriát** (új betűjelet) felvenni ha kell — bővíthető séma
+
+**Válaszkor:** status `answered` + válasz 1 mondatban (történet okán marad).
+**Drop:** ha irrelevánssá vált, status `dropped`, indok 1 mondatban.
 
 ---
 

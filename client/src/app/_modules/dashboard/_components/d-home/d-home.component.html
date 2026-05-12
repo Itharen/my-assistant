@@ -1,0 +1,36 @@
+@if (state$ | async; as state) {
+  <section class="dashboard">
+    <header class="dashboard-bar">
+      <div class="title">
+        <h2>Dashboard</h2>
+        @if (state.lastFetchedAt; as t) {
+          <small class="muted">last: {{ t | date:'HH:mm:ss' }}</small>
+        }
+      </div>
+      <div class="actions">
+        @if (state.isLoading) {
+          <span class="muted">loading…</span>
+        }
+        @if (state.error; as e) {
+          <span class="error">⚠ {{ e }}</span>
+        }
+        <button type="button" (click)="handleRefresh()" [disabled]="state.isLoading">↻ Refresh</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div class="cell cell-big cell-top-left">
+        <d-tasks [snapshot]="state.snapshot"></d-tasks>
+      </div>
+      <div class="cell cell-big cell-top-right">
+        <d-waves [snapshot]="state.snapshot"></d-waves>
+      </div>
+      <div class="cell cell-small cell-bottom-left">
+        <d-insights [snapshot]="state.snapshot"></d-insights>
+      </div>
+      <div class="cell cell-small cell-bottom-right">
+        <d-capture></d-capture>
+      </div>
+    </div>
+  </section>
+}

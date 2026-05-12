@@ -1,0 +1,57 @@
+{"ts":"2026-05-07T17:50:00+02:00","actor":"claude","kind":"flow-start","summary":"Google Home research V1 indul (3 parallel agents)"}
+{"ts":"2026-05-07T18:05:00+02:00","actor":"claude","kind":"ship","summary":"Google Home FR V1 letéve: current/feature-requests/google-home-integration.md","ref":"current/feature-requests/google-home-integration.md"}
+{"ts":"2026-05-07T18:10:00+02:00","actor":"claude","kind":"flow-end","summary":"Google Home V2 lezárva — natív path-ok kizárva (Calendar/Reminders/Routines mind no-go)"}
+{"ts":"2026-05-07T18:35:00+02:00","actor":"claude","kind":"decision","summary":"User push-back: NO PAID + build-it-ourselves. Két új univerzális principle felvéve"}
+{"ts":"2026-05-07T18:36:00+02:00","actor":"claude","kind":"ship","summary":"current/principles/no-paid-solutions.md + build-it-ourselves.md letéve, CLAUDE.md-be utalás","ref":"current/principles/"}
+{"ts":"2026-05-07T18:50:00+02:00","actor":"claude","kind":"ship","summary":"cast-notifier PoC felépítve (Node+TS+castv2-client+bonjour, ~400 LoC, FOSS only)","ref":"cast-notifier/"}
+{"ts":"2026-05-07T19:05:00+02:00","actor":"claude","kind":"ship","summary":"cast-notifier discovery FIX: multi-interface support (Windows 6 IPv4 if), --interface/--verbose/--host flag-ek","ref":"cast-notifier/src/discover.ts"}
+{"ts":"2026-05-07T19:15:00+02:00","actor":"claude","kind":"note","summary":"Inventory: 11 Cast device a 200.33.0.0/24 hálózaton (6 hangszóró + 5 group)"}
+{"ts":"2026-05-07T19:30:00+02:00","actor":"claude","kind":"ship","summary":"cast-notifier Phase 1.5 ship: TTS msedge-tts Tamás neural + per-device save/up/play/restore + groups.json","ref":"cast-notifier/"}
+{"ts":"2026-05-07T19:31:00+02:00","actor":"claude","kind":"note","summary":"BathCom smoke test: save 0.10 -\u003e up 0.70 -\u003e TTS 53KB -\u003e play 6.4s -\u003e restore 0.10 OK"}
+{"ts":"2026-05-07T19:32:00+02:00","actor":"claude","kind":"ship","summary":"current/principles/cast-notifier-defaults.md letéve (operacionális defaultok)","ref":"current/principles/cast-notifier-defaults.md"}
+{"ts":"2026-05-07T19:33:00+02:00","actor":"claude","kind":"state-change","summary":"STATUS.md: idle, last_event=cast-notifier-phase-1.5-shipped, vár Phase 2 user-OK-ra"}
+{"ts":"2026-05-07T23:07:17+02:00","actor":"claude","kind":"session-start","summary":"Új Claude session — user kérte: session-recovery infra felállítása"}
+{"ts":"2026-05-07T23:07:17+02:00","actor":"claude","kind":"decision","summary":"Action-log = continuous append-only naplo, kötelező minden akcióra. Activity-monitor logja NEM ide tartozik (gitignored)"}
+{"ts":"2026-05-07T23:07:17+02:00","actor":"claude","kind":"ship","summary":"__agent/log/actions/README.md schema doc","ref":"__agent/log/actions/README.md"}
+{"ts":"2026-05-07T23:07:17+02:00","actor":"claude","kind":"ship","summary":"scripts/action-log/append.ps1 universal PowerShell appender","ref":"scripts/action-log/append.ps1"}
+{"ts":"2026-05-07T23:07:17+02:00","actor":"claude","kind":"ship","summary":"scripts/action-log/hook.ps1 Claude Code hook handler","ref":"scripts/action-log/hook.ps1"}
+{"ts":"2026-05-07T23:07:17+02:00","actor":"claude","kind":"ship","summary":"scripts/action-log/lib.ts Node helper","ref":"scripts/action-log/lib.ts"}
+{"ts":"2026-05-07T23:07:17+02:00","actor":"claude","kind":"ship","summary":".claude/settings.json hookok: SessionStart, UserPromptSubmit, PostToolUse, Stop","ref":".claude/settings.json"}
+{"ts":"2026-05-07T23:07:17+02:00","actor":"claude","kind":"state-change","summary":"activity-monitor log atmozgatva: __agent/log/activity/ -\u003e activity-monitor/data/, gitignored","ref":"activity-monitor/data/"}
+{"ts":"2026-05-07T23:07:17+02:00","actor":"claude","kind":"ship","summary":"activity-monitor retrofit: lifecycle action-log emit (start/stop/error) + új default LogDir","ref":"activity-monitor/logger.ps1"}
+{"ts":"2026-05-07T23:07:17+02:00","actor":"claude","kind":"ship","summary":"cast-notifier retrofit: action-log.ts thin writer + emit subcommand invocation/ok/error","ref":"cast-notifier/src/"}
+{"ts":"2026-05-07T23:07:17+02:00","actor":"claude","kind":"ship","summary":"CLAUDE.md új főszekció: Action log — kötelező + resume protokoll + új-fejlesztés szabály","ref":"CLAUDE.md"}
+{"ts":"2026-05-07T23:07:17+02:00","actor":"claude","kind":"note","summary":"Action-log session-history seed-elve a 2026-05-07-i fő mérföldkövekkel (12 entry)"}
+{"ts":"2026-05-07T23:32:31+02:00","actor":"claude","kind":"user-msg","summary":"User update 23:25: takaritas csuszott (utoljara 2026-04-30), Nietzsche=passive, Palyazatiras=delete, Upwork=vasarnap kezdes, Jogsi=szept 1 deadline + nyar kozepe start, CCAP-task-cluster=batch-later, agent-szam novelese=next"}
+{"ts":"2026-05-07T23:32:31+02:00","actor":"claude","kind":"decision","summary":"Uj alapveto: tul nagy esedekes task -\u003e bontas kisebb reszekre (current/principles/task-decomposition.md)"}
+{"ts":"2026-05-07T23:32:31+02:00","actor":"claude","kind":"ship","summary":"current/principles/task-decomposition.md letetve","ref":"current/principles/task-decomposition.md"}
+{"ts":"2026-05-07T23:32:31+02:00","actor":"claude","kind":"ship","summary":"current/stt-typos.md letetve (Terra-\u003eTERA, NeachAdataSet-\u003eNietzsche, kezkaja-\u003ekeszkaja stb.)","ref":"current/stt-typos.md"}
+{"ts":"2026-05-07T23:32:32+02:00","actor":"claude","kind":"ship","summary":"current/notes/ccap-tasks-batch-later.md - 7 CCAP-task parkolva later batch-feldolgozasra","ref":"current/notes/ccap-tasks-batch-later.md"}
+{"ts":"2026-05-07T23:32:32+02:00","actor":"claude","kind":"state-change","summary":"CLAUDE.md + working-style.md: tomorseg KRITIKUS - hosszu paragrafusok TILTOTTAK, csak bullet/tablazat/emoji","ref":"CLAUDE.md"}
+{"ts":"2026-05-07T23:32:32+02:00","actor":"claude","kind":"external-action","summary":"Organizer: Palyazatiras task ARCHIVE (org:task:699ca5b6...)","ref":"org:task:699ca5b6cb79b45c59a74de6"}
+{"ts":"2026-05-07T23:32:32+02:00","actor":"claude","kind":"external-action","summary":"Organizer: Upwork task UPDATE - vasarnap 2026-05-10 kezdes, dueDate beallitva","ref":"org:task:69ab6a90913e642a6c2a34bd"}
+{"ts":"2026-05-07T23:32:32+02:00","actor":"claude","kind":"external-action","summary":"Organizer: Jogsi task UPDATE - dueDate=2026-09-01, description=bontas-javaslat (5 sub-task)","ref":"org:task:69a20d24913e642a6c2a3439"}
+{"ts":"2026-05-07T23:32:32+02:00","actor":"claude","kind":"note","summary":"Verified: fo tasks.update --if-match etag-gel mukodik (eddig partial volt). SOURCE_OF_TRUTH frissitendo."}
+{"ts":"2026-05-07T23:32:32+02:00","actor":"claude","kind":"ship","summary":"Diary 2026-05-07 frissitve: takaritas csuszott, Nietzsche-passive, projektek aktualizalva","ref":"current/diary/diary.md"}
+{"ts":"2026-05-07T23:32:32+02:00","actor":"claude","kind":"ship","summary":"current/projects.md frissitve: runners=KESZ, Palyazatiras=DELETED, Nietzsche-passive, Upwork-vasarnap, agentek-next-step","ref":"current/projects.md"}
+{"ts":"2026-05-07T23:32:32+02:00","actor":"claude","kind":"note","summary":"ASSISTANT FAILURE: 18:05 furdes-becsobbant jelzeskor nem kuldtem auto checklist (arc/honaljak/intim) - jovo alkalommal kotelezo"}
+{"ts":"2026-05-07T23:41:37+02:00","actor":"claude","kind":"user-msg","summary":"User update: 3 high-level alapveto - 3x3 system (asztral/mental/anyag + hullam-tracking) + 2 eletcel (vilag-fejlesztes + csaladalapitas/HelloCIA)"}
+{"ts":"2026-05-07T23:41:37+02:00","actor":"claude","kind":"ship","summary":"current/principles/three-by-three-system.md - 3x3 ember-modell + hullam-dinamika + vektor-szabaly + state-tracking phases","ref":"current/principles/three-by-three-system.md"}
+{"ts":"2026-05-07T23:41:37+02:00","actor":"claude","kind":"ship","summary":"current/life-goals.md - 2 eletcel + HelloCIA projekt-status + eletcel-szorzo javaslat priority-system bovitesere","ref":"current/life-goals.md"}
+{"ts":"2026-05-07T23:41:37+02:00","actor":"claude","kind":"ship","summary":"current/projects.md bovitve: HelloCIA (1.3) + 3x3-tanulmany/Ideology-Forum (1.4) projekt-szorzokkal","ref":"current/projects.md"}
+{"ts":"2026-05-07T23:41:37+02:00","actor":"claude","kind":"ship","summary":"current/stt-typos.md bovitve: tech-sztecken, faszazni, monetizal-monetaris, HelloCIA name-form-TBD, Ideology-Forum-TBD","ref":"current/stt-typos.md"}
+{"ts":"2026-05-07T23:41:37+02:00","actor":"claude","kind":"decision","summary":"3x3 system = state-tracking foundation. Phase 1: definicio (most). Phase 2: napi 3-koord. tracking. Phase 3: tudomanyos kepletek. Organizer-FR jelolt."}
+{"ts":"2026-05-07T23:41:37+02:00","actor":"claude","kind":"decision","summary":"HelloCIA = aktiv projekt (eletcel #2), 90% kesz 5 eve csuszik -\u003e task-decomposition kotelezo"}
+{"ts":"2026-05-07T23:41:37+02:00","actor":"claude","kind":"note","summary":"Uj open-kerdes-kategoria: 3x3 (Q-3x3-1..8) + life-goals (Q-life-1..5) - bevezetendo open-questions.md-be"}
+{"ts":"2026-05-07T23:52:30+02:00","actor":"claude","kind":"user-msg","summary":"User update: kerdesek-\u003eopen-questions log KOTELEZO; penz=kozvetett eletcel (ceg-\u003eeletcel-projektek); food-tracking FR; etkezes utan seta/edzes; kaja-rendeles eskalacios gorbe nem kemeny deadline"}
+{"ts":"2026-05-07T23:52:30+02:00","actor":"claude","kind":"decision","summary":"Open-questions log = KRITIKUS alapveto. CLAUDE.md megerositve user szovegevel."}
+{"ts":"2026-05-07T23:52:30+02:00","actor":"claude","kind":"ship","summary":"current/open-questions.md bovitve: L)3x3 (Q-3x3-1..8) + M)Eletcelok (Q-life-1..6) + N)Food (Q-food-1..5) - 19 uj kerdes","ref":"current/open-questions.md"}
+{"ts":"2026-05-07T23:52:30+02:00","actor":"claude","kind":"ship","summary":"current/life-goals.md kibovitve: Penz=kozvetett eletcel (ceg-\u003eeletcel-projektek tamogatas)","ref":"current/life-goals.md"}
+{"ts":"2026-05-07T23:52:30+02:00","actor":"claude","kind":"ship","summary":"current/feature-requests/food-tracking.md - Phase 0/1/2/3 strategia + 5 megoldasjelolt + adatsema","ref":"current/feature-requests/food-tracking.md"}
+{"ts":"2026-05-07T23:52:30+02:00","actor":"claude","kind":"ship","summary":"recurring-tasks.md kibovitve: post-meal mozgas + Interfood eskalacios tabla (cs=1.0 -\u003e sze=4.0+)","ref":"current/principles/recurring-tasks.md"}
+{"ts":"2026-05-07T23:52:30+02:00","actor":"claude","kind":"ship","summary":"CLAUDE.md megerositve: open-questions log KOTELEZO minden kerdesnel + user kerelem szovege","ref":"CLAUDE.md"}
+{"ts":"2026-05-07T23:55:37+02:00","actor":"claude","kind":"user-msg","summary":"User update: tanc=fit-elem (felfele leszti testet), sulyzos tanc=meg jobb, seta+tanc kombinalhato, szegyellos -\u003e csak ember-mentes utca = TOP preferalt 02:00-04:00 hajnal"}
+{"ts":"2026-05-07T23:55:37+02:00","actor":"claude","kind":"ship","summary":"fit-system.md kibovitve: Tanc szakasz + hajnali 02-04 mint TOP preferalt setalasi sav + 4 open Q","ref":"current/principles/fit-system.md"}
+{"ts":"2026-05-07T23:55:37+02:00","actor":"claude","kind":"ship","summary":"recurring-tasks.md frissitve: setalasi TOP slot=hajnal 02-04, napnyugta=masodlagos","ref":"current/principles/recurring-tasks.md"}
+{"ts":"2026-05-07T23:55:37+02:00","actor":"claude","kind":"ship","summary":"open-questions.md +O)Tanc kategoria (Q-fit-tanc-1..4)","ref":"current/open-questions.md"}
+{"ts":"2026-05-07T23:55:37+02:00","actor":"claude","kind":"ship","summary":"stt-typos.md bovitve: leszti, suzoval, osszekodheto","ref":"current/stt-typos.md"}

@@ -1,0 +1,18 @@
+{
+  "verdict": "soft-nudge",
+  "reason": "Sample test: smoke teszt a dispatcher-en, nem valódi tick. (recurring-tasks.md séta utolsó 2026-05-04 → 4 missed cycle, de csak nudge mert ma már megvolt a séta)",
+  "actions": [
+    {
+      "type": "log",
+      "tier": 0,
+      "args": {
+        "kind": "note",
+        "summary": "Smoke teszt: dispatcher kipróbálva — log handler"
+      }
+    }
+  ],
+  "tickMeta": {
+    "tickedAt": "2026-05-08T01:00:00+02:00",
+    "inputDigest": "smoke teszt — semmi valódi input"
+  }
+}

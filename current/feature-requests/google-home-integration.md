@@ -32,6 +32,248 @@ felvételkor. Az eredeti chat-üzenet nem őrződött szó szerint külön — h
 
 ---
 
+## 2026-05-07 (17:55) — user clarification + scope-szűkítés
+
+> Most első körben azt hiszem fókuszálunk kéne az emlékeztetőkre, illetve a
+> triggerekre, amivel a Google Home eszközökre küldhetünk triggereket. Lehet,
+> hogy ez egyszerű emlékeztetők beállításával, naptáreseményekkel is elérhető
+> lehet. Van itthon egy egész klaszternyi Google Home és Google Nest hangszóró
+> szerte mindenhol a lakásban. Folyamatosan fut a Google Home Assistant. A Voice
+> input az elsősorban kevésbé prió, mint az, hogy a Google Home-on keresztül
+> tudjon nekem üzeneteket küldeni a rendszerem, illetve itt az aszisztant.
+
+### Mit változtat
+
+1. **Hardware confirmed ✅** — több Google Home + Nest szerte a lakásban; Google
+   Assistant 24/7 fut. Discovery / cluster planning már nem nyitott kérdés.
+2. **Scope V1 = output only** — TTS / notification PUSH a hangszóróra. Voice
+   input visszacsúszik a roadmap végére (vagy törölve a V1-ből).
+3. **Új path-prio**: a user explicit felvetette hogy "egyszerű emlékeztetők /
+   naptáresemények" is elég lehet. Ez egy **teljesen más architektúra** mint az
+   eredeti research (HA + Cast push) — itt a **Google ökoszisztémán BELÜL**
+   maradunk: Calendar API / Reminders / Tasks / Routines, és a Google saját
+   rendszere szól a hangszóróra. Ez egy **fókuszált follow-up research** tárgya
+   (lásd lentebb a 2026-05-07 18:00 szakaszt).
+4. **Open kérdések közül elesett**: 1 (hardware) ✅. Még válaszra vár: HA igény,
+   költség-tolerancia, multi-room broadcast-stratégia, my-assistant vs HA mint
+   "scheduler authority".
+
+---
+
+## 2026-05-07 (18:05) — follow-up research: Google natív path-ok (zero-3rd-party)
+
+> **Kérdés:** ha kizárólag a Google ökoszisztémán belül maradunk (Calendar /
+> Reminders / Tasks / Routines), van-e mód arra, hogy a my-assistant a hangszórón
+> proaktívan **megszólaltasson** egy üzenetet — Home Assistant, Cast lib, IFTTT
+> nélkül?
+>
+> **Válasz: NEM.** ❌
+>
+> 2026 májusában **egyetlen olyan natív Google mechanizmus sincs**, amit egy
+> server-side script programatikusan triggerelni tud, és ami **hangosan
+> felolvas** valamit a Nest hangszórón. Google szándékosan nem nyitotta meg ezt
+> a felületet.
+
+### Útvonal-tábla
+
+| Path | Hangosan szól? | Programatikusan triggerelhető? | Verdict |
+|---|---|---|---|
+| **Calendar event** (saját + Google Calendar API) | ❌ Csak LED flash ~10 percig, nincs spoken announcement | ✅ API van | ❌ |
+| **Google Reminders** (klasszikus "Hey Google, remind me at 6pm…") | ✅ Igen, pulse + spoken | ❌ Nincs publikus REST API, csak voice/UI | ⚠️ csak manuálisan |
+| **Google Tasks** (Tasks API) | ❌ Csendben marad due time-nál; csak "what are my tasks"-ra olvas | ✅ API stabil | ❌ |
+| **Routines / Automations Script Editor** (`time.schedule` + `assistant.command.Broadcast`) | ✅ Igen, statikus üzenettel | ❌ Csak Home APIs SDK (Android-only Kotlin), **nincs server SDK** | ⚠️ csak manuál setup |
+| **Family Bell** | n/a | n/a | ☠️ **Deprecated 2024-2025** |
+| **Google Keep reminders** | ❌ Migrálva Tasks-ba 2026-01 | n/a | ❌ |
+| **Broadcast** ("Hey Google, broadcast 'X'") | ✅ | ❌ Nincs hivatalos server API; csak unofficial Assistant SDK simulate-tel | ❌ natív szempontból |
+| **Gemini for Home** (post-2026-03) | Ugyanaz mint Routines | Ugyanaz | ⚠️ jobb NLP, **azonos architectural ceiling** — magyar Nest-en még nem teljes |
+
+### Részletek a két "majdnem-jó" útról
+
+**Voice-created Reminders** (⚠️):
+- Még működik 2026-ban: "Hey Google, emlékeztess este 10-kor lefeküdni" → 22:00-kor a hangszóró pulzál + felolvassa
+- Tárolás háttérben átmigrálva Google Tasks-ba (2026-01), location reminders eltávolítva
+- **Nincs publikus API** ami létrehoz egy "speaker-spoken reminder"-t — csak hangparanccsal vagy a Google Home UI-ban
+- → my-assistant-ből nem szólítható meg programatikusan, **csak ha a user maga mondja be**
+
+**Routines `time.schedule` + `BroadcastCommand`** (⚠️):
+- Manuálisan a Google Home appban létrehozható: "minden nap 22:00 → broadcast 'ideje lefeküdni'"
+- Statikus szöveg per routine — nincs változó, nem tud calendar event-et felolvasni
+- `time.schedule` recurring (hét napjai) — **one-time dátum-trigger nincs dokumentálva**
+- A Home APIs SDK (Android-only) tudna routine-t létrehozni, de **server-ről nem hívható**
+- → fix idejű, ismétlődő, statikus üzenetekre OK; dinamikus / one-shot / variable text-re ❌
+
+### Mit jelent ez a use case-ekre
+
+| Use case | Natív Google-only működik? | Miért |
+|---|---|---|
+| **Bedtime push (sliding 26h ciklus, sleep-system.md)** | ❌ | Az ébredés-idő naponta változik → a bedtime is. Statikus recurring routine nem tudja kiszolgálni. |
+| **Recurring task heads-up** ("ma esedékes a séta", "fürdés overdue") | ❌ | Dinamikus content, halogatás-szorzós eszkalációval. Statikus routine nem érti a state-et. |
+| **Általános "új emlékeztetőd van" pingelés** | ⚠️ | Egyetlen statikus routine + virtual switch trigger-rel **lehetne**, de a user nem tudja mire emlékeztet — vissza kell néznie chat-en. Marginal value. |
+| **Fix idejű recurring** (pl. "vasárnap 18:00 takarítás emlékeztető") | ✅ | Statikus routine OK, manuálisan a Home appban beállítva. De ez **a my-assistant-től függetlenül** él — ha a szabály változik, kézzel kell frissíteni. |
+
+### Egyetlen "natív hack" út, ha mindenképp 3rd-party-mentes kell
+
+**Smart Home Cloud-to-cloud "fake device" + pre-built routines**:
+1. Egy OAuth app + fulfillment endpoint (a my-assistant exposolja magát "smart device"-ként a Google-nek)
+2. Manuálisan létrehozott routine-ok: starter = "amikor a virtuális kapcsoló bekapcsol" → action = `BroadcastCommand` statikus szöveggel
+3. Server flippeli a virtual switch state-et → routine triggerel → hangszóró szól
+4. **Korlát**: minden egyedi szöveghez **külön routine + külön virtual device** kell. Ha 10 különböző üzenet kell → 10 routine + 10 virtual switch előre létrehozva manuálisan.
+
+**Verdict erre is**: **több munka mint HA**, kevesebb flexibilitás, és a Cloud-to-cloud
+fulfillment endpoint OAuth/HTTPS infrastruktúrát igényel ami már nem kevésbé
+"3rd-party" mint egy HA Docker container. **Nem ajánlott.**
+
+---
+
+## 2026-05-07 (18:25) — user push-back: NO PAID + build-it-ourselves
+
+> Egyáltalán ne nézzünk semmilyen fizetős megoldást. Ha létezik fizetős
+> megoldás, akkor meg kell tudjuk csinálni magunknak is. Mindent le kell
+> tudjunk fejleszteni, ami szükséges. Semmiképpen nem nézünk fizetős
+> megoldásokat.
+>
+> Nagyon rosszul néz ki, nincs olyan táblázatod, amiben azt mondanád, hogy
+> valami végtődik [működik]. Mindenhol csak azt látom, hogy semmi sem végtődik
+> sehogy se. Nincsen egyetlen egy clear módja annak, hogy bármilyen módon
+> készítsünk egy üzenetet, amit valahogy ráveszünk a Google Home eszközöket,
+> hogy kimondja azt az üzenetet. Akár úgy, hogy 5 perccel előtte beállítjuk,
+> vagy pár perccel előtte beállítjuk, vagy én nem tudom, de nem hiszem el,
+> hogy nincsen működő megoldás. és nem egy előre nagyon krediktálható dologra
+> lenne szükség, hanem egy olyanra, ami 5 percen belül küld nekem valamilyen
+> felkiáltás vagy hé haver, valami van. Mindig custom üzenetekkel.
+
+### Mit változtat (assistant-jegyzet, NEM a user szavai)
+
+1. **Nabu Casa, Azure neural, ElevenLabs — mind kihúzva.** Új univerzális elv
+   rögzítve: `current/principles/no-paid-solutions.md` + `build-it-ourselves.md`.
+   CLAUDE.md frissítve.
+2. **Az előző szintézis tévesen sugalta, hogy semmi sem működik ingyen.**
+   Korrekció: **több ingyenes, működő út van**. Az igazság: a *natív Google*
+   path nem ad spoken output-ot, **de a Cast protocol-on keresztül egyszerűen
+   lehet** — saját scripttel, FOSS könyvtárakkal.
+3. **A use case is élesedett**: "5 perccel előtte / pár perccel előtte / akár
+   azonnal — custom üzenettel". Ez a **Cast push** pattern dolgos kenyere.
+   Latency ~1-2 másodperc trigger-től hangszóróra.
+
+---
+
+## 2026-05-07 (18:30) — TISZTA TÁBLÁZAT: mi MŰKÖDIK ingyen, self-built módon
+
+| Komponens | Lib / megoldás | Költség | License | Working 2026-ban? |
+|---|---|---|---|---|
+| **Cast push** (Node) | `castv2-client` (thibauts) | Free | MIT/BSD | ✅ Igen, building block stable |
+| **Cast push** (Python) | `pychromecast` (home-assistant-libs) | Free | MIT | ✅ Igen, aktívan karbantartott (v14.x 2026-03) |
+| **Mini HTTP server** MP3 szolgáltatáshoz | Express / FastAPI / Python `http.server` | Free | (built-in / MIT) | ✅ |
+| **TTS — magyar, ingyen, online** | Google Translate TTS REST | Free | (no auth, public) | ✅ Robotikus, érthető |
+| **TTS — magyar, ingyen, lokál** | Coqui XTTS v2 (HU támogatott) | Free | MPL-2.0 | ✅ Voice cloning, jó minőség |
+| **TTS — magyar, ingyen, lokál, könnyebb** | gTTS (Python lib Translate REST körül) | Free | MIT | ✅ |
+| **mDNS / cluster discovery** | castv2-client beépített / pychromecast Zeroconf | Free | (built-in) | ✅ |
+
+**Verdict**: 🟢 **Igen, van konkrét működő ingyen megoldás.** Több is. Self-built, ~150-300 LoC, my-assistant repo `scripts/` alá.
+
+### Az egész flow vázlata (Node példa)
+
+```
+my-assistant scripts/notify-cast.ts
+   1. POST {text, target?} érkezik (vagy CLI argumentum)
+   2. Generál MP3-at:
+      - opció A: gTTS-szerű hívás Translate REST-re → MP3 buffer
+      - opció B: lokál Coqui XTTS v2 → MP3 fájl
+   3. Express mini server (0.0.0.0:randomPort) szolgálja az MP3-t
+      időkorlátos URL-en (auto-cleanup ~30s után)
+   4. castv2-client → discover Nest hangszóró(k) target alapján
+   5. DefaultMediaReceiver.load(MP3 URL)
+   6. Várja a "FINISHED" eventet, leállítja az Express server-t
+```
+
+**Latency**: típikusan **1-3 másodperc** trigger-től hangszóróra (TTS gen idő + mDNS resolve + Cast handshake + buffer).
+
+**Working set ami már megvan a my-assistant-ben**: semmi még, de a `scripts/` mappa készen áll a CLAUDE.md alapján.
+
+### Magyar TTS minőség — ingyen opciók ranking
+
+| Opció | Minőség | Setup | Mikor jó |
+|---|---|---|---|
+| **gTTS / Translate TTS REST** | 🟡 Robotikus de érthető | Trivial (egy HTTP hívás) | **V1 default** — gyors, no infra |
+| **Coqui XTTS v2 lokál** | 🟢 Jó, voice cloning lehet | ~Python venv + ~2GB model letöltés, GPU preferred | **V2 upgrade** ha a robotikusból elég |
+| **Piper lokál** | 🟡 Tiszta, nincs official HU model | Saját HU model training (vagy community fork keresése) | Ha gTTS megy de Coqui túl heavy |
+
+### Risks & maintenance ownership
+
+A self-built path-ot a user vállalja (build-it-ourselves):
+- **Cast protocol cert/firmware drama** (lásd 2025 márciusi ICA cert outage):
+  ha újra történik, mi frissítjük a CA whitelist-et a saját scriptünkben.
+  A `castv2-client` és `pychromecast` aktív repo-k, általában gyorsan kapnak fix-et.
+- **mDNS** csak ugyanazon a L2 segmensen működik. Ha a Windows gép és a
+  hangszórók más VLAN-on vannak, egy Avahi reflector kell — egyszeri config.
+- **Multi-room**: castv2-client-tel target paraméter alapján más hangszórót
+  választunk. Multi-cast (egyszerre több helyre) szervezhető Cast Group-on
+  keresztül, amit a Google Home appban lehet csoportosítani (ingyen).
+
+---
+
+## 2026-05-07 (18:35) — végső szintézis és ajánlás (REVISED)
+
+### Igazság
+
+- **A Google natív path-ok** (Calendar event spoken / Reminders API / Tasks API spoken / Routines server-API) **mind nem működnek** programatikusan dinamikus content-tel. Ez tény, nem változott.
+- **DE a Cast protocol** (ami szintén Google, csak más rétegen) **igenis működik** — azon megy minden YouTube cast, Spotify cast, sőt a Google Home app saját TTS-e is. A `castv2-client` (Node) és `pychromecast` (Python) FOSS lib-ek ezt a protokollt implementálják.
+- → **Saját scripttel, ingyen, my-assistant repo-n belül megoldható** a "5 perc múlva mondj nekem custom üzenetet a hangszórón" use case.
+
+### 🎯 Konkrét ajánlás — saját scripttel, ingyen, my-assistant-ben
+
+**Phase 1 — V1 PoC (1 nap, 0 Ft)**: `scripts/notify-cast.ts` (Node) vagy `scripts/notify_cast.py` (Python)
+
+**Stack**:
+- **Cast lib**: `castv2-client` (Node) **vagy** `pychromecast` (Python) — válassz a my-assistant kódbázis preferencia szerint
+- **TTS**: Google Translate TTS REST hívás (free, no auth) — gTTS-szerű 1 függvény
+- **Mini HTTP server**: Express / Python http.server az MP3 időkorlátos URL-en
+- **Discovery**: castv2 / pychromecast beépített mDNS
+
+**API forma** (egyezzen az `fo` CLI JSON envelope mintával — CLAUDE.md előírja):
+
+```bash
+# CLI használat
+node scripts/notify-cast.js --text "Ideje lefeküdni" --target "Hálószoba" --pretty
+
+# vagy programatikus hívás my-assistant-en belül
+import { notifyCast } from './scripts/notify-cast';
+await notifyCast({ text: "Ideje lefeküdni", target: "Hálószoba" });
+```
+
+**Output envelope**:
+```json
+{
+  "ok": true,
+  "action": "notify-cast",
+  "requestId": "...",
+  "elapsedMs": 1842,
+  "result": { "playedOn": "Hálószoba.local", "duration": 2.3 }
+}
+```
+
+**Phase 2 — magyar TTS upgrade (opcionális, ~fél nap, 0 Ft)**: gTTS → Coqui XTTS v2 lokál ha a robotikus magyar hang zavaró. Ugyanaz a script, csak a TTS gen-réteg cserélődik.
+
+**Phase 3 — Calendar / scheduler integráció (több nap, 0 Ft)**: my-assistant scheduler ami a sleep-system / recurring-tasks szabályait olvassa, és ütemezi a `notify-cast` hívásokat (lokál cron / setTimeout / `node-schedule`). **Az authority a my-assistant marad**, a hangszóró csak a "hangosító".
+
+### Voice INPUT (későbbre)
+
+A user explicit jelezte: alacsonyabb prio. Ha mégis kell, **szintén ingyen, self-built**:
+- HA Voice PE *hardware*-ből (~$60) — DE ez paid hardware, nem paid service. Ha kerülnénk: DIY satellite USB mikrofonnal egy Pi-n (~$30 hardware ha még nincs Pi).
+- Whisper.cpp lokál (Free, MIT) magyar small/medium model
+- Piper TTS magyar (community model vagy saját training)
+- Ez nincs scope-ban most.
+
+### Open kérdések — refresh a "no-paid + build-it-ourselves" után
+
+1. **Node vagy Python a `notify-cast` script-nek?** A my-assistant repo-ban mi van inkább? (Node fitting az `fo` CLI mintához.)
+2. **Multi-room policy?** Cast Group használata a Google Home appban (ingyen) → `target: "Mindenhol"` kulcsszó működjön?
+3. **Implementáció prio**: organizer-task `org:task:69fca4a9d440d3f484cedf05` most P=50. Felemeljük V1-hez?
+4. **Telepítendő dependencyk** OK-e Windows-on? Node esetén `npm install castv2-client` → semmilyen system dep nem kell. Python esetén `pip install pychromecast gtts`. Mindkettő ártalmatlan.
+5. **Magyar TTS minőség elfogadható-e gTTS-szel V1-re?** (Robotikus, de érthető.) Ha igen → Phase 1 ship, Phase 2 opcionális. Ha nem → induljunk rögtön Coqui XTTS v2-vel (nehezebb setup, jobb hang).
+
+---
+
 ## 2026-05-07 — research összefoglaló (assistant-jegyzet, NEM a user szavai)
 
 > ⚠️ **A landscape jelenleg instabil.** A Google Assistant-et **2026 márciusától

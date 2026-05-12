@@ -1,0 +1,48 @@
+:host { display: block; color: var(--ma-fg); }
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  h3 { margin: 0; font-size: 1.05rem; color: var(--ma-fg); }
+  .muted { color: var(--ma-fg-muted); font-size: 0.85em; }
+}
+
+.warn { color: var(--ma-warn); font-size: 0.9em; padding: 8px 0; }
+
+.task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &.done .task { opacity: 0.55; }
+
+  .task {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 6px 4px;
+    border-bottom: 1px solid var(--ma-border);
+    color: var(--ma-fg);
+
+    &:last-child { border-bottom: none; }
+
+    .icon { flex: 0 0 1.2em; }
+    .title { flex: 1; }
+    .meta { color: var(--ma-fg-muted); font-size: 0.8em; flex-shrink: 0; }
+  }
+}
+
+.done-fold {
+  margin-top: 10px;
+  summary {
+    cursor: pointer;
+    color: var(--ma-fg-muted);
+    font-size: 0.9em;
+    padding: 4px 0;
+  }
+}
+
+.muted { color: var(--ma-fg-muted); }

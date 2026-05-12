@@ -1,0 +1,18 @@
+{
+  "verdict": "invalid-verdict",
+  "reason": "",
+  "actions": [
+    {
+      "type": "task-create",
+      "tier": 1,
+      "args": {
+        "title": "Test no clear-rule",
+        "description": "Hiányzik a Forrás kifejezés — el kéne utasítson"
+      }
+    }
+  ],
+  "tickMeta": {
+    "tickedAt": "2026-05-08T01:30:00+02:00",
+    "inputDigest": "invalid"
+  }
+}

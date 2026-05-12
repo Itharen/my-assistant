@@ -15,6 +15,18 @@ warn / overshoot, nem normál tartomány.
 
 ---
 
+## 2026-05-07 — külső anchor: péntek esti vendégek
+
+> *"Illetve pénteken ilyen 6-7 körülőtől, inkább 7-től várható. minden héten
+> péntek hívtől vendégek, szóval akkor sem nagyon lehet sétákat ütemezni.
+> Általában ezt szoktam úgy főként megtörni a lendületet, meg a szokást."*
+
+**Következmény:** péntek estefelé (18:00–19:00-tól) heti rendszerességgel
+vendégek vannak → péntek estére sem lehet külső aktivitást (séta, hegy-mászás)
+ütemezni. Lásd: `current/principles/fit-system.md`.
+
+---
+
 ## 2026-05-07 — külső anchor: pénteki meeting
 
 > Ja, és még egy csavar, ami megint kicsit bonyolítja a sztorit, hogy

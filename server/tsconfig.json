@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "outDir": "./build",
+    "target": "es2022",
+    "module": "commonjs",
+    "lib": ["es6", "es2022", "dom"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "importHelpers": true,
+    "resolveJsonModule": true,
+    "noImplicitOverride": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true,
+    "types": ["node", "jasmine"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "build"]
+}

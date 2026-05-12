@@ -1,0 +1,18 @@
+{
+  "name": "agent-handlers",
+  "version": "0.1.0",
+  "description": "Action-handler dispatcher for the my-assistant A-mode agent (CCAP runtime calls this with the agent's JSON output).",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "prep": "pnpm i",
+    "typecheck": "tsc --noEmit",
+    "dispatch": "tsx src/dispatch.ts",
+    "smoke": "tsx src/dispatch.ts < test/sample-output.json"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.5.4"
+  }
+}

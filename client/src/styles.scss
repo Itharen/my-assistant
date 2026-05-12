@@ -1,0 +1,89 @@
+// Global dark theme + Tailwind + Material 18 core.
+// Pattern source: `LIVE-projects/master-prompter/client/src/styles.scss`.
+
+@use '@angular/material' as mat;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@include mat.core();
+
+// Minimal Material M3 dark palette — themes only the core typography/elevation;
+// component-level dark styling is driven by the `--ma-*` CSS variables below
+// (consumed by both component SCSS files and Tailwind via tailwind.config.js).
+$ma-dark-theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$blue-palette,
+    tertiary: mat.$violet-palette,
+  ),
+  density: (
+    scale: -1,
+  ),
+));
+
+html {
+  @include mat.all-component-themes($ma-dark-theme);
+  color-scheme: dark;
+}
+
+:root {
+  // Surface layers — from deepest to most elevated.
+  --ma-bg:           #0f1115;
+  --ma-bg-card:      #1a1d24;
+  --ma-bg-elevated:  #232831;
+  --ma-bg-input:     #1f242c;
+  --ma-bg-hover:     #2a3038;
+
+  // Text.
+  --ma-fg:           #e6e8ec;
+  --ma-fg-muted:     #9aa0a9;
+  --ma-fg-subtle:    #6b7280;
+  --ma-fg-on-accent: #ffffff;
+
+  // Borders.
+  --ma-border:        #262b34;
+  --ma-border-strong: #3a414c;
+
+  // Brand / state.
+  --ma-accent:   #5b8def;
+  --ma-success:  #3fb950;
+  --ma-warn:     #d29922;
+  --ma-error:    #f47373;
+
+  // Wave palette tuned for dark backgrounds.
+  --ma-wave-astral: #a78bfa;
+  --ma-wave-mental: #60a5fa;
+  --ma-wave-matter: #34d399;
+
+  // Chart grid / axis labels.
+  --ma-chart-grid:  #262b34;
+  --ma-chart-label: #6b7280;
+
+  --ma-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--ma-bg);
+  color: var(--ma-fg);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  height: 100%;
+}
+
+a {
+  color: var(--ma-accent);
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+button { font-family: inherit; }
+
+::selection {
+  background: var(--ma-accent);
+  color: var(--ma-fg-on-accent);
+}

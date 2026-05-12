@@ -1,0 +1,42 @@
+<div class="panel-head">
+  <h3>⚡ Quick capture</h3>
+  <div class="mode-tabs">
+    <button type="button" [class.active]="mode === 'text'" (click)="handleSetMode('text')">📝 Text</button>
+    <button type="button" [class.active]="mode === 'energy'" (click)="handleSetMode('energy')">🌊 Energy</button>
+  </div>
+</div>
+
+@if (mode === 'text') {
+  <div class="text-mode">
+    <textarea [(ngModel)]="text"
+              placeholder="Bármit dobj ide — gondolat, jegyzet, feladat-csíra… az agent később feldolgozza."
+              rows="3"></textarea>
+  </div>
+}
+
+@if (mode === 'energy') {
+  <div class="energy-mode">
+    <label>
+      <span class="lbl">🌌 Asztrál</span>
+      <input type="range" min="0" max="100" step="1" [(ngModel)]="astral"/>
+      <span class="val">{{ astral }}</span>
+    </label>
+    <label>
+      <span class="lbl">🧠 Mentál</span>
+      <input type="range" min="0" max="100" step="1" [(ngModel)]="mental"/>
+      <span class="val">{{ mental }}</span>
+    </label>
+    <label>
+      <span class="lbl">🪨 Anyag</span>
+      <input type="range" min="0" max="100" step="1" [(ngModel)]="matter"/>
+      <span class="val">{{ matter }}</span>
+    </label>
+  </div>
+}
+
+<div class="footer">
+  <button type="button" class="submit" [disabled]="isBusy" (click)="handleSubmit()">
+    {{ isBusy ? '…' : (mode === 'text' ? '➜ Mentés' : '➜ Snapshot') }}
+  </button>
+  @if (ack) { <small class="ack">{{ ack }}</small> }
+</div>

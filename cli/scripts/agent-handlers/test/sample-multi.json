@@ -1,0 +1,37 @@
+{
+  "verdict": "urgens",
+  "reason": "Multi-handler smoke: log + update-status + user-input-new + tier3-tiltott (lefuttat 3 valid action-t és 1 placeholder-t)",
+  "actions": [
+    {
+      "type": "log",
+      "tier": 0,
+      "args": {
+        "kind": "note",
+        "summary": "Multi smoke: 1. action — log emitted by agent dispatcher test"
+      }
+    },
+    {
+      "type": "user-input-new",
+      "tier": 1,
+      "args": {
+        "title": "[SMOKE-TEST] dispatcher integráció kipróbálva",
+        "kind": "feedback",
+        "domain": "meta",
+        "body": "Ez egy auto-generated teszt-blokk. Ha látod ezt a USER_INPUT.md-ben, a dispatcher user-input-new handlere működik. Nyugodtan töröld."
+      }
+    },
+    {
+      "type": "notify-cast",
+      "tier": 1,
+      "args": {
+        "text": "Smoke teszt — éber-állapotban ez kimenne a hangszórókon",
+        "target": "All Speakers",
+        "throttleId": "smoke-test"
+      }
+    }
+  ],
+  "tickMeta": {
+    "tickedAt": "2026-05-08T01:30:00+02:00",
+    "inputDigest": "smoke teszt — multi handler"
+  }
+}

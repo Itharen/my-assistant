@@ -1,0 +1,48 @@
+<div class="panel-head">
+  <h3>📋 Feladatok</h3>
+  <small class="muted">{{ openRows.length }} nyitott · {{ doneRows.length }} kész</small>
+</div>
+
+@if (!isAvailable) {
+  <div class="warn">
+    ⚠ Organizer offline — {{ error || 'fo CLI nem elérhető' }}
+  </div>
+}
+
+@if (isAvailable) {
+  <div>
+    <ul class="task-list">
+      @for (row of openRows; track row.item.ref) {
+        <li class="task open">
+          <span class="icon">{{ row.icon }}</span>
+          <span class="title">{{ row.item.title }}</span>
+          <small class="meta">
+            @if (row.item.priority !== null) {
+              <span>prio {{ row.item.priority }}</span>
+            }
+            @if (row.item.dueDate) {
+              <span> · ⏰ {{ row.item.dueDate }}</span>
+            }
+          </small>
+        </li>
+      }
+      @if (openRows.length === 0) {
+        <li class="muted">Nincs nyitott feladat 🎉</li>
+      }
+    </ul>
+
+    @if (doneRows.length > 0) {
+      <details class="done-fold">
+        <summary>✅ Teljesített ({{ doneRows.length }})</summary>
+        <ul class="task-list done">
+          @for (row of doneRows; track row.item.ref) {
+            <li class="task">
+              <span class="icon">{{ row.icon }}</span>
+              <span class="title">{{ row.item.title }}</span>
+            </li>
+          }
+        </ul>
+      </details>
+    }
+  </div>
+}

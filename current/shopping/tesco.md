@@ -16,10 +16,10 @@ Szabályok: `current/principles/recurring-tasks.md` (2-3 hetente megrendelés) +
 ## Aktuális batch — 2026-05-07-i input alapján
 
 ### Italok 🥤
-- [ ] Energiaital
+- [ ] **Energiaital** ⏰ (2026-05-09: elfogyott)
 - [ ] Vodka
 - [ ] Rum (alap)
-- [ ] Kapitány (Captain Morgan rum)
+- [ ] Kapitány (Captain Morgan rum) **× 2** (ma 2-t vettünk, de 4-re dúsítunk → 2 még kell; bolt out-of-stock volt)
 - [ ] Víz — sok
 - [ ] Sprite
 - [ ] Tej

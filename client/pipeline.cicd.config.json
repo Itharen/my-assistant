@@ -1,0 +1,103 @@
+{
+  "name": "my-assistant Client CI/CD Pipeline",
+  "outputDir": "./logs/cicd-pipeline",
+  "timing": {
+    "stepTimeout": "10m",
+    "teeMaxRuntime": "10m",
+    "stepCooldown": "1s"
+  },
+  "log": {
+    "runtimeMaxBytes": 5242880,
+    "trimCheckEveryN": 1000
+  },
+  "versionBump": {
+    "enabled": false
+  },
+  "report": {
+    "fileName": "cicd-report.json",
+    "includeLogTail": true,
+    "logTailLines": 10000,
+    "includeStepLogs": false
+  },
+  "steps": [
+    {
+      "label": "discord-start",
+      "command": "dc ci-dn-s '{\"appName\":\"my-assistant Client\",\"appEmoji\":\"🪟\",\"commitMessage\":\"$COMMIT_MESSAGE\",\"branchName\":\"$GITHUB_REF_NAME\",\"author\":\"$GITHUB_ACTOR\",\"runNumber\":\"$GITHUB_RUN_NUMBER\",\"runId\":\"$GITHUB_RUN_ID\",\"repository\":\"$GITHUB_REPOSITORY\",\"eventName\":\"$GITHUB_EVENT_NAME\",\"eventDateTime\":\"$EVENT_DATETIME\"}'",
+      "fatal": false,
+      "discord": {
+        "hide": true
+      },
+      "condition": {
+        "envSet": [
+          "DISCORD_WEBHOOK_ID"
+        ]
+      }
+    },
+    {
+      "label": "install",
+      "command": "cd client && pnpm i",
+      "fatal": true,
+      "discord": {
+        "hide": true
+      }
+    },
+    {
+      "label": "build",
+      "command": "cd client && pnpm run build-base",
+      "fatal": true,
+      "discord": {
+        "emoji": "🏗️",
+        "name": "Build"
+      }
+    },
+    {
+      "label": "test",
+      "command": "cd client && pnpm test",
+      "fatal": true,
+      "discord": {
+        "emoji": "🧪",
+        "name": "Tests"
+      }
+    },
+    {
+      "label": "coverage",
+      "command": "cd client && pnpm run test:coverage",
+      "fatal": false,
+      "discord": {
+        "emoji": "📈",
+        "name": "Coverage"
+      }
+    },
+    {
+      "label": "pipeline-report",
+      "command": "fdp pipeline-report --report ./logs/cicd-pipeline/cicd-report.json --server-dir ./client --overseer-url $OVERSEER_URL --overseer-secret $OVERSEER_SECRET_KEY --branch $GITHUB_REF_NAME",
+      "fatal": false,
+      "always": true,
+      "discord": {
+        "emoji": "📊",
+        "name": "Build Report"
+      },
+      "condition": {
+        "envSet": [
+          "OVERSEER_URL"
+        ]
+      }
+    },
+    {
+      "label": "discord-result",
+      "command": "fdp pipeline-notify --report ./logs/cicd-pipeline/cicd-report.json --config ./pipeline.cicd.config.json --app-name 'my-assistant Client' --app-emoji 🪟 --webhook-id $DISCORD_WEBHOOK_ID --webhook-token $DISCORD_WEBHOOK_TOKEN --overseer-url $OVERSEER_DASHBOARD_URL",
+      "fatal": false,
+      "retryOnFail": 2,
+      "retryDelaySec": 5,
+      "always": true,
+      "discord": {
+        "hide": true
+      },
+      "condition": {
+        "envSet": [
+          "DISCORD_WEBHOOK_ID"
+        ]
+      }
+    }
+  ]
+}

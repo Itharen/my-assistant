@@ -1,0 +1,45 @@
+<div class="panel-head">
+  <h3>🌊 Hullámok</h3>
+  <small class="muted">utolsó {{ rangeHours }}h</small>
+</div>
+
+@if (!hasData) {
+  <div class="empty">
+    Még nincs adat. Vidd az energy snapshot 3 csúszkáját a Quick capture-ben →
+  </div>
+}
+
+@if (hasData) {
+  <svg [attr.viewBox]="viewBox" preserveAspectRatio="xMidYMid meet" class="wave-svg">
+    <g class="grid">
+      @for (tick of gridTicks; track tick.value) {
+        <line [attr.x1]="axisLeft" [attr.x2]="axisRight"
+              [attr.y1]="tick.y" [attr.y2]="tick.y"
+              stroke="#262b34" stroke-width="1"/>
+        <text [attr.x]="axisLeft - 6" [attr.y]="tick.y + 4"
+              text-anchor="end" font-size="10" fill="#6b7280">{{ tick.value }}</text>
+      }
+    </g>
+
+    <g class="series">
+      @for (p of polylines; track p.kind) {
+        <polyline fill="none"
+                  [attr.stroke]="p.color"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  [attr.points]="p.points"/>
+      }
+    </g>
+  </svg>
+}
+
+<ul class="legend">
+  @for (p of polylines; track p.kind) {
+    <li>
+      <span class="dot" [style.background]="p.color"></span>
+      <span class="lbl">{{ p.emoji }} {{ p.label }}</span>
+      <span class="val">{{ p.latest !== null ? (p.latest | number:'1.0-0') : '—' }}</span>
+    </li>
+  }
+</ul>

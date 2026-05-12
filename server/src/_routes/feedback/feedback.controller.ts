@@ -14,8 +14,10 @@ import { FDPNTS_Feedback_Controller } from '@futdevpro/nts-fdp-templates';
 import { Auth_ControlService } from '../../_services/core-services/auth.control-service';
 
 
+/** Feedback HTTP controller. FDPNTS_Feedback_Controller-t terjeszti, my-assistant auth-szal wire-olva. */
 export class Feedback_Controller extends FDPNTS_Feedback_Controller {
 
+  /** Singleton accessor — `FDPNTS_Feedback_Controller.getSingletonInstance()` wrapper. */
   static getInstance(): Feedback_Controller {
     return Feedback_Controller.getSingletonInstance();
   }

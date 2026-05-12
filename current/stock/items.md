@@ -5,6 +5,11 @@ Strukturált stock-tábla. Szabályok: `current/principles/stock-system.md`.
 > **Mezők:** `targetQty` = ideálisan ennyi van itthon. `reorderThreshold` = ha
 > ennyi vagy kevesebb, **bevásárló-listára kerül**. `reorderQty` = ekkor ennyit
 > veszünk. `currentQty` = most hány van (TBD = még nem mértük fel).
+>
+> **Default pattern (2026-05-07):** target=3, threshold=2, reorder=2 ("4-re
+> dúsítunk"). Lásd `current/principles/stock-system.md`. A táblákban "default"
+> jelölés = ezekkel az értékekkel. A `currentQty` továbbra is TBD, mert nem
+> mértük fel.
 
 ---
 
@@ -27,43 +32,56 @@ Strukturált stock-tábla. Szabályok: `current/principles/stock-system.md`.
 
 | Name | currentQty | targetQty | reorderThreshold | reorderQty | unit | notes |
 |---|---|---|---|---|---|---|
-| Energiaital | TBD | TBD | TBD | TBD | db | a user kétszer is említette → most kell |
-| Vodka | TBD | TBD | TBD | TBD | üveg | |
-| Rum (alap) | TBD | TBD | TBD | TBD | üveg | különálló a Kapitány-tól |
-| Kapitány (Captain Morgan rum) | TBD | TBD | TBD | TBD | üveg | a user explicit kibontotta: "Kapitány alias Captain Morgan rum" |
-| Víz | TBD | **magas** ("rengeteg-rengeteg") | TBD | TBD | l / 1.5l palack | folyamatos high stock |
-| Sprite | TBD | TBD | TBD | TBD | db | "a srácok mindig megisszák" — társaságra kell |
-| Tej | TBD | TBD | TBD | TBD | l | "most már lassan" → küszöb-közeli |
+| Energiaital | **0** (2026-05-09 elfogyott) | 3 (default) | 2 (default) | 2 (default) | db | 2026-05-09: elfogyott → bevásárló-listára |
+| Vodka | TBD | 3 (default) | 2 (default) | 2 (default) | üveg | |
+| Rum (alap) | TBD | 3 (default) | 2 (default) | 2 (default) | üveg | különálló a Kapitány-tól |
+| Kapitány (Captain Morgan rum) | **2** (vett ma 2-t; bolt out-of-stock 2-re) | 3 (default) | 2 (default) | dinamikus → most **2** kell még | üveg | 2026-05-07: vásárlás megvolt 2 db, de a 4-re dúsításhoz még 2 hiányzik (a bolt out-of-stock volt). Marad a listán. |
+| Víz | TBD | **magas** ("rengeteg-rengeteg") | TBD | TBD | l / 1.5l palack | folyamatos high stock — default NEM alkalmazható |
+| Sprite | TBD | 3 (default) | 2 (default) | 2 (default) | db | "a srácok mindig megisszák" — társaságra kell |
+| Tej | TBD | 3 (default) | 2 (default) | 2 (default) | l | "most már lassan" → küszöb-közeli |
+
+## Élvezeti / dohány 🚬
+
+| Name | currentQty | targetQty | reorderThreshold | reorderQty | unit | notes |
+|---|---|---|---|---|---|---|
+| Cigi | **0** (2026-05-09 elfogyott) | TBD | TBD | TBD | csomag/karton | 2026-05-09: elfogyott. preferredStore TBD (Tesco / dohánybolt / benzinkút?). Felvenni mint új stock-elem — defaultok pontosítandók. |
 
 ## Étel — kész 🍱
 
 | Name | currentQty | targetQty | reorderThreshold | reorderQty | unit | notes |
 |---|---|---|---|---|---|---|
-| Kész kaja | TBD | TBD | TBD | TBD | db | a user kétszer említette (kész kaja + kézkaja STT-variant) |
+| Kész kaja | TBD | 3 (default) | 2 (default) | 2 (default) | db | a user kétszer említette (kész kaja + kézkaja STT-variant) |
 
 ## Étel — alapanyag 🥕
 
 | Name | currentQty | targetQty | reorderThreshold | reorderQty | unit | notes |
 |---|---|---|---|---|---|---|
-| Gyömbér | TBD | TBD | TBD | TBD | db / g | |
-| Fokhagyma | TBD | TBD | TBD | TBD | fej | |
-| Tökmagolaj | TBD | TBD | TBD | TBD | üveg | |
-| **Tejföl** | TBD | **3** | **1** | **2** | poharas (kicsi) | ⭐ rotálási szabály a user-től: kis adagokban, target=3, küszöb=1, ekkor venni 2-t. ("Na jó, nem sokat, de mondjuk hármat. Mondjuk kettőt rotálni, tehát amikor majd csak egy venni még egyet, vagy kettőt.") |
-| Kenyér | TBD | TBD | TBD | TBD | db | "Kenyeret kenyérhez ezt, meg azt" — a kenyér biztos, a végét nem értettem (STT) |
-| Mozzarella | TBD | TBD | TBD | TBD | db / csomag | "mindig jól jön" |
+| Gyömbér | TBD | 3 (default) | 2 (default) | 2 (default) | db / g | |
+| Fokhagyma | TBD | 3 (default) | 2 (default) | 2 (default) | fej | |
+| Tökmagolaj | TBD | 3 (default) | 2 (default) | 2 (default) | üveg | |
+| **Tejföl** | TBD | **3** | **1** | **2** | poharas (kicsi) | ⭐ user-spec rotálási szabály (NEM default): target=3, küszöb=**1** (default 2 helyett), reorder=2. ("Na jó, nem sokat, de mondjuk hármat. Mondjuk kettőt rotálni, tehát amikor majd csak egy venni még egyet, vagy kettőt.") |
+| Kenyér | TBD | 3 (default) | 2 (default) | 2 (default) | db | "Kenyeret kenyérhez ezt, meg azt" — a kenyér biztos, a végét nem értettem (STT) |
+| Mozzarella | TBD | 3 (default) | 2 (default) | 2 (default) | db / csomag | "mindig jól jön" |
 
 ## Drogéria / higiénia 🧴
 
 | Name | currentQty | targetQty | reorderThreshold | reorderQty | unit | notes |
 |---|---|---|---|---|---|---|
-| Aftershave | TBD | TBD | TBD | TBD | flakon | hozzáadva 2026-05-07 — *"aftershave-et is venni kell"* |
+| Aftershave | TBD | 3 (default) | 2 (default) | 2 (default) | flakon | hozzáadva 2026-05-07 — *"aftershave-et is venni kell"* |
+
+## Gyógyszer / patika 🏥
+
+| Name | currentQty | targetQty | reorderThreshold | reorderQty | unit | notes |
+|---|---|---|---|---|---|---|
+| Kataflam | **TBD** (vett ma) | 3 (default) | 2 (default) | dinamikus | doboz | 2026-05-07: vásárolva, mennyiség TBD |
+| Széntabletta | **3** (vett ma 3-at, volt 0) | 3 (default) | 2 (default) | dinamikus | doboz | 2026-05-07: bolt-elérhetőség miatt csak 3 lett (default 4 helyett); user "mindegy"-jel lezárta — a hiány NEM kerül vissza listára (vs. Captain Morgan eset, ahol a user akart 4-et) |
 
 ## Ruházat 👕 (stock-jellegű alapdarabok)
 
 | Name | currentQty | targetQty | reorderThreshold | reorderQty | unit | notes |
 |---|---|---|---|---|---|---|
-| Zokni | TBD ("kevés") | TBD | TBD | TBD | pár | a user mondta: "szorosak is. kevés" → méret-probléma + alacsony készlet |
-| Alsógatya | TBD ("lecsúsznak" → rossz méret) | TBD | TBD | TBD | db | méret-probléma |
+| Zokni | TBD ("kevés") | TBD ⚠️ | TBD ⚠️ | TBD ⚠️ | pár | a user mondta: "szorosak is. kevés" → méret-probléma + alacsony készlet. Default 3/2/2 nem reális ruhán; valószínűbb 8-10 pár target. Tisztázandó. |
+| Alsógatya | TBD ("lecsúsznak" → rossz méret) | TBD ⚠️ | TBD ⚠️ | TBD ⚠️ | db | méret-probléma. Hasonlóan: 7-10 db reálisabb mint 3. Tisztázandó. |
 
 > **Megjegyzés:** ezek stock-jellegű tételek (alapdarab, állandóan kéne legyen
 > X db). A nem-stock ruházat (cipő, kabát, póló, pulóver) a
@@ -73,9 +91,9 @@ Strukturált stock-tábla. Szabályok: `current/principles/stock-system.md`.
 
 | Name | currentQty | targetQty | reorderThreshold | reorderQty | unit | notes |
 |---|---|---|---|---|---|---|
-| ❓ Serikók | TBD | TBD | TBD | TBD | ? | **STT-bizonytalan**: nem tudom mire gondolt — felvéve, később pontosítani |
-| ❓ Rákcsa | TBD | TBD | TBD | TBD | ? | **STT-bizonytalan**: valószínűleg "rágcsa" / rágcsálnivaló — kérdezzük |
-| Nasi (általános) | TBD | TBD | TBD | TBD | ? | általános fogalom, alkategória-jelölt |
+| ❓ Serikók | TBD | 3 (default) | 2 (default) | 2 (default) | ? | **STT-bizonytalan**: nem tudom mire gondolt — felvéve, később pontosítani |
+| **Rákcsa** | **0** (utolsó kinyitva 2026-05-09) | 3 (default) | 2 (default) | 2 (default) | ? | Péntekenként fogy (a srácoknak). Ma elfogyott → bevásárló-listára. **preferredStore: Kínai bolt.** Korábbi STT-bizonytalanság feloldva: ez a "rákcsa" — a user így használja. |
+| Nasi (általános) | TBD | 3 (default) | 2 (default) | 2 (default) | ? | általános fogalom, alkategória-jelölt |
 
 ---
 

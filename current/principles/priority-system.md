@@ -43,3 +43,4 @@ A fenti elvekből kiolvasható kritériumok (NEM a user szavai — ezek implemen
 - **Deadline-szorzó**: dueDate közeledtével prio nő (függvény-formára szükség van)
 - **Projekt-szorzó (cross-project)**: minden task-group / project-nek van egy "fő prio" szorzója; egy feladat tényleges (cross-project) prioja = `task.priority × project.multiplier × halogatás_szorzó × deadline_szorzó`
 - **Általános prio cross-projekt**: ezek alapján rendezhető az "ami most a legfontosabb" lista bármi feletti scope-ban
+- **Élő projekt-szorzók**: a konkrét projektek és default szorzóik a `current/projects.md`-ben vannak — TERA=2.0, CCAP=1.5, Niche=1.2, Personal admin=1.0 (initial defaultok)

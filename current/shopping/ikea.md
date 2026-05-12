@@ -27,6 +27,16 @@ szeparálás). Ütem: esetenkénti.
   háztartási kuka, méret nem említve)
 - [ ] **Kis kuka × 1** — fürdőbe
 
+### 🛏️ Ágynemű (2026-05-10 hozzáadva)
+- [ ] **Ágynemű** (alap-szettek, db-szám TBD)
+- [ ] **Takaró**
+- [ ] **Ágytakaró**
+- [ ] **Takaróhuzat**
+- [ ] **Párnahuzat**
+
+> ⚠️ Méret-info hiányzik mindegyikre (ágy-méret? párna-méret?) — IKEA-ban
+> helyben dönthető, vagy előzetes tisztázás kell.
+
 ---
 
 ## Megjegyzések

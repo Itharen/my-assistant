@@ -1,0 +1,45 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"E:\\Programming\\Own\\CURSOR\\my-assistant\\cli\\scripts\\action-log\\hook.ps1\""
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"E:\\Programming\\Own\\CURSOR\\my-assistant\\cli\\scripts\\action-log\\hook.ps1\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|Bash|PowerShell|NotebookEdit|TodoWrite",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"E:\\Programming\\Own\\CURSOR\\my-assistant\\cli\\scripts\\action-log\\hook.ps1\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"E:\\Programming\\Own\\CURSOR\\my-assistant\\cli\\scripts\\action-log\\hook.ps1\""
+          }
+        ]
+      }
+    ]
+  }
+}

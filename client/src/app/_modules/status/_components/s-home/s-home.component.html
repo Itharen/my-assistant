@@ -1,0 +1,39 @@
+<section class="status-panel">
+  <h2>Server status</h2>
+
+  @if (view.loading) {
+    <p class="muted">Loading…</p>
+  }
+
+  @if (view.errorMessage) {
+    <p class="error">⚠ {{ view.errorMessage }}</p>
+  }
+
+  @if (view.status; as s) {
+    <div class="status-grid">
+      <div><strong>Server time:</strong> {{ s.serverTime }}</div>
+      <div><strong>Uptime:</strong> {{ s.uptimeSeconds }} s</div>
+      <div><strong>Ticks today:</strong> {{ s.ticksToday }}</div>
+      <div>
+        <strong>Activity:</strong>
+        @if (s.activity.isLikelyAsleep) { <span>😴 likely asleep</span> }
+        @if (s.activity.isAfk && !s.activity.isLikelyAsleep) { <span>🚶 AFK</span> }
+        @if (!s.activity.isAfk && !s.activity.isLikelyAsleep) { <span>🟢 active</span> }
+      </div>
+
+      @if (s.latestTick; as t) {
+        <div class="latest-tick">
+          <strong>Latest tick:</strong>
+          <pre>{{ t | json }}</pre>
+        </div>
+      }
+
+      @if (s.recentActions.length > 0) {
+        <div class="recent-actions">
+          <strong>Recent actions:</strong>
+          <pre>{{ s.recentActions | json }}</pre>
+        </div>
+      }
+    </div>
+  }
+</section>

@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "lastTickAt": "2026-05-08T03:21:07.175Z",
+  "tickCounter": 3,
+  "currentDay": "2026-05-08",
+  "dailyTickCount": 2,
+  "lastVerdict": "urgens",
+  "lastReason": "Multi-handler smoke: log + update-status + user-input-new + tier3-tiltott (lefuttat 3 valid action-t és 1 placeholder-t)"
+}
