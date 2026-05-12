@@ -1,0 +1,50 @@
+<div class="i-spotify-panel">
+  <h2>🎵 Spotify</h2>
+
+  @if (loading()) {
+    <p>Betöltés…</p>
+  } @else {
+    @let s = status();
+    @if (s) {
+    <table class="i-status-table">
+      <tr><td>Configured</td><td>{{ s.configured ? '✅' : '❌' }}</td></tr>
+      @if (s.configured) {
+        <tr><td>Token valid</td><td>{{ s.tokenValid ? '✅' : '❌' }}</td></tr>
+      }
+      @if (s.error) {
+        <tr><td>Error</td><td><code>{{ s.error }}</code></td></tr>
+      }
+      @if (s.currentPlayback; as p) {
+        <tr><td>Now playing</td>
+          <td>
+            <strong>{{ p.trackName ?? '(no track)' }}</strong>
+            @if (p.artistName) { <span> — {{ p.artistName }}</span> }
+            <br/>
+            <small>device: <code>{{ p.deviceName }}</code> · {{ p.isPlaying ? 'playing' : 'paused' }} &#64; {{ (p.positionMs / 1000) | number: '1.0-0' }}s</small>
+          </td>
+        </tr>
+      }
+      @if (s.devices?.length) {
+        <tr><td>Devices ({{ s.devices?.length }})</td>
+          <td>
+            <ul>
+              @for (d of s.devices; track d.id) {
+                <li><code>{{ d.name }}</code> ({{ d.type }}) · vol {{ d.volumePercent ?? '?' }}% {{ d.isActive ? '· active' : '' }}</li>
+              }
+            </ul>
+          </td>
+        </tr>
+      }
+    </table>
+    }
+  }
+
+  <div class="i-actions">
+    <button (click)="refresh()" [disabled]="loading()">🔄 Refresh</button>
+    <button (click)="startReauth()" [disabled]="loading()">🔑 Re-auth (browser)</button>
+  </div>
+
+  @if (authError(); as e) {
+    <p class="i-error">⚠️ Auth start error: {{ e }}</p>
+  }
+</div>

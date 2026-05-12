@@ -34,4 +34,15 @@ module.exports = [
       '@futdevpro/dynamo/require-jsdoc-description': 'off',
     },
   },
+  {
+    files: ['**/*.html'],
+    rules: {
+      // Disabled — Angular signals are designed to be called in templates
+      // (`status()`, `loading()` stb.). A `template/no-call-expression` szabály
+      // a régi Angular-konvenciót tükrözi (RxJS observable + async pipe);
+      // signal-alapú kódra nem alkalmazható. A signal-call zero-overhead a
+      // change detection-ben (memoizált) — nem teljesítmény-probléma.
+      '@angular-eslint/template/no-call-expression': 'off',
+    },
+  },
 ];

@@ -1,0 +1,53 @@
+<div class="i-google-panel">
+  <h2>🤖 Google Assistant SDK</h2>
+
+  @if (loading()) {
+    <p>Betöltés…</p>
+  } @else {
+    @let s = status();
+    @if (s) {
+      <table class="i-status-table">
+        <tr><td>Configured</td><td>{{ s.configured ? '✅' : '❌' }}</td></tr>
+        <tr><td>Installed creds</td><td>{{ s.hasInstalledCreds ? '✅' : '❌' }}</td></tr>
+        <tr><td>Tokens file</td><td>{{ s.hasTokensFile ? '✅' : '❌' }}</td></tr>
+        <tr><td>Device model</td><td>{{ s.hasDeviceModel ? '✅' : '❌' }} <code>{{ s.deviceModelId }}</code></td></tr>
+        <tr><td>Device instance</td><td>{{ s.hasDeviceInstance ? '✅' : '❌' }} <code>{{ s.deviceId }}</code></td></tr>
+        @if (s.projectId) { <tr><td>GCP project</td><td><code>{{ s.projectId }}</code></td></tr> }
+        <tr><td>Next step</td><td><em>{{ s.nextStep }}</em></td></tr>
+      </table>
+    }
+  }
+
+  <div class="i-actions">
+    <button (click)="refresh()" [disabled]="loading()">🔄 Refresh</button>
+    <button (click)="startReauth()" [disabled]="loading()">🔑 Re-auth (browser)</button>
+  </div>
+  @if (authError(); as e) {
+    <p class="i-error">⚠️ Auth start error: {{ e }}</p>
+  }
+
+  <hr/>
+
+  <div class="i-test-query">
+    <h3>Test query</h3>
+    <input type="text" [(ngModel)]="queryText" placeholder='e.g. "resume music"' [disabled]="querying()" />
+    <button (click)="sendQuery()" [disabled]="querying() || !queryText.trim()">Send</button>
+
+    @if (queryResult(); as r) {
+      <div class="i-query-result">
+        @if (r.responseText) {
+          <p><strong>Response:</strong> {{ r.responseText }}</p>
+        }
+        @if (r.transcripts?.length) {
+          <p><strong>Transcripts:</strong> <code>{{ r.transcripts.join(' / ') }}</code></p>
+        }
+        @if (r.micMode) {
+          <p><small>micMode: <code>{{ r.micMode }}</code></small></p>
+        }
+      </div>
+    }
+    @if (queryError(); as e) {
+      <p class="i-error">⚠️ Query error: {{ e }}</p>
+    }
+  </div>
+</div>
