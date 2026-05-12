@@ -2,28 +2,28 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 9                                  # Cycle 9 lezárva; következő cycle 10 lesz
+cycle: 10                                 # Cycle 10 lezárva; következő cycle 11 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 9 lezárva 2026-05-12 — nodemon watch rekurzivvá tétele (./src/* -> ./src) +
-  pipeline postPipelineCommand npm-script-routed (server/dist -> npm --prefix server run start-prod).
-  Commit ad3f26f. Lásd log/cycles/cycle-9.md.
+  Cycle 10 lezárva 2026-05-12 — lint-server fix (server/eslint.config.js -> .cjs,
+  ESM utóhatás). Commit 24c4b31.
+  Megmaradt LDP fail: client-build + lint-client (chat Phase 6 i-google WIP) — defer.
+  M1 grooming triggerelve cycle 10-zel — átvinni cycle 11 elejére.
+  Lásd log/cycles/cycle-10.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 9
+  cycle_id: 10
   phase_completed: close-cycle
   files_modified:
-    - server/nodemon.json
-    - server/package.json
-    - pipeline.config.json
-    - __agent/log/cycles/cycle-9.md
+    - server/eslint.config.cjs (renamed from .js)
+    - __agent/log/cycles/cycle-10.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: "ad3f26f"
+  commit_sha: "24c4b31"
   build_status: success
-  test_status: not-re-run                  # config-only change, no build impact
+  test_status: success                     # npx eslint src exit 0 (106 warnings)
 
 foreign_pending:
   first_seen_cycle: 4
