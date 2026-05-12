@@ -2,28 +2,27 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 12                                 # Cycle 12 lezárva; következő cycle 13 lesz
+cycle: 13                                 # Cycle 13 lezárva; következő cycle 14 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 12 lezárva 2026-05-12 — postPipelineCommand server runtime ESM fix
-  (start-prod → tsx forrás-futtatás) + M1 grooming (backlog_snapshot + active_plan
-  mezők). Commit ed0b1f5. LDP várt: 10/10 step ✅ + postPipeline ✅.
-  Lásd log/cycles/cycle-12.md.
+  Cycle 13 lezárva 2026-05-12 — első tiszta LDP zöld 10/10 + server-runtime futás.
+  Új FR `server-esm-proper-resolution.md` (cycle 12 tsx-workaround tartozása, backlog 7f).
+  Commit cdd957e. Lásd log/cycles/cycle-13.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 12
+  cycle_id: 13
   phase_completed: close-cycle
   files_modified:
-    - server/package.json
-    - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-12.md
+    - current/feature-requests/server-esm-proper-resolution.md
+    - __agent/triggers/development-agent-backlog.md
+    - __agent/log/cycles/cycle-13.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: "ed0b1f5"
+  commit_sha: "cdd957e"
   build_status: success
-  test_status: success                     # LDP 10/10 + start-prod no ESM error
+  test_status: success                     # LDP 10/10 + server-runtime
 
 foreign_pending:
   first_seen_cycle: 4
@@ -49,9 +48,9 @@ active_plan:
 # Backlog snapshot (a 03-collect-tasks frissíti)
 backlog_snapshot:
   green_count: 6                           # 🟢 Most-fókusz sorok száma (FR #1-3d)
-  yellow_count: 13                         # 🟡 Második/harmadik hullám
+  yellow_count: 14                         # 🟡 Második/harmadik hullám (+7f server-esm-proper-resolution)
   parked_count: 9                          # 🅿️ Parkolt
-  last_checked: "2026-05-12T23:20+02:00"   # M1 grooming cycle 12
+  last_checked: "2026-05-12T23:28+02:00"   # M1 grooming + cycle 13 7f add
 
 # Package (26. alapelv — related-cluster)
 package:
