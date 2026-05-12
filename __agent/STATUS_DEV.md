@@ -2,27 +2,26 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 13                                 # Cycle 13 lezárva; következő cycle 14 lesz
+cycle: 14                                 # Cycle 14 lezárva (no-op); következő cycle 15 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 13 lezárva 2026-05-12 — első tiszta LDP zöld 10/10 + server-runtime futás.
-  Új FR `server-esm-proper-resolution.md` (cycle 12 tsx-workaround tartozása, backlog 7f).
-  Commit cdd957e. Lásd log/cycles/cycle-13.md.
+  Cycle 14 lezárva 2026-05-12 — #6 fallback no-op. Nincs candidate:
+  LDP 10/10 zöld, runtime errors küszöb alatt, plan-step chat-felelős
+  (Phase 5-6 functional), USER_INPUT [NEW] dev nincs, backlog 🟢 6 sora plan-szintű.
+  Lásd log/cycles/cycle-14.md. M2 daily report holnap (2026-05-13) reggel fog futni.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 13
+  cycle_id: 14
   phase_completed: close-cycle
   files_modified:
-    - current/feature-requests/server-esm-proper-resolution.md
-    - __agent/triggers/development-agent-backlog.md
-    - __agent/log/cycles/cycle-13.md
+    - __agent/log/cycles/cycle-14.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: "cdd957e"
-  build_status: success
-  test_status: success                     # LDP 10/10 + server-runtime
+  commit_sha: null                          # no-op cycle, csak cycle-close commit
+  build_status: success                     # LDP unchanged ✅
+  test_status: success                      # LDP unchanged ✅
 
 foreign_pending:
   first_seen_cycle: 4
