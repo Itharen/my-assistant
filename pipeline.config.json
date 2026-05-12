@@ -62,7 +62,7 @@
     },
     {
       "label": "tsc-cli",
-      "command": "cd cli && tsc -p tsconfig.json --pretty",
+      "command": "cd cli && npx tsc -p tsconfig.json --pretty",
       "fatal": true
     },
     {
@@ -77,7 +77,7 @@
     },
     {
       "label": "tsc-server",
-      "command": "cd server && tsc -p tsconfig.json --pretty",
+      "command": "cd server && npx tsc -p tsconfig.json --pretty",
       "fatal": true
     },
     {
