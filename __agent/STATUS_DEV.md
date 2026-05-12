@@ -2,37 +2,45 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 3                                  # Cycle 3 lezárva; következő cycle 4 lesz
+cycle: 4                                  # Cycle 4 lezárva; következő cycle 5 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 3 lezárva 2026-05-12 — Q-package-1 (protobufjs pnpm build-script approval) fix.
-  Commit 0f3c7a1. cli/pnpm-workspace.yaml + cli/README setup doc. CLI pnpm test
-  now green (21 specs). Új blocker: Q-package-2 (@futdevpro/ngx-dynamo-models 404 server-en).
-  Lásd log/cycles/cycle-3.md.
+  Cycle 4 lezárva 2026-05-12 — LDP #0a fix: server-test "No specs" (spec_dir
+  build mismatch + placeholder spec) + client-test NG0304 (CUSTOM_ELEMENTS_SCHEMA).
+  Commit 576912a. CLI 21 / Server 2 / Client 13 spec mind zöld.
+  Lásd log/cycles/cycle-4.md. Foreign pending: chat (#5) ESM migration plan in-progress (rögzítve).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 3
+  cycle_id: 4
   phase_completed: close-cycle
   files_modified:
-    - cli/pnpm-workspace.yaml
-    - cli/README.md
-    - current/open-questions.md
-    - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-3.md
+    - server/spec/support/jasmine.json
+    - server/src/app.server.spec.ts
+    - client/src/app/app.component.spec.ts
+    - pnpm-workspace.yaml
+    - __agent/log/cycles/cycle-4.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: "0f3c7a1"
+  commit_sha: "576912a"
   build_status: success
-  test_status: success                     # CLI 21 specs, 0 failures (server/client skip)
+  test_status: success                     # CLI 21, Server 2, Client 13 — mind zöld
 
-# 25. alapelv (persistencia-takeover) tracking
 foreign_pending:
-  first_seen_cycle: null
-  files: []
-  fingerprint: null
-  cycles_persisted: 0
+  first_seen_cycle: 4
+  files:
+    - __agent/plans/ssot-server-esm-migration.plan.md
+    - server/tsconfig.json (mod)
+    - server/package.json (mod, also auto-modified during commit)
+    - server/src/app.server.ts (mod)
+    - server/src/_models/interfaces/ (new dir)
+    - cli/src/google/google-assistant.client.ts (mod)
+    - cli/src/spotify/spotify.client.ts (mod)
+    - cli/tsconfig.json (mod)
+    - client/tsconfig.json (mod)
+  fingerprint: "chat-esm-migration-in-progress-2026-05-12"
+  cycles_persisted: 1
 
 # Plan-folytatás tracking
 active_plan:
