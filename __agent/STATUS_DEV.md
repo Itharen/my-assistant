@@ -2,25 +2,26 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 21                                 # Cycle 21 lezárva (no-op); következő cycle 22 lesz
+cycle: 22                                 # Cycle 22 lezárva; következő cycle 23 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 21 lezárva 2026-05-13 18:00 — no-op cycle. LDP all green (10/10 steps,
-  cli=21/21, server=2/2, client=13/13). Aktív plan chat-felelős (Phase 5-6).
-  Backlog 🟢 candidate-ek ütköznének a chat folyó integrations-munkájával,
-  ezért safe candidate hiányában no-op close. Lásd log/cycles/cycle-21.md.
+  Cycle 22 lezárva 2026-05-13 19:00 — AGB-02 pattern self-audit válasz
+  (AGB-03 announcement bus-ba). AGB-01 Q-package-2 unblock ACKed,
+  AGB-01 FR #3d green-light defer-elve (chat Phase 5-6 ütközés). LDP zöld
+  marad. Lásd log/cycles/cycle-22.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 21
+  cycle_id: 22
   phase_completed: close-cycle
   files_modified:
+    - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-21.md
+    - __agent/log/cycles/cycle-22.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: (cycle-close only)
+  commit_sha: (audit only, no production code)
   build_status: success                     # LDP unchanged ✅ (10/10 green)
   test_status: success                      # cli=21/21, server=2/2, client=13/13
 
