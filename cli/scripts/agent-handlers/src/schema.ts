@@ -2,14 +2,16 @@
 // Manual JSON validator (no external deps). Returns a list of errors;
 // empty list = valid.
 
-import type { AgentOutput, Action, ActionType, ActionTier, Verdict } from './types.js';
+import { Verdict } from './types.js';
+import type { AgentOutput, Action, ActionType, ActionTier } from './types.js';
 
-const VERDICTS: ReadonlySet<Verdict> = new Set(['urgens', 'soft-nudge', 'no-action']);
+const VERDICTS: ReadonlySet<Verdict> = new Set([Verdict.urgens, Verdict.softNudge, Verdict.noAction]);
 const ACTION_TYPES: ReadonlySet<ActionType> = new Set([
   'log',
   'user-input-new',
   'update-status',
   'notify-cast',
+  'ccap-notify',
   'task-create',
   'task-update',
 ]);
@@ -20,9 +22,13 @@ const REQUIRED_TIER: Record<ActionType, ActionTier> = {
   'user-input-new': 1,
   'update-status': 1,
   'notify-cast': 1,
+  'ccap-notify': 1,
   'task-create': 2,
   'task-update': 2,
 };
+
+const VALID_CCAP_NOTIFY_TYPES = new Set(['message', 'confirm', 'option-select', 'question']);
+const VALID_CCAP_PRIORITIES = new Set(['info', 'warning', 'success', 'error']);
 
 const VALID_USER_INPUT_KINDS = new Set([
   'task',
@@ -151,6 +157,24 @@ function validateAction(action: unknown, index: number, errors: ValidationError[
       break;
     case 'notify-cast':
       requireString(args, 'text', `${path}.args`, errors);
+      break;
+    case 'ccap-notify':
+      requireString(args, 'title', `${path}.args`, errors);
+      if (args.type !== undefined && (typeof args.type !== 'string' || !VALID_CCAP_NOTIFY_TYPES.has(args.type))) {
+        errors.push({
+          path: `${path}.args.type`,
+          message: `must be one of: ${[...VALID_CCAP_NOTIFY_TYPES].join(', ')}`,
+        });
+      }
+      if (args.priority !== undefined && (typeof args.priority !== 'string' || !VALID_CCAP_PRIORITIES.has(args.priority))) {
+        errors.push({
+          path: `${path}.args.priority`,
+          message: `must be one of: ${[...VALID_CCAP_PRIORITIES].join(', ')}`,
+        });
+      }
+      if (args.wait !== undefined && typeof args.wait !== 'boolean') {
+        errors.push({ path: `${path}.args.wait`, message: 'must be a boolean' });
+      }
       break;
     case 'task-create':
       requireString(args, 'title', `${path}.args`, errors);

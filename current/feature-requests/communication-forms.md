@@ -42,14 +42,15 @@ endpoint, már implementálva).
 | Phase | Mit | Felelős |
 |---|---|---|
 | 0 | ez a FR | én ✅ |
-| 1 | `ccap-notify` handler a dispatcher-ben | Dev Agent |
+| 1 | `ccap-notify` handler a dispatcher-ben | Dev Agent ✅ cycle 24 |
 | 2 | `notify-cast` handler valódi cast-notifier shell-out | Dev Agent |
 | 3 | Csatorna-választó logika a Cron Job entrypoint-ban (mikor-melyik) | én (workflow-doc) |
 | 4 | Throttle közös a 3 csatornára | Dev Agent |
 
 ## Status
 
-🟢 **Aktív FR.**
+🟢 **Aktív FR.** Phase 1 (`ccap-notify`) shipped cycle 24-ben — plan-doc
+`__agent/plans/communication-forms.plan.md`.
 
 ## Kapcsolódik
 

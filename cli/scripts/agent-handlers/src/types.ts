@@ -11,6 +11,7 @@ export type ActionType =
   | 'user-input-new'
   | 'update-status'
   | 'notify-cast'
+  | 'ccap-notify'
   | 'task-create'
   | 'task-update';
 
@@ -56,6 +57,20 @@ export interface NotifyCastAction extends BaseAction {
   };
 }
 
+export interface CcapNotifyAction extends BaseAction {
+  type: 'ccap-notify';
+  tier: 1;
+  args: {
+    title: string;
+    type?: 'message' | 'confirm' | 'option-select' | 'question';
+    description?: string;
+    priority?: 'info' | 'warning' | 'success' | 'error';
+    options?: string;
+    wait?: boolean;
+    sessionId?: string;
+  };
+}
+
 export interface TaskCreateAction extends BaseAction {
   type: 'task-create';
   tier: 2;
@@ -82,6 +97,7 @@ export type Action =
   | UserInputNewAction
   | UpdateStatusAction
   | NotifyCastAction
+  | CcapNotifyAction
   | TaskCreateAction
   | TaskUpdateAction;
 

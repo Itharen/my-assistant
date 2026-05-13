@@ -16,6 +16,7 @@ import { handleLog } from './handlers/log.js';
 import { handleUserInputNew } from './handlers/user-input-new.js';
 import { handleUpdateStatus } from './handlers/update-status.js';
 import { handleNotifyCast } from './handlers/notify-cast.js';
+import { handleCcapNotify } from './handlers/ccap-notify.js';
 import { handleTaskCreate } from './handlers/task-create.js';
 import { handleTaskUpdate } from './handlers/task-update.js';
 import type { Action, AgentOutput, DispatchResult } from './types.js';
@@ -61,6 +62,8 @@ async function executeAction(action: Action): Promise<void> {
       return handleUpdateStatus(action);
     case 'notify-cast':
       return handleNotifyCast(action);
+    case 'ccap-notify':
+      return handleCcapNotify(action);
     case 'task-create':
       return handleTaskCreate(action);
     case 'task-update':

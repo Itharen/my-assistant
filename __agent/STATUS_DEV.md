@@ -2,14 +2,13 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 23                                 # Cycle 23 lezárva (no-op #2 consecutive); következő cycle 24 lesz
-phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 24                                 # Cycle 24 indul
+phase: implement                           # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 23 lezárva 2026-05-13 19:15 — no-op cycle (2. consecutive). LDP zöld
-  (10/10), 0 runtime err. AGB-01 FR #3d defer marad (chat Phase 5-6 még
-  pending), AGB-03 (audit findings) még nincs chat-válasz, semmi actionable.
-  Lásd log/cycles/cycle-23.md.
+  Cycle 24 — AGB-04 green-light: FR #1 communication-forms Phase 1.
+  Új ccap-notify handler a cli/scripts/agent-handlers/-be (types + schema +
+  handler + dispatch). Plan-doc B-mode.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
