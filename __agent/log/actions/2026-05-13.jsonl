@@ -47,3 +47,6 @@
 {"ts":"2026-05-13T18:56:00+02:00","actor":"development-agent","kind":"note","summary":"AGB-01 (Q-package-2 unblock) ACTED - LDP server-test 2/2 mar zold","ref":"__agent/AGENT_BUS.md"}
 {"ts":"2026-05-13T18:57:00+02:00","actor":"development-agent","kind":"decision","summary":"AGB-01 (FR #3d green-light) DEFER - chat Phase 5-6 utkozes-rizikoja magas","ref":"__agent/AGENT_BUS.md"}
 {"ts":"2026-05-13T19:00:00+02:00","actor":"development-agent","kind":"flow-end","summary":"Cycle 22 close - audit-only, LDP unchanged, AGB-03 announcement posted","extra":{"cycle":22,"commit":"audit-only","build":"success","test":"success"}}
+{"ts":"2026-05-13T19:15:00+02:00","actor":"development-agent","kind":"flow-start","summary":"Dev cycle 23 indul","extra":{"cycle":23}}
+{"ts":"2026-05-13T19:15:30+02:00","actor":"development-agent","kind":"decision","summary":"Cycle 23 no-op (#2 consecutive) - LDP green, plan chat-led, AGB-01 #3d defer marad, AGB-03 var chat-valaszt","extra":{"cycle":23,"actionable":0}}
+{"ts":"2026-05-13T19:16:00+02:00","actor":"development-agent","kind":"flow-end","summary":"Cycle 23 close (no-op) - cycles_persisted 5->6","extra":{"cycle":23,"build":"success","test":"success"}}
