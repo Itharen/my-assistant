@@ -90,7 +90,7 @@ export async function runActionLogEmitCommand(args: string[]): Promise<void> {
     }
   }
 
-  await logAction({
+  const result = await logAction({
     kind: kind as string,
     summary: summary as string,
     actor: typeof actor === 'string' ? actor : undefined,
@@ -99,6 +99,16 @@ export async function runActionLogEmitCommand(args: string[]): Promise<void> {
     extra: extraObj,
     ts: typeof ts === 'string' ? ts : undefined,
   });
+
+  // Strukturált fail-propagáció — per error-handling.md "SEMMI csendes catch":
+  // a hook-caller LÁTJA a write-failt a JSON envelope-on és a stderr-en.
+  if (!result.ok) {
+    writeEnvelope(
+      fail('action-log.emit', requestId, startedAt, result.error.code, result.error.message, result.error),
+      pretty,
+    );
+    process.exit(1);
+  }
 
   // Phase 3+: POST http://127.0.0.1:39245/actions (best-effort, 500ms timeout).
   // Most stub — server endpoint még nem létezik.

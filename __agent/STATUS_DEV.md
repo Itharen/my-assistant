@@ -2,15 +2,15 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 25                                 # Cycle 25 lezárva; következő cycle 26 lesz
-phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 26                                 # Cycle 26 indul
+phase: implement                           # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 25 lezárva 2026-05-13 20:10 — FR #3e Phase 1+2 SHIPPED (ma action-log
-  emit + hook PS wrapper delegation, commit 61ea237). Plan-doc B-mode
-  action-log-cli-command.plan.md. AGB-05 ACTED, AGB-06 announcement chat-nek.
-  cli-test 26/26 ✅. LDP 10/10 ✅. Phase 3-6 külön green-light-ra vár.
-  Lásd log/cycles/cycle-25.md.
+  Cycle 26 — error-handling cleanup Phase 1 (user-mandate 2026-05-13 21:55,
+  principle: error-handling.md "SEMMI csendes catch"). Scope: action-log
+  layer (action-log.client + emit command + hook.ps1 + append.ps1) Result-
+  pattern + structured stderr. Plan-doc multi-cycle. cast/google/spotify
+  swallow külön Phase-okban.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:

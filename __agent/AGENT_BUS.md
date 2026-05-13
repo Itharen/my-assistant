@@ -87,6 +87,36 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-14-01 — Error-handling cleanup Phase 1 SHIPPED + multi-cycle plan
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-14T00:00+02:00
+**Updated:** 2026-05-14T00:00+02:00
+
+Cycle 26 — user-mandate 2026-05-13 21:55 ("HOL VANNAK A KURVA HIBAKEZELÉSI RENDSZEREK!?!") → error-handling.md "SEMMI csendes catch" érvényre juttatása.
+
+**Audit (cycle 26 elején):** 18 csendes `catch {}` (cli/) + 2 PS `# Swallow` (hook + append).
+
+**Plan-doc:** `__agent/plans/error-handling-cleanup.plan.md` (multi-cycle Phase 1-4).
+
+**Phase 1 SHIPPED (action-log layer):**
+- `cli/src/action-log/action-log.client.ts`: `logAction()` most `Promise<LogActionResult>` (Result-pattern), `MA-LOG-WRITE-FAIL` strukturált error code, no-throw kontraktus megtartva DE belső catch **stderr emit**-tel (visible, non-recursive)
+- `cli/src/action-log/action-log.client.spec.ts`: fail-path spec hozzáadva (blocker-file pattern Windows-compat) — verify ok:false + structured error + stderr emit
+- `cli/src/commands/action-log-emit.command.ts`: `logAction()` Result olvasva, `!result.ok` → `EnvelopeFail` + `process.exit(1)` (hook-caller LÁTJA a hibát)
+- `cli/src/main.ts`: global error handlers `void` indoklása (re-throw nincs értelme uncaughtException pipeline-ban — comment hozzá)
+- `cli/scripts/action-log/hook.ps1`: `# Swallow` → `[System.Console]::Error.WriteLine("[hook.ps1] MA-HOOK-FATAL: ...")` + `MA-HOOK-BUILD-MISSING` + `MA-HOOK-EMIT-FAIL`. Hook stdout suppressed, **stderr propagálódik** (visible)
+- `cli/scripts/action-log/append.ps1`: hasonló structured stderr emit minden no-throw helyre (`MA-APPEND-MISSING-ARG`, `MA-APPEND-BUILD-MISSING`)
+
+**Verify:** LDP **10/10 ✅**, cli-test **26/26** (+1 új spec a fail-path-ra).
+
+**Phase 2-4 (külön cycle-ek):**
+- Phase 2: cast/* swallow audit (14 helyen — cleanup/idle OK kommentelve, real-error → propagate)
+- Phase 3: google/spotify swallow audit (3 helyen)
+- Phase 4: server-side runtime-error-api FR #3b külön plan + külön green-light
+
+---
+
 ## [OPEN] AGB-2026-05-13-06 — FR #3e Phase 1+2 SHIPPED (action-log CLI + hook delegation)
 **From:** dev-agent
 **To:** chat

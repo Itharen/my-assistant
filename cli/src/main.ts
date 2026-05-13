@@ -11,7 +11,12 @@ import { logAction } from './action-log/action-log.client.js';
 import { fail, makeRequestId, writeEnvelope } from './output/envelope.js';
 
 // Global error handler-ek azonnal kötjük (NEM await, mert sync error-ok
-// import-time-on is fire-elhetnek). A logAction async — itt void-oljuk.
+// import-time-on is fire-elhetnek). A logAction async + Result-tel tér vissza,
+// de itt szándékosan `void`-oljuk: már egy fatal-error pipeline-ban vagyunk,
+// a log-write fail-jét sem tudnánk értelmesen kezelni (recursive error).
+// A log-write fail-je így is **látható** lesz — a logAction belső
+// `process.stderr.write` strukturált emitje fut le (error-handling-cleanup
+// Phase 1). Per current/principles/error-handling.md.
 process.on('uncaughtException', (err: Error) => {
   process.stderr.write(`[ma] uncaughtException: ${err.stack ?? err.message}\n`);
   void logAction({

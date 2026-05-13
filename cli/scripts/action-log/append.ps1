@@ -41,7 +41,8 @@ if (-not $ExtraJson) { $ExtraJson = $env:AL_EXTRA_JSON }
 if (-not $Ts)        { $Ts        = $env:AL_TS }
 
 if (-not $Actor -or -not $Kind -or -not $Summary) {
-    Write-Error "append.ps1 requires Actor, Kind, Summary (params or AL_ACTOR/AL_KIND/AL_SUMMARY env vars)."
+    # Strukturált stderr — per error-handling.md
+    [System.Console]::Error.WriteLine("[append.ps1] MA-APPEND-MISSING-ARG: Actor/Kind/Summary required (params or AL_ACTOR/AL_KIND/AL_SUMMARY env vars).")
     exit 2
 }
 
@@ -51,7 +52,7 @@ $projectRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScr
 $maMainJs = Join-Path $projectRoot 'cli\build\main.js'
 
 if (-not (Test-Path $maMainJs)) {
-    Write-Error "ma CLI build missing: $maMainJs — run LDP or `pnpm run build-base` in cli/"
+    [System.Console]::Error.WriteLine("[append.ps1] MA-APPEND-BUILD-MISSING: $maMainJs — run LDP or 'pnpm run build-base' in cli/")
     exit 2
 }
 
@@ -66,7 +67,7 @@ if ($Session)   { $cliArgs += @('--session', $Session) }
 if ($ExtraJson) { $cliArgs += @('--extra', $ExtraJson) }
 if ($Ts)        { $cliArgs += @('--ts', $Ts) }
 
-# Delegate. Forward exit code, suppress stdout (the envelope is for callers
-# of the CLI directly — append.ps1 is fire-and-forget).
-& node $maMainJs @cliArgs *> $null
+# Delegate. Forward exit code, suppress stdout (envelope nem érdekel append-callert),
+# **átfolyik a stderr** hogy a logAction structured error látható legyen.
+& node $maMainJs @cliArgs 1> $null
 exit $LASTEXITCODE

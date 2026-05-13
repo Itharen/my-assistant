@@ -66,12 +66,33 @@ function nowIsoBudapest(): string {
   );
 }
 
+/** Structured error returned by `logAction()` when the write fails. */
+export interface LogActionError {
+  code: string;                                // MA-<MODULE>-<CODE> per error-handling.md
+  message: string;
+  stack?: string;
+  details?: Record<string, unknown>;
+}
+
+export type LogActionResult =
+  | { ok: true }
+  | { ok: false; error: LogActionError };
+
 /**
- * Append an action-log entry. Never throws.
+ * Append an action-log entry. Returns a Result — NEVER throws (so callers
+ * in global error handlers / hot paths don't cascade), but **never silently
+ * swallows** either: on failure, emits a structured error to stderr AND
+ * returns `{ ok: false, error }` for the caller to surface.
  *
  * `actor` defaults to 'cli', `ts` defaults to nowIsoBudapest().
+ *
+ * Why Result + no-throw: per `current/principles/error-handling.md` "SEMMI
+ * csendes catch" — the log layer must not be a black hole. Callers that
+ * cannot meaningfully react (e.g. uncaughtException handler) explicitly
+ * `void` the result; callers that CAN react (CLI commands) propagate the
+ * error to their JSON envelope (`fail(...)`).
  */
-export async function logAction(entry: ActionLogEntry): Promise<void> {
+export async function logAction(entry: ActionLogEntry): Promise<LogActionResult> {
   try {
     const root = resolveLogRoot();
     await fs.mkdir(root, { recursive: true });
@@ -87,7 +108,28 @@ export async function logAction(entry: ActionLogEntry): Promise<void> {
     if (entry.session) out.session = entry.session;
     if (entry.extra && Object.keys(entry.extra).length > 0) out.extra = entry.extra;
     await fs.appendFile(path.join(root, `${day}.jsonl`), JSON.stringify(out) + '\n', { encoding: 'utf8' });
-  } catch {
-    // swallow
+    return { ok: true };
+  } catch (err) {
+    const e: Error = err instanceof Error ? err : new Error(String(err));
+    const error: LogActionError = {
+      code: 'MA-LOG-WRITE-FAIL',
+      message: e.message,
+      stack: e.stack,
+      details: {
+        kind: entry.kind,
+        summary: entry.summary.slice(0, 100),
+        actor: entry.actor ?? DEFAULT_ACTOR,
+      },
+    };
+    // Structured stderr emit — visible to the caller / hook / Claude session.
+    // Outer try/catch: ha még a stderr is unwritable (tty closed), valóban
+    // nincs hova logolni → documented silent fallback (utolsó láncszem).
+    try {
+      process.stderr.write(`[action-log] WRITE FAILED: ${JSON.stringify(error)}\n`);
+    } catch {
+      // Documented swallow: stderr unwritable. No further channel exists.
+      // Result is still returned so the caller can react.
+    }
+    return { ok: false, error };
   }
 }

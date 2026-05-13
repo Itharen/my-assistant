@@ -126,21 +126,36 @@ try {
 
     if (-not $kind -or -not $summary) { exit 0 }
 
-    # If the CLI build doesn't exist yet (e.g. fresh clone), silently exit —
-    # cannot log, won't block the workflow.
-    if (-not (Test-Path $maMainJs)) { exit 0 }
+    # If the CLI build doesn't exist yet (e.g. fresh clone), emit structured
+    # stderr (visible to the Claude session for debug) — per error-handling.md
+    # "SEMMI csendes catch". Hook nem dob ki workflow-t, de a hiányosság látszik.
+    if (-not (Test-Path $maMainJs)) {
+        [System.Console]::Error.WriteLine("[hook.ps1] MA-HOOK-BUILD-MISSING: $maMainJs — entry NOT logged (kind=$kind, summary='$summary')")
+        exit 0
+    }
 
     # Delegate to `ma action-log emit`. Pass --actor claude (the hook fires
-    # from Claude Code sessions). Stdout/stderr suppressed so the hook never
-    # leaks output back into the Claude session.
+    # from Claude Code sessions). Stdout suppressed (envelope nem érdekel a
+    # hook-caller-t); stderr **átfolyik** a Claude session-be hogy a write-fail
+    # látható legyen (logAction structured error emit).
     $cliArgs = @('action-log', 'emit', '--actor', 'claude', '--kind', $kind, '--summary', $summary)
     if ($ref)       { $cliArgs += @('--ref', $ref) }
     if ($sessionId) { $cliArgs += @('--session', $sessionId) }
     if ($extraJson) { $cliArgs += @('--extra', $extraJson) }
 
-    & node $maMainJs @cliArgs *> $null
+    & node $maMainJs @cliArgs 1> $null
+    if ($LASTEXITCODE -ne 0) {
+        [System.Console]::Error.WriteLine("[hook.ps1] MA-HOOK-EMIT-FAIL: exit=$LASTEXITCODE (kind=$kind, summary='$summary')")
+    }
 } catch {
-    # Swallow - never break the user's workflow because of logging
+    # Hook never throws back — workflow break worse than missing log. De NEM
+    # silent: structured stderr emit per error-handling.md.
+    try {
+        $errMsg = $_.Exception.Message
+        [System.Console]::Error.WriteLine("[hook.ps1] MA-HOOK-FATAL: $errMsg")
+    } catch {
+        # Documented last-resort swallow: stderr unwritable, no further channel.
+    }
 }
 
 exit 0
