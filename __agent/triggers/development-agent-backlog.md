@@ -33,6 +33,7 @@
 | 7d | "Hey Google"-szerű voice-trigger research | `current/feature-requests/hey-google-like-voice-trigger.md` |
 | 7e | Per-device hangerő-cap impl (BathCom 50%) | `current/principles/cast-notifier-defaults.md` |
 | 7f | Server ESM proper module resolution (.js extension codemod) | `current/feature-requests/server-esm-proper-resolution.md` |
+| 7g | Szórakoztatás integráció (Jellyfin + Steam) | `current/feature-requests/entertainment-integration.md` |
 
 ---
 

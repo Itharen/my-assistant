@@ -2,26 +2,28 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 19                                 # Cycle 19 lezárva; következő cycle 20 lesz
+cycle: 20                                 # Cycle 20 lezárva (M1 grooming); következő cycle 21 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 19 lezárva 2026-05-13 06:00+ — LDP runtime fail (EADDRINUSE 39245 orphan)
-  → pre-kill helper a start-prod-on. Commit 8192d20. Lásd log/cycles/cycle-19.md.
+  Cycle 20 lezárva 2026-05-13 09:05+ — 20-as cycle M1 grooming: backlog 7g
+  add (entertainment-integration), backlog_snapshot frissítés, action-log
+  rotálás küszöb alatt. LDP teljes zöld (cycle 19 pre-kill dolgozik).
+  Lásd log/cycles/cycle-20.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 19
+  cycle_id: 20
   phase_completed: close-cycle
   files_modified:
-    - server/scripts/pre-kill-port.mjs
-    - server/package.json
-    - __agent/log/cycles/cycle-19.md
+    - __agent/triggers/development-agent-backlog.md
+    - __agent/STATUS_DEV.md
+    - __agent/log/cycles/cycle-20.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: "8192d20"
-  build_status: success
-  test_status: success                     # pre-kill verifikálva (PID 249848 killed)
+  commit_sha: (cycle-close only)
+  build_status: success                     # LDP unchanged ✅
+  test_status: success                      # LDP unchanged ✅
 
 foreign_pending:
   first_seen_cycle: 4
@@ -47,9 +49,9 @@ active_plan:
 # Backlog snapshot (a 03-collect-tasks frissíti)
 backlog_snapshot:
   green_count: 6                           # 🟢 Most-fókusz sorok száma (FR #1-3d)
-  yellow_count: 14                         # 🟡 Második/harmadik hullám (+7f server-esm-proper-resolution)
+  yellow_count: 15                         # 🟡 Második/harmadik hullám (+7g entertainment-integration cycle 20)
   parked_count: 9                          # 🅿️ Parkolt
-  last_checked: "2026-05-12T23:28+02:00"   # M1 grooming + cycle 13 7f add
+  last_checked: "2026-05-13T09:05+02:00"   # M1 grooming cycle 20
 
 # Package (26. alapelv — related-cluster)
 package:
