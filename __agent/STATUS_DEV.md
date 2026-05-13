@@ -2,28 +2,27 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 20                                 # Cycle 20 lezárva (M1 grooming); következő cycle 21 lesz
+cycle: 21                                 # Cycle 21 lezárva (no-op); következő cycle 22 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 20 lezárva 2026-05-13 09:05+ — 20-as cycle M1 grooming: backlog 7g
-  add (entertainment-integration), backlog_snapshot frissítés, action-log
-  rotálás küszöb alatt. LDP teljes zöld (cycle 19 pre-kill dolgozik).
-  Lásd log/cycles/cycle-20.md.
+  Cycle 21 lezárva 2026-05-13 18:00 — no-op cycle. LDP all green (10/10 steps,
+  cli=21/21, server=2/2, client=13/13). Aktív plan chat-felelős (Phase 5-6).
+  Backlog 🟢 candidate-ek ütköznének a chat folyó integrations-munkájával,
+  ezért safe candidate hiányában no-op close. Lásd log/cycles/cycle-21.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 20
+  cycle_id: 21
   phase_completed: close-cycle
   files_modified:
-    - __agent/triggers/development-agent-backlog.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-20.md
+    - __agent/log/cycles/cycle-21.md
   fr_status_changes: []
   plan_steps_marked_done: []
   commit_sha: (cycle-close only)
-  build_status: success                     # LDP unchanged ✅
-  test_status: success                      # LDP unchanged ✅
+  build_status: success                     # LDP unchanged ✅ (10/10 green)
+  test_status: success                      # cli=21/21, server=2/2, client=13/13
 
 foreign_pending:
   first_seen_cycle: 4
@@ -38,7 +37,7 @@ foreign_pending:
     - cli/tsconfig.json (mod)
     - client/tsconfig.json (mod)
   fingerprint: "chat-esm-migration-in-progress-2026-05-12"
-  cycles_persisted: 4                      # cycle 4/5/6/7 — Phase 3.2 cycle 7-ben takeover-elve. Maradék (Phase 5-6) még chat-felelős.
+  cycles_persisted: 5                      # cycle 4/5/6/7/21 — Phase 3.2 cycle 7-ben takeover-elve. Maradék (Phase 5-6) chat-felelős, cycle 21-ben re-observed (no takeover).
 
 # Plan-folytatás tracking
 active_plan:
