@@ -1,7 +1,10 @@
 # scripts/action-log/hook.ps1
 #
 # Claude Code hook handler. Reads the hook payload (JSON) from stdin,
-# converts it to an action-log entry, and appends to today's JSONL file.
+# converts it to an action-log entry, and delegates the write to the
+# canonical CLI command:
+#
+#     node $projectRoot\cli\build\main.js action-log emit ...
 #
 # Wired in .claude/settings.json for: SessionStart, UserPromptSubmit,
 # PostToolUse, Stop. The hook event name comes from the payload itself.
@@ -10,12 +13,16 @@
 #   { "session_id": "...", "hook_event_name": "PostToolUse",
 #     "tool_name": "Edit", "tool_input": { "file_path": "..." }, ... }
 #
-# We never block the tool — print nothing to stdout, swallow errors.
+# We never block the tool - print nothing to stdout, swallow errors.
+# FR #3e Phase 2 — delegates to `ma action-log emit`.
 
 $ErrorActionPreference = 'Continue'
 
 try {
-    $rawJson = [Console]::In.ReadToEnd()
+    # PS5.1 quirk: [Console]::In.ReadToEnd() can return empty in complex scripts
+    # invoked via `powershell.exe -File`. The automatic $input variable is reliable.
+    $rawJson = ''
+    if ($input) { foreach ($line in $input) { $rawJson += $line } }
     if (-not $rawJson) { exit 0 }
 
     $payload = $rawJson | ConvertFrom-Json -ErrorAction Stop
@@ -24,15 +31,16 @@ try {
 
     $sessionId = [string]$payload.session_id
 
-    # Project root — two levels up from this script
-    $projectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-    $logRoot = Join-Path $projectRoot '__agent\log\actions'
+    # Project root - the script lives at <root>\cli\scripts\action-log\hook.ps1
+    # so we walk up THREE levels: action-log -> scripts -> cli -> <root>.
+    $projectRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
+    $maMainJs = Join-Path $projectRoot 'cli\build\main.js'
 
-    # Build kind + summary + optional extra per event type
+    # Build kind + summary + optional ref/extra per event type
     $kind = $null
     $summary = $null
     $ref = $null
-    $extraObj = $null
+    $extraJson = $null
 
     switch ($hookEvent) {
         'SessionStart' {
@@ -42,44 +50,56 @@ try {
             else      { $summary = 'Claude session started' }
         }
         'UserPromptSubmit' {
-            $kind = 'user-msg'
             $prompt = [string]$payload.prompt
-            if ($prompt.Length -gt 200) { $prompt = $prompt.Substring(0, 197) + '...' }
-            $prompt = $prompt -replace '\s+', ' '
-            $summary = "User: $prompt"
+            # Cron-trigger detection: the CCAP cron tick sends a fixed template
+            # prompt that adds nothing to the log. Emit a minimal entry instead.
+            $promptTrim = $prompt.TrimStart()
+            if ($promptTrim -match '^Olvasd el az __agent[\\/]WORKFLOW_DEV\.md') {
+                $kind = 'cron-trigger'
+                $summary = 'dev-agent tick'
+            }
+            elseif ($promptTrim -match '^Olvasd el az __agent[\\/]WORKFLOW_ASSIST\.md') {
+                $kind = 'cron-trigger'
+                $summary = 'assist-agent tick'
+            }
+            else {
+                $kind = 'user-msg'
+                if ($prompt.Length -gt 200) { $prompt = $prompt.Substring(0, 197) + '...' }
+                $prompt = $prompt -replace '\s+', ' '
+                $summary = "User: $prompt"
+            }
         }
         'PostToolUse' {
             $toolName = [string]$payload.tool_name
             $kind = 'tool-call'
-            $input = $payload.tool_input
+            $toolInput = $payload.tool_input
 
             # Pretty-summary per tool kind
             if ($toolName -eq 'Edit' -or $toolName -eq 'Write' -or $toolName -eq 'NotebookEdit') {
                 $kind = if ($toolName -eq 'Edit') { 'file-edit' } else { 'file-write' }
-                $fp = [string]$input.file_path
+                $fp = [string]$toolInput.file_path
                 $summary = "$toolName $fp"
                 $ref = $fp
             }
             elseif ($toolName -eq 'Bash' -or $toolName -eq 'PowerShell') {
                 $kind = 'bash'
-                $cmd = [string]$input.command
-                $desc = [string]$input.description
+                $cmd = [string]$toolInput.command
+                $desc = [string]$toolInput.description
                 if ($cmd.Length -gt 200) { $cmd = $cmd.Substring(0, 197) + '...' }
                 $cmd = $cmd -replace '\s+', ' '
-                if ($desc) { $summary = "$toolName ($desc): $cmd" } else { $summary = "$toolName: $cmd" }
+                if ($desc) { $summary = "${toolName} (${desc}): $cmd" } else { $summary = "${toolName}: $cmd" }
             }
             elseif ($toolName -eq 'TodoWrite') {
                 $kind = 'tool-call'
-                $todos = $input.todos
+                $todos = $toolInput.todos
                 $count = if ($todos) { @($todos).Count } else { 0 }
                 $summary = "TodoWrite ($count items)"
             }
             else {
                 $summary = "$toolName"
-                # Include first string field from input as a hint, if present
-                if ($input) {
+                if ($toolInput) {
                     $hint = $null
-                    foreach ($p in $input.PSObject.Properties) {
+                    foreach ($p in $toolInput.PSObject.Properties) {
                         if ($p.Value -is [string] -and $p.Value.Length -gt 0) {
                             $hint = [string]$p.Value
                             break
@@ -98,7 +118,7 @@ try {
             $summary = 'Assistant turn ended'
         }
         default {
-            # Unknown / unwired hook — log generically
+            # Unknown / unwired hook - log generically
             $kind = 'note'
             $summary = "hook: $hookEvent"
         }
@@ -106,28 +126,21 @@ try {
 
     if (-not $kind -or -not $summary) { exit 0 }
 
-    if (-not (Test-Path $logRoot)) {
-        New-Item -ItemType Directory -Path $logRoot -Force | Out-Null
-    }
+    # If the CLI build doesn't exist yet (e.g. fresh clone), silently exit —
+    # cannot log, won't block the workflow.
+    if (-not (Test-Path $maMainJs)) { exit 0 }
 
-    $ts = (Get-Date).ToString('yyyy-MM-ddTHH:mm:sszzz')
-    $day = ($ts -split 'T')[0]
-    $logFile = Join-Path $logRoot "$day.jsonl"
+    # Delegate to `ma action-log emit`. Pass --actor claude (the hook fires
+    # from Claude Code sessions). Stdout/stderr suppressed so the hook never
+    # leaks output back into the Claude session.
+    $cliArgs = @('action-log', 'emit', '--actor', 'claude', '--kind', $kind, '--summary', $summary)
+    if ($ref)       { $cliArgs += @('--ref', $ref) }
+    if ($sessionId) { $cliArgs += @('--session', $sessionId) }
+    if ($extraJson) { $cliArgs += @('--extra', $extraJson) }
 
-    $entry = [ordered]@{
-        ts      = $ts
-        actor   = 'claude'
-        kind    = $kind
-        summary = $summary
-    }
-    if ($ref)       { $entry.ref     = $ref }
-    if ($sessionId) { $entry.session = $sessionId }
-    if ($extraObj)  { $entry.extra   = $extraObj }
-
-    $line = ($entry | ConvertTo-Json -Compress -Depth 10) + "`n"
-    [System.IO.File]::AppendAllText($logFile, $line, [System.Text.UTF8Encoding]::new($false))
+    & node $maMainJs @cliArgs *> $null
 } catch {
-    # Swallow — never break the user's workflow because of logging
+    # Swallow - never break the user's workflow because of logging
 }
 
 exit 0

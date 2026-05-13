@@ -19,13 +19,16 @@ export type ActionLogKind =
   | 'ship';
 
 export interface ActionLogEntry {
-  kind: ActionLogKind;
+  kind: ActionLogKind | string;     // wider — hook-kinds (tool-call, file-edit, session-start, etc.) is OK
   summary: string;
+  actor?: string;                    // default: 'cli'
   ref?: string;
+  session?: string;                  // optional Claude session id (hook context)
   extra?: Record<string, unknown>;
+  ts?: string;                       // ISO; default = nowIsoBudapest()
 }
 
-const ACTOR = 'cli';
+const DEFAULT_ACTOR: string = 'cli';
 
 /**
  * Walk up from this file to find the project root (folder containing
@@ -65,20 +68,23 @@ function nowIsoBudapest(): string {
 
 /**
  * Append an action-log entry. Never throws.
+ *
+ * `actor` defaults to 'cli', `ts` defaults to nowIsoBudapest().
  */
 export async function logAction(entry: ActionLogEntry): Promise<void> {
   try {
     const root = resolveLogRoot();
     await fs.mkdir(root, { recursive: true });
-    const ts = nowIsoBudapest();
-    const day = ts.split('T')[0];
+    const ts: string = entry.ts ?? nowIsoBudapest();
+    const day: string = ts.split('T')[0] ?? new Date().toISOString().split('T')[0]!;
     const out: Record<string, unknown> = {
       ts,
-      actor: ACTOR,
+      actor: entry.actor ?? DEFAULT_ACTOR,
       kind: entry.kind,
       summary: entry.summary,
     };
     if (entry.ref) out.ref = entry.ref;
+    if (entry.session) out.session = entry.session;
     if (entry.extra && Object.keys(entry.extra).length > 0) out.extra = entry.extra;
     await fs.appendFile(path.join(root, `${day}.jsonl`), JSON.stringify(out) + '\n', { encoding: 'utf8' });
   } catch {

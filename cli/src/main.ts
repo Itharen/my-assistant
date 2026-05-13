@@ -41,6 +41,7 @@ import { runSpotifyAuthCommand } from './commands/spotify-auth.command.js';
 import { runGoogleAuthCommand } from './commands/google-auth.command.js';
 import { runGoogleStatusCommand } from './commands/google-status.command.js';
 import { runGoogleQueryCommand } from './commands/google-query.command.js';
+import { runActionLogEmitCommand } from './commands/action-log-emit.command.js';
 
 type CommandHandler = (args: string[]) => Promise<void>;
 
@@ -60,6 +61,9 @@ const COMMAND_TREE: Record<string, Record<string, CommandHandler>> = {
     auth: runGoogleAuthCommand,
     status: runGoogleStatusCommand,
     query: runGoogleQueryCommand,
+  },
+  'action-log': {
+    emit: runActionLogEmitCommand,
   },
 };
 
@@ -128,8 +132,10 @@ function printHelp(): void {
       '  ma <group> <subcommand> [options]',
       '',
       'Groups:',
-      '  cast       Cast device operations (discover/notify/volume/preset)',
-      '  spotify    Spotify Web API integration (auth/status)',
+      '  cast        Cast device operations (discover/notify/volume/preset)',
+      '  spotify     Spotify Web API integration (auth/status)',
+      '  google      Google Assistant integration (auth/status/query)',
+      '  action-log  Action-log entry emit (kanonikus belépés)',
       '',
       'Run `ma <group> --help` for group-specific help.',
       '',
@@ -185,6 +191,33 @@ function printGroupHelp(group: string): void {
         'Examples:',
         '  ma spotify auth',
         '  ma spotify status --pretty',
+        '',
+      ].join('\n'),
+    );
+    return;
+  }
+  if (group === 'action-log') {
+    process.stdout.write(
+      [
+        '',
+        'ma action-log — Action-log entry emit (FR #3e Phase 1)',
+        '',
+        'Subcommands:',
+        '  emit     Append entry → __agent/log/actions/<day>.jsonl (+ server POST stub Phase 3+)',
+        '',
+        'emit flags:',
+        '  --kind <K>      (required) entry kind (note, ship, error, tool-call, file-edit, ...)',
+        '  --summary <S>   (required) egy mondatos összefoglaló',
+        '  --actor <A>     default: cli',
+        '  --ref <R>       fájl-/task-ref/url',
+        '  --session <S>   Claude session id (hook context)',
+        '  --extra <JSON>  JSON-encoded extra payload',
+        '  --ts <ISO>      default: now (Europe/Budapest)',
+        '  --pretty        pretty-print JSON envelope',
+        '',
+        'Examples:',
+        '  ma action-log emit --kind note --summary "cycle 25 start" --pretty',
+        '  ma action-log emit --actor claude --kind tool-call --summary "Edit foo.ts"',
         '',
       ].join('\n'),
     );

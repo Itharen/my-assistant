@@ -1,7 +1,8 @@
 # scripts/action-log/append.ps1
 #
-# Universal action-log appender. Appends a single JSONL line to
-# __agent/log/actions/YYYY-MM-DD.jsonl with the current Europe/Budapest day.
+# Universal action-log appender. Delegates the write to the canonical CLI:
+#
+#     node $projectRoot\cli\build\main.js action-log emit ...
 #
 # Usage (named params):
 #   pwsh scripts/action-log/append.ps1 `
@@ -17,6 +18,7 @@
 #   pwsh scripts/action-log/append.ps1
 #
 # Schema: see __agent/log/actions/README.md
+# FR #3e Phase 2 — delegates to `ma action-log emit`.
 
 param(
     [string]$Actor,
@@ -43,47 +45,28 @@ if (-not $Actor -or -not $Kind -or -not $Summary) {
     exit 2
 }
 
-# Resolve log root: either explicit, env, or two levels up from this script
-if (-not $LogRoot) { $LogRoot = $env:AL_LOG_ROOT }
-if (-not $LogRoot) {
-    $projectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-    $LogRoot = Join-Path $projectRoot '__agent\log\actions'
+# Project root - the script lives at <root>\cli\scripts\action-log\append.ps1
+# so we walk up THREE levels: action-log -> scripts -> cli -> <root>.
+$projectRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
+$maMainJs = Join-Path $projectRoot 'cli\build\main.js'
+
+if (-not (Test-Path $maMainJs)) {
+    Write-Error "ma CLI build missing: $maMainJs — run LDP or `pnpm run build-base` in cli/"
+    exit 2
 }
 
-if (-not (Test-Path $LogRoot)) {
-    New-Item -ItemType Directory -Path $LogRoot -Force | Out-Null
-}
+# Optional MA_LOG_ROOT passthrough (the CLI honors process.env.MA_LOG_ROOT)
+if ($LogRoot)            { $env:MA_LOG_ROOT = $LogRoot }
+elseif ($env:AL_LOG_ROOT) { $env:MA_LOG_ROOT = $env:AL_LOG_ROOT }
 
-# Timestamp — Europe/Budapest. Default = now (local).
-if (-not $Ts) {
-    $Ts = (Get-Date).ToString('yyyy-MM-ddTHH:mm:sszzz')
-}
+# Build the CLI args
+$cliArgs = @('action-log', 'emit', '--actor', $Actor, '--kind', $Kind, '--summary', $Summary)
+if ($Ref)       { $cliArgs += @('--ref', $Ref) }
+if ($Session)   { $cliArgs += @('--session', $Session) }
+if ($ExtraJson) { $cliArgs += @('--extra', $ExtraJson) }
+if ($Ts)        { $cliArgs += @('--ts', $Ts) }
 
-# Day = local date portion of $Ts (split on 'T')
-$day    = ($Ts -split 'T')[0]
-$logFile = Join-Path $LogRoot "$day.jsonl"
-
-# Build entry. Use ordered hashtable so key order in JSON is stable.
-$entry = [ordered]@{
-    ts      = $Ts
-    actor   = $Actor
-    kind    = $Kind
-    summary = $Summary
-}
-if ($Ref)     { $entry.ref     = $Ref }
-if ($Session) { $entry.session = $Session }
-if ($ExtraJson) {
-    try {
-        $extraObj = $ExtraJson | ConvertFrom-Json -ErrorAction Stop
-        $entry.extra = $extraObj
-    } catch {
-        # If extra isn't valid JSON, keep it as a raw string (don't fail the log).
-        $entry.extra = @{ raw = $ExtraJson }
-    }
-}
-
-$json = ($entry | ConvertTo-Json -Compress -Depth 10)
-
-# Append. Use UTF-8 (no BOM) for cross-tool compatibility.
-$bytes = [System.Text.Encoding]::UTF8.GetBytes($json + "`n")
-[System.IO.File]::AppendAllText($logFile, $json + "`n", [System.Text.UTF8Encoding]::new($false))
+# Delegate. Forward exit code, suppress stdout (the envelope is for callers
+# of the CLI directly — append.ps1 is fire-and-forget).
+& node $maMainJs @cliArgs *> $null
+exit $LASTEXITCODE

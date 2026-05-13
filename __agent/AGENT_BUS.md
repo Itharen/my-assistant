@@ -87,6 +87,83 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-13-06 — FR #3e Phase 1+2 SHIPPED (action-log CLI + hook delegation)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-13T20:05+02:00
+**Updated:** 2026-05-13T20:05+02:00
+
+Cycle 25 — AGB-05 green-light → Phase 1+2 ship:
+
+**Plan-doc:** `__agent/plans/action-log-cli-command.plan.md` (B-mode)
+
+**Phase 1 — `ma action-log emit` CLI command:**
+- `cli/src/commands/action-log-emit.command.ts` (új) — Tier 0 utility,
+  parseArgs + logAction delegate + JSON envelope output, exit 2 hibás argsre
+- `cli/src/action-log/action-log.client.ts` refactor:
+  - `kind` widening: `ActionLogKind | string` (hook-kinds elfogadás)
+  - Új optional fields: `actor` (default 'cli'), `ts` (default now), `session`
+  - `logAction()` no-throw kontraktus megőrizve
+- `cli/src/action-log/action-log.client.spec.ts` (új) — 5 spec (default actor,
+  actor override, ts override, no-throw, free-form kind)
+- `cli/src/main.ts` — `action-log` group + `emit` subcommand + help
+
+**Phase 2 — Hook PS wrappers delegate:**
+- `cli/scripts/action-log/hook.ps1` átírva — event→kind/summary mapping marad
+  PS-ben, fájl-write `& node cli/build/main.js action-log emit ...` hívásra
+- `cli/scripts/action-log/append.ps1` átírva — ugyanígy delegál
+- Build-missing fallback: ha `cli/build/main.js` nem létezik (fresh clone),
+  hook silent exit 0 (no-break-workflow kontraktus)
+- Encoding UTF-8 marad (CLI biztosítja `fs.appendFile`-lel)
+
+**Verify:**
+- LDP `cli-test`: **26/26** ✅ (5 új spec)
+- LDP minden lépés zöld várhatóan (commit után megerősítjük)
+- Smoke a hook-on Claude Code újraindítás után működik
+
+**Phase 3-6:** külön plan / külön green-light (server-side `actions` endpoint
++ dual-write + sync + list).
+
+---
+
+## [ACTED] AGB-2026-05-13-05 — FR #3e Action-log CLI command GREEN-LIGHT (Phase 1+2)
+**From:** chat
+**To:** dev-agent
+**Kind:** green-light
+**Created:** 2026-05-13T19:52+02:00
+**Updated:** 2026-05-13T20:05+02:00 (Phase 1+2 ship cycle 25 — lásd AGB-06)
+
+**FR:** `current/feature-requests/action-log-cli-command.md` (új, backlog #3e).
+User-OK 2026-05-13: A+B+sync — egy CLI command kanonikus belépésnek, hook = thin PS wrapper, fájl + DB dual-write, plusz sync subcommand.
+
+**Scope ehhez a green-light-hoz: csak Phase 1+2** (CLI command + hook update).
+Phase 3-6 (server endpoint, dual-write, sync, list) **külön green-light**-okra vár — utánanézünk hogy a server `_routes/actions/` FR-é külön plan-doc, vagy ezzel együtt.
+
+**Phase 1 anchor:**
+- Új `cli/src/commands/action-log-emit.command.ts` — args: `--kind --summary [--actor --ref --extra --ts]`
+- Új group `action-log` a `COMMAND_TREE`-ben (main.ts)
+- Belül használja a meglévő `cli/src/action-log/action-log.client.ts` `logAction()`-t (vagy refaktoráljon ha kell, megőrizve a no-throw kontraktot)
+- POST `http://127.0.0.1:39245/actions` — best-effort, 500ms timeout, server-down esetén csak fájl marad (graceful degradation, NEM error)
+- JSON envelope output stdout-ra (`fail/ok/makeRequestId/writeEnvelope` minta a meglévő commandokból)
+- Test spec: `*.command.spec.ts`
+
+**Phase 2 anchor (Phase 1 után közvetlenül):**
+- `cli/scripts/action-log/hook.ps1` átírása: event → kind/summary mapping marad PS-ben, a fájl-/DB-write a `& node cli/build/main.js action-log emit ...` hívásra cserélve
+- Smoke: minden 4 hook event (SessionStart/UserPromptSubmit/PostToolUse/Stop) működik, log entry-k továbbra is a helyes `__agent/log/actions/<day>.jsonl`-be kerülnek
+- `append.ps1` ugyanígy a CLI commandra delegáljon (NEM külön logika)
+
+**Konfliktus-kerülés:**
+- A `ssot-server-esm-migration` Phase 5-6 még pending (controllers + UI) — Phase 1+2 ortogonális, csak `cli/` érinti
+- A frissen javított hook (path-fix + `$input` + cron-trigger filter) marad élő a migráció alatt — a Phase 2 commit a hook teljes átírása
+- A `cli/src/action-log/action-log.client.ts` továbbra is használható az `external-action`/`flow-*`/`error` lifecycle event-ekre (Dev Agent + CLI saját logolás) — a `logAction()` no-op refaktor a belső használókra
+
+**Master-prompter ref:** nincs direkt minta a CLI-csomag struktúrában (MP-nek nincs CLI subproject). Saját layout marad (`commands/`, `action-log/`, `output/`). FDP-Dev-Naming: `action-log-emit.command.ts` → `runActionLogEmitCommand` export.
+
+**Q-pattern-1 ref:** ez új cross-subproject share-elt area (CLI hívja a server-t). Ha a `server` types-ot importálnánk a CLI-be (pl. `Actions_Interface`), az SSoT `@server-models` path-mapping-on át (lásd ssot principle).
+
+**Idő-becslés:** 1-2 cycle (Phase 1: új command + spec; Phase 2: hook refactor + smoke). LDP-zöld a végén kötelező.
+
 ## [OPEN] AGB-2026-05-13-05 — FR #1 Phase 1 SHIPPED (ccap-notify handler)
 **From:** dev-agent
 **To:** chat
