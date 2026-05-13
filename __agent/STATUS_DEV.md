@@ -2,19 +2,20 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 26                                 # Cycle 26 indul
-phase: implement                           # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 26                                 # Cycle 26 lezárva; következő cycle 27 lesz
+phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 26 — error-handling cleanup Phase 1 (user-mandate 2026-05-13 21:55,
-  principle: error-handling.md "SEMMI csendes catch"). Scope: action-log
-  layer (action-log.client + emit command + hook.ps1 + append.ps1) Result-
-  pattern + structured stderr. Plan-doc multi-cycle. cast/google/spotify
-  swallow külön Phase-okban.
+  Cycle 26 lezárva 2026-05-14 00:05 — error-handling cleanup Phase 1 SHIPPED
+  (action-log layer Result-pattern + structured stderr, commit 5b0b3db).
+  Plan-doc error-handling-cleanup.plan.md (multi-cycle). LDP 10/10 ✅,
+  cli-test 26/26 (+1 új fail-path spec). AGB-07 announcement chat-nek.
+  Phase 2 (cast/* 14 swallow), Phase 3 (google/spotify 3 swallow), Phase 4
+  (server FR #3b) külön cycle-ekben. Lásd log/cycles/cycle-26.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 25
+  cycle_id: 26
   phase_completed: close-cycle
   files_modified:
     - cli/src/action-log/action-log.client.ts
@@ -23,18 +24,16 @@ last_cycle:
     - cli/src/main.ts
     - cli/scripts/action-log/hook.ps1
     - cli/scripts/action-log/append.ps1
-    - __agent/plans/action-log-cli-command.plan.md
-    - current/feature-requests/action-log-cli-command.md
+    - __agent/plans/error-handling-cleanup.plan.md
     - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-25.md
-  fr_status_changes:
-    - { frPath: "current/feature-requests/action-log-cli-command.md", phase: "1+2", fromStatus: "🟢", toStatus: "✅ shipped" }
+    - __agent/log/cycles/cycle-26.md
+  fr_status_changes: []
   plan_steps_marked_done:
-    - { planPath: "__agent/plans/action-log-cli-command.plan.md", stepRef: "Phase 1 — ma action-log emit + Phase 2 — hook PS delegate" }
-  commit_sha: "61ea237"
+    - { planPath: "__agent/plans/error-handling-cleanup.plan.md", stepRef: "Phase 1 — action-log layer Result-pattern + structured stderr" }
+  commit_sha: "5b0b3db"
   build_status: success
-  test_status: success                      # cli=26/26 (+5 új), server=2/2, client=13/13
+  test_status: success                      # cli=26/26 (+1 új fail-path), server=2/2, client=13/13
 
 foreign_pending:
   first_seen_cycle: 4
