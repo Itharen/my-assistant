@@ -2,25 +2,35 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 24                                 # Cycle 24 indul
-phase: implement                           # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 24                                 # Cycle 24 lezárva; következő cycle 25 lesz
+phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 24 — AGB-04 green-light: FR #1 communication-forms Phase 1.
-  Új ccap-notify handler a cli/scripts/agent-handlers/-be (types + schema +
-  handler + dispatch). Plan-doc B-mode.
+  Cycle 24 lezárva 2026-05-13 19:40 — FR #1 Phase 1 SHIPPED (ccap-notify
+  handler, commit cea44cb). Plan-doc B-mode communication-forms.plan.md.
+  AGB-04 ACTED, AGB-05 announcement chat-nek. Phase 2-4 következő cycle-ekben.
+  LDP 10/10 ✅. Lásd log/cycles/cycle-24.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 23
+  cycle_id: 24
   phase_completed: close-cycle
   files_modified:
+    - cli/scripts/agent-handlers/src/types.ts
+    - cli/scripts/agent-handlers/src/schema.ts
+    - cli/scripts/agent-handlers/src/dispatch.ts
+    - cli/scripts/agent-handlers/src/handlers/ccap-notify.ts
+    - __agent/plans/communication-forms.plan.md
+    - current/feature-requests/communication-forms.md
+    - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-23.md
-  fr_status_changes: []
-  plan_steps_marked_done: []
-  commit_sha: (cycle-close only, no-op)
-  build_status: success                     # LDP unchanged ✅
+    - __agent/log/cycles/cycle-24.md
+  fr_status_changes:
+    - { frPath: "current/feature-requests/communication-forms.md", phase: 1, fromStatus: "🟢", toStatus: "✅ shipped" }
+  plan_steps_marked_done:
+    - { planPath: "__agent/plans/communication-forms.plan.md", stepRef: "Phase 1 — ccap-notify handler" }
+  commit_sha: "cea44cb"
+  build_status: success
   test_status: success                      # cli=21/21, server=2/2, client=13/13
 
 foreign_pending:
