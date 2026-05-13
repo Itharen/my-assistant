@@ -2,24 +2,22 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 17                                 # Cycle 17 lezárva; következő cycle 18 lesz
+cycle: 18                                 # Cycle 18 lezárva (no-op); következő cycle 19 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 17 lezárva 2026-05-13 00:00+ — M2 daily report a 2026-05-12-re
-  (16 cycle, 30 own commit, LDP zöld baseline elérve). Lásd
-  __agent/reports/2026-05/2026-05-12.md + log/cycles/cycle-17.md.
+  Cycle 18 lezárva 2026-05-13 03:00+ — #6 fallback no-op. State változatlan
+  cycle 17 óta. Sleep-window (csendes futás). Lásd log/cycles/cycle-18.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 17
+  cycle_id: 18
   phase_completed: close-cycle
   files_modified:
-    - __agent/reports/2026-05/2026-05-12.md
-    - __agent/log/cycles/cycle-17.md
+    - __agent/log/cycles/cycle-18.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: (cycle-close only)
+  commit_sha: null                          # no-op cycle
   build_status: success                     # LDP unchanged ✅
   test_status: success                      # LDP unchanged ✅
 

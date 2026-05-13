@@ -5,3 +5,4 @@
 {"ts":"2026-05-13T00:00:50+02:00","actor":"assistant-agent-cron","kind":"flow-end","summary":"Cron tick #6 done: verdict=no-action, ok=5 (5 Tier 0 log), failed=0, skipped=0","extra":{"verdict":"no-action","actions_succeeded":5,"actions_failed":0,"actions_skipped":0,"daily_tick_count":1}}
 {"ts":"2026-05-13T00:01:00+02:00","actor":"development-agent","kind":"ship","summary":"M2 daily report 2026-05-12 written (16 cycles, 30 commits)","ref":"__agent/reports/2026-05/2026-05-12.md"}
 {"ts":"2026-05-13T00:02:00+02:00","actor":"development-agent","kind":"flow-end","summary":"Cycle 17 close - M2 daily report 2026-05-12","extra":{"cycle":17,"trigger":"new-day","report":"__agent/reports/2026-05/2026-05-12.md"}}
+{"ts":"2026-05-13T03:01:30+02:00","actor":"development-agent","kind":"flow-end","summary":"Cycle 18 close - #6 fallback no-op (state unchanged, sleep-window csendes)","extra":{"cycle":18,"verdict":"no-action","sleep_window":true}}
