@@ -2,36 +2,39 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 24                                 # Cycle 24 lezárva; következő cycle 25 lesz
+cycle: 25                                 # Cycle 25 lezárva; következő cycle 26 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 24 lezárva 2026-05-13 19:40 — FR #1 Phase 1 SHIPPED (ccap-notify
-  handler, commit cea44cb). Plan-doc B-mode communication-forms.plan.md.
-  AGB-04 ACTED, AGB-05 announcement chat-nek. Phase 2-4 következő cycle-ekben.
-  LDP 10/10 ✅. Lásd log/cycles/cycle-24.md.
+  Cycle 25 lezárva 2026-05-13 20:10 — FR #3e Phase 1+2 SHIPPED (ma action-log
+  emit + hook PS wrapper delegation, commit 61ea237). Plan-doc B-mode
+  action-log-cli-command.plan.md. AGB-05 ACTED, AGB-06 announcement chat-nek.
+  cli-test 26/26 ✅. LDP 10/10 ✅. Phase 3-6 külön green-light-ra vár.
+  Lásd log/cycles/cycle-25.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 24
+  cycle_id: 25
   phase_completed: close-cycle
   files_modified:
-    - cli/scripts/agent-handlers/src/types.ts
-    - cli/scripts/agent-handlers/src/schema.ts
-    - cli/scripts/agent-handlers/src/dispatch.ts
-    - cli/scripts/agent-handlers/src/handlers/ccap-notify.ts
-    - __agent/plans/communication-forms.plan.md
-    - current/feature-requests/communication-forms.md
+    - cli/src/action-log/action-log.client.ts
+    - cli/src/action-log/action-log.client.spec.ts
+    - cli/src/commands/action-log-emit.command.ts
+    - cli/src/main.ts
+    - cli/scripts/action-log/hook.ps1
+    - cli/scripts/action-log/append.ps1
+    - __agent/plans/action-log-cli-command.plan.md
+    - current/feature-requests/action-log-cli-command.md
     - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-24.md
+    - __agent/log/cycles/cycle-25.md
   fr_status_changes:
-    - { frPath: "current/feature-requests/communication-forms.md", phase: 1, fromStatus: "🟢", toStatus: "✅ shipped" }
+    - { frPath: "current/feature-requests/action-log-cli-command.md", phase: "1+2", fromStatus: "🟢", toStatus: "✅ shipped" }
   plan_steps_marked_done:
-    - { planPath: "__agent/plans/communication-forms.plan.md", stepRef: "Phase 1 — ccap-notify handler" }
-  commit_sha: "cea44cb"
+    - { planPath: "__agent/plans/action-log-cli-command.plan.md", stepRef: "Phase 1 — ma action-log emit + Phase 2 — hook PS delegate" }
+  commit_sha: "61ea237"
   build_status: success
-  test_status: success                      # cli=21/21, server=2/2, client=13/13
+  test_status: success                      # cli=26/26 (+5 új), server=2/2, client=13/13
 
 foreign_pending:
   first_seen_cycle: 4
