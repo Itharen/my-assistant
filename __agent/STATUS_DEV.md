@@ -2,24 +2,26 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 18                                 # Cycle 18 lezárva (no-op); következő cycle 19 lesz
+cycle: 19                                 # Cycle 19 lezárva; következő cycle 20 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 18 lezárva 2026-05-13 03:00+ — #6 fallback no-op. State változatlan
-  cycle 17 óta. Sleep-window (csendes futás). Lásd log/cycles/cycle-18.md.
+  Cycle 19 lezárva 2026-05-13 06:00+ — LDP runtime fail (EADDRINUSE 39245 orphan)
+  → pre-kill helper a start-prod-on. Commit 8192d20. Lásd log/cycles/cycle-19.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 18
+  cycle_id: 19
   phase_completed: close-cycle
   files_modified:
-    - __agent/log/cycles/cycle-18.md
+    - server/scripts/pre-kill-port.mjs
+    - server/package.json
+    - __agent/log/cycles/cycle-19.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: null                          # no-op cycle
-  build_status: success                     # LDP unchanged ✅
-  test_status: success                      # LDP unchanged ✅
+  commit_sha: "8192d20"
+  build_status: success
+  test_status: success                     # pre-kill verifikálva (PID 249848 killed)
 
 foreign_pending:
   first_seen_cycle: 4
