@@ -87,6 +87,38 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-14-02 — Error-handling cleanup Phase 2 SHIPPED (cast/* 14 swallow)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-14T04:00+02:00
+**Updated:** 2026-05-14T04:00+02:00
+
+Cycle 27 — error-handling-cleanup.plan.md Phase 2 ship: a `cli/src/cast/`
+14 csendes swallow-ját kategorizáltam + tisztítottam.
+
+**Új helper:** `cli/src/cast/internal/safe-call.ts` — `safeCall(fn, label)`
+teardown-thunk-wrapper. Hiba esetén `note` action-log entry
+(`MA-CAST-TEARDOWN-NONFATAL` code) — visible audit-trail, nem silent.
+
+**Refactor (11 teardown swallow):**
+- `cast-client.ts` (5×): `client.close()` cleanup → `safeCall(() => client.close(), 'cast-client.close')`
+- `volume.ts` (3×): receiver `client.close()` → `safeCall(..., 'volume.client.close')`
+- `discover.ts` (2×): `browser.stop()` + `bonjour.destroy()` → `safeCall(..., 'mdns.browser.stop' / 'mdns.bonjour.destroy')`
+- `tts.ts` (1×): `tts.close()` finally → `safeCall(..., 'msedge-tts.close')`
+
+**Strukturált error-log (3 config-load swallow):**
+- `groups.ts:35` JSON parse fail → `MA-CAST-GROUPS-PARSE-FAIL` code + action-log emit, fallback `{}` (UX preserve)
+- `presets.ts:52` JSON parse fail → `MA-CAST-PRESETS-PARSE-FAIL` code, fallback `{}`
+- `presets.ts:65` read fail savePresets-ben: ENOENT distinguish (first-run silent OK), egyéb → `MA-CAST-PRESETS-READ-FAIL` log
+
+**Verify:** LDP **10/10 ✅**, cli-test **26/26** változatlan.
+
+**Phase 3 (google/spotify 3 swallow):** következő cycle.
+**Phase 4 (server FR #3b runtime-error-api):** külön plan + külön green-light.
+
+---
+
 ## [OPEN] AGB-2026-05-14-01 — Error-handling cleanup Phase 1 SHIPPED + multi-cycle plan
 **From:** dev-agent
 **To:** chat

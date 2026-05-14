@@ -8,6 +8,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
+import { logAction } from '../action-log/action-log.client.js';
 import type { CastDevice } from './discover.js';
 import type { VolumeTargetRef } from './volume.js';
 
@@ -32,7 +33,16 @@ export function loadGroupConfig(configPath?: string): GroupConfig {
       }
     }
     return out;
-  } catch {
+  } catch (err) {
+    // Per error-handling.md: malformed config NEM silent — strukturált log,
+    // fallback empty (UX-preserving — group-resolution fallback-ját triggereli).
+    const msg: string = err instanceof Error ? err.message : String(err);
+    void logAction({
+      kind: 'error',
+      summary: `[cast/groups] MA-CAST-GROUPS-PARSE-FAIL: ${msg}`,
+      ref: path,
+      extra: { code: 'MA-CAST-GROUPS-PARSE-FAIL', file: path, error: msg },
+    });
     return {};
   }
 }

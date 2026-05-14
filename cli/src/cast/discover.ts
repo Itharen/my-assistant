@@ -8,6 +8,7 @@
 
 import { Bonjour, type Service } from 'bonjour-service';
 import { networkInterfaces } from 'node:os';
+import { safeCall } from './internal/safe-call.js';
 
 export interface CastDevice {
   name: string;
@@ -99,16 +100,8 @@ export async function discoverCastDevices(opts: DiscoverOptions = {}): Promise<C
       });
 
       setTimeout(() => {
-        try {
-          browser.stop();
-        } catch {
-          /* noop */
-        }
-        try {
-          bonjour.destroy();
-        } catch {
-          /* noop */
-        }
+        safeCall(() => browser.stop(), 'mdns.browser.stop');
+        safeCall(() => bonjour.destroy(), 'mdns.bonjour.destroy');
         resolve();
       }, timeoutMs);
     });

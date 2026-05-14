@@ -32,6 +32,7 @@ interface CastClient {
 
 // @ts-expect-error - castv2-client lacks published types; kept untyped on purpose (no .d.ts).
 import { Client as ClientCtor, DefaultMediaReceiver as DefaultMediaReceiverRef } from 'castv2-client';
+import { safeCall } from './internal/safe-call.js';
 const Client = ClientCtor as unknown as new () => CastClient;
 const DefaultMediaReceiver = DefaultMediaReceiverRef as unknown;
 
@@ -52,7 +53,7 @@ export async function launchAppOnCast(args: {
     const safety = setTimeout(() => {
       if (settled) return;
       settled = true;
-      try { client.close(); } catch { /* noop */ }
+      safeCall(() => client.close(), 'cast-client.close');
       reject(new Error(`launchApp timeout (${timeoutMs}ms) for ${host}:${port} appId=${appId}`));
     }, timeoutMs);
 
@@ -60,7 +61,7 @@ export async function launchAppOnCast(args: {
       if (settled) return;
       settled = true;
       clearTimeout(safety);
-      try { client.close(); } catch { /* noop */ }
+      safeCall(() => client.close(), 'cast-client.close');
       err ? reject(err) : resolve();
     };
 
@@ -105,11 +106,7 @@ export async function playOnCast(opts: PlayOptions): Promise<PlayResult> {
     const safetyTimer = setTimeout(() => {
       if (settled) return;
       settled = true;
-      try {
-        client.close();
-      } catch {
-        /* noop */
-      }
+      safeCall(() => client.close(), 'cast-client.close');
       reject(new Error(`Cast timeout (${timeoutMs}ms) — speaker did not finish playback`));
     }, timeoutMs);
 
@@ -117,11 +114,7 @@ export async function playOnCast(opts: PlayOptions): Promise<PlayResult> {
       if (settled) return;
       settled = true;
       clearTimeout(safetyTimer);
-      try {
-        client.close();
-      } catch {
-        /* noop */
-      }
+      safeCall(() => client.close(), 'cast-client.close');
       resolve(result);
     };
 
@@ -129,11 +122,7 @@ export async function playOnCast(opts: PlayOptions): Promise<PlayResult> {
       if (settled) return;
       settled = true;
       clearTimeout(safetyTimer);
-      try {
-        client.close();
-      } catch {
-        /* noop */
-      }
+      safeCall(() => client.close(), 'cast-client.close');
       reject(err);
     };
 

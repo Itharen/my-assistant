@@ -10,6 +10,7 @@
 
 import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
 import { Readable } from 'node:stream';
+import { safeCall } from './internal/safe-call.js';
 
 export interface TtsOptions {
   text: string;
@@ -49,11 +50,7 @@ export async function fetchTtsMp3(opts: TtsOptions): Promise<Buffer> {
     }
     return buffer;
   } finally {
-    try {
-      tts.close();
-    } catch {
-      /* swallow — close hibák nem fontosak */
-    }
+    safeCall(() => tts.close(), 'msedge-tts.close');
   }
 }
 

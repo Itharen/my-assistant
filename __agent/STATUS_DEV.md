@@ -2,38 +2,38 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 26                                 # Cycle 26 lezárva; következő cycle 27 lesz
+cycle: 27                                 # Cycle 27 lezárva; következő cycle 28 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 26 lezárva 2026-05-14 00:05 — error-handling cleanup Phase 1 SHIPPED
-  (action-log layer Result-pattern + structured stderr, commit 5b0b3db).
-  Plan-doc error-handling-cleanup.plan.md (multi-cycle). LDP 10/10 ✅,
-  cli-test 26/26 (+1 új fail-path spec). AGB-07 announcement chat-nek.
-  Phase 2 (cast/* 14 swallow), Phase 3 (google/spotify 3 swallow), Phase 4
-  (server FR #3b) külön cycle-ekben. Lásd log/cycles/cycle-26.md.
+  Cycle 27 lezárva 2026-05-14 04:05 — error-handling cleanup Phase 2 SHIPPED
+  (cli/src/cast/ 14 swallow → safeCall helper + structured logs).
+  Plan-doc error-handling-cleanup.plan.md Phase 2 ✅. LDP 10/10 ✅, cli-test
+  26/26 változatlan. AGB-02 announcement chat-nek. Phase 3 (google/spotify
+  3 swallow), Phase 4 (server FR #3b) külön cycle-ekben. Lásd
+  log/cycles/cycle-27.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 26
+  cycle_id: 27
   phase_completed: close-cycle
   files_modified:
-    - cli/src/action-log/action-log.client.ts
-    - cli/src/action-log/action-log.client.spec.ts
-    - cli/src/commands/action-log-emit.command.ts
-    - cli/src/main.ts
-    - cli/scripts/action-log/hook.ps1
-    - cli/scripts/action-log/append.ps1
-    - __agent/plans/error-handling-cleanup.plan.md
+    - cli/src/cast/internal/safe-call.ts
+    - cli/src/cast/cast-client.ts
+    - cli/src/cast/volume.ts
+    - cli/src/cast/discover.ts
+    - cli/src/cast/tts.ts
+    - cli/src/cast/groups.ts
+    - cli/src/cast/presets.ts
     - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-26.md
+    - __agent/log/cycles/cycle-27.md
   fr_status_changes: []
   plan_steps_marked_done:
-    - { planPath: "__agent/plans/error-handling-cleanup.plan.md", stepRef: "Phase 1 — action-log layer Result-pattern + structured stderr" }
-  commit_sha: "5b0b3db"
+    - { planPath: "__agent/plans/error-handling-cleanup.plan.md", stepRef: "Phase 2 — cast/* swallow audit (14 helyen)" }
+  commit_sha: "<pending>"
   build_status: success
-  test_status: success                      # cli=26/26 (+1 új fail-path), server=2/2, client=13/13
+  test_status: success                      # cli=26/26 (változatlan), server=2/2, client=13/13
 
 foreign_pending:
   first_seen_cycle: 4

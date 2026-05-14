@@ -35,6 +35,7 @@ interface CastReceiverClient {
 
 // @ts-expect-error - castv2-client lacks published types; kept untyped on purpose (no .d.ts).
 import { Client as ClientCtor } from 'castv2-client';
+import { safeCall } from './internal/safe-call.js';
 const Client = ClientCtor as unknown as new () => CastReceiverClient;
 
 export interface VolumeTargetRef {
@@ -206,11 +207,7 @@ function withClient<T>(
     const safety = setTimeout(() => {
       if (settled) return;
       settled = true;
-      try {
-        client.close();
-      } catch {
-        /* noop */
-      }
+      safeCall(() => client.close(), 'volume.client.close');
       reject(new Error(`Receiver timeout (${timeoutMs}ms) for ${host}:${port}`));
     }, timeoutMs);
 
@@ -219,22 +216,14 @@ function withClient<T>(
         if (settled) return;
         settled = true;
         clearTimeout(safety);
-        try {
-          client.close();
-        } catch {
-          /* noop */
-        }
+        safeCall(() => client.close(), 'volume.client.close');
         resolve(value);
       },
       err: (e) => {
         if (settled) return;
         settled = true;
         clearTimeout(safety);
-        try {
-          client.close();
-        } catch {
-          /* noop */
-        }
+        safeCall(() => client.close(), 'volume.client.close');
         reject(e);
       },
     };
