@@ -9,6 +9,9 @@
       "./client/src",
       "./cli/spec",
       "./server/spec",
+      "./cli/scripts/agent-handlers/src",
+      "./cli/scripts/agent-handlers/tsconfig.json",
+      "./cli/scripts/agent-handlers/package.json",
       "./cli/package.json",
       "./server/package.json",
       "./client/package.json",
@@ -68,6 +71,11 @@
     {
       "label": "cli-test",
       "command": "cd cli && jasmine --config=spec/support/jasmine.json",
+      "fatal": false
+    },
+    {
+      "label": "tsc-agent-handlers",
+      "command": "cd cli && npx tsc --noEmit -p scripts/agent-handlers/tsconfig.json --pretty",
       "fatal": false
     },
     {

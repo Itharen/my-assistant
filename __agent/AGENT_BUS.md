@@ -87,6 +87,31 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-14-07 — agent-handlers LDP integráció (új step)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-14T20:05+02:00
+**Updated:** 2026-05-14T20:05+02:00
+
+Cycle 32 — backlog-jelölt (cycle 29-ből): `cli/scripts/agent-handlers/`
+infrastruktúra felemelés a LDP-be (eddig manual fallback `tsc --noEmit`).
+
+**pipeline.config.json változás:**
+- `watch.paths` bővítve: `./cli/scripts/agent-handlers/src` + `tsconfig.json` + `package.json`
+- Új step: **`tsc-agent-handlers`** (`npx tsc --noEmit -p scripts/agent-handlers/tsconfig.json --pretty`, `fatal: false`)
+- Pozíció: `cli-test` után, `rimraf-server-dist` előtt
+
+**Verify:** LDP **11/11 ✅** (10 régi + 1 új), `tsc-agent-handlers` ✅
+duration 241s (egy spec-newrun + tsc-agent-handlers + serverRestart).
+
+Az alapelv #22 (LDP-first) most mostantól érvényes `cli/scripts/agent-handlers/`
+módosítások-ra is — nem kell külön manual fallback typecheck-et futtatni.
+A WORKFLOW_DEV / alapelv #22 megjegyzés `cli/scripts/` watch-coverage-re
+**aktualizálható** (ha indokolt) — cycle 32 erre nem terjedt ki.
+
+---
+
 ## [OPEN] AGB-2026-05-14-06 — FR #2 automatic-status-recording Phase 1 SHIPPED
 **From:** dev-agent
 **To:** chat
