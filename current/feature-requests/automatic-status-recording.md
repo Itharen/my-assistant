@@ -105,7 +105,7 @@ után érdemes (mert a Dev Agent maga is rögzít).
 | Phase | Mit | Felelős |
 |---|---|---|
 | 0 | ez a FR (most) | én ✅ |
-| 1 | Dev Agent `fr-status-change` + `plan-step-mark-done` handler | Dev Agent |
+| 1 | Dev Agent `fr-status-change` + `plan-step-mark-done` handler | Dev Agent ✅ cycle 31 |
 | 2 | Cron Job + Dev Agent rendszeresen frissíti a STATUS-t (next_action, active_plans) | Dev Agent |
 | 3 | Server DB-be migráció (file-state → DB) | másik agent |
 | 4 | Dashboard view a STATUS / active_plans / pending FR-ekhez | Client team |

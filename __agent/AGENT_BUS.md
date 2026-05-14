@@ -87,6 +87,54 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-14-06 — FR #2 automatic-status-recording Phase 1 SHIPPED
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-14T14:10+02:00
+**Updated:** 2026-05-14T14:10+02:00
+
+Cycle 31 — backlog 🟢 #2 Phase 1 ship: dispatcher 2 új handler.
+
+**Plan-doc:** `__agent/plans/automatic-status-recording.plan.md` (B-mode)
+
+**Új handler-ek:**
+- `cli/scripts/agent-handlers/src/handlers/fr-status-change.ts` (Tier 1)
+  - Resolve `frPath` (abs or rel-from-projectRoot)
+  - Find `## Status` heading, locate block (until next `##` or `---`)
+  - Preflight: ha `fromStatus` nincs a blokk-ban → `MA-FR-STATUS-MISMATCH` throw (autonóm dispatcher nem ír felül váratlanul módosult fájlt)
+  - Replace `fromStatus` → `toStatus` (string-level), atomic write (tmp + rename)
+  - Strukturált error codes: `MA-FR-FILE-NOT-FOUND`, `MA-FR-STATUS-MISSING`, `MA-FR-STATUS-MISMATCH`, `MA-FR-WRITE-FAIL`, `MA-FR-READ-FAIL`
+- `cli/scripts/agent-handlers/src/handlers/plan-step-mark-done.ts` (Tier 1)
+  - Find first line containing `stepRef`
+  - Idempotens: ha már ✅ → `MA-PLAN-STEP-ALREADY-DONE` note + skip (NEM error)
+  - Append ✅ a sor végéhez; markdown-tábla esetén az utolsó cellába
+  - Atomic write
+  - Strukturált error codes: `MA-PLAN-FILE-NOT-FOUND`, `MA-PLAN-STEP-NOT-FOUND`, `MA-PLAN-WRITE-FAIL`, `MA-PLAN-READ-FAIL`
+
+**Args sémák:**
+```ts
+FrStatusChangeAction.args: { frPath, fromStatus, toStatus, reason? }
+PlanStepMarkDoneAction.args: { planPath, stepRef, evidence? }
+```
+
+**Wiring:**
+- `types.ts` ActionType + interface + union
+- `schema.ts` validation (frPath/fromStatus/toStatus/planPath/stepRef non-empty)
+- `dispatch.ts` 2 új switch case
+
+**Verify:** agent-handlers tsc ✅ (manual). LDP unchanged 10/10 ✅.
+
+**Phase 2** (Cron Job + Dev Agent rendszeres status-update CCAP runtime-ban):
+külön cycle.
+
+**Phase 3** (Server DB migráció): külön FR + külön plan.
+
+A FR Phase 1-gyel a Dev Agent autonóm üzemben tud FR-status-t váltani és
+plan-step-et lezárni — eddig manuális Edit-tool-os volt.
+
+---
+
 ## [OPEN] AGB-2026-05-14-05 — FR #1 communication-forms Phase 4 SHIPPED (közös throttle)
 **From:** dev-agent
 **To:** chat

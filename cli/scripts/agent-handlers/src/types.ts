@@ -13,7 +13,9 @@ export type ActionType =
   | 'notify-cast'
   | 'ccap-notify'
   | 'task-create'
-  | 'task-update';
+  | 'task-update'
+  | 'fr-status-change'
+  | 'plan-step-mark-done';
 
 export interface BaseAction {
   type: ActionType;
@@ -95,6 +97,27 @@ export interface TaskUpdateAction extends BaseAction {
   };
 }
 
+export interface FrStatusChangeAction extends BaseAction {
+  type: 'fr-status-change';
+  tier: 1;
+  args: {
+    frPath: string;                            // relative-from-projectRoot OR absolute
+    fromStatus: string;                        // expected substring in current Status (preflight)
+    toStatus: string;                          // new status (free-form, e.g. "✅ shipped (cycle 31)")
+    reason?: string;
+  };
+}
+
+export interface PlanStepMarkDoneAction extends BaseAction {
+  type: 'plan-step-mark-done';
+  tier: 1;
+  args: {
+    planPath: string;
+    stepRef: string;                           // substring identifying the step line/row
+    evidence?: string;                         // e.g. commit-sha, cycle id
+  };
+}
+
 export type Action =
   | LogAction
   | UserInputNewAction
@@ -102,7 +125,9 @@ export type Action =
   | NotifyCastAction
   | CcapNotifyAction
   | TaskCreateAction
-  | TaskUpdateAction;
+  | TaskUpdateAction
+  | FrStatusChangeAction
+  | PlanStepMarkDoneAction;
 
 export interface AgentOutput {
   verdict: Verdict;

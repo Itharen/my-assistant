@@ -14,6 +14,8 @@ const ACTION_TYPES: ReadonlySet<ActionType> = new Set([
   'ccap-notify',
   'task-create',
   'task-update',
+  'fr-status-change',
+  'plan-step-mark-done',
 ]);
 
 // Tier each action MUST have. Mismatch = validation error.
@@ -25,6 +27,8 @@ const REQUIRED_TIER: Record<ActionType, ActionTier> = {
   'ccap-notify': 1,
   'task-create': 2,
   'task-update': 2,
+  'fr-status-change': 1,
+  'plan-step-mark-done': 1,
 };
 
 const VALID_CCAP_NOTIFY_TYPES = new Set(['message', 'confirm', 'option-select', 'question']);
@@ -199,6 +203,15 @@ function validateAction(action: unknown, index: number, errors: ValidationError[
       if (typeof args.patch !== 'object' || args.patch === null) {
         errors.push({ path: `${path}.args.patch`, message: 'must be an object' });
       }
+      break;
+    case 'fr-status-change':
+      requireString(args, 'frPath', `${path}.args`, errors);
+      requireString(args, 'fromStatus', `${path}.args`, errors);
+      requireString(args, 'toStatus', `${path}.args`, errors);
+      break;
+    case 'plan-step-mark-done':
+      requireString(args, 'planPath', `${path}.args`, errors);
+      requireString(args, 'stepRef', `${path}.args`, errors);
       break;
   }
 }

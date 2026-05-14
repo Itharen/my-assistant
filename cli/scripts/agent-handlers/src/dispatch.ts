@@ -19,6 +19,8 @@ import { handleNotifyCast } from './handlers/notify-cast.js';
 import { handleCcapNotify } from './handlers/ccap-notify.js';
 import { handleTaskCreate } from './handlers/task-create.js';
 import { handleTaskUpdate } from './handlers/task-update.js';
+import { handleFrStatusChange } from './handlers/fr-status-change.js';
+import { handlePlanStepMarkDone } from './handlers/plan-step-mark-done.js';
 import type { Action, AgentOutput, DispatchResult } from './types.js';
 
 async function readStdin(): Promise<string> {
@@ -68,6 +70,10 @@ async function executeAction(action: Action): Promise<void> {
       return handleTaskCreate(action);
     case 'task-update':
       return handleTaskUpdate(action);
+    case 'fr-status-change':
+      return handleFrStatusChange(action);
+    case 'plan-step-mark-done':
+      return handlePlanStepMarkDone(action);
   }
 }
 
