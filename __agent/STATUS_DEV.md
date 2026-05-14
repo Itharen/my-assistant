@@ -2,37 +2,33 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 28                                 # Cycle 28 lezárva; következő cycle 29 lesz
+cycle: 29                                 # Cycle 29 lezárva; következő cycle 30 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 28 lezárva 2026-05-14 08:00 — error-handling cleanup Phase 3 SHIPPED
-  (google/spotify 3 swallow). safe-call helper áthelyezve cast/internal →
-  utils. Teljes 18 swallow eltüntetve a cli/-ből (Phase 1+2+3). LDP 10/10 ✅,
-  cli-test 26/26 változatlan. AGB-03 announcement chat-nek. Phase 4 (server
-  FR #3b) külön plan + green-light. Lásd log/cycles/cycle-28.md.
+  Cycle 29 lezárva 2026-05-14 10:15 — FR #1 Phase 2 SHIPPED (notify-cast
+  valódi shell-out, commit 428aae7). Plan-folytatás communication-forms
+  Phase 2. agent-handlers tsc ✅ (manual). LDP unchanged 10/10. AGB-04
+  announcement chat-nek. Phase 4 (throttle) következő cycle. Lásd
+  log/cycles/cycle-29.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 28
+  cycle_id: 29
   phase_completed: close-cycle
   files_modified:
-    - cli/src/utils/safe-call.ts                # áthelyezve cast/internal-ből
-    - cli/src/cast/cast-client.ts               # safe-call import path update
-    - cli/src/cast/volume.ts
-    - cli/src/cast/discover.ts
-    - cli/src/cast/tts.ts
-    - cli/src/google/google-assistant.client.ts
-    - cli/src/spotify/spotify.client.ts
+    - cli/scripts/agent-handlers/src/handlers/notify-cast.ts
+    - current/feature-requests/communication-forms.md
     - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-28.md
-  fr_status_changes: []
+    - __agent/log/cycles/cycle-29.md
+  fr_status_changes:
+    - { frPath: "current/feature-requests/communication-forms.md", phase: 2, fromStatus: "🟢", toStatus: "✅ shipped" }
   plan_steps_marked_done:
-    - { planPath: "__agent/plans/error-handling-cleanup.plan.md", stepRef: "Phase 3 — google/spotify swallow (3 helyen) + helper áthelyezés" }
-  commit_sha: "6b5c53c"
+    - { planPath: "__agent/plans/communication-forms.plan.md", stepRef: "Phase 2 — notify-cast valódi shell-out" }
+  commit_sha: "428aae7"
   build_status: success
-  test_status: success                      # cli=26/26 (változatlan), server=2/2, client=13/13
+  test_status: success                      # cli=26/26 LDP, agent-handlers tsc ✅ manual
 
 foreign_pending:
   first_seen_cycle: 4
