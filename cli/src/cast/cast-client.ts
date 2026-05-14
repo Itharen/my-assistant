@@ -32,7 +32,7 @@ interface CastClient {
 
 // @ts-expect-error - castv2-client lacks published types; kept untyped on purpose (no .d.ts).
 import { Client as ClientCtor, DefaultMediaReceiver as DefaultMediaReceiverRef } from 'castv2-client';
-import { safeCall } from './internal/safe-call.js';
+import { safeCall } from '../utils/safe-call.js';
 const Client = ClientCtor as unknown as new () => CastClient;
 const DefaultMediaReceiver = DefaultMediaReceiverRef as unknown;
 

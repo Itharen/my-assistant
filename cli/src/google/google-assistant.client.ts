@@ -15,24 +15,18 @@ import { dirname, resolve } from 'node:path';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import GoogleAssistant from 'google-assistant';
 
-export interface GoogleInstalledCreds {
-  client_id: string;
-  client_secret: string;
-  project_id: string;
-  auth_uri: string;
-  token_uri: string;
-  redirect_uris: string[];
-}
+import { logAction } from '../action-log/action-log.client.js';
+import { safeCall } from '../utils/safe-call.js';
 
-export interface GoogleRuntimeConfig {
-  device_model_id: string;
-  device_id: string;
-}
-
-export interface GoogleAssistantConfig {
-  installed: GoogleInstalledCreds;
-  runtime?: GoogleRuntimeConfig;
-}
+// Types: SSoT a server-ben (lásd `current/principles/ssot.md` cross-subproject pattern).
+import type {
+  GoogleInstalledCreds,
+  GoogleRuntimeConfig,
+  GoogleAssistantConfig,
+  QueryOptions,
+  QueryResult,
+} from '@server/_models/interfaces/integrations/google.interface';
+export type { GoogleInstalledCreds, GoogleRuntimeConfig, GoogleAssistantConfig, QueryOptions, QueryResult };
 
 export function defaultConfigPath(): string {
   const here = dirname(fileURLToPath(import.meta.url));
@@ -51,7 +45,18 @@ export async function loadConfig(path?: string): Promise<GoogleAssistantConfig |
     const parsed = JSON.parse(raw) as Partial<GoogleAssistantConfig>;
     if (!parsed.installed?.client_id || !parsed.installed?.client_secret) return null;
     return parsed as GoogleAssistantConfig;
-  } catch {
+  } catch (err) {
+    // ENOENT first-run silent OK; bármi más (parse fail, perm) strukturált log.
+    const errno: NodeJS.ErrnoException = err as NodeJS.ErrnoException;
+    if (errno.code !== 'ENOENT') {
+      const msg: string = err instanceof Error ? err.message : String(err);
+      void logAction({
+        kind: 'error',
+        summary: `[google] MA-GOOGLE-CONFIG-LOAD-FAIL: ${msg}`,
+        ref: p,
+        extra: { code: 'MA-GOOGLE-CONFIG-LOAD-FAIL', file: p, error: msg, errnoCode: errno.code },
+      });
+    }
     return null;
   }
 }
@@ -60,18 +65,6 @@ export async function saveConfig(cfg: GoogleAssistantConfig, path?: string): Pro
   const p = path ?? defaultConfigPath();
   await fs.mkdir(dirname(p), { recursive: true });
   await fs.writeFile(p, JSON.stringify(cfg, null, 2) + '\n', 'utf-8');
-}
-
-export interface QueryOptions {
-  text: string;
-  lang?: string;
-  timeoutMs?: number;
-}
-
-export interface QueryResult {
-  responseText?: string;
-  transcripts: string[];
-  micMode?: string;
 }
 
 // Egy textQuery → response. Promise alapú wrapper az event-emitter API köré.
@@ -152,11 +145,7 @@ export async function sendTextQuery(opts: QueryOptions): Promise<QueryResult> {
 
           // 'ended' callback signature is (error, continueConversation) — wrap to match (data: unknown).
           conv.on('ended', ((..._args: unknown[]) => {
-            try {
-              conv.end();
-            } catch {
-              /* noop */
-            }
+            safeCall(() => conv.end(), 'google.conv.end');
             settle();
           }) as unknown as (data: unknown) => void);
 

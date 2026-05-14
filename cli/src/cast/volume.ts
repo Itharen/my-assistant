@@ -35,7 +35,7 @@ interface CastReceiverClient {
 
 // @ts-expect-error - castv2-client lacks published types; kept untyped on purpose (no .d.ts).
 import { Client as ClientCtor } from 'castv2-client';
-import { safeCall } from './internal/safe-call.js';
+import { safeCall } from '../utils/safe-call.js';
 const Client = ClientCtor as unknown as new () => CastReceiverClient;
 
 export interface VolumeTargetRef {

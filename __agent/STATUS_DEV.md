@@ -2,36 +2,35 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 27                                 # Cycle 27 lezárva; következő cycle 28 lesz
+cycle: 28                                 # Cycle 28 lezárva; következő cycle 29 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 27 lezárva 2026-05-14 04:05 — error-handling cleanup Phase 2 SHIPPED
-  (cli/src/cast/ 14 swallow → safeCall helper + structured logs).
-  Plan-doc error-handling-cleanup.plan.md Phase 2 ✅. LDP 10/10 ✅, cli-test
-  26/26 változatlan. AGB-02 announcement chat-nek. Phase 3 (google/spotify
-  3 swallow), Phase 4 (server FR #3b) külön cycle-ekben. Lásd
-  log/cycles/cycle-27.md.
+  Cycle 28 lezárva 2026-05-14 08:00 — error-handling cleanup Phase 3 SHIPPED
+  (google/spotify 3 swallow). safe-call helper áthelyezve cast/internal →
+  utils. Teljes 18 swallow eltüntetve a cli/-ből (Phase 1+2+3). LDP 10/10 ✅,
+  cli-test 26/26 változatlan. AGB-03 announcement chat-nek. Phase 4 (server
+  FR #3b) külön plan + green-light. Lásd log/cycles/cycle-28.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 27
+  cycle_id: 28
   phase_completed: close-cycle
   files_modified:
-    - cli/src/cast/internal/safe-call.ts
-    - cli/src/cast/cast-client.ts
+    - cli/src/utils/safe-call.ts                # áthelyezve cast/internal-ből
+    - cli/src/cast/cast-client.ts               # safe-call import path update
     - cli/src/cast/volume.ts
     - cli/src/cast/discover.ts
     - cli/src/cast/tts.ts
-    - cli/src/cast/groups.ts
-    - cli/src/cast/presets.ts
+    - cli/src/google/google-assistant.client.ts
+    - cli/src/spotify/spotify.client.ts
     - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-27.md
+    - __agent/log/cycles/cycle-28.md
   fr_status_changes: []
   plan_steps_marked_done:
-    - { planPath: "__agent/plans/error-handling-cleanup.plan.md", stepRef: "Phase 2 — cast/* swallow audit (14 helyen)" }
-  commit_sha: "29f5f44"
+    - { planPath: "__agent/plans/error-handling-cleanup.plan.md", stepRef: "Phase 3 — google/spotify swallow (3 helyen) + helper áthelyezés" }
+  commit_sha: "<pending>"
   build_status: success
   test_status: success                      # cli=26/26 (változatlan), server=2/2, client=13/13
 

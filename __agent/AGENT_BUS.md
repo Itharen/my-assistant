@@ -87,6 +87,38 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-14-03 — Error-handling cleanup Phase 3 SHIPPED (google/spotify 3 swallow)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-14T08:00+02:00
+**Updated:** 2026-05-14T08:00+02:00
+
+Cycle 28 — error-handling-cleanup.plan.md Phase 3 ship: `cli/src/google/` +
+`cli/src/spotify/` 3 csendes swallow-jának tisztítása.
+
+**Refactor:**
+- `safe-call.ts` áthelyezve: `cli/src/cast/internal/safe-call.ts` → `cli/src/utils/safe-call.ts` (cross-cutting helper, cast + google használja)
+- Cast importok updatelve (cast-client, volume, discover, tts)
+- Helper code: `MA-CAST-TEARDOWN-NONFATAL` → `MA-TEARDOWN-NONFATAL` (generikus)
+
+**Új strukturált logok (3 swallow tisztítva):**
+- `google-assistant.client.ts:45` `loadConfig`: ENOENT distinguish (first-run silent OK) vs `MA-GOOGLE-CONFIG-LOAD-FAIL` action-log
+- `google-assistant.client.ts:136` `conv.end()` teardown → `safeCall(..., 'google.conv.end')`
+- `spotify.client.ts:55` `loadConfig`: ENOENT distinguish vs `MA-SPOTIFY-CONFIG-LOAD-FAIL` action-log
+
+**Verify:** LDP **10/10 ✅**, cli-test **26/26** változatlan.
+
+**Audit eredmény után 3 Phase összesen:**
+- Phase 1 (cycle 26): action-log layer Result-pattern (1 swallow → strukturált)
+- Phase 2 (cycle 27): cast/* 14 swallow → safeCall + structured logs
+- Phase 3 (cycle 28): google/spotify 3 swallow → safeCall + structured logs
+- **Teljes 18 swallow eltüntetve** a cli/ kódbázisból. Csak a documented "outer last-resort stderr-unwritable swallow" maradt 1 helyen (action-log.client.ts:104).
+
+**Phase 4 (server-side runtime-error-api FR #3b):** külön plan + külön green-light.
+
+---
+
 ## [OPEN] AGB-2026-05-14-02 — Error-handling cleanup Phase 2 SHIPPED (cast/* 14 swallow)
 **From:** dev-agent
 **To:** chat

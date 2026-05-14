@@ -17,32 +17,16 @@ import { promises as fs } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
-export interface SpotifyConfig {
-  clientId: string;
-  clientSecret: string;
-  refreshToken: string;
-  accessToken?: string;
-  expiresAt?: number;
-}
+import { logAction } from '../action-log/action-log.client.js';
 
-export interface PlaybackSnapshot {
-  isPlaying: boolean;
-  trackUri?: string;
-  trackName?: string;
-  artistName?: string;
-  positionMs: number;
-  deviceId: string;
-  deviceName: string;
-  contextUri?: string;
-}
-
-export interface SpotifyDevice {
-  id: string;
-  name: string;
-  type: string;
-  isActive: boolean;
-  volumePercent?: number;
-}
+// Types: SSoT a server-ben (lásd `current/principles/ssot.md` cross-subproject pattern).
+import type {
+  SpotifyConfig,
+  PlaybackSnapshot,
+  SpotifyDevice,
+  ResolveDeviceResult,
+} from '@server/_models/interfaces/integrations/spotify.interface';
+export type { SpotifyConfig, PlaybackSnapshot, SpotifyDevice, ResolveDeviceResult };
 
 const SPOTIFY_APP_ID = '705D30C6'; // Cast app ID a Spotify-ra (a getStatus-ből látjuk)
 
@@ -70,7 +54,18 @@ export async function loadConfig(path?: string): Promise<SpotifyConfig | null> {
       accessToken: parsed.accessToken,
       expiresAt: parsed.expiresAt,
     };
-  } catch {
+  } catch (err) {
+    // ENOENT first-run silent OK; egyéb (parse, perm) strukturált log.
+    const errno: NodeJS.ErrnoException = err as NodeJS.ErrnoException;
+    if (errno.code !== 'ENOENT') {
+      const msg: string = err instanceof Error ? err.message : String(err);
+      void logAction({
+        kind: 'error',
+        summary: `[spotify] MA-SPOTIFY-CONFIG-LOAD-FAIL: ${msg}`,
+        ref: p,
+        extra: { code: 'MA-SPOTIFY-CONFIG-LOAD-FAIL', file: p, error: msg, errnoCode: errno.code },
+      });
+    }
     return null;
   }
 }
@@ -202,11 +197,6 @@ export async function transferPlayback(
 }
 
 // ===== Magas szintű flow ===================================================
-
-export interface ResolveDeviceResult {
-  device: SpotifyDevice | null;
-  candidates: SpotifyDevice[];
-}
 
 // A pre-snapshot deviceName-jét próbáljuk megtalálni a current device-list-ben.
 // Ha eltűnt (mert a Cast átvétel törölte), keresünk substring matchet. Ha

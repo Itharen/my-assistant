@@ -10,7 +10,7 @@
 
 import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
 import { Readable } from 'node:stream';
-import { safeCall } from './internal/safe-call.js';
+import { safeCall } from '../utils/safe-call.js';
 
 export interface TtsOptions {
   text: string;

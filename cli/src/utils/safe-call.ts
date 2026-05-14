@@ -4,9 +4,10 @@
 // de NEM silent: minden ilyen `note` action-log entry-t kap, hogy auditolható
 // legyen.
 //
-// FR: error-handling-cleanup Phase 2 (cycle 27).
+// FR: error-handling-cleanup Phase 2 (cycle 27) létrehozva cast/internal/-ben,
+// Phase 3 (cycle 28) áthelyezve utils/-ba (cross-cutting: cast + google).
 
-import { logAction } from '../../action-log/action-log.client.js';
+import { logAction } from '../action-log/action-log.client.js';
 
 /**
  * Hívd meg a teardown-thunk-ot. Hiba esetén `note` action-log emit (NEM
@@ -24,8 +25,8 @@ export function safeCall(fn: () => void, label: string): void {
     // ellen védve a logAction belső stderr emit-jével).
     void logAction({
       kind: 'note',
-      summary: `[cast] safeCall: ${label} failed (non-fatal teardown)`,
-      extra: { label, error: msg, code: 'MA-CAST-TEARDOWN-NONFATAL' },
+      summary: `safeCall: ${label} failed (non-fatal teardown)`,
+      extra: { label, error: msg, code: 'MA-TEARDOWN-NONFATAL' },
     });
   }
 }

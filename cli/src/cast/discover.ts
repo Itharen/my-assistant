@@ -8,7 +8,7 @@
 
 import { Bonjour, type Service } from 'bonjour-service';
 import { networkInterfaces } from 'node:os';
-import { safeCall } from './internal/safe-call.js';
+import { safeCall } from '../utils/safe-call.js';
 
 export interface CastDevice {
   name: string;
