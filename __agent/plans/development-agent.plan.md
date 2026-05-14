@@ -99,8 +99,8 @@ File-lock a state-fájlokon — már megvalósítva (`cli/scripts/agent-handlers
 | Phase | Mit | Felelős |
 |---|---|---|
 | 0 | ez a plan + entrypoint vázlat | én ✅ |
-| 1 | Dispatcher `agent` mező support + Dev-agent log handler | én vagy másik agent |
-| 2 | FR-status-change + plan-step-* handlerek | másik agent |
+| 1 | Dispatcher `agent` mező support + Dev-agent log handler | Dev Agent ✅ cycle 33 |
+| 2 | FR-status-change + plan-step-* handlerek | Dev Agent ✅ cycle 31 (FR #2) |
 | 3 | CCAP integráció (event-/cron-trigger) | CCAP team |
 | 4 | Server DB-migration + cost-cap szétválasztás | másik agent |
 
@@ -113,7 +113,11 @@ File-lock a state-fájlokon — már megvalósítva (`cli/scripts/agent-handlers
 
 ## Status
 
-📝 **v1 vázlat készen.** Várja a 3-pontos user-OK-t (vagy alapos review-t) ahhoz hogy a kódszintű build induljon.
+🔄 **Phase 1+2 shipped.** Phase 1 (dispatcher `agent` mező support) cycle 33-ban,
+Phase 2 (FR-status-change + plan-step-mark-done handlers) cycle 31-ben (FR #2 Phase 1
+plan-on át). Phase 3 (CCAP integráció) + Phase 4 (server DB) nyitva.
+
+📝 **v1 vázlat (eredeti):** Várja a 3-pontos user-OK-t (vagy alapos review-t) ahhoz hogy a kódszintű build induljon.
 
 3 pont a Phase 1 indításához:
 

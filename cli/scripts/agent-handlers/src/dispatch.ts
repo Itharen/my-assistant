@@ -109,14 +109,16 @@ async function main(): Promise<void> {
   }
 
   const output: AgentOutput = validation.output;
+  const agent: string = output.agent ?? 'assistant-cron';   // default backward-compat
   const isSleeping = isSleepingNow();
 
   // Tick-start log
   await logAction({
-    actor: 'agent-dispatcher',
+    actor: `agent-dispatcher:${agent}`,
     kind: 'flow-start',
-    summary: `Assistant Agent Cron tick: verdict=${output.verdict}, ${output.actions.length} action(s), sleeping=${isSleeping}`,
+    summary: `${agent} tick: verdict=${output.verdict}, ${output.actions.length} action(s), sleeping=${isSleeping}`,
     extra: {
+      agent,
       reason: output.reason,
       tickedAt: output.tickMeta.tickedAt,
       inputDigest: output.tickMeta.inputDigest,
@@ -182,9 +184,9 @@ async function main(): Promise<void> {
 
   // Tick-end log + summary on stdout
   await logAction({
-    actor: 'agent-dispatcher',
+    actor: `agent-dispatcher:${agent}`,
     kind: 'flow-end',
-    summary: `Assistant Agent Cron tick done: ok=${result.succeeded}, failed=${result.failed}, skipped=${result.skipped}`,
+    summary: `${agent} tick done: ok=${result.succeeded}, failed=${result.failed}, skipped=${result.skipped}`,
     extra: { details: result.details },
   });
 

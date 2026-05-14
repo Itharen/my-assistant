@@ -129,7 +129,10 @@ export type Action =
   | FrStatusChangeAction
   | PlanStepMarkDoneAction;
 
+export type AgentName = 'assistant-cron' | 'development';
+
 export interface AgentOutput {
+  agent?: AgentName;                          // optional for backward-compat; default = 'assistant-cron'
   verdict: Verdict;
   reason: string;
   actions: Action[];

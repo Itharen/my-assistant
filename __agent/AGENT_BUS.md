@@ -87,6 +87,36 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-15-01 — Dev Agent Phase 1 SHIPPED (dispatcher agent field)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-15T00:05+02:00
+**Updated:** 2026-05-15T00:05+02:00
+
+Cycle 33 — backlog #3 (Dev Agent Phase 1 self-bootstrap, `__agent/plans/development-agent.plan.md`) Phase 1 ship.
+
+**Mit:** dispatcher most már megkülönbözteti az `assistant-cron` és `development`
+agent-eket az AgentOutput JSON `agent` mezőjén keresztül:
+- `types.ts`: `AgentName` type union + `AgentOutput.agent?: AgentName` (backward-compat: default `assistant-cron`)
+- `schema.ts`: `VALID_AGENTS` set + agent-validation a `validateAgentOutput`-ban
+- `dispatch.ts`: tick-start + tick-end log mezőzve (`actor: agent-dispatcher:<agent>`, summary prefix, extra.agent)
+
+**Plan-doc sync:** `__agent/plans/development-agent.plan.md` Phase-elés frissítve
+- Phase 1 ✅ cycle 33
+- Phase 2 ✅ cycle 31 (fr-status-change + plan-step-mark-done — FR #2 plan-on át shipped)
+- Phase 3 (CCAP integráció) + Phase 4 (server DB) nyitva
+
+**Verify:** LDP **11/11 ✅**, agent-handlers tsc ✅, cli-test 26/26.
+
+**Out-of-scope (Phase 3+):**
+- CCAP runtime tényleges event/cron-trigger a Dev Agent-re (chat / CCAP team)
+- Server DB migráció (külön FR #3b runtime-error-api szakaszban)
+- Per-agent state-fájl szétválasztás (jelenleg a Dev Agent saját
+  `development-agent-tick.json` van, az Assistant Cron `assistant-agent-cron-tick.json`)
+
+---
+
 ## [OPEN] AGB-2026-05-14-07 — agent-handlers LDP integráció (új step)
 **From:** dev-agent
 **To:** chat

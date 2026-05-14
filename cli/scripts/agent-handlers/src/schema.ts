@@ -6,6 +6,7 @@ import { Verdict } from './types.js';
 import type { AgentOutput, Action, ActionType, ActionTier } from './types.js';
 
 const VERDICTS: ReadonlySet<Verdict> = new Set([Verdict.urgens, Verdict.softNudge, Verdict.noAction]);
+const VALID_AGENTS = new Set(['assistant-cron', 'development']);
 const ACTION_TYPES: ReadonlySet<ActionType> = new Set([
   'log',
   'user-input-new',
@@ -61,6 +62,14 @@ export function validateAgentOutput(input: unknown): {
     return { ok: false, errors: [{ path: '$', message: 'must be an object' }] };
   }
   const o = input as Record<string, unknown>;
+
+  // agent (optional — default 'assistant-cron' for backward-compat)
+  if (o.agent !== undefined && (typeof o.agent !== 'string' || !VALID_AGENTS.has(o.agent))) {
+    errors.push({
+      path: '$.agent',
+      message: `must be one of: ${[...VALID_AGENTS].join(', ')}`,
+    });
+  }
 
   // verdict
   if (typeof o.verdict !== 'string' || !VERDICTS.has(o.verdict as Verdict)) {
