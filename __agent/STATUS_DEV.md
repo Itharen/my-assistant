@@ -2,37 +2,30 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 31                                 # Cycle 31 lezárva; következő cycle 32 lesz
+cycle: 32                                 # Cycle 32 lezárva; következő cycle 33 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 31 lezárva 2026-05-14 14:15 — FR #2 Phase 1 SHIPPED (fr-status-change +
-  plan-step-mark-done handlers, commit 7c98fa7). Plan-doc B-mode
-  automatic-status-recording. agent-handlers tsc ✅ manual. LDP unchanged
-  10/10. AGB-06 announcement chat-nek. Lásd log/cycles/cycle-31.md.
+  Cycle 32 lezárva 2026-05-14 20:10 — agent-handlers LDP integráció ship
+  (commit fa3f844). pipeline.config.json watch.paths + új tsc-agent-handlers
+  step. LDP 11/11 ✅ (10+1). agent-handlers most már LDP-coverage alatt,
+  alapelv #22 manual fallback megszűnt erre. AGB-07 announcement chat-nek.
+  Lásd log/cycles/cycle-32.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 31
+  cycle_id: 32
   phase_completed: close-cycle
   files_modified:
-    - cli/scripts/agent-handlers/src/types.ts
-    - cli/scripts/agent-handlers/src/schema.ts
-    - cli/scripts/agent-handlers/src/dispatch.ts
-    - cli/scripts/agent-handlers/src/handlers/fr-status-change.ts       # ÚJ
-    - cli/scripts/agent-handlers/src/handlers/plan-step-mark-done.ts    # ÚJ
-    - __agent/plans/automatic-status-recording.plan.md                  # ÚJ
-    - current/feature-requests/automatic-status-recording.md
+    - pipeline.config.json
     - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-31.md
-  fr_status_changes:
-    - { frPath: "current/feature-requests/automatic-status-recording.md", phase: 1, fromStatus: "🟢", toStatus: "✅ shipped" }
-  plan_steps_marked_done:
-    - { planPath: "__agent/plans/automatic-status-recording.plan.md", stepRef: "Phase 1 — fr-status-change + plan-step-mark-done handlers" }
-  commit_sha: "7c98fa7"
+    - __agent/log/cycles/cycle-32.md
+  fr_status_changes: []
+  plan_steps_marked_done: []                  # infrastruktúra, backlog-jelölt
+  commit_sha: "fa3f844"
   build_status: success
-  test_status: success                      # cli=26/26 LDP, agent-handlers tsc ✅ manual
+  test_status: success                        # LDP 11/11 ✅ (új tsc-agent-handlers step)
 
 foreign_pending:
   first_seen_cycle: 4
