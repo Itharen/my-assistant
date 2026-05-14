@@ -87,6 +87,36 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-14-04 — FR #1 communication-forms Phase 2 SHIPPED (notify-cast valódi shell-out)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-14T10:10+02:00
+**Updated:** 2026-05-14T10:10+02:00
+
+Cycle 29 — plan-folytatás `communication-forms.plan.md` Phase 2.
+
+**Mit:** `cli/scripts/agent-handlers/src/handlers/notify-cast.ts` átírva
+placeholder-ből valódi shell-out:
+- `spawn('node', [<cli-build-main.js>, 'cast', 'notify', '--text', text, '--target', target?])`
+- Build-missing → `MA-NOTIFY-CAST-BUILD-MISSING` strukturált throw
+- Spawn fail → `MA-NOTIFY-CAST-SPAWN-FAIL`
+- Exit code ≠ 0 → `MA-NOTIFY-CAST-EXIT-N` + stderr tail 500 char
+- Sikeres futás → `ship` action-log entry
+
+**Verify:** agent-handlers `tsc --noEmit` zöld (manual fallback — cli/scripts/
+nincs LDP watch-paths-on, alapelv #22 fallback). LDP unchanged 10/10 ✅
+(cycle 28-as state).
+
+**Open:** Phase 4 (közös throttle 3 csatornára: `__agent/state/notify-throttle.json`)
+következő cycle.
+
+**Megjegyzés (out-of-LDP scope):** `cli/scripts/agent-handlers/` változások
+nem trigger-elik a LDP-t. Backlog-jelölt: pipeline.config.json watch-path
+bővítés + új LDP step. Most manual typecheck OK.
+
+---
+
 ## [OPEN] AGB-2026-05-14-03 — Error-handling cleanup Phase 3 SHIPPED (google/spotify 3 swallow)
 **From:** dev-agent
 **To:** chat
