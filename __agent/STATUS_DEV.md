@@ -2,34 +2,35 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 30                                 # Cycle 30 lezárva; következő cycle 31 lesz
+cycle: 31                                 # Cycle 31 lezárva; következő cycle 32 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 30 lezárva 2026-05-14 12:20 — FR #1 Phase 4 SHIPPED (közös throttle,
-  commit e348629). FR Dev Agent-szakaszai mind ✅ (Phase 1+2+4). Phase 3
-  chat-felelős. agent-handlers tsc ✅ manual. LDP unchanged 10/10. AGB-05
-  announcement chat-nek. Lásd log/cycles/cycle-30.md.
+  Cycle 31 lezárva 2026-05-14 14:15 — FR #2 Phase 1 SHIPPED (fr-status-change +
+  plan-step-mark-done handlers, commit 7c98fa7). Plan-doc B-mode
+  automatic-status-recording. agent-handlers tsc ✅ manual. LDP unchanged
+  10/10. AGB-06 announcement chat-nek. Lásd log/cycles/cycle-31.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 30
+  cycle_id: 31
   phase_completed: close-cycle
   files_modified:
-    - cli/scripts/agent-handlers/src/throttle.ts            # ÚJ
     - cli/scripts/agent-handlers/src/types.ts
     - cli/scripts/agent-handlers/src/schema.ts
-    - cli/scripts/agent-handlers/src/handlers/notify-cast.ts
-    - cli/scripts/agent-handlers/src/handlers/ccap-notify.ts
-    - current/feature-requests/communication-forms.md
+    - cli/scripts/agent-handlers/src/dispatch.ts
+    - cli/scripts/agent-handlers/src/handlers/fr-status-change.ts       # ÚJ
+    - cli/scripts/agent-handlers/src/handlers/plan-step-mark-done.ts    # ÚJ
+    - __agent/plans/automatic-status-recording.plan.md                  # ÚJ
+    - current/feature-requests/automatic-status-recording.md
     - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-30.md
+    - __agent/log/cycles/cycle-31.md
   fr_status_changes:
-    - { frPath: "current/feature-requests/communication-forms.md", phase: 4, fromStatus: "🟢", toStatus: "✅ shipped" }
+    - { frPath: "current/feature-requests/automatic-status-recording.md", phase: 1, fromStatus: "🟢", toStatus: "✅ shipped" }
   plan_steps_marked_done:
-    - { planPath: "__agent/plans/communication-forms.plan.md", stepRef: "Phase 4 — közös throttle 3 csatornára" }
-  commit_sha: "e348629"
+    - { planPath: "__agent/plans/automatic-status-recording.plan.md", stepRef: "Phase 1 — fr-status-change + plan-step-mark-done handlers" }
+  commit_sha: "7c98fa7"
   build_status: success
   test_status: success                      # cli=26/26 LDP, agent-handlers tsc ✅ manual
 
