@@ -31,7 +31,7 @@ last_cycle:
   fr_status_changes: []
   plan_steps_marked_done:
     - { planPath: "__agent/plans/error-handling-cleanup.plan.md", stepRef: "Phase 2 — cast/* swallow audit (14 helyen)" }
-  commit_sha: "<pending>"
+  commit_sha: "29f5f44"
   build_status: success
   test_status: success                      # cli=26/26 (változatlan), server=2/2, client=13/13
 
