@@ -54,6 +54,7 @@ export interface NotifyCastAction extends BaseAction {
     text: string;
     target?: string;
     throttleId?: string;
+    cooldownMs?: number;                       // per-action override; default in throttle.ts
   };
 }
 
@@ -68,6 +69,8 @@ export interface CcapNotifyAction extends BaseAction {
     options?: string;
     wait?: boolean;
     sessionId?: string;
+    throttleId?: string;                       // Phase 4 közös throttle (FR #1)
+    cooldownMs?: number;
   };
 }
 

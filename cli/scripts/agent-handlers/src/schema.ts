@@ -157,6 +157,9 @@ function validateAction(action: unknown, index: number, errors: ValidationError[
       break;
     case 'notify-cast':
       requireString(args, 'text', `${path}.args`, errors);
+      if (args.cooldownMs !== undefined && (typeof args.cooldownMs !== 'number' || args.cooldownMs < 0)) {
+        errors.push({ path: `${path}.args.cooldownMs`, message: 'must be a non-negative number' });
+      }
       break;
     case 'ccap-notify':
       requireString(args, 'title', `${path}.args`, errors);
@@ -174,6 +177,9 @@ function validateAction(action: unknown, index: number, errors: ValidationError[
       }
       if (args.wait !== undefined && typeof args.wait !== 'boolean') {
         errors.push({ path: `${path}.args.wait`, message: 'must be a boolean' });
+      }
+      if (args.cooldownMs !== undefined && (typeof args.cooldownMs !== 'number' || args.cooldownMs < 0)) {
+        errors.push({ path: `${path}.args.cooldownMs`, message: 'must be a non-negative number' });
       }
       break;
     case 'task-create':

@@ -9,6 +9,7 @@ import * as path from 'node:path';
 import { existsSync } from 'node:fs';
 import { logAction } from '../action-log.js';
 import { paths } from '../paths.js';
+import { checkThrottle, recordThrottle } from '../throttle.js';
 import type { NotifyCastAction } from '../types.js';
 
 function resolveMaMainJs(): string {
@@ -16,6 +17,26 @@ function resolveMaMainJs(): string {
 }
 
 export async function handleNotifyCast(action: NotifyCastAction): Promise<void> {
+  // Phase 4 közös throttle — ha throttleId adott + cooldown-on belül → skip + log
+  if (action.args.throttleId) {
+    const check = await checkThrottle(action.args.throttleId, action.args.cooldownMs);
+    if (check.skip) {
+      await logAction({
+        actor: 'agent',
+        kind: 'note',
+        summary: `[notify-cast] throttled: "${action.args.text.slice(0, 60)}" (ageMs=${check.ageMs}, cooldownMs=${check.cooldownMs})`,
+        extra: {
+          code: 'MA-NOTIFY-CAST-THROTTLED',
+          throttleId: action.args.throttleId,
+          lastSentAt: check.lastSentAt,
+          ageMs: check.ageMs,
+          cooldownMs: check.cooldownMs,
+        },
+      });
+      return;
+    }
+  }
+
   const maMainJs: string = resolveMaMainJs();
   if (!existsSync(maMainJs)) {
     // Build hiányzik — strukturált error, NEM silent. A dispatcher
@@ -27,7 +48,6 @@ export async function handleNotifyCast(action: NotifyCastAction): Promise<void> 
 
   const cliArgs: string[] = ['cast', 'notify', '--text', action.args.text];
   if (action.args.target) cliArgs.push('--target', action.args.target);
-  // throttleId — Phase 4 lesz throttle handler. Itt csak action-log mező.
 
   await new Promise<void>((resolve, reject) => {
     const child = spawn('node', [maMainJs, ...cliArgs], {
@@ -50,6 +70,10 @@ export async function handleNotifyCast(action: NotifyCastAction): Promise<void> 
     });
   });
 
+  if (action.args.throttleId) {
+    await recordThrottle(action.args.throttleId);
+  }
+
   await logAction({
     actor: 'agent',
     kind: 'ship',
@@ -57,6 +81,7 @@ export async function handleNotifyCast(action: NotifyCastAction): Promise<void> 
     extra: {
       target: action.args.target ?? 'All Speakers',
       throttleId: action.args.throttleId,
+      cooldownMs: action.args.cooldownMs,
     },
   });
 }
