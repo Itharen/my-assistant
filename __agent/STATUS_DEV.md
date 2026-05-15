@@ -21,7 +21,7 @@ last_cycle:
     - __agent/log/cycles/cycle-37.md
   fr_status_changes: []
   plan_steps_marked_done: []                    # M2 backfill, nincs plan-step
-  commit_sha: "<pending>"
+  commit_sha: "97da1f8"
   build_status: success
   test_status: success                          # LDP unchanged 11/11
 
