@@ -1,10 +1,12 @@
 // scripts/agent-handlers/src/state.ts
-// Reads/writes __agent/state/assistant-agent-cron-tick.json with file-locking.
+// Reads/writes the per-agent tick-state JSON with file-locking.
+// Routing: assistant-cron → assistant-agent-cron-tick.json,
+//          development    → development-agent-tick.json.
 
 import { promises as fs } from 'node:fs';
 import * as path from 'node:path';
 import { paths } from './paths.js';
-import type { Verdict } from './types.js';
+import type { AgentName, Verdict } from './types.js';
 
 export interface AgentTickState {
   schemaVersion: 1;
@@ -30,9 +32,9 @@ async function ensureStateDir(): Promise<void> {
   await fs.mkdir(paths.state(), { recursive: true });
 }
 
-export async function readTickState(): Promise<AgentTickState> {
+export async function readTickState(agent: AgentName = 'assistant-cron'): Promise<AgentTickState> {
   await ensureStateDir();
-  const file = paths.agentTickJson();
+  const file = paths.tickStateFile(agent);
   try {
     const raw = await fs.readFile(file, 'utf8');
     const parsed = JSON.parse(raw) as Partial<AgentTickState>;
@@ -51,9 +53,10 @@ export async function readTickState(): Promise<AgentTickState> {
  */
 export async function updateTickState(
   patch: Partial<AgentTickState>,
+  agent: AgentName = 'assistant-cron',
 ): Promise<AgentTickState> {
   await ensureStateDir();
-  const file = paths.agentTickJson();
+  const file = paths.tickStateFile(agent);
   const lock = `${file}.lock`;
 
   // Try to acquire lock — bail after a few retries.
@@ -81,7 +84,7 @@ export async function updateTickState(
   }
 
   try {
-    const current = await readTickState();
+    const current = await readTickState(agent);
     const merged: AgentTickState = { ...current, ...patch, schemaVersion: 1 };
     await fs.writeFile(file, JSON.stringify(merged, null, 2) + '\n', 'utf8');
     return merged;

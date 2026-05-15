@@ -21,7 +21,7 @@ import { handleTaskCreate } from './handlers/task-create.js';
 import { handleTaskUpdate } from './handlers/task-update.js';
 import { handleFrStatusChange } from './handlers/fr-status-change.js';
 import { handlePlanStepMarkDone } from './handlers/plan-step-mark-done.js';
-import type { Action, AgentOutput, DispatchResult } from './types.js';
+import type { Action, AgentName, AgentOutput, DispatchResult } from './types.js';
 
 async function readStdin(): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -109,7 +109,7 @@ async function main(): Promise<void> {
   }
 
   const output: AgentOutput = validation.output;
-  const agent: string = output.agent ?? 'assistant-cron';   // default backward-compat
+  const agent: AgentName = output.agent ?? 'assistant-cron';   // default backward-compat
   const isSleeping = isSleepingNow();
 
   // Tick-start log
@@ -169,18 +169,21 @@ async function main(): Promise<void> {
     }
   }
 
-  // Update tick state
+  // Update tick state (per-agent routing — Phase 1.5)
   const now = new Date();
-  let state = await readTickState();
+  let state = await readTickState(agent);
   state = rolloverIfNewDay(state, now);
-  await updateTickState({
-    lastTickAt: now.toISOString(),
-    tickCounter: state.tickCounter + 1,
-    currentDay: state.currentDay,
-    dailyTickCount: state.dailyTickCount + 1,
-    lastVerdict: output.verdict,
-    lastReason: output.reason,
-  });
+  await updateTickState(
+    {
+      lastTickAt: now.toISOString(),
+      tickCounter: state.tickCounter + 1,
+      currentDay: state.currentDay,
+      dailyTickCount: state.dailyTickCount + 1,
+      lastVerdict: output.verdict,
+      lastReason: output.reason,
+    },
+    agent,
+  );
 
   // Tick-end log + summary on stdout
   await logAction({

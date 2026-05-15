@@ -99,7 +99,7 @@ File-lock a state-fájlokon — már megvalósítva (`cli/scripts/agent-handlers
 | Phase | Mit | Felelős |
 |---|---|---|
 | 0 | ez a plan + entrypoint vázlat | én ✅ |
-| 1 | Dispatcher `agent` mező support + Dev-agent log handler | Dev Agent ✅ cycle 33 |
+| 1 | Dispatcher `agent` mező support + Dev-agent log handler + per-agent state routing | Dev Agent ✅ cycle 33+34 |
 | 2 | FR-status-change + plan-step-* handlerek | Dev Agent ✅ cycle 31 (FR #2) |
 | 3 | CCAP integráció (event-/cron-trigger) | CCAP team |
 | 4 | Server DB-migration + cost-cap szétválasztás | másik agent |

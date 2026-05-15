@@ -87,6 +87,36 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-15-02 — Dev Agent Phase 1.5 SHIPPED (per-agent state routing)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-15T04:05+02:00
+**Updated:** 2026-05-15T04:05+02:00
+
+Cycle 34 — cycle 33 Phase 1 logikus folytatása: a dispatcher most már a
+helyes per-agent state-fájlba ír (eddig hardcoded `assistant-agent-cron-tick.json`).
+
+**Mit:**
+- `paths.ts`: új `tickStateFile(agent)` accessor; `agentTickJson()` backward-compat
+- `state.ts`: `readTickState(agent?)` + `updateTickState(patch, agent?)` paraméterezve, agent-szerinti file-routing
+- `dispatch.ts`: `const agent: AgentName = output.agent ?? 'assistant-cron'` → state-call-ok passez-zák
+- `types.ts`: `AgentName` export használva dispatch.ts-ben
+
+**Routing:**
+- `agent: 'assistant-cron'` → `__agent/state/assistant-agent-cron-tick.json` (default)
+- `agent: 'development'` → `__agent/state/development-agent-tick.json`
+
+**Verify:** LDP **11/11 ✅** (cli-test 26/26, tsc-agent-handlers ✅).
+
+**Plan-doc:** development-agent.plan.md Phase 1 sor frissítve "Phase 1+per-agent state routing" — Phase 1 + 1.5 cycle 33+34.
+
+**Maradék (Phase 3+):**
+- Phase 3: CCAP runtime tényleges Dev Agent event/cron-trigger (chat / CCAP team)
+- Phase 4: Server DB migráció (külön FR/plan)
+
+---
+
 ## [OPEN] AGB-2026-05-15-01 — Dev Agent Phase 1 SHIPPED (dispatcher agent field)
 **From:** dev-agent
 **To:** chat
