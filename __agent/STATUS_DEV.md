@@ -2,33 +2,31 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 33                                 # Cycle 33 lezárva; következő cycle 34 lesz
+cycle: 34                                 # Cycle 34 lezárva; következő cycle 35 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 33 lezárva 2026-05-15 00:10 — Dev Agent Phase 1 SHIPPED (dispatcher
-  agent field support, commit 2c7feaa). Plan-doc Phase 1 ✅, Phase 2
-  retroaktív ✅ (FR #2 cycle 31 plan-on át). LDP 11/11 ✅. AGB-01
-  (2026-05-15) announcement chat-nek. Phase 3 (CCAP) + Phase 4 (server DB)
-  nyitva. Lásd log/cycles/cycle-33.md.
+  Cycle 34 lezárva 2026-05-15 04:10 — Dev Agent Phase 1.5 SHIPPED (per-agent
+  state-file routing, commit e80d473). paths.tickStateFile(agent) + state.ts
+  param + dispatch.ts. LDP 11/11 ✅. AGB-02 announcement chat-nek. Phase 3
+  (CCAP) + Phase 4 (server DB) nyitva. Lásd log/cycles/cycle-34.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 33
+  cycle_id: 34
   phase_completed: close-cycle
   files_modified:
-    - cli/scripts/agent-handlers/src/types.ts
-    - cli/scripts/agent-handlers/src/schema.ts
+    - cli/scripts/agent-handlers/src/paths.ts
+    - cli/scripts/agent-handlers/src/state.ts
     - cli/scripts/agent-handlers/src/dispatch.ts
     - __agent/plans/development-agent.plan.md
     - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-33.md
+    - __agent/log/cycles/cycle-34.md
   fr_status_changes: []
   plan_steps_marked_done:
-    - { planPath: "__agent/plans/development-agent.plan.md", stepRef: "Phase 1 — Dispatcher agent mező support" }
-    - { planPath: "__agent/plans/development-agent.plan.md", stepRef: "Phase 2 — FR-status-change + plan-step-* handlers (retroaktív, ship cycle 31)" }
-  commit_sha: "2c7feaa"
+    - { planPath: "__agent/plans/development-agent.plan.md", stepRef: "Phase 1.5 — per-agent state-file routing (paths + state + dispatch)" }
+  commit_sha: "e80d473"
   build_status: success
   test_status: success                        # LDP 11/11 ✅
 
