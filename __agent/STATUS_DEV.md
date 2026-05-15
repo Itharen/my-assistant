@@ -2,28 +2,31 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 37                                 # Cycle 37 lezárva; következő cycle 38 lesz
+cycle: 38                                 # Cycle 38 lezárva; következő cycle 39 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 37 lezárva 2026-05-15 10:05 — M2 backfill 2026-05-13 daily report
-  (missed cycle 26 transition-kor). 9-cycle nap retrospektív (cycle 17-25).
-  LDP unchanged 11/11. Lásd log/cycles/cycle-37.md +
-  __agent/reports/2026-05/2026-05-13.md.
+  Cycle 38 lezárva 2026-05-15 12:10 — Dev Agent dispatcher smoke-test infra
+  (commit c22c29f). sample-development-agent.json + smoke-dev script.
+  Cycle 33+34 end-to-end validálva: actor=agent-dispatcher:development,
+  development-agent-tick.json tickCounter 1->2, cron state érintetlen.
+  LDP unchanged 11/11. Lásd log/cycles/cycle-38.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 37
+  cycle_id: 38
   phase_completed: close-cycle
   files_modified:
-    - __agent/reports/2026-05/2026-05-13.md     # ÚJ — backfill
+    - cli/scripts/agent-handlers/test/sample-development-agent.json   # ÚJ
+    - cli/scripts/agent-handlers/package.json
+    - cli/scripts/agent-handlers/README.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-37.md
+    - __agent/log/cycles/cycle-38.md
   fr_status_changes: []
-  plan_steps_marked_done: []                    # M2 backfill, nincs plan-step
-  commit_sha: "97da1f8"
+  plan_steps_marked_done: []
+  commit_sha: "c22c29f"
   build_status: success
-  test_status: success                          # LDP unchanged 11/11
+  test_status: success                          # smoke-dev ✅ end-to-end, LDP 11/11
 
 foreign_pending:
   first_seen_cycle: 4
