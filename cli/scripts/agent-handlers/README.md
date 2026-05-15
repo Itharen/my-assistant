@@ -101,14 +101,15 @@ A handler-ek strukturált `MA-*` error code-okkal throw-olnak (per
 ## Smoke teszt
 
 ```bash
-pnpm smoke
-# vagy:
-node src/dispatch.ts < test/sample-output.json
+pnpm smoke           # log-handler smoke (test/sample-output.json)
+pnpm smoke-multi     # multi-handler smoke (log + user-input-new + notify-cast)
+pnpm smoke-dev       # Dev Agent routing smoke — validálja cycle 33+34 work-öt
 ```
 
-A `test/sample-output.json` egy minimális log-handler minta. A
-`test/sample-multi.json` log + user-input-new + notify-cast multi-handler
-mintát tartalmaz.
+A smoke-dev validálja:
+- `output.agent: 'development'` → `actor: agent-dispatcher:development` action-log entry
+- Tick state-fájl routing: `__agent/state/development-agent-tick.json` (NEM az `assistant-agent-cron-tick.json`)
+- Cron state érintetlen marad
 
 ## State (per-agent routing — cycle 34)
 

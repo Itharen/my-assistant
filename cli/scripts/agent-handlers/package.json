@@ -1,14 +1,16 @@
 {
   "name": "agent-handlers",
   "version": "0.1.0",
-  "description": "Action-handler dispatcher for the my-assistant Assistant Agent Cron Job (CCAP runtime calls this with the agent's JSON output). See current/principles/system-components.md.",
+  "description": "Action-handler dispatcher for both my-assistant agents (Development Agent + Assistant Agent Cron Job). CCAP runtime calls this with the agent's JSON output; per-agent state routing via the optional 'agent' field. See current/principles/system-components.md.",
   "type": "module",
   "private": true,
   "scripts": {
     "prep": "pnpm i",
     "typecheck": "tsc --noEmit",
     "dispatch": "tsx src/dispatch.ts",
-    "smoke": "tsx src/dispatch.ts < test/sample-output.json"
+    "smoke": "tsx src/dispatch.ts < test/sample-output.json",
+    "smoke-dev": "tsx src/dispatch.ts < test/sample-development-agent.json",
+    "smoke-multi": "tsx src/dispatch.ts < test/sample-multi.json"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
