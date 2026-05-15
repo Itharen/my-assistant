@@ -2,27 +2,27 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 40                                 # Cycle 40 lezárva; következő cycle 41 lesz
+cycle: 41                                 # Cycle 41 lezárva; következő cycle 42 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 40 lezárva 2026-05-15 18:15 — M1 grooming (10-enkénti, last: cycle 20).
-  Backlog 🟢 status-column-nal gazdagítva (Phase ship-jelölések 4 row-on),
-  plan archive PARTIAL ship → marad, action-log rotation no-action.
-  AGB-03 chat-válasz még nincs. LDP unchanged 11/11.
-  Lásd log/cycles/cycle-40.md.
+  Cycle 41 lezárva 2026-05-15 20:10 — references/architecture.md doc-sync
+  (commit baffc27). Cycle 24-38 ship-elt dispatcher-fejlesztések átvezetve:
+  agent-handlers + action-log DEPRECATED label leveve, per-agent state
+  routing dokumentálva. LDP unchanged 11/11. AGB-03 chat-válasz még nincs.
+  Lásd log/cycles/cycle-41.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 40
+  cycle_id: 41
   phase_completed: close-cycle
   files_modified:
-    - __agent/triggers/development-agent-backlog.md
+    - __agent/references/architecture.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-40.md
+    - __agent/log/cycles/cycle-41.md
   fr_status_changes: []
-  plan_steps_marked_done: []                    # M1 grooming, nincs plan-step
-  commit_sha: "3860f4e"
+  plan_steps_marked_done: []                    # doc-sync, nincs plan-step
+  commit_sha: "baffc27"
   build_status: success
   test_status: success                          # LDP unchanged 11/11
 
