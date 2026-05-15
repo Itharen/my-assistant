@@ -2,27 +2,26 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 36                                 # Cycle 36 lezárva; következő cycle 37 lesz
+cycle: 37                                 # Cycle 37 lezárva; következő cycle 38 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 36 lezárva 2026-05-15 08:15 — agent-handlers/README.md sync
-  (commit 656c939). Cycle 24-34 ship-elt változások dokumentálva: új
-  action-types (ccap-notify/fr-status-change/plan-step-mark-done), throttle,
-  per-agent state-routing, LDP integráció, MA-* error codes. LDP unchanged
-  11/11. Lásd log/cycles/cycle-36.md.
+  Cycle 37 lezárva 2026-05-15 10:05 — M2 backfill 2026-05-13 daily report
+  (missed cycle 26 transition-kor). 9-cycle nap retrospektív (cycle 17-25).
+  LDP unchanged 11/11. Lásd log/cycles/cycle-37.md +
+  __agent/reports/2026-05/2026-05-13.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 36
+  cycle_id: 37
   phase_completed: close-cycle
   files_modified:
-    - cli/scripts/agent-handlers/README.md
+    - __agent/reports/2026-05/2026-05-13.md     # ÚJ — backfill
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-36.md
+    - __agent/log/cycles/cycle-37.md
   fr_status_changes: []
-  plan_steps_marked_done: []                    # docs-only
-  commit_sha: "656c939"
+  plan_steps_marked_done: []                    # M2 backfill, nincs plan-step
+  commit_sha: "<pending>"
   build_status: success
   test_status: success                          # LDP unchanged 11/11
 
