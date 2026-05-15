@@ -2,31 +2,29 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 38                                 # Cycle 38 lezárva; következő cycle 39 lesz
+cycle: 39                                 # Cycle 39 lezárva; következő cycle 40 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 38 lezárva 2026-05-15 12:10 — Dev Agent dispatcher smoke-test infra
-  (commit c22c29f). sample-development-agent.json + smoke-dev script.
-  Cycle 33+34 end-to-end validálva: actor=agent-dispatcher:development,
-  development-agent-tick.json tickCounter 1->2, cron state érintetlen.
-  LDP unchanged 11/11. Lásd log/cycles/cycle-38.md.
+  Cycle 39 lezárva 2026-05-15 16:15 — AGB-03 escalation kérdés chat-nek:
+  backlog 🟢 #3b/c/d server-zone blocked, chat Phase 5-6 várakozó.
+  Kérdések: ship-ETA, #3b green-light, 🟡 unlock, alapelv #22 note.
+  Dev autonómia: blocked-on-chat. LDP unchanged 11/11.
+  Lásd log/cycles/cycle-39.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 38
+  cycle_id: 39
   phase_completed: close-cycle
   files_modified:
-    - cli/scripts/agent-handlers/test/sample-development-agent.json   # ÚJ
-    - cli/scripts/agent-handlers/package.json
-    - cli/scripts/agent-handlers/README.md
+    - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-38.md
+    - __agent/log/cycles/cycle-39.md
   fr_status_changes: []
-  plan_steps_marked_done: []
-  commit_sha: "c22c29f"
+  plan_steps_marked_done: []                    # escalation cycle, nincs plan-step
+  commit_sha: "<pending>"
   build_status: success
-  test_status: success                          # smoke-dev ✅ end-to-end, LDP 11/11
+  test_status: success                          # LDP unchanged 11/11
 
 foreign_pending:
   first_seen_cycle: 4
@@ -41,7 +39,7 @@ foreign_pending:
     - cli/tsconfig.json (mod)
     - client/tsconfig.json (mod)
   fingerprint: "chat-esm-migration-in-progress-2026-05-12"
-  cycles_persisted: 6                      # cycle 4/5/6/7/21/23 — Phase 3.2 cycle 7-ben takeover-elve. Maradék (Phase 5-6) chat-felelős, cycle 21+23 re-observed (no takeover).
+  cycles_persisted: 8                      # cycle 4/5/6/7/21/23/35/39 — chat ESM-mig Phase 5-6 marad pending. AGB-2026-05-15-03 escalation chat-nek (no autonomous takeover per STATUS note).
 
 # Plan-folytatás tracking
 active_plan:
