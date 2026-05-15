@@ -2,33 +2,28 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 34                                 # Cycle 34 lezárva; következő cycle 35 lesz
+cycle: 35                                 # Cycle 35 lezárva; következő cycle 36 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 34 lezárva 2026-05-15 04:10 — Dev Agent Phase 1.5 SHIPPED (per-agent
-  state-file routing, commit e80d473). paths.tickStateFile(agent) + state.ts
-  param + dispatch.ts. LDP 11/11 ✅. AGB-02 announcement chat-nek. Phase 3
-  (CCAP) + Phase 4 (server DB) nyitva. Lásd log/cycles/cycle-34.md.
+  Cycle 35 lezárva 2026-05-15 06:10 — M2 maintenance daily report 2026-05-14
+  generálva. Termékeny tegnapi nap: 6 ship + 6 close commit (cycle 26-32),
+  18 swallow eltüntetve, FR #1 Phase 2+4 + FR #2 Phase 1 + agent-handlers
+  LDP integráció. Lásd __agent/reports/2026-05/2026-05-14.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 34
+  cycle_id: 35
   phase_completed: close-cycle
   files_modified:
-    - cli/scripts/agent-handlers/src/paths.ts
-    - cli/scripts/agent-handlers/src/state.ts
-    - cli/scripts/agent-handlers/src/dispatch.ts
-    - __agent/plans/development-agent.plan.md
-    - __agent/AGENT_BUS.md
+    - __agent/reports/2026-05/2026-05-14.md     # ÚJ — M2 daily report
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-34.md
+    - __agent/log/cycles/cycle-35.md
   fr_status_changes: []
-  plan_steps_marked_done:
-    - { planPath: "__agent/plans/development-agent.plan.md", stepRef: "Phase 1.5 — per-agent state-file routing (paths + state + dispatch)" }
-  commit_sha: "e80d473"
+  plan_steps_marked_done: []                    # M2 maintenance, nincs plan-step
+  commit_sha: "<pending>"
   build_status: success
-  test_status: success                        # LDP 11/11 ✅
+  test_status: success                          # LDP unchanged
 
 foreign_pending:
   first_seen_cycle: 4
