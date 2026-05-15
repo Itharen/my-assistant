@@ -1,14 +1,15 @@
-# agent-handlers — Assistant Agent Cron Job dispatcher
+# agent-handlers — Dispatcher (Assistant Cron + Dev Agent)
 
 > **Komponens-térkép**: `current/principles/system-components.md` — ez a
-> dispatcher a #6 (Assistant Agent Cron Job) JSON output-ját kezeli.
-> A Development Agent (#1) integráció Phase 2-höz tartozik (lásd
-> `__agent/plans/development-agent.plan.md`).
+> dispatcher mindkét agent (#1 Development Agent, #6 Assistant Agent Cron Job)
+> JSON output-ját kezeli. A `output.agent` mezővel routol per-agent
+> state-fájlra + action-log actor-prefixre.
 >
-> **Mit csinál:** beolvas egy JSON-t (az Assistant Agent Cron Job output-ját), validálja,
-> tier-checkeli, és sorban végrehajtja az `actions[]`-t a megfelelő handlerek-en
-> keresztül. Side-effecteket csinál: `__agent/log/actions/`-ba ír,
-> `__agent/USER_INPUT.md`-be új blokkot fűz, `STATUS.md` mezőt frissít, stb.
+> **Mit csinál:** beolvas egy JSON-t (agent output), validálja, tier-checkeli,
+> és sorban végrehajtja az `actions[]`-t a megfelelő handlerek-en keresztül.
+> Side-effecteket csinál: `__agent/log/actions/`-ba ír,
+> `__agent/USER_INPUT.md`-be új blokkot fűz, `STATUS.md` mezőt frissít,
+> notify-cast / ccap-notify shell-out, FR-status csere, plan-step ✅ stb.
 >
 > **Mit NEM csinál:** nem hív Claude API-t, nem tickel, nem ütemez. Ezt a
 > CCAP futtatja.
@@ -21,46 +22,81 @@ pnpm install
 pnpm typecheck
 ```
 
+A `cli/scripts/agent-handlers/` része a LDP-nek (cycle 32 óta) — `tsc-agent-handlers`
+step a `pipeline.config.json`-ban. Manuális typecheck nem szükséges.
+
 ## Használat (CCAP integráció)
 
-A CCAP minden Assistant Agent Cron tick-kor:
+A CCAP minden agent tick-kor:
 
-1. Olvassa be a system-prompt-ot: `__agent/triggers/assistant-agent-cron-entrypoint.md`
-2. Összerakja az inputot (a 7 forrásfájl tartalma) és hívja a Claude API-t
+1. Olvassa be a system-prompt-ot: `__agent/triggers/<agent>-entrypoint.md`
+2. Összerakja az inputot (a forrásfájl tartalma) és hívja a Claude API-t
 3. A modell strukturált JSON outputot ad
 4. Ezt a JSON-t bedobja a dispatcher-be:
 
 ```bash
 cd <my-assistant-root>
-echo '<agent-output-json>' | node scripts/agent-handlers/src/dispatch.ts
+echo '<agent-output-json>' | node cli/scripts/agent-handlers/src/dispatch.ts
 # vagy:
-node scripts/agent-handlers/src/dispatch.ts --file path/to/agent-output.json
+node cli/scripts/agent-handlers/src/dispatch.ts --file path/to/agent-output.json
 ```
 
 A dispatcher minden műveletet:
-- validál (séma-check, tier-check)
+- validál (séma-check, tier-check, agent-check)
 - végrehajt (handler hívása)
-- naplóz az action-logba (`__agent/log/actions/<today>.jsonl`)
-- frissíti az `__agent/state/assistant-agent-cron-tick.json`-t
+- naplóz az action-logba (`__agent/log/actions/<today>.jsonl`, `actor: agent-dispatcher:<agent>`)
+- frissíti az adott agent tick state-jét (`__agent/state/<agent>-tick.json` — per-agent routing cycle 34 óta)
 
 A dispatcher **kódját 0 (zéró)** futtatja sikerre, **2** validációs hibára,
 **3** runtime hibára. A CCAP ezzel követheti hogy mi történt.
 
 ## Output JSON séma
 
-Lásd: `__agent/triggers/assistant-agent-cron-entrypoint.md` "Output" szakasz, vagy
-`src/schema.ts` (manual validator).
+```jsonc
+{
+  "agent": "assistant-cron" | "development",   // optional; default 'assistant-cron'
+  "verdict": "urgens" | "soft-nudge" | "no-action",
+  "reason": "...",
+  "actions": [ /* lásd Action types */ ],
+  "tickMeta": { "tickedAt": "...", "inputDigest": "..." }
+}
+```
+
+Részletes validátor: `src/schema.ts` (manual). Entrypoint:
+`__agent/triggers/{assistant-agent-cron,development-agent}-entrypoint.md`.
 
 ## Action types — handler mapping
 
-| Action `type` | Tier | Handler | Status |
-|---|---|---|---|
-| `log` | 0 | `src/handlers/log.ts` | ✅ MVP |
-| `user-input-new` | 1 | `src/handlers/user-input-new.ts` | ✅ MVP |
-| `update-status` | 1 | `src/handlers/update-status.ts` | ✅ MVP |
-| `notify-cast` | 1 | `src/handlers/notify-cast.ts` | 🅿️ Phase 2 placeholder |
-| `task-create` | 2 | `src/handlers/task-create.ts` | 🅿️ Phase 2 placeholder |
-| `task-update` | 2 | `src/handlers/task-update.ts` | 🅿️ Phase 2 placeholder |
+| Action `type` | Tier | Handler | Cycle | Status |
+|---|---|---|---|---|
+| `log` | 0 | `src/handlers/log.ts` | — | ✅ MVP |
+| `user-input-new` | 1 | `src/handlers/user-input-new.ts` | — | ✅ MVP |
+| `update-status` | 1 | `src/handlers/update-status.ts` | — | ✅ MVP (STATUS.md `next_action` / `last_event_type`) |
+| `notify-cast` | 1 | `src/handlers/notify-cast.ts` | 29, 30 | ✅ valódi shell-out (`ma cast notify`) + throttle |
+| `ccap-notify` | 1 | `src/handlers/ccap-notify.ts` | 24, 30 | ✅ shell-out (`ccap notify send`) + throttle |
+| `task-create` | 2 | `src/handlers/task-create.ts` | — | 🅿️ placeholder |
+| `task-update` | 2 | `src/handlers/task-update.ts` | — | 🅿️ placeholder |
+| `fr-status-change` | 1 | `src/handlers/fr-status-change.ts` | 31 | ✅ FR `## Status` preflight + replace + atomic write |
+| `plan-step-mark-done` | 1 | `src/handlers/plan-step-mark-done.ts` | 31 | ✅ stepRef → ✅ append (idempotens, table-cell aware) |
+
+### Throttle (cycle 30)
+
+A `notify-cast` és `ccap-notify` handler-ek közös throttle-eljárást használnak
+(`src/throttle.ts`):
+- State: `__agent/state/notify-throttle.json` (`{ throttleId: lastSentIso }`)
+- Default cooldown: 5 perc; per-action `args.cooldownMs` override
+- Cooldown-on belül → `MA-{NOTIFY-CAST|CCAP-NOTIFY}-THROTTLED` action-log note, NEM hajtja végre
+- Sikeres send után `recordThrottle(throttleId)` (atomic write, tmp+rename)
+
+### Error-handling
+
+A handler-ek strukturált `MA-*` error code-okkal throw-olnak (per
+`current/principles/error-handling.md` "SEMMI csendes catch"):
+
+- `MA-FR-FILE-NOT-FOUND`, `MA-FR-STATUS-MISSING`, `MA-FR-STATUS-MISMATCH`, `MA-FR-WRITE-FAIL`, `MA-FR-READ-FAIL`
+- `MA-PLAN-FILE-NOT-FOUND`, `MA-PLAN-STEP-NOT-FOUND`, `MA-PLAN-STEP-ALREADY-DONE` (note, not error), `MA-PLAN-WRITE-FAIL`, `MA-PLAN-READ-FAIL`
+- `MA-NOTIFY-CAST-BUILD-MISSING`, `MA-NOTIFY-CAST-SPAWN-FAIL`, `MA-NOTIFY-CAST-EXIT-N`
+- `MA-THROTTLE-READ-FAIL` (stderr, fallback empty)
 
 ## Smoke teszt
 
@@ -70,18 +106,36 @@ pnpm smoke
 node src/dispatch.ts < test/sample-output.json
 ```
 
-A `test/sample-output.json` egy minimális minta-output, amit a dispatcher
-végigfuttat.
+A `test/sample-output.json` egy minimális log-handler minta. A
+`test/sample-multi.json` log + user-input-new + notify-cast multi-handler
+mintát tartalmaz.
 
-## State
+## State (per-agent routing — cycle 34)
 
-- `__agent/state/assistant-agent-cron-tick.json` — utolsó tick metadata (ts, counter, last verdict)
-- `__agent/state/notify-throttle.json` — Phase 2
-- `__agent/state/sleep-cache.json` — Phase 2
-- `__agent/state/pending-notifications.json` — Phase 2 (alvás-vége csomag)
+| File | Agent | Tartalom |
+|---|---|---|
+| `__agent/state/assistant-agent-cron-tick.json` | `assistant-cron` | utolsó tick metadata |
+| `__agent/state/development-agent-tick.json` | `development` | utolsó tick metadata |
+| `__agent/state/notify-throttle.json` | mindkettő | közös throttle map |
+
+## LDP integráció (cycle 32)
+
+A `cli/scripts/agent-handlers/` része a Live Development Pipeline-nak:
+- `pipeline.config.json` `watch.paths`: `./cli/scripts/agent-handlers/src` + `tsconfig.json` + `package.json`
+- Step: `tsc-agent-handlers` (`npx tsc --noEmit -p scripts/agent-handlers/tsconfig.json --pretty`, `fatal: false`)
+
+Az alapelv #22 (LDP-first) erre is érvényes — fájl-change után az LDP
+re-runolja a typecheck-et.
 
 ## Pointer
 
-- **Belépési instrukció (agent-prompt)**: `__agent/triggers/assistant-agent-cron-entrypoint.md`
-- **Részletes plan**: `__agent/plans/assistant-agent-cron.plan.md`
-- **Forrás-FR**: `current/feature-requests/triggering-system-architecture.md`
+- **Belépési instrukció (agent-prompt)**:
+  - `__agent/triggers/assistant-agent-cron-entrypoint.md`
+  - `__agent/triggers/development-agent-entrypoint.md`
+- **Részletes plan-ek**:
+  - `__agent/plans/assistant-agent-cron.plan.md`
+  - `__agent/plans/development-agent.plan.md`
+- **Forrás-FR-ek**:
+  - `current/feature-requests/triggering-system-architecture.md`
+  - `current/feature-requests/communication-forms.md` (notify handlerek)
+  - `current/feature-requests/automatic-status-recording.md` (fr-status + plan-step)
