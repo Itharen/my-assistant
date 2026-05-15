@@ -2,28 +2,29 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 35                                 # Cycle 35 lezárva; következő cycle 36 lesz
+cycle: 36                                 # Cycle 36 lezárva; következő cycle 37 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 35 lezárva 2026-05-15 06:10 — M2 maintenance daily report 2026-05-14
-  generálva. Termékeny tegnapi nap: 6 ship + 6 close commit (cycle 26-32),
-  18 swallow eltüntetve, FR #1 Phase 2+4 + FR #2 Phase 1 + agent-handlers
-  LDP integráció. Lásd __agent/reports/2026-05/2026-05-14.md.
+  Cycle 36 lezárva 2026-05-15 08:15 — agent-handlers/README.md sync
+  (commit 656c939). Cycle 24-34 ship-elt változások dokumentálva: új
+  action-types (ccap-notify/fr-status-change/plan-step-mark-done), throttle,
+  per-agent state-routing, LDP integráció, MA-* error codes. LDP unchanged
+  11/11. Lásd log/cycles/cycle-36.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 35
+  cycle_id: 36
   phase_completed: close-cycle
   files_modified:
-    - __agent/reports/2026-05/2026-05-14.md     # ÚJ — M2 daily report
+    - cli/scripts/agent-handlers/README.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-35.md
+    - __agent/log/cycles/cycle-36.md
   fr_status_changes: []
-  plan_steps_marked_done: []                    # M2 maintenance, nincs plan-step
-  commit_sha: "1bed2f3"
+  plan_steps_marked_done: []                    # docs-only
+  commit_sha: "656c939"
   build_status: success
-  test_status: success                          # LDP unchanged
+  test_status: success                          # LDP unchanged 11/11
 
 foreign_pending:
   first_seen_cycle: 4
