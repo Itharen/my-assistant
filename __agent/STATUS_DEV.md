@@ -21,7 +21,7 @@ last_cycle:
     - __agent/log/cycles/cycle-35.md
   fr_status_changes: []
   plan_steps_marked_done: []                    # M2 maintenance, nincs plan-step
-  commit_sha: "<pending>"
+  commit_sha: "1bed2f3"
   build_status: success
   test_status: success                          # LDP unchanged
 
