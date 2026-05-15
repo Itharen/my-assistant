@@ -22,7 +22,7 @@ last_cycle:
     - __agent/log/cycles/cycle-40.md
   fr_status_changes: []
   plan_steps_marked_done: []                    # M1 grooming, nincs plan-step
-  commit_sha: "<pending>"
+  commit_sha: "3860f4e"
   build_status: success
   test_status: success                          # LDP unchanged 11/11
 
