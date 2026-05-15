@@ -2,27 +2,26 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 41                                 # Cycle 41 lezárva; következő cycle 42 lesz
+cycle: 42                                 # Cycle 42 lezárva; következő cycle 43 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 41 lezárva 2026-05-15 20:10 — references/architecture.md doc-sync
-  (commit baffc27). Cycle 24-38 ship-elt dispatcher-fejlesztések átvezetve:
-  agent-handlers + action-log DEPRECATED label leveve, per-agent state
-  routing dokumentálva. LDP unchanged 11/11. AGB-03 chat-válasz még nincs.
-  Lásd log/cycles/cycle-41.md.
+  Cycle 42 lezárva 2026-05-16 01:25 — M2 daily report 2026-05-15 generálva.
+  9-cycle nap retrospektív (cycle 33-41), 5 ship-commit, Dev Agent Phase 1+1.5
+  + sok maintenance. AGB-03 chat-válasz még nincs. LDP unchanged 11/11.
+  Lásd log/cycles/cycle-42.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 41
+  cycle_id: 42
   phase_completed: close-cycle
   files_modified:
-    - __agent/references/architecture.md
+    - __agent/reports/2026-05/2026-05-15.md     # ÚJ — M2 daily report
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-41.md
+    - __agent/log/cycles/cycle-42.md
   fr_status_changes: []
-  plan_steps_marked_done: []                    # doc-sync, nincs plan-step
-  commit_sha: "baffc27"
+  plan_steps_marked_done: []                    # M2 maintenance
+  commit_sha: "<pending>"
   build_status: success
   test_status: success                          # LDP unchanged 11/11
 
