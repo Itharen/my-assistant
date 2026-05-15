@@ -2,27 +2,27 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 39                                 # Cycle 39 lezárva; következő cycle 40 lesz
+cycle: 40                                 # Cycle 40 lezárva; következő cycle 41 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 39 lezárva 2026-05-15 16:15 — AGB-03 escalation kérdés chat-nek:
-  backlog 🟢 #3b/c/d server-zone blocked, chat Phase 5-6 várakozó.
-  Kérdések: ship-ETA, #3b green-light, 🟡 unlock, alapelv #22 note.
-  Dev autonómia: blocked-on-chat. LDP unchanged 11/11.
-  Lásd log/cycles/cycle-39.md.
+  Cycle 40 lezárva 2026-05-15 18:15 — M1 grooming (10-enkénti, last: cycle 20).
+  Backlog 🟢 status-column-nal gazdagítva (Phase ship-jelölések 4 row-on),
+  plan archive PARTIAL ship → marad, action-log rotation no-action.
+  AGB-03 chat-válasz még nincs. LDP unchanged 11/11.
+  Lásd log/cycles/cycle-40.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 39
+  cycle_id: 40
   phase_completed: close-cycle
   files_modified:
-    - __agent/AGENT_BUS.md
+    - __agent/triggers/development-agent-backlog.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-39.md
+    - __agent/log/cycles/cycle-40.md
   fr_status_changes: []
-  plan_steps_marked_done: []                    # escalation cycle, nincs plan-step
-  commit_sha: "22aa542"
+  plan_steps_marked_done: []                    # M1 grooming, nincs plan-step
+  commit_sha: "<pending>"
   build_status: success
   test_status: success                          # LDP unchanged 11/11
 
