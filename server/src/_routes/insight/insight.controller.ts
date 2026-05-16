@@ -8,6 +8,7 @@ import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
 
 import { Auth_ControlService } from '../../_services/core-services/auth.control-service';
 import { Insight_DataService } from './insight.data-service';
+import { VersionBroadcast_SocketServerService } from '../../_services/socket-services/version-broadcast.socket-server-service';
 
 /** Insight HTTP controller. Vékony endpoint réteg — list / add / dismiss endpointokkal. */
 export class Insight_Controller extends DyNTS_Controller {
@@ -53,6 +54,10 @@ export class Insight_Controller extends DyNTS_Controller {
 
             await insight_DS.validateForSave();
             await insight_DS.saveData();
+
+            // FR #3f Phase 5.B-extra (cycle 81): socket push-event a kliensnek.
+            await VersionBroadcast_SocketServerService.getInstance().broadcastDomainEvent('insight', 'create', insight_DS.data);
+
             res.send(insight_DS.data);
           },
         ],
@@ -66,8 +71,12 @@ export class Insight_Controller extends DyNTS_Controller {
         tasks: [
           async (req: Request, res: Response, issuer: string): Promise<void> => {
             const insight_DS = new Insight_DataService({ issuer });
+            const result: unknown = await insight_DS.dismissById(req.params.id);
 
-            res.send(await insight_DS.dismissById(req.params.id));
+            // FR #3f Phase 5.B-extra: dismiss is mutation → push-event update.
+            await VersionBroadcast_SocketServerService.getInstance().broadcastDomainEvent('insight', 'update', { id: req.params.id, dismissed: true });
+
+            res.send(result);
           },
         ],
       }),

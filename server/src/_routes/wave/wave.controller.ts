@@ -13,6 +13,7 @@ import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
 import { Auth_ControlService } from '../../_services/core-services/auth.control-service';
 import { Wave_Kind } from '../../_models/data-models/wave.data-model';
 import { Wave_DataService } from './wave.data-service';
+import { VersionBroadcast_SocketServerService } from '../../_services/socket-services/version-broadcast.socket-server-service';
 
 /** Wave HTTP controller. Vékony endpoint réteg — list + add Wave time-series row-okhoz. */
 export class Wave_Controller extends DyNTS_Controller {
@@ -58,6 +59,12 @@ export class Wave_Controller extends DyNTS_Controller {
 
             await wave_DS.validateForSave();
             await wave_DS.saveData();
+
+            // FR #3f Phase 5.B-extra (cycle 81): socket push-event a kliensnek.
+            // (A wave-jsonl /log-public path-en már megvan Phase 5.B-ben; ez a
+            // direkt auth-gated /api/wave/add path.)
+            await VersionBroadcast_SocketServerService.getInstance().broadcastDomainEvent('wave', 'create', wave_DS.data);
+
             res.send(wave_DS.data);
           },
         ],

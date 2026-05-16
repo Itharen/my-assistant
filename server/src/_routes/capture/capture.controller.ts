@@ -8,6 +8,7 @@ import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
 
 import { Auth_ControlService } from '../../_services/core-services/auth.control-service';
 import { Capture_DataService } from './capture.data-service';
+import { VersionBroadcast_SocketServerService } from '../../_services/socket-services/version-broadcast.socket-server-service';
 
 /** Capture HTTP controller. Vékony endpoint réteg a Capture_DataService felett — list + add. */
 export class Capture_Controller extends DyNTS_Controller {
@@ -48,8 +49,12 @@ export class Capture_Controller extends DyNTS_Controller {
               data: req.body,
               issuer,
             });
+            const saved: unknown = await capture_DS.saveWithFanout();
 
-            res.send(await capture_DS.saveWithFanout());
+            // FR #3f Phase 5.B-extra (cycle 81): socket push-event a kliensnek.
+            await VersionBroadcast_SocketServerService.getInstance().broadcastDomainEvent('capture', 'create', saved);
+
+            res.send(saved);
           },
         ],
       }),
