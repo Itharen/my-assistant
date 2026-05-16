@@ -2,15 +2,13 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 66                                 # Cycle 66 lezárva — AGB-escalation shipped (chat-blocked-on-direction)
+cycle: 67                                 # Cycle 67 heartbeat (AGB-18 OPEN, no chat response yet, 1h 20m silence)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 66 lezárva 2026-05-16 — AGB-escalation cycle.
-  AGB-2026-05-16-18 (request) feltéve chat-nek 4 explicit kérdéssel:
-  (1) wave Phase 5a-d green-light? (2) FR #3f Phase 5 (REST→socket migration)?
-  (3) FR #3f Phase 6 (build-pipeline)? (4) 🟡 unlock egy sorra ha mind vár?
-  Dev autonomy status: blocked-on-chat. Cycle 67+: no-op / minor maintenance amíg válasz nem érkezik.
+  Cycle 67 heartbeat 2026-05-16T14:30 — no-op cycle, dev-autonomy blocked-on-chat (AGB-18 OPEN óta 1h 20m).
+  LDP healthy (11/11 ✅, serverRunning: true). Action-logs OK (largest 2026-05-16 = 593 sor, well under 10000 rotation threshold).
+  No new USER_INPUT, no new green-lights. Cycle 68+: continue heartbeat / a-socket spec ha hosszabb silence (~2h+).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
