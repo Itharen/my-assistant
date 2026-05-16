@@ -1,0 +1,13 @@
+<div class="status-bar" [class.disconnected]="!state.serverVersion">
+  <span class="srv" title="Server version">🖥 srv {{ state.serverVersion ?? '—' }}</span>
+  <span class="sep">·</span>
+  <span class="cli" title="Client version">🖱 cli {{ state.clientVersion }}</span>
+  @if (state.lastUpdateTs) {
+    <span class="sep">·</span>
+    <span class="muted" title="Last server broadcast">↻ {{ formatTime(state.lastUpdateTs) }}</span>
+  }
+  @if (state.requireReload) {
+    <span class="sep">·</span>
+    <span class="reload-flag" title="Server version updated — reload required">⚠ reload</span>
+  }
+</div>

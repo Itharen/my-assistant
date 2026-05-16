@@ -1,0 +1,39 @@
+:host {
+  display: block;
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  z-index: 100;
+  background: var(--ma-bg, #0f1115);
+  border-top: 1px solid var(--ma-border, #2a2d35);
+  color: var(--ma-fg-muted, #888);
+  font-size: 0.78em;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  flex-wrap: wrap;
+
+  &.disconnected {
+    color: #e57373;
+    background: rgba(229, 115, 115, 0.06);
+  }
+
+  .srv, .cli { color: var(--ma-fg, #d4d4d4); }
+  .sep { color: var(--ma-fg-muted, #555); }
+  .muted { color: var(--ma-fg-muted, #888); }
+
+  .reload-flag {
+    color: #fbbf24;
+    font-weight: 600;
+    cursor: help;
+  }
+}
+
+@media (max-width: 600px) {
+  .status-bar { font-size: 0.72em; gap: 4px; padding: 3px 8px; }
+}

@@ -11,6 +11,8 @@ import { AppRoutingModule } from './app.routing-module';
 import { A_Auth_Interceptor } from './_interceptors/a-auth.interceptor';
 import { A_Error_Interceptor } from './_interceptors/a-error.interceptor';
 import { A_ErrorHandler_ControlService } from './_services/control-services/a-error-handler.control-service';
+// FR #3f Phase 4.A (cycle 59): standalone footer status-bar (server + client version).
+import { S_StatusBar_Component } from './_components/s-status-bar/s-status-bar.component';
 
 @NgModule({
   declarations: [ AppComponent ],
@@ -21,6 +23,8 @@ import { A_ErrorHandler_ControlService } from './_services/control-services/a-er
     DyNX_FULLDependencies_Module,
     // Global feedback system — generic FAB shell from dynamo-ngx (M3).
     DyNX_Fab_Shell_Component,
+    // FR #3f Phase 4.A (cycle 59): status-bar standalone component.
+    S_StatusBar_Component,
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
