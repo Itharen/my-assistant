@@ -1,10 +1,15 @@
 # my-assistant — tri-tier architecture (implementációs referencia)
 
-**Last verified:** 2026-05-15 (cycle 41 doc-sync)
+**Last verified:** 2026-05-16 (cycle 68 doc-sync)
 **Status:** Phase 1 ship-elve (cli + server + client skeleton). Cycle 24-38 alatt
 a `cli/scripts/agent-handlers/` dispatcher első-osztályú lett (LDP-coverage,
 dual-agent, throttle, FR/plan-step handlerek) — részletek
 [`../../cli/scripts/agent-handlers/README.md`](../../cli/scripts/agent-handlers/README.md).
+**Cycle 51-65 (2026-05-16):** FR #3b-WAVE-UI Phase 2-4 + FR #3f socket-and-version-sync
+Phase 1-4 funkcionálisan zárva. Új komponensek: server `VersionBroadcast_SocketServerService`
++ `wave-jsonl.controller` (unauth read/write + DB sync), kliens `A_Socket_ControlService` +
+`A_Version_DataService` + `S_StatusBar_Component` + `S_VersionReloadBanner_Component` +
+`D_WavesForm_Component`. +47 client-test case (13 → 60).
 **Forrás-plan:** [`../plans/refactor-tri-tier.plan.md`](../plans/refactor-tri-tier.plan.md)
 
 > **Magasszintű rendszer-térkép** (5 layer modell, FR-mapping, roadmap,
@@ -58,7 +63,7 @@ my-assistant/
 | **Output** | JSON envelope (`{ok, action, requestId, elapsedMs, result\|error}`) — matches `fo` CLI |
 | **Action-log** | Every invocation emits to `__agent/log/actions/<day>.jsonl` |
 | **Pattern partner** | `LIVE-projects/organizer-cli/cli/` |
-| **Tests** | jasmine + c8 (21 specs) |
+| **Tests** | jasmine + c8 (26 specs as of cycle 68) |
 | **CI/CD** | `cli/pipeline.cicd.config.json` — install → build → test → coverage |
 
 ### Subcommand tree
@@ -93,8 +98,9 @@ cli/src/
 | **DB** | SQLite via `better-sqlite3` — file at `server/data/my-assistant.db` (gitignored) |
 | **Schema** | Auto-migrating; version tracked in `schema_meta` table |
 | **Pattern partner** | `LIVE-projects/organizer/server/` |
-| **Tests** | jasmine + c8 (20 specs) |
+| **Tests** | jasmine + c8 (2 specs as of cycle 68; ESM-mig + DyNTS_AppExtended switch reduced inline-tested code paths; pattern shifted toward integration via LDP smoke) |
 | **CI/CD** | `server/pipeline.cicd.config.json` |
+| **Socket** | `_services/socket-services/version-broadcast.socket-server-service.ts` (FR #3f Phase 2.A+2.B, cycle 58) — `DyNTS_SocketServerService` extend, path=`/socket` (DyNTS_defaultSocketPath), 30s tick + `server:hello`/`server:version` broadcast |
 
 ### Endpoints (Phase 1)
 
@@ -151,8 +157,12 @@ See `current/feature-requests/server-app-architecture.md`.
 | **Port (dev)** | `4224` (`ng serve`) |
 | **Stack** | Angular 18.2, NgModule mode, Karma + Jasmine |
 | **Pattern partner** | `LIVE-projects/organizer/client/` |
-| **Tests** | karma + jasmine + headless Chrome (7 specs) |
+| **Tests** | karma + jasmine + headless Chrome (60 specs as of cycle 68; +47 in cycle 62-65 for FR #3b-WAVE-UI + FR #3f new client components) |
 | **CI/CD** | `client/pipeline.cicd.config.json` |
+| **Socket client** | `_services/control-services/a-socket.control-service.ts` (FR #3f Phase 3.A, cycle 59) — `DyFM_SocketClient_ServiceBase` extend, path=`/socket` (KRITIKUS, NEM Socket.IO default), server:hello/version handlers → `A_Version_DataService` |
+| **Status-bar** | `_components/s-status-bar/` (FR #3f Phase 4.A) — footer-sticky, server+client version display |
+| **Reload-banner** | `_components/s-version-reload-banner/` (FR #3f Phase 4.B) — dev-silent / prod-5s-countdown reload UX |
+| **Wave panel form** | `_modules/dashboard/_components/d-waves-form/` (FR #3b-WAVE-UI Phase 3.B) — új-snapshot form, JSONL-fallback útvonalon submit |
 
 ### Modules (Phase 1)
 

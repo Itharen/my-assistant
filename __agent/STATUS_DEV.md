@@ -2,13 +2,15 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 67                                 # Cycle 67 heartbeat (AGB-18 OPEN, no chat response yet, 1h 20m silence)
+cycle: 68                                 # Cycle 68 lezárva — architecture-ref doc-sync shipped
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 67 heartbeat 2026-05-16T14:30 — no-op cycle, dev-autonomy blocked-on-chat (AGB-18 OPEN óta 1h 20m).
-  LDP healthy (11/11 ✅, serverRunning: true). Action-logs OK (largest 2026-05-16 = 593 sor, well under 10000 rotation threshold).
-  No new USER_INPUT, no new green-lights. Cycle 68+: continue heartbeat / a-socket spec ha hosszabb silence (~2h+).
+  Cycle 68 lezárva 2026-05-16 — safe-orthogonal doc-sync.
+  __agent/references/architecture.md frissítve: Last-verified cycle 41 → 68, test counts (cli 21→26,
+  server 20→2, client 7→60), socket-layer row (server VersionBroadcast + client A_Socket + status-bar
+  + reload-banner + waves-form). AGB-18 OPEN 2h óta — még nincs chat-válasz.
+  Cycle 69+: continue heartbeat. A-socket spec skip-elve (master-prompter sem spec-el).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
