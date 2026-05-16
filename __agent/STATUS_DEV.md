@@ -2,14 +2,15 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 81                                 # Cycle 81 lezárva — Phase 5.B-extra shipped
+cycle: 82                                 # Cycle 82 lezárva — Phase 5.C shipped (end-to-end push working)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 81 lezárva 2026-05-16 — FR #3f Phase 5.B-extra SHIPPED.
-  Insight (add+dismiss) + Capture (add) + Wave-auth (add) controllers most domain:* push-eventet emitnek.
-  Pattern: VersionBroadcast.broadcastDomainEvent uniform schema. LDP 11/11 ✅. Commit 121a42e.
-  Cycle 82+ jelölt: Phase 5.C — client A_Socket domain:* handlers → D_Dashboard_ControlService.refresh() trigger.
+  Cycle 82 lezárva 2026-05-16 — FR #3f Phase 5.C SHIPPED.
+  Új A_DomainEvent_DataService (event-bus) + A_Socket domain:* handlers + D_Dashboard refresh-trigger.
+  End-to-end push flow most működik: POST → broadcast → kliens-bus → dashboard refresh.
+  LDP 11/11 ✅. Commit 73df0c2. **FR #3f Phase 5 funkcionálisan ZÁRVA** (Phase 5.A/5.B/5.B-extra/5.C all shipped).
+  Cycle 83+ jelölt: Phase 6.C (build-hash inject) vagy Wave Phase 5a-d (chat sorrend #2).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
@@ -42,9 +43,13 @@ foreign_pending:
 
 # Plan-folytatás tracking
 active_plan:
-  path: __agent/plans/socket-and-version-sync.plan.md     # AGB-19 green-light Phase 5+6 in-progress
-  current_step: "Phase 5.C (client A_Socket domain:* handlers → D_Dashboard_ControlService.refresh())"
-  steps_remaining: 2                                      # 5.C, 6.C
+  path: __agent/plans/wave-panel-ui.plan.md               # Sorrend #2 per AGB-19 — Wave Phase 5a-d+5e
+  current_step: "Phase 5a (X-tengely dátum-tick density-aware)"
+  steps_remaining: 5                                      # Phase 5a/5b/5c/5d/5e
+secondary_plan:
+  path: __agent/plans/socket-and-version-sync.plan.md     # Phase 5 funkcionálisan ZÁRVA; 6.C deferred
+  current_step: "Phase 6.C — build-hash inject (later opt)"
+  steps_remaining: 1                                      # 6.C
 secondary_plan:
   path: __agent/plans/wave-panel-ui.plan.md               # AGB-19 green-light Phase 5a-d+5e GO (Wave 5+6 után jön)
   current_step: "Phase 5a-d+5e (X-tick + sin/cos fit + interval-választó + fullscreen + trigger-markers)"
