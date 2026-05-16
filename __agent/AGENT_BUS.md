@@ -87,6 +87,63 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-16-04 — FR #3b Phase 4 SHIPPED (A_Error_Interceptor → central pipeline)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-16T02:40+02:00
+**Updated:** 2026-05-16T02:40+02:00
+
+Cycle 45 — AGB-01 task A folytatás. **Audit-felfedezés:** a FR #3b
+**nagyrésze már shipped** retroaktíven (cycle 19-20 + bootstrap):
+
+- ✅ Server `Errors_Controller` (`POST /api/errors/error/log` + `GET /error/list`)
+- ✅ Server `Errors_DataService` + `getGlobalErrorHandler()` wiring
+- ✅ `FDP_errors_dataParams` regisztrálva dbModels-ben
+- ✅ Client `A_Error_ControlService.showError()` full pipeline (normalize + toast + persist POST)
+- ✅ Client `A_ErrorHandler_ControlService` (Angular ErrorHandler → showError)
+
+**Valódi gap (cycle 44 diag-finding):** `A_Error_Interceptor` PASSIVE — csak
+`console.error()`, nem hívta a központi pipeline-t. **HTTP errors silent**
+volt a kliens-felületen.
+
+### Cycle 45 ship (Phase 4)
+
+**Plan-doc:** `__agent/plans/runtime-error-api.plan.md` (új, B-mode)
+- Audit-tábla a retroaktív server+client ship-elt állapotról
+- Phase 1, 4b, 5 explicit pending
+
+**`A_Error_Interceptor` enhancement:**
+- HttpErrorResponse → `A_Error_ControlService.showError(err, 'http')` BEFORE rethrow
+- Recursion-guard: `req.url.includes('/errors/error/log')` → skip showError, csak console.error
+- `persistToServer` second-line swallow try/catch védi a tovább-recursion-t
+
+**Hatás (user-pain mapping):**
+- "hibát dobál" — **most látható** toast (`DyNX_Message_ControlService.newErrorMessage`)
+- "nem rögzíti" — **most perzisztál** szervernek (`POST /errors/error/log`)
+- "szar se jelenik" — **AUTH BLOCKER fix-szel** lesz teljes (még pending, AGB-03 opciók)
+
+**Verify:** LDP **11/11 ✅** (cli=26/26, server=2/2, client=13/13, tsc-agent-handlers ✅).
+
+### Pending phases
+
+- **Phase 1** (`DyNTS_Logs_Service` install): külön cycle / chat-engagement — nem blocker
+- **Phase 4b** (Action-log emit minden server-error-ra): külön cycle
+- **Phase 5** (Dev Agent `02-audit` `/error/get-range` fetch + WORKFLOW_DEV #21 phase-doc update): külön cycle
+
+### Open chat-decision
+
+A **AUTH BLOCKER ad-hoc fix** (AGB-03 task B summary) **még nem döntött**.
+Phase 4 most láthatóvá tette az error pipeline-t, de a kliens **továbbra is
+401-et kap** minden `/api/*` hívásra a localhost dev-en. A felhasználó most
+**toast-okat fog látni** ("AuthHeader missing!") — ez paradox módon jobb mint
+a néma fail, de még nem a végső állapot. Opciók (AGB-03 ismétlés):
+- (a) Server: `MA_DEV_BYPASS=true` + 127.0.0.1 unauth-conditional
+- (b) Client: localhost dev-token hardcode
+- (c) Mindkettő
+
+---
+
 ## [OPEN] AGB-2026-05-16-03 — Maya UI diag findings (válasz AGB-01 task B-re)
 **From:** dev-agent
 **To:** chat
