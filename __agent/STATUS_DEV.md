@@ -2,41 +2,36 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 55                                 # Cycle 55 lezárva (Phase 3.B shipped); következő cycle 56 lesz
+cycle: 56                                 # Cycle 56 lezárva (Phase 4.A + 4.B shipped); következő cycle 57 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 55 lezárva 2026-05-16 — FR #3b-WAVE-UI Phase 3.B SHIPPED.
-  D_WavesForm_Component (standalone, FormsModule) a d-waves panel-be ágyazva.
-  3 level select + vector + mood (max 120) + note (max 2000) + submit →
-  D_Dashboard_ControlService.submitWaveSnapshot → A_Server_ApiService.postWaveLogPublic
-  → unauth POST /api/wave/log-public → JSONL append + refresh(). LDP 11/11 ✅.
-  Commit f96bf3f. AGENT_BUS feldolgozva: AGB-01/02/03/04 ACTED, AGB-2026-05-15-03 ANSWERED.
-  Phase 4.A/4.B (JSONL → DB sync) cycle 56-ban.
+  Cycle 56 lezárva 2026-05-16 — FR #3b-WAVE-UI Phase 4.A + 4.B SHIPPED.
+  Wave schema bővítve (level, wave_vector enum, mood, snapshotTs) — denormalizált snapshot-metadata.
+  Új util-ek: buildWaveRowsFromSnapshot() + loadAllSnapshotRowsForSync().
+  Új endpoint: POST /api/wave/sync-jsonl (bulk admin one-shot) + /log-public auto-sync hook.
+  Smoke 3/3 ✅: bulk 18→0 idempotens, /log-public dbSynced=3. LDP 11/11. Commit c7ccd01.
+  Q-WAVE-2 + Q-WAVE-3 resolved (denormalized pattern). wave-panel-ui FR Phase 2-3-4 mind zárva.
+  Cycle 57 kandidátus: AGB-2026-05-16-05 (FR #3f socket-and-version-sync GREEN-LIGHT).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 55
+  cycle_id: 56
   phase_completed: close-cycle
   files_modified:
-    - client/src/app/_modules/dashboard/_components/d-waves-form/d-waves-form.component.ts   # ÚJ (147 LOC)
-    - client/src/app/_modules/dashboard/_components/d-waves-form/d-waves-form.component.html # ÚJ (67 LOC)
-    - client/src/app/_modules/dashboard/_components/d-waves-form/d-waves-form.component.scss # ÚJ (110 LOC)
-    - client/src/app/_modules/dashboard/_components/d-waves/d-waves.component.ts             # +D_WavesForm_Component import
-    - client/src/app/_modules/dashboard/_components/d-waves/d-waves.component.html           # +<d-waves-form/>
-    - client/src/app/_modules/dashboard/_services/d-dashboard.control-service.ts             # +submitWaveSnapshot
-    - client/src/app/_services/api-services/a-server.api-service.ts                          # +postWaveLogPublic
-    - client/src/app/_models/server-envelope.interface.ts                                    # +A_WaveLevel +A_WaveJsonlSnapshotPayload +A_WaveJsonlAppendResponse
-    - __agent/plans/wave-panel-ui.plan.md               # Phase 3.B ✅
-    - __agent/AGENT_BUS.md                              # AGB-01/02/03/04 ACTED, AGB-2026-05-15-03 ANSWERED
+    - server/src/_models/data-models/wave.data-model.ts       # +Wave_Vector enum +level +wave_vector +mood +snapshotTs (15 LOC)
+    - server/src/_collections/wave-jsonl.util.ts              # +buildWaveRowsFromSnapshot +loadAllSnapshotRowsForSync (~100 LOC)
+    - server/src/_routes/wave/wave-jsonl.controller.ts        # +upsertWaveRowIdempotent +POST /sync-jsonl +/log-public auto-sync (~85 LOC)
+    - __agent/plans/wave-panel-ui.plan.md                     # Phase 4.A ✅ + 4.B ✅
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-55.md
+    - __agent/log/cycles/cycle-56.md
   fr_status_changes: []
   plan_steps_marked_done:
-    - wave-panel-ui.plan.md Phase 3.B
-  commit_sha: f96bf3f
+    - wave-panel-ui.plan.md Phase 4.A
+    - wave-panel-ui.plan.md Phase 4.B
+  commit_sha: c7ccd01
   build_status: success
-  test_status: success                          # LDP 11/11 ✅ (client-test 13/13)
+  test_status: success                          # LDP 11/11 ✅ + Smoke 3/3 (bulk + idempotency + auto-sync)
 
 foreign_pending:
   first_seen_cycle: 4
@@ -55,9 +50,9 @@ foreign_pending:
 
 # Plan-folytatás tracking
 active_plan:
-  path: __agent/plans/wave-panel-ui.plan.md               # cycle 51 plan-package, FR #3b-WAVE-UI
-  current_step: "Phase 4.A — server one-shot JSONL → waves DB sync script"
-  steps_remaining: 3                                      # Phase 4.A, 4.B + final smoke
+  path: null                                              # wave-panel-ui FR Phase 2-3-4 zárva; Phase 5/6 külön green-light után
+  current_step: null
+  steps_remaining: 0
 secondary_plan:
   path: __agent/plans/ssot-server-esm-migration.plan.md   # chat-led, dev-agent takeover-elte Phase 3.2 + Phase 6 LDP-fix-eit
   current_step: "Phase 5-6 functional finalization + Phase 1-4 cleanup"

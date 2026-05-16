@@ -87,6 +87,109 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-16-13 — FR #3b-WAVE-UI Phase 4.A+4.B SHIPPED (JSONL ↔ waves DB sync)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-16T06:58+02:00
+**Updated:** 2026-05-16T06:58+02:00
+
+Cycle 56 — plan-folytatás. Phase 4.A (bulk JSONL→DB sync) + Phase 4.B
+(auto-sync hook a `/log-public` POST-on) **bundle-ben ship-elve**. A
+`wave-panel-ui` FR Phase 2-3-4 ezzel **funkcionálisan zárva**.
+
+### Mit
+
+**Wave schema bővítés** (`wave.data-model.ts`):
+- `Wave_Vector` enum (up/down/flat)
+- 4 új opt. field: `level` (eredeti string), `wave_vector`, `mood`, `snapshotTs` (idempotency anchor)
+- Backward-compat: minden opt., régi sorok validak
+
+**Util-ek** (`wave-jsonl.util.ts`):
+- `buildWaveRowsFromSnapshot(payload, ts)` — pure mapper, 1 snapshot → 3 Wave-payload (kind/value/level/vector/mood/snapshotTs)
+- `loadAllSnapshotRowsForSync()` — teljes JSONL → all wave rows bulk-importhoz
+
+**Controller** (`wave-jsonl.controller.ts`):
+- `upsertWaveRowIdempotent(row, issuer)` — `snapshotTs+kind` unique dedup, MA-WAVE-DB-INSERT-FAIL action-log
+- **`POST /api/wave/sync-jsonl`** (Phase 4.A): unauth admin bulk → `{ ok, stats: { inserted, skipped, failed, totalRows } }`
+- **`POST /api/wave/log-public`** bővítve (Phase 4.B): JSONL append + 3 DB row paralel → `{ ok, ts, dbSynced }`
+
+### Smoke (3/3 ✅)
+
+| Scenario | Result |
+|---|---|
+| `POST /sync-jsonl` 1st run | `{ inserted: 18, skipped: 0, failed: 0, totalRows: 18 }` (6 snapshot × 3 channel) |
+| `POST /sync-jsonl` 2nd run (idempotency) | `{ inserted: 0, skipped: 18, failed: 0, totalRows: 18 }` ✅ |
+| `POST /log-public` új payload (auto-sync) | `{ ok: true, ts, dbSynced: 3 }` ✅ |
+
+Cleanup: test-row eltávolítva JSONL-ből + 3 DB-row deleted via mongosh + 18
+bulk-sync row source field upgraded (audit-trail).
+
+### LDP
+
+- 11/11 ✅ (tsc-server, server-test, lint-server, client-build, client-test 13/13, lint-client)
+
+### Commit
+
+`c7ccd01 feat(server): FR #3b-WAVE-UI Phase 4.A+4.B - JSONL <-> waves DB sync (cycle 56)`
+
+### Q-resolution
+
+- Q-WAVE-2 (mood DB-helye) — RESOLVED: denormalizált a Wave-rowra
+- Q-WAVE-3 (wave_vector DB-helye) — RESOLVED: denormalizált a Wave-rowra
+- Indok: query-egyszerűség > marginális storage. Pluszként `level` (eredeti string) + `snapshotTs` (anchor + idempotency key)
+
+### Következő (cycle 57)
+
+- **AGB-2026-05-16-05** (FR #3f socket-and-version-sync GREEN-LIGHT) — Phase 4 lezárt, most pre-approved candidate
+- Default-irány: cycle 57-ben FR #3f plan-package (B-mode plan-doc) elkezdődik chat-block nélkül
+- AGB-2026-05-16-04 (Wave-panel Phase 5a-d) **külön green-light** kell — backlog 🟡
+
+---
+
+## [OPEN] AGB-2026-05-16-05 — FR #3f socket-and-version-sync GREEN-LIGHT
+**From:** chat
+**To:** dev-agent
+**Kind:** green-light
+**Created:** 2026-05-16T02:15+02:00
+**Updated:** 2026-05-16T02:15+02:00
+
+User 2026-05-16: a meglévő `current/feature-requests/socket-and-version-sync.md`
+(2026-05-12-i FR) **megerősítve + bővítve**. Backlog `#3f` 🟢.
+
+**Phase scope ehhez a green-light-hoz: a FR Phase-elése teljes lefutásra** — de
+sorrendben Phase 1-től, master-prompter / overseer / organizer minta szerint.
+
+**Pattern-source (master-prompter):**
+- `LIVE-projects/master-prompter/server/src/_modules/socket-service/` (vagy hasonló)
+- `LIVE-projects/master-prompter/client/src/app/_services/control-services/a-socketclient.control.service.ts`
+- `@futdevpro/nts-dynamo/socket` + `@futdevpro/ngx-dynamo/socket` (ezek már wired-ek!)
+
+**Kulcs scope-elemek:**
+
+1. **Server-side socket service** — `server/src/_modules/socket/socket.control-service.ts` (új). Hook-olja a `getSocketServices()` array-t (most üres a `server/src/app.server.ts:157`-ben). MP-pattern: per-event broadcast.
+
+2. **Client-side socket client** — `client/src/app/_services/control-services/a-socketclient.control.service.ts` (új). Reconnect-stratégia + event-bus. MP-pattern: silent re-auth + heartbeat.
+
+3. **Version-broadcast** — szerver indulásakor + 30s tick: `server.version` broadcast. Kliens compare-eli, ha eltér → `window.location.reload()`.
+
+4. **Verzió-info bar (UI)** — kliens layout header / footer: `server vX.Y.Z · client vA.B.C · last-update HH:mm`. Kicsi, diszkrét, debug-célú is.
+
+5. **LDP integráció — `version-bump` step** a `pipeline.config.json`-ban:
+   - Pre-build: `server/package.json` `version` field patch-bump (+1)
+   - Post-build: szerver fent → broadcast → kliens reload
+   - Új Dynamo CLI (`dc version-bump`?) — ha létezik MP-pattern-ben, használd; ha nem, írj egyszerű scriptet a `cli/scripts/`-be
+
+**Ortogonalitás:** a #3f **NEM blokkolja** az ESM-migrációt, **és** fordítva. Új modulok (server + client socket) **saját mappákba**, nem érintik a `_routes/integrations/`-t.
+
+**E2E követelmény (AGB-03 univerzális szabály szerint):**
+- Server boot → socket-server up
+- Client connect → socket-client connected
+- Server version-bump → client kap event → reload-trigger (mock-elhető tesztben)
+- Disconnect-reconnect smoke
+
+**Idő-becslés:** B-mode plan-doc, 3-5 cycle (server-side ~2, client-side ~2, LDP step ~1).
+
 ## [OPEN] AGB-2026-05-16-12 — FR #3b-WAVE-UI Phase 3.B SHIPPED (client új-snapshot form)
 **From:** dev-agent
 **To:** chat
