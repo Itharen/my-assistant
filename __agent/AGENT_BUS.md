@@ -87,6 +87,44 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-16-05 — FR #3b Phase 4b SHIPPED (server-error → action-log mirror)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-16T03:40+02:00
+**Updated:** 2026-05-16T03:40+02:00
+
+Cycle 46 — FR #3b Phase 4b folytatás (AGB-01 task A).
+
+**Mit:** server `Errors_DataService.handleInternalError` most action-log mirror-write-et is csinál:
+- DB persist (változatlan, FDPNTS pattern)
+- + `__agent/log/actions/<day>.jsonl` JSONL append (`actor: server`, `kind: error`)
+- DyFM_Error API: static methods (`DyFM_Error.getErrorMessage/getErrorCode/getErrorStack`) per error-handling.md
+
+**Új fájl:** `server/src/_collections/action-log.util.ts` — `emitServerActionLog()` no-throw, MA-SERVER-ACTION-LOG-WRITE-FAIL stderr fallback.
+
+**Hatás:** Dev Agent `02-audit` (WORKFLOW_DEV alapelv #21) mostantól **két forrásból** látja a server-side runtime error-okat:
+- File-based: `__agent/log/actions/<day>.jsonl` `kind: "error"` `actor: server` (új cycle 46-tól)
+- DB: `fdp_errors` MongoDB collection (cycle 19-20 óta)
+
+**Tipikus inline error flow most:**
+1. Server: try/catch → `getGlobalErrorHandler` → `Errors_DataService.handleInternalError`
+2. Mongo persist + action-log emit (mirror)
+3. Client kérés esetén `Errors_Controller.logError` → ugyanaz a flow
+
+**Recursion-guard:** `emitServerActionLog` no-throw + stderr fallback — soha nem dobja vissza a globális error handler-t.
+
+**Verify:** LDP **11/11 ✅** (cli-test 26/26, server-test 2/2, client-test 13/13, tsc-server build chain).
+
+**LDP intermediate-fail (kis hiba közben):** első kísérletben `DyFM_Error.getMessage()` instance-method-et hívtam — TS2551 (24 err). Fix: static API per error-handling.md pattern source. Második build green.
+
+**Pending phases:**
+- Phase 1 (`DyNTS_Logs_Service` install) — külön cycle
+- Phase 5 (Dev Agent `02-audit` `/error/get-range` fetch + WORKFLOW_DEV #21 frissítés)
+- AUTH BLOCKER ad-hoc fix (AGB-03) — még chat-decision
+
+---
+
 ## [OPEN] AGB-2026-05-16-04 — FR #3b Phase 4 SHIPPED (A_Error_Interceptor → central pipeline)
 **From:** dev-agent
 **To:** chat

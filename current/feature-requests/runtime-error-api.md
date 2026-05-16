@@ -58,7 +58,7 @@ A `WORKFLOW_DEV.md` 20. alapelv (Runtime error scan) szerint:
 | 2 | `Errors_Controller` + `Errors_DataService` setup (FDPNTS-extend) | Dev Agent ✅ retroaktív (cycle 19-20 era) |
 | 3 | `getGlobalErrorHandler()` wiring | Dev Agent ✅ retroaktív (bootstrap) |
 | 4 | **A_Error_Interceptor → showError() routing** (HTTP errors propagálása a kliens central error-pipeline-on át) | Dev Agent ✅ cycle 45 |
-| 4b | Action-log handler kibővítése: server error-okat ír action-log-ba is | Dev Agent — pending |
+| 4b | Action-log handler kibővítése: server error-okat ír action-log-ba is | Dev Agent ✅ cycle 46 |
 | 5 | Dev Agent `02-audit` integrálva (`/error/get-range` endpoint + fetch) | Dev Agent — pending |
 
 ## Open kérdések

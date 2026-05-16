@@ -50,8 +50,9 @@ nem teljesen audit-elve. Cycle 45 task A scope-ja a **valódi gap** azonosítás
 | 1 | `DyNTS_Logs_Service` install + `logs_endpoint` enable | 🚧 nincs (kihagyható ha nem kell `/api/logs/*` endpoint) | — |
 | 2 | `Errors_Controller` + `Errors_DataService` setup | ✅ shipped (cycle ~19-20 era) | retroaktív |
 | 3 | `getGlobalErrorHandler()` wiring | ✅ shipped | retroaktív |
-| **4** | **A_Error_Interceptor → showError** (HTTP errors propagálása) | 🔄 **cycle 45** | **this** |
-| 5 | Action-log handler kibővítése (server-error → action-log) | 🚧 pending | later |
+| **4** | **A_Error_Interceptor → showError** (HTTP errors propagálása) | ✅ cycle 45 | shipped |
+| **4b** | **Action-log emit minden server-error-on** (Errors_DataService.handleInternalError override) | ✅ cycle 46 | shipped |
+| 5 | Dev Agent `02-audit` `/error/get-range` fetch + WORKFLOW_DEV #21 frissítés | 🚧 pending | later |
 | 6 | Dev Agent `02-audit` integráció (`/error/get-range` endpoint + fetch) | 🚧 pending | later |
 
 ### Cycle 45 scope (Phase 4)
