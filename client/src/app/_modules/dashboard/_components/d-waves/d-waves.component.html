@@ -1,6 +1,12 @@
+<div class="d-waves-root" [class.fullscreen]="isFullscreen">
 <div class="panel-head">
   <h3>🌊 Hullámok</h3>
   <small class="muted">utolsó {{ rangeHours }}h</small>
+  <!-- FR #3b-WAVE-UI Phase 5d (cycle 86): fullscreen toggle (⛶), Esc → kilépés. -->
+  <button type="button" class="fullscreen-btn" (click)="handleFullscreenToggle()"
+          [title]="isFullscreen ? 'Kilépés (Esc)' : 'Teljes képernyő'">
+    {{ isFullscreen ? '⤩' : '⛶' }}
+  </button>
 </div>
 
 <!-- FR #3b-WAVE-UI Phase 5c (cycle 85): interval-választó preset gombok + custom. -->
@@ -97,3 +103,5 @@
 }
 
 <d-waves-form/>
+</div>
+

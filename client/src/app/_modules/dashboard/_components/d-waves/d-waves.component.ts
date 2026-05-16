@@ -6,7 +6,7 @@
 // so the template never calls a method during change detection.
 
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, Input, OnDestroy } from '@angular/core';
 
 import {
   A_WaveKind,
@@ -155,7 +155,7 @@ function computeXTicks(tStart: number, tEnd: number, rangeHours: number): D_Wave
   imports: [ CommonModule, D_WavesForm_Component ],
 })
 /** Waves panel — 3 vonalas SVG diagram astral/mental/matter time-series-szel, precomputált polyline-okkal. */
-export class D_Waves_Component {
+export class D_Waves_Component implements OnDestroy {
 
   private readonly control: D_Dashboard_ControlService = inject(D_Dashboard_ControlService);
 
@@ -165,6 +165,12 @@ export class D_Waves_Component {
   readonly gridTicks: D_WaveGridTick_Interface[] =
     Y_GRID_VALUES.map((v: number): D_WaveGridTick_Interface => ({ value: v, y: yFor(v) }));
   readonly rangePresets: D_WaveRangePreset_Interface[] = RANGE_PRESETS;
+
+  /** FR #3b-WAVE-UI Phase 5d (cycle 86): fullscreen toggle state. Esc → kilépés. */
+  isFullscreen: boolean = false;
+
+  /** Esc key listener — fullscreen exit handler, attached when isFullscreen=true. */
+  private escListener: ((e: KeyboardEvent) => void) | null = null;
 
   rangeHours: number = 24;
   hasData: boolean = false;
@@ -239,6 +245,38 @@ export class D_Waves_Component {
 
     if (!Number.isFinite(days) || days <= 0) return;
     this.control.setRangeHours(Math.round(days * 24));
+  }
+
+  /** FR #3b-WAVE-UI Phase 5d (cycle 86): fullscreen toggle + esc listener. */
+  handleFullscreenToggle(): void {
+    this.isFullscreen = !this.isFullscreen;
+    if (this.isFullscreen) {
+      this.attachEscListener();
+    } else {
+      this.detachEscListener();
+    }
+  }
+
+  private attachEscListener(): void {
+    if (typeof window === 'undefined' || this.escListener) return;
+    this.escListener = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape' && this.isFullscreen) {
+        this.isFullscreen = false;
+        this.detachEscListener();
+      }
+    };
+    window.addEventListener('keydown', this.escListener);
+  }
+
+  private detachEscListener(): void {
+    if (typeof window === 'undefined' || !this.escListener) return;
+    window.removeEventListener('keydown', this.escListener);
+    this.escListener = null;
+  }
+
+  /** Cleanup — esc listener uninstall on component destroy. */
+  ngOnDestroy(): void {
+    this.detachEscListener();
   }
 
   /**

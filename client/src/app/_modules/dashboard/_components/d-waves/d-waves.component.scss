@@ -1,13 +1,41 @@
 :host { display: block; color: var(--ma-fg); }
 
+/* FR #3b-WAVE-UI Phase 5d (cycle 86): fullscreen mode container. */
+.d-waves-root.fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--ma-bg, #0f1115);
+  padding: 24px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+
+  .wave-svg { flex: 1 1 auto; max-height: calc(100vh - 240px); }
+}
+
 .panel-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  gap: 10px;
   margin-bottom: 8px;
 
   h3 { margin: 0; font-size: 1.05rem; color: var(--ma-fg); }
-  .muted { color: var(--ma-fg-muted); font-size: 0.85em; }
+  .muted { color: var(--ma-fg-muted); font-size: 0.85em; flex: 1 1 auto; }
+
+  .fullscreen-btn {
+    background: transparent;
+    color: var(--ma-fg-muted);
+    border: 1px solid var(--ma-border);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.95em;
+    cursor: pointer;
+    line-height: 1;
+
+    &:hover { border-color: var(--ma-accent, #60a5fa); color: var(--ma-fg); }
+  }
 }
 
 .empty {
