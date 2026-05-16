@@ -44,6 +44,7 @@ import { Capture_Controller } from './_routes/capture/capture.controller';
 import { Dashboard_Controller } from './_routes/dashboard/dashboard.controller';
 import { Spotify_Controller } from './_routes/spotify/spotify.controller';
 import { Google_Controller } from './_routes/google/google.controller';
+import { Version_Controller } from './_routes/version/version.controller';
 
 import { VersionBroadcast_SocketServerService } from './_services/socket-services/version-broadcast.socket-server-service';
 
@@ -150,6 +151,11 @@ export class App extends DyNTS_AppExtended {
       // FR #3b Phase 1 (cycle 48): /api/logs/* — server-wide log endpoints
       // (unauth, FDPNTS pattern). Lásd `DyNTS_getLogsRoutingModule` util-t.
       DyNTS_getLogsRoutingModule(),
+      // FR #3f Phase 6.B (cycle 80): GET /api/version — version + bootTime + gitSha (unauth).
+      new DyNTS_RoutingModule({
+        route: '/version',
+        controllers: [ Version_Controller.getInstance() ],
+      }),
     ];
   }
 

@@ -134,6 +134,43 @@ export class VersionBroadcast_SocketServerService extends DyNTS_SocketServerServ
     return [];
   }
 
+  /**
+   * Domain-event broadcast (FR #3f Phase 5.A). A `topic` event-name (pl. 'wave',
+   * 'insight', 'capture', 'task'), az `op` a mutation type (`create`/`update`/`delete`),
+   * a payload a domain-objektum. Minden aktív kliensnek elküldve.
+   *
+   * Schema: `{ topic, op, payload, ts }`. Master-prompter notification-pattern adaptáció.
+   */
+  async broadcastDomainEvent(topic: string, op: 'create' | 'update' | 'delete', payload: unknown): Promise<void> {
+    try {
+      const eventKey: string = `domain:${topic}`;
+      const content: { topic: string; op: 'create' | 'update' | 'delete'; payload: unknown; ts: string } = {
+        topic,
+        op,
+        payload,
+        ts: new Date().toISOString(),
+      };
+
+      await this.broadcastEvent(eventKey, content, 'domain-event-broadcast');
+
+      await emitServerActionLog({
+        actor: 'server',
+        kind: 'state-change',
+        summary: `domain event broadcast: ${topic}.${op}`,
+        extra: { issuer: 'version-broadcast.broadcastDomainEvent', topic, op },
+      });
+    } catch (err) {
+      const e: Error = err instanceof Error ? err : new Error(String(err));
+
+      await emitServerActionLog({
+        actor: 'server',
+        kind: 'error',
+        summary: `[MA-SOCKET-DOMAIN-BROADCAST-FAIL] ${topic}.${op}: ${e.message.slice(0, 200)}`,
+        extra: { errorCode: 'MA-SOCKET-DOMAIN-BROADCAST-FAIL', issuer: 'version-broadcast.broadcastDomainEvent', topic, op, stack: e.stack },
+      });
+    }
+  }
+
   /** `server:hello` event egy adott presence-nek (új subscriber). */
   private async sendHelloToPresence(clientId: string): Promise<void> {
     try {

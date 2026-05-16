@@ -22,6 +22,7 @@ import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
 
 import { Wave, Wave_Kind, Wave_Vector } from '../../_models/data-models/wave.data-model';
 import { Wave_DataService } from './wave.data-service';
+import { VersionBroadcast_SocketServerService } from '../../_services/socket-services/version-broadcast.socket-server-service';
 
 import { emitServerActionLog } from '../../_collections/action-log.util';
 import {
@@ -138,6 +139,13 @@ export class WaveJsonl_Controller extends DyNTS_Controller {
 
               if (outcome === 'inserted') synced++;
             }
+
+            // FR #3f Phase 5.B: socket-push event a kliensnek (real-time refresh-trigger)
+            await VersionBroadcast_SocketServerService.getInstance().broadcastDomainEvent('wave', 'create', {
+              ts: result.ts,
+              snapshot: payload,
+              dbSynced: synced,
+            });
 
             res.send({ ok: true, ts: result.ts, dbSynced: synced });
           },

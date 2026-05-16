@@ -92,8 +92,12 @@
 | **3.B** | **Client: A_Version_DataService** — BehaviorSubject state (serverVersion + clientVersion + lastUpdateTs + requireReload) | ✅ cycle 59 | shipped |
 | **4.A** | **Status-bar component** (`s-status-bar.component`) — sticky footer, server + client + last-update + reload-flag | ✅ cycle 59 | shipped |
 | **4.B** | **Auto-reload UX** — `S_VersionReloadBanner_Component` (5s countdown + Reload Now + Dismiss + dev-mode silent reload) | ✅ cycle 60 | shipped |
-| 5 | **Domain-events migration** — REST poll → socket push fokozatosan (waves auto-refresh, tasks-updated, …) | 🚧 később | külön green-light |
-| 6 | **Build-pipeline integration** — `dc bump-version` post-hook → socket broadcast trigger; build-hash inject | 🚧 később | külön green-light |
+| **5.A** | **Server: domain-events push util** — `broadcastDomainEvent(topic, op, payload)` a VersionBroadcast szervice-en, schema `{topic, op:create\|update\|delete, payload, ts}` | 🚧 cycle 80 | in-progress |
+| **5.B** | **Server: wave/insight/capture create hook** — push event broadcast a controller-mutation után (kezdés: wave-jsonl `/log-public`) | 🚧 cycle 80 | in-progress |
+| **5.C** | **Client: A_Socket subscribe + dispatch** — domain-topic event handlerek → `D_Dashboard_DataService.refresh()` trigger | 🚧 cycle 82-83 |  |
+| **6.A** | **Server: build-hash + version response headers** (Express middleware, `X-Build-Hash` + `X-Server-Version`) | 🚧 cycle 80 | in-progress |
+| **6.B** | **Server: GET /api/version endpoint** (unauth, json: version + gitSha + bootTime) | 🚧 cycle 80 | in-progress |
+| **6.C** | **LDP integráció** — build-time git-sha inject (`server/src/_collections/build-info.const.ts` generated) — later opt | 🚧 cycle 84 |  |
 
 **Cycle 57 ezzel a planning-fázist zárja.** Cycle 58 Phase 2.A+2.B (server-side) bundle indul.
 
