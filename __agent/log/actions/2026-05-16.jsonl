@@ -631,3 +631,5 @@
 {"ts":"2026-05-16T18:00:00+02:00","actor":"development-agent","kind":"note","summary":"Cycle 74 heartbeat — AGB-18 OPEN 5h (still within AGB-15-03 reference 9-10h range)","extra":{"cycle":74,"agb18_age_min":300}}
 {"ts":"2026-05-16T18:01:27+02:00","actor":"server","kind":"state-change","summary":"server:version broadcast (0.1.117 -> 0.1.118, requireReload=true)","extra":{"issuer":"version-broadcast.tickAndBroadcastIfChanged","previousVersion":"0.1.117","currentVersion":"0.1.118"}}
 {"ts":"2026-05-16T18:30:00+02:00","actor":"development-agent","kind":"note","summary":"Cycle 75 heartbeat — AGB-18 OPEN 5h 30m, szabat-day Saturday evening","extra":{"cycle":75,"agb18_age_min":330}}
+{"ts":"2026-05-16T18:31:08+02:00","actor":"server","kind":"state-change","summary":"server:version broadcast (0.1.118 -> 0.1.119, requireReload=true)","extra":{"issuer":"version-broadcast.tickAndBroadcastIfChanged","previousVersion":"0.1.118","currentVersion":"0.1.119"}}
+{"ts":"2026-05-16T19:00:00+02:00","actor":"development-agent","kind":"note","summary":"Cycle 76 heartbeat — AGB-18 OPEN 6h, szombat este","extra":{"cycle":76,"agb18_age_min":360}}
