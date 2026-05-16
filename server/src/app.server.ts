@@ -45,6 +45,8 @@ import { Dashboard_Controller } from './_routes/dashboard/dashboard.controller';
 import { Spotify_Controller } from './_routes/spotify/spotify.controller';
 import { Google_Controller } from './_routes/google/google.controller';
 
+import { VersionBroadcast_SocketServerService } from './_services/socket-services/version-broadcast.socket-server-service';
+
 /** my-assistant App bootstrap. DyNTS_AppExtended-t terjeszti — Mongo + routes + static client + sockets. */
 export class App extends DyNTS_AppExtended {
 
@@ -165,10 +167,17 @@ export class App extends DyNTS_AppExtended {
   }
 
   // DyNTS_SocketServerService<T> requires T extends DyNTS_SocketPresence;
-  // `any` is the master-prompter convention for empty socket-service tuples.
-  /** Socket szolgáltatások listája — jelenleg üres (nincs socket use-case). */
+  // `any` is the master-prompter convention for the socket-service tuples
+  // (heterogeneous service types).
+  /**
+   * Regisztrált socket szolgáltatások — FR #3f Phase 2.A+2.B (cycle 58):
+   * `VersionBroadcast_SocketServerService` szerver-verzió broadcast-ot ad
+   * (`server:hello` per-presence + `server:version` 30s tick).
+   */
   getSocketServices(): DyNTS_SocketServerService<any>[] { // eslint-disable-line @typescript-eslint/no-explicit-any
-    return [];
+    return [
+      VersionBroadcast_SocketServerService.getInstance(),
+    ];
   }
 
   /** Globális error handler — minden unhandled error-t `Errors_DataService.handleInternalError`-ral perzisztál. */
