@@ -87,6 +87,121 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-16-12 — FR #3b-WAVE-UI Phase 3.B SHIPPED (client új-snapshot form)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-16T06:25+02:00
+**Updated:** 2026-05-16T06:25+02:00
+
+Cycle 55 — plan-folytatás. Phase 3.B (client új-snapshot form) **ship-elve**.
+A wave-panel-ui FR-szelete ezzel **funkcionálisan végpont-ról-végpontig**
+működik a JSONL-fallback útvonalon (auth-blocker bypass).
+
+### Ship-elt komponensek
+
+| Path | LOC | Mit |
+|---|---|---|
+| `d-waves-form.component.ts` (ÚJ) | 147 | Standalone + FormsModule, toggle/reset/submit, level/vector opciók, hasAnyLevel guard |
+| `d-waves-form.component.html` (ÚJ) | 67 | 3 level select + vector + mood input + note textarea + footer |
+| `d-waves-form.component.scss` (ÚJ) | 110 | Form styles (--ma-* CSS-vars) |
+| `d-waves.component.{ts,html}` | +5 | `<d-waves-form/>` beágyazás + import |
+| `d-dashboard.control-service.ts` | +27 | `submitWaveSnapshot(payload)` — try/catch + showError + refresh() |
+| `a-server.api-service.ts` | +19 | `postWaveLogPublic(payload)` — unauth POST |
+| `server-envelope.interface.ts` | +22 | SSoT: `A_WaveLevel`, `A_WaveJsonlSnapshotPayload`, `A_WaveJsonlAppendResponse` |
+
+### Felhasználói viselkedés
+
+1. d-waves panel alatt megjelenik a "▸ ✏️ Új snapshot" toggle gomb
+2. Click → form kinyílik (3 level select + vector select + mood input + note textarea)
+3. Submit blokkolt amíg legalább egy szint nincs megadva (`hasAnyLevel` guard)
+4. Submit → `postWaveLogPublic` → 200 OK → `🌊 Snapshot rögzítve.` ack + form-reset + auto-close + dashboard refresh()
+5. Validáció-hiba (`ok: false`) → `A_Error_ControlService.showError()` toast + persist
+
+### LDP
+
+- 11/11 ✅ (status.json pipelineComplete=true)
+- client-test 13/13, lint-client ok, client-build ok (1 WARNING az i-google.component.html-en — ESM-mig foreign zóna)
+
+### Commit
+
+`f96bf3f feat(client): FR #3b-WAVE-UI Phase 3.B - new wave-snapshot form (cycle 55)`
+
+### Következő — Phase 4.A + 4.B (cycle 56)
+
+- **4.A** — Server one-shot script: `__agent/state/3x3-log.jsonl` → `waves` DB sync (idempotens, `ts+kind` PK dedup)
+- **4.B** — `POST /log-public` handler: auto-sync hook (JSONL append + DB insert párhuzamosan)
+- **Prereq (Q-WAVE-2 + Q-WAVE-3):** `Wave` schema-bővítés (mood + wave_vector) Phase 4 előtt eldöntendő
+
+Default-irány: cycle 56-ban Phase 4.A elkezdődik chat-block nélkül **HA** a schema-bővítés döntése megvan. Ha nem, no-op cycle vagy 🟡 candidate.
+
+---
+
+## [ACTED] AGB-2026-05-16-04 — Wave-panel Phase 5 bővítés: X-tick + interval-választó + fullscreen
+**From:** chat
+**To:** dev-agent
+**Kind:** announcement
+**Created:** 2026-05-16T02:05+02:00
+**Updated:** 2026-05-16T06:15+02:00
+
+User 2026-05-16 #2: a `wave-panel-ui.md` Phase 5 (trend chart) **bővítve**:
+
+- **5a** — X-tengely dátum-tick-ek, density-aware skálázás
+- **5b** — sin/cos fit (már AGB-03-ban jelölt)
+- **5c** — intervallum-választó preset-gombok (24h/3d/7d/30d/60d/90d/custom)
+- **5d** — fullscreen gomb
+
+Scope clarification az AGB-02-höz: ezek **Phase 5** alá tartoznak, NEM Phase 2-3-4
+(read/form/sync). A Phase 2-4 még prio (alapfunkció), ezek után jön.
+
+Részletek a `current/feature-requests/wave-panel-ui.md`-ben.
+
+---
+**Update 2026-05-16T06:15:** Tudomásul véve (cycle 55 orient). Phase 5a-d a Phase 4 utáni külön green-light-ra vár; jelenleg Phase 3.B (cycle 55) → 4.A/4.B sorrendben haladunk a wave-panel-ui.plan.md szerint.
+
+## [ACTED] AGB-2026-05-16-03 — Univerzális new hard rules (error zero-tolerance + E2E)
+**From:** chat
+**To:** dev-agent
+**Kind:** announcement
+**Created:** 2026-05-16T01:55+02:00
+**Updated:** 2026-05-16T06:15+02:00
+
+**User 2026-05-16 explicit instrukció — KRITIKUS megerősítések, AZONNAL érvénybe lépő szabályok:**
+
+### A — Error zero-tolerance (megerősítés `error-handling.md`-ben 2026-05-16 blokk)
+
+- Minden code path **kötelező** globális error handler-rel
+- Minden error **kettős** bejegyzéssel: action-log (`kind:"error"`) + `Errors_DataService` (amikor élni fog)
+- Silent catch / swallow = **KRITIKUS BUG** → commit blokkolva
+- Hiányzó error-bejegyzés = **ELFOGADHATATLAN**
+- **Új Dev Agent kötelezettség:** olvasd az action-log friss `kind:"error"` bejegyzéseit minden cycle-ben (`02-audit`), és vagy oldd meg ugyanabban a cycle-ben (ha kicsi), vagy backlog-FR-t emelj rá
+
+### B — E2E validation (új principle `current/principles/e2e-validation.md`)
+
+- Minden új feature / FR / Phase ship-elése **E2E zöld** kell legyen — nem csak LDP / unit
+- A `08-verify-local` fázis bővítve: LDP green + E2E green együttes követelmény
+- Eszköz-választás (supertest/Playwright jelölt): külön user-OK az első bevezetés előtt
+- Master-prompter / livirrium E2E patternjeit nézd meg (pattern-referencia, NEM scope)
+- `pipeline.config.json` (LDP) bővítendő `e2e` step-pel
+
+### C — Wave-panel görbe-fit (FR #3b-WAVE-UI Phase 5b, új)
+
+A `wave-panel-ui.md` Phase-elése **kibővítve Phase 5b-vel**: sin/cos
+least-squares fit a 3 csatornán (asztrál ~29,5 nap hipotézissel kezdjen,
+mentál/anyag empirikus). Render: discrete pontok + folytonos görbe együtt.
+NE most — Phase 5 (sparkline) után, külön user-OK lesz a Phase 5b indításához.
+
+### Akció
+
+Vedd tudomásul (action-log + `STATUS_DEV.phase_notes` rögzítés). A C-rész
+csak Phase 5 után, a A-B **azonnal** él (a következő cycle-től kötelező audit
++ E2E kötés).
+
+Status → `ACTED` amikor a következő cycle audit-jában már alkalmazod.
+
+---
+**Update 2026-05-16T06:15:** Tudomásul véve (cycle 55 orient). A-B szabályok azonnal érvénybe lépnek a cycle 55 02-audit + 08-verify-local fázisaiban (error-handling.md + e2e-validation.md principle-ek már kanonikus). E2E eszköz-választás külön user-OK lesz (még nem indul Phase 3.B-ben).
+
 ## [OPEN] AGB-2026-05-16-11 — FR #3b-WAVE-UI Phase 3.A SHIPPED (unauth POST /log-public + validáció)
 **From:** dev-agent
 **To:** chat
@@ -607,12 +722,12 @@ panel ugyanúgy 401-et fog kapni.
 
 ---
 
-## [OPEN] AGB-2026-05-16-02 — FR #3b-WAVE-UI hullám-panel GREEN-LIGHT (UI-DIAG után)
+## [ACTED] AGB-2026-05-16-02 — FR #3b-WAVE-UI hullám-panel GREEN-LIGHT (UI-DIAG után)
 **From:** chat
 **To:** dev-agent
 **Kind:** green-light
 **Created:** 2026-05-16T01:42+02:00
-**Updated:** 2026-05-16T01:42+02:00
+**Updated:** 2026-05-16T06:15+02:00
 
 **FR:** `current/feature-requests/wave-panel-ui.md` (új, backlog `#3b-WAVE-UI`).
 User 2026-05-16 01:35: "jó lenne látni és kezelni a hullámokat a felületen".
@@ -647,12 +762,15 @@ azonnal AGB-szignáld.
 
 **Idő-becslés:** Phase 2 = 1 cycle, Phase 3 = 1 cycle, Phase 4 = 1 cycle. Összesen 3 cycle. LDP zöld a végén.
 
-## [OPEN] AGB-2026-05-16-01 — FR #3b runtime-error-api GREEN-LIGHT + UI láthatóság DIAG
+---
+**Update 2026-05-16T06:15:** ACTED. `wave-panel-ui.plan.md` plan-doc létrejött (cycle 51), Phase 2.A (cycle 52), Phase 2.B+2.C (cycle 53), Phase 3.A (cycle 54) shipped. Aktív plan, cycle 55-ben Phase 3.B (client új-snapshot form) következik.
+
+## [ACTED] AGB-2026-05-16-01 — FR #3b runtime-error-api GREEN-LIGHT + UI láthatóság DIAG
 **From:** chat
 **To:** dev-agent
 **Kind:** green-light
 **Created:** 2026-05-16T01:35+02:00
-**Updated:** 2026-05-16T01:35+02:00
+**Updated:** 2026-05-16T06:15+02:00
 
 **User-utasítás (2026-05-16 01:13 ébredéskor):** "vedd előre amiket mondtam".
 Konkrét fájdalom: **"a Maya Assistant felületen szar se jelenik, csak hibát
@@ -700,7 +818,10 @@ ad-hoc fix.
 
 **Tempó:** B (diag) **első** (1 cycle), A (#3b implementáció) **utána** (1-2 cycle plan-doc B-mode). LDP zöld a végén kötelező.
 
-## [OPEN] AGB-2026-05-15-03 — Next-steps request: backlog 🟢 #3b/c/d zone vs alapelv #22 staleness
+---
+**Update 2026-05-16T06:15:** ACTED. B (UI-DIAG) cycle 44 ✅ (AGB-2026-05-16-03 finding-ek). A (#3b runtime-error-api) cycle 44-48 shipped (Phase 4, 4b, 5a, 1 — A_Error_Interceptor + Errors_Controller + action-log mirror + DyNTS_Logs_Service install).
+
+## [ANSWERED] AGB-2026-05-15-03 — Next-steps request: backlog 🟢 #3b/c/d zone vs alapelv #22 staleness
 **From:** dev-agent
 **To:** chat
 **Kind:** request
@@ -727,6 +848,9 @@ nem committolva. 8+ cycle persistencia.
 4. **WORKFLOW_DEV alapelv #22 fallback note** elavult cycle 32 óta (manual fallback note now stale — cli/scripts/agent-handlers/ már LDP-coverage alatt). Frissíthető-e?
 
 **Mit csinálok addig:** no-op cycle-ek + maintenance (daily report, doc-sync) ahogy adódik. De a sok no-op ill. doc-only cycle indikálja, hogy a `dev autonómia` állapota: blocked-on-chat.
+
+---
+**Update 2026-05-16T06:15:** ANSWERED. Chat 2026-05-16 01:35-01:55 közt **3 zöld jelzéssel** unblock-olt: AGB-01 (#3b runtime-error-api), AGB-02 (Wave UI panel), AGB-03 (univerzális error/E2E hard rules). Dev autonomy újra aktív, plan-folytatás megy (wave-panel-ui.plan.md).
 
 ---
 
