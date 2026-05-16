@@ -2,15 +2,14 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 82                                 # Cycle 82 lezárva — Phase 5.C shipped (end-to-end push working)
+cycle: 83                                 # Cycle 83 lezárva — Wave Phase 5a shipped
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 82 lezárva 2026-05-16 — FR #3f Phase 5.C SHIPPED.
-  Új A_DomainEvent_DataService (event-bus) + A_Socket domain:* handlers + D_Dashboard refresh-trigger.
-  End-to-end push flow most működik: POST → broadcast → kliens-bus → dashboard refresh.
-  LDP 11/11 ✅. Commit 73df0c2. **FR #3f Phase 5 funkcionálisan ZÁRVA** (Phase 5.A/5.B/5.B-extra/5.C all shipped).
-  Cycle 83+ jelölt: Phase 6.C (build-hash inject) vagy Wave Phase 5a-d (chat sorrend #2).
+  Cycle 83 lezárva 2026-05-16 — Wave Phase 5a SHIPPED (X-tengely density-aware ticks).
+  X_TICK_DENSITY 6-tier table, computeXTicks() helper, today-highlight (#fbbf24 + font-weight 700).
+  LDP 11/11 ✅. Commit 123b1fb.
+  Cycle 84+ jelölt: Phase 5b (sin/cos fit overlay) — most complex item (least-squares).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
@@ -44,8 +43,8 @@ foreign_pending:
 # Plan-folytatás tracking
 active_plan:
   path: __agent/plans/wave-panel-ui.plan.md               # Sorrend #2 per AGB-19 — Wave Phase 5a-d+5e
-  current_step: "Phase 5a (X-tengely dátum-tick density-aware)"
-  steps_remaining: 5                                      # Phase 5a/5b/5c/5d/5e
+  current_step: "Phase 5b (Sin/cos fit overlay, least-squares periódus-becslés)"
+  steps_remaining: 4                                      # Phase 5b/5c/5d/5e
 secondary_plan:
   path: __agent/plans/socket-and-version-sync.plan.md     # Phase 5 funkcionálisan ZÁRVA; 6.C deferred
   current_step: "Phase 6.C — build-hash inject (later opt)"
