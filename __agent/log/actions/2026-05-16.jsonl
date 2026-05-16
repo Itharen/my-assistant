@@ -635,3 +635,5 @@
 {"ts":"2026-05-16T19:00:00+02:00","actor":"development-agent","kind":"note","summary":"Cycle 76 heartbeat — AGB-18 OPEN 6h, szombat este","extra":{"cycle":76,"agb18_age_min":360}}
 {"ts":"2026-05-16T19:01:15+02:00","actor":"server","kind":"state-change","summary":"server:version broadcast (0.1.119 -> 0.1.120, requireReload=true)","extra":{"issuer":"version-broadcast.tickAndBroadcastIfChanged","previousVersion":"0.1.119","currentVersion":"0.1.120"}}
 {"ts":"2026-05-16T19:30:00+02:00","actor":"development-agent","kind":"note","summary":"Cycle 77 heartbeat — AGB-18 OPEN 6h 30m","extra":{"cycle":77,"agb18_age_min":390}}
+{"ts":"2026-05-16T19:31:03+02:00","actor":"server","kind":"state-change","summary":"server:version broadcast (0.1.120 -> 0.1.121, requireReload=true)","extra":{"issuer":"version-broadcast.tickAndBroadcastIfChanged","previousVersion":"0.1.120","currentVersion":"0.1.121"}}
+{"ts":"2026-05-16T20:00:00+02:00","actor":"development-agent","kind":"note","summary":"Cycle 78 heartbeat — AGB-18 OPEN 7h","extra":{"cycle":78,"agb18_age_min":420}}
