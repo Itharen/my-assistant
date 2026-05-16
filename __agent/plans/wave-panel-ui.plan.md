@@ -51,8 +51,8 @@
 | **2.C** | **d-waves enrichment**: mood + note + vector emoji megjelenítés | ✅ cycle 53 | shipped |
 | **3.A** | **Server: unauth `POST /api/wave/log-public`** (FDPNTS-pattern, mint /error/log) | ✅ cycle 54 | shipped |
 | **3.B** | **Client: új-snapshot form** (3 select + vector + mood + note) | ✅ cycle 55 | shipped |
-| **4.A** | **Server: jsonl → waves DB sync script** (one-shot import) | 🚧 | cycle 56 |
-| **4.B** | **Server: auto-sync hook** (új `/wave/log-public` payload → jsonl append + DB insert) | 🚧 | cycle 56 |
+| **4.A** | **Server: jsonl → waves DB sync** (one-shot bulk endpoint `POST /sync-jsonl`) | ✅ cycle 56 | shipped |
+| **4.B** | **Server: auto-sync hook** (`/log-public` payload → JSONL append + DB insert paralel) | ✅ cycle 56 | shipped |
 | 5 | Trend mini-chart (sparkline) | 🚧 később | külön green-light |
 | 6 | Holdfázis overlay | 🚧 később | külön green-light |
 

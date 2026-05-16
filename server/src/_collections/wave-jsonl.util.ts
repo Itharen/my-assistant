@@ -299,3 +299,110 @@ export async function appendWaveSnapshotToJsonl(
 
   return { ok: true, ts };
 }
+
+// ── JSONL ↔ Wave DB sync (FR #3b-WAVE-UI Phase 4) ────────────────────────────
+
+/**
+ * Egy JSONL snapshot payload explode-olása a DB-be. Mind a 3 csatorna (astral/
+ * mental/matter) egy-egy Wave row-ként kerül be, denormalizált mood/wave_vector/
+ * note-tal. Idempotency: `snapshotTs + kind` unique combo. A hívó (controller
+ * vagy script) felelős a Wave_DataService konstrukciójáért + saveData-ért.
+ *
+ * Visszaadja a kész Wave-payload listát + a duplikációkat (Wave-array, nem
+ * Wave_DataService).
+ *
+ * NOTE: a beillesztést maga NEM végzi — ez egy tiszta pure mapper. A DB-side
+ * effect a hívó controller-ben történik (DB connection a DyNTS_GlobalService-ben).
+ */
+export function buildWaveRowsFromSnapshot(
+  payload: WaveJsonlSnapshot_Payload,
+  ts: string,
+): { kind: WaveJsonl_Kind; value: number; level: string; vector: WaveJsonl_Vector | null; mood: string | null; note: string | null; snapshotTs: string }[] {
+  const rows: { kind: WaveJsonl_Kind; value: number; level: string; vector: WaveJsonl_Vector | null; mood: string | null; note: string | null; snapshotTs: string }[] = [];
+  const kinds: WaveJsonl_Kind[] = [ 'astral', 'mental', 'matter' ];
+
+  for (const kind of kinds) {
+    const field: keyof RawJsonlRow_Interface = KIND_FIELD_MAP[kind];
+    const level: string | undefined = payload[field as keyof WaveJsonlSnapshot_Payload] as string | undefined;
+
+    if (!level) {
+      continue;
+    }
+
+    rows.push({
+      kind,
+      value: levelToValue(level),
+      level,
+      vector: payload.wave_vector ?? null,
+      mood: payload.mood ?? null,
+      note: payload.note ?? null,
+      snapshotTs: ts,
+    });
+  }
+
+  return rows;
+}
+
+/**
+ * Olvas `__agent/state/3x3-log.jsonl`-ből MINDEN sort (nem csak limit-szelet),
+ * és buildeli az explode-olt Wave-payload listát snapshot-szintű ts-szel.
+ * A controller / sync-script ezt iterálja és per-row idempotens `findDataList`
+ * + `saveData` ciklust futtat.
+ *
+ * Hibás JSON sorok skip-elve + emitServerActionLog. Fájl-hiba esetén üres `[]`
+ * + MA-WAVE-JSONL-READ-FAIL action-log, no-throw.
+ */
+export async function loadAllSnapshotRowsForSync(): Promise<{ kind: WaveJsonl_Kind; value: number; level: string; vector: WaveJsonl_Vector | null; mood: string | null; note: string | null; snapshotTs: string }[]> {
+  const jsonlPath: string = resolveJsonlPath();
+
+  let content: string;
+  try {
+    content = await fs.readFile(jsonlPath, 'utf8');
+  } catch (err) {
+    const e: Error = err instanceof Error ? err : new Error(String(err));
+    await emitServerActionLog({
+      actor: 'server',
+      kind: 'error',
+      summary: `[MA-WAVE-JSONL-READ-FAIL] ${e.message.slice(0, 200)}`,
+      extra: { errorCode: 'MA-WAVE-JSONL-READ-FAIL', issuer: 'wave-jsonl.util.loadAllSnapshotRowsForSync', path: jsonlPath, stack: e.stack },
+    });
+
+    return [];
+  }
+
+  const lines: string[] = content.split(/\r?\n/).filter((l: string): boolean => l.trim().length > 0);
+  const result: { kind: WaveJsonl_Kind; value: number; level: string; vector: WaveJsonl_Vector | null; mood: string | null; note: string | null; snapshotTs: string }[] = [];
+
+  for (const line of lines) {
+    let raw: RawJsonlRow_Interface;
+    try {
+      raw = JSON.parse(line) as RawJsonlRow_Interface;
+    } catch (err) {
+      const e: Error = err instanceof Error ? err : new Error(String(err));
+      await emitServerActionLog({
+        actor: 'server',
+        kind: 'error',
+        summary: `[MA-WAVE-JSONL-PARSE-FAIL] ${e.message.slice(0, 100)} — line skipped`,
+        extra: { errorCode: 'MA-WAVE-JSONL-PARSE-FAIL', issuer: 'wave-jsonl.util.loadAllSnapshotRowsForSync', linePreview: line.slice(0, 120) },
+      });
+      continue;
+    }
+
+    if (!raw.ts) {
+      continue;
+    }
+
+    const synthPayload: WaveJsonlSnapshot_Payload = {
+      astral: raw.astral,
+      mental: raw.mental,
+      material: raw.material,
+      wave_vector: raw.wave_vector,
+      mood: raw.mood,
+      note: raw.note,
+    };
+
+    result.push(...buildWaveRowsFromSnapshot(synthPayload, raw.ts));
+  }
+
+  return result;
+}

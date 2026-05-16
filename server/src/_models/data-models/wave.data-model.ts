@@ -10,6 +10,9 @@ import { DyFM_DataModel_Params, DyFM_Metadata, DyFM_Object } from '@futdevpro/fs
 /** Wave kategória taxonómiája — astral / mental / matter energy-channel. */
 export enum Wave_Kind { astral = 'astral', mental = 'mental', matter = 'matter' }
 
+/** Hullám-vektor — opcionális, snapshot-szintű metaadat (mind a 3 exploded row hordozza). */
+export enum Wave_Vector { up = 'up', down = 'down', flat = 'flat' }
+
 /** Wave time-series sample. Egy kind/value/source mintapont DyFM_Metadata-val + Mongoose schema-val. */
 export class Wave extends DyFM_Metadata {
 
@@ -18,6 +21,14 @@ export class Wave extends DyFM_Metadata {
   source?: string;
   note?: string;
   userId?: string;
+  /** Eredeti szint-string a JSONL forrásból (very-low|low|low-mid|mid|mid+|normal|high|very-high). FR #3b-WAVE-UI Phase 4. */
+  level?: string;
+  /** Snapshot-szintű hullám-vektor (denormalized — mind a 3 exploded row-on). FR #3b-WAVE-UI Phase 4. */
+  wave_vector?: Wave_Vector;
+  /** Snapshot-szintű mood-string (denormalized). Max 120 char (wave-jsonl.util MOOD_MAX_LEN). FR #3b-WAVE-UI Phase 4. */
+  mood?: string;
+  /** Snapshot anchor timestamp (a JSONL row eredeti ts-e — mind a 3 exploded row-on azonos). Idempotency: ts + kind unique. */
+  snapshotTs?: string;
 
   /** Inicializál egy Wave instance-ot, opcionálisan a `set` mezőit cleanAssign-nal másolva. */
   constructor(set?: Partial<Wave>) {
@@ -37,5 +48,9 @@ export const wave_dataParams = new DyFM_DataModel_Params<Wave>({
     source: { type: 'string' },
     note: { type: 'string' },
     userId: { type: 'string' },
+    level: { type: 'string' },
+    wave_vector: { type: 'string' },
+    mood: { type: 'string' },
+    snapshotTs: { type: 'string' },
   },
 });
