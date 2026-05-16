@@ -2,17 +2,16 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 56                                 # Cycle 56 lezárva (Phase 4.A + 4.B shipped); következő cycle 57 lesz
-phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 57                                 # Cycle 57 indul — AGB-05 green-light promoválva, FR #3f plan-package mode B
+phase: plan-package                        # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 56 lezárva 2026-05-16 — FR #3b-WAVE-UI Phase 4.A + 4.B SHIPPED.
-  Wave schema bővítve (level, wave_vector enum, mood, snapshotTs) — denormalizált snapshot-metadata.
-  Új util-ek: buildWaveRowsFromSnapshot() + loadAllSnapshotRowsForSync().
-  Új endpoint: POST /api/wave/sync-jsonl (bulk admin one-shot) + /log-public auto-sync hook.
-  Smoke 3/3 ✅: bulk 18→0 idempotens, /log-public dbSynced=3. LDP 11/11. Commit c7ccd01.
-  Q-WAVE-2 + Q-WAVE-3 resolved (denormalized pattern). wave-panel-ui FR Phase 2-3-4 mind zárva.
-  Cycle 57 kandidátus: AGB-2026-05-16-05 (FR #3f socket-and-version-sync GREEN-LIGHT).
+  Cycle 57 indul 2026-05-16T07:05 — FR #3f socket-and-version-sync (AGB-2026-05-16-05 green-light) plan-package.
+  Mode B: új plan-doc `__agent/plans/socket-and-version-sync.plan.md` készül. Phase 1 (pattern-mapping
+  research: master-prompter / organizer / nts-dynamo socket / ngx-dynamo socket) ebben a cycle-ben.
+  Phase 2-6 (server wire-up → client socket-client → status-bar → auto-version-update → domain-events
+  → build-pipeline) későbbi cycle-ekben.
+  Pattern-source default: master-prompter (CLAUDE.md "Pattern-based Development" + AGB-05 explicit).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
@@ -50,9 +49,9 @@ foreign_pending:
 
 # Plan-folytatás tracking
 active_plan:
-  path: null                                              # wave-panel-ui FR Phase 2-3-4 zárva; Phase 5/6 külön green-light után
-  current_step: null
-  steps_remaining: 0
+  path: __agent/plans/socket-and-version-sync.plan.md     # ÚJ — cycle 57 plan-package B-mode, FR #3f
+  current_step: "Phase 2.A — server VersionBroadcast_SocketServerService + getSocketServices() reg + boot broadcast"
+  steps_remaining: 5                                      # Phase 2.A/2.B/3.A/3.B/4.A/4.B (4-6 cycle estimate)
 secondary_plan:
   path: __agent/plans/ssot-server-esm-migration.plan.md   # chat-led, dev-agent takeover-elte Phase 3.2 + Phase 6 LDP-fix-eit
   current_step: "Phase 5-6 functional finalization + Phase 1-4 cleanup"
