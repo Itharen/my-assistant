@@ -619,3 +619,6 @@
 {"ts":"2026-05-16T16:31:29+02:00","actor":"server","kind":"state-change","summary":"server:version broadcast (0.1.114 -> 0.1.115, requireReload=true)","extra":{"issuer":"version-broadcast.tickAndBroadcastIfChanged","previousVersion":"0.1.114","currentVersion":"0.1.115"}}
 {"ts":"2026-05-16T17:00:00+02:00","actor":"development-agent","kind":"note","summary":"Cycle 72 pure heartbeat — AGB-18 OPEN 4h. Szombat=szabat-nap (wake-bundle 10:00), low-pressure stance","extra":{"cycle":72,"agb18_age_min":240}}
 {"ts":"2026-05-16T17:00:01+02:00","actor":"development-agent","kind":"flow-end","summary":"Cycle 72 close — heartbeat continued","extra":{"cycle":72}}
+{"ts":"2026-05-16T17:01:29+02:00","actor":"server","kind":"state-change","summary":"server:version broadcast (0.1.115 -> 0.1.116, requireReload=true)","extra":{"issuer":"version-broadcast.tickAndBroadcastIfChanged","previousVersion":"0.1.115","currentVersion":"0.1.116"}}
+{"ts":"2026-05-16T17:30:00+02:00","actor":"development-agent","kind":"note","summary":"Cycle 73 pure heartbeat — AGB-18 OPEN 4h 30m. LDP healthy","extra":{"cycle":73,"agb18_age_min":270}}
+{"ts":"2026-05-16T17:30:01+02:00","actor":"development-agent","kind":"flow-end","summary":"Cycle 73 close — heartbeat continued","extra":{"cycle":73}}
