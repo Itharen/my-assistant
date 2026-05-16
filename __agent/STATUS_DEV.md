@@ -2,35 +2,41 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 58                                 # Cycle 58 lezárva (Phase 2.A + 2.B shipped); következő cycle 59 lesz
+cycle: 59                                 # Cycle 59 lezárva (Phase 3.A+3.B+4.A shipped); következő cycle 60 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 58 lezárva 2026-05-16 — FR #3f Phase 2.A + 2.B SHIPPED.
-  Új `VersionBroadcast_SocketServerService` (DyNTS_SocketServerService<DyNTS_SocketPresence, ...>)
-  + `getSocketServices()` wiring + 30s tick + `server:hello` per-new-presence + `server:version` broadcast.
-  Smoke ✅: HELLO@0.1.95 → mid-flight bump → VERSION{0.1.95→0.1.195, requireReload:true} kapott a kliens.
-  KRITIKUS FELFEDEZÉS: DyNTS socket path = '/socket' (NEM '/socket.io'). Phase 3.A client cycle 59-ben.
-  LDP 11/11 ✅. Commit bf23ed7.
+  Cycle 59 lezárva 2026-05-16 — FR #3f Phase 3.A + 3.B + 4.A SHIPPED.
+  Új kliens-komponensek: A_Socket_ControlService (DyFM extend, path='/socket') + A_Version_DataService
+  (BehaviorSubject) + S_StatusBar_Component (sticky footer). app.component-ben inject + app.module-ban
+  S_StatusBar importálva. AppComponent.spec.ts stub-bal frissítve.
+  LDP 11/11 ✅. Phase 4.B (reload-banner UX) cycle 60-ban.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 58
+  cycle_id: 59
   phase_completed: close-cycle
   files_modified:
-    - server/src/_services/socket-services/version-broadcast.socket-server-service.ts  # ÚJ (~210 LOC)
-    - server/src/app.server.ts                                # +VersionBroadcast import +getSocketServices wiring
-    - __agent/plans/socket-and-version-sync.plan.md           # Phase 2.A ✅ + 2.B ✅
+    - client/src/app/_services/control-services/a-socket.control-service.ts   # ÚJ (~135 LOC)
+    - client/src/app/_services/data-services/a-version.data-service.ts        # ÚJ (~65 LOC)
+    - client/src/app/_components/s-status-bar/s-status-bar.component.ts       # ÚJ (~50 LOC)
+    - client/src/app/_components/s-status-bar/s-status-bar.component.html     # ÚJ
+    - client/src/app/_components/s-status-bar/s-status-bar.component.scss     # ÚJ
+    - client/src/app/app.component.ts                                         # +inject(A_Socket)
+    - client/src/app/app.component.html                                       # +<s-status-bar/>
+    - client/src/app/app.component.spec.ts                                    # +A_Socket stub provider
+    - client/src/app/app.module.ts                                            # +S_StatusBar_Component standalone import
+    - __agent/plans/socket-and-version-sync.plan.md                           # Phase 3.A+3.B+4.A ✅
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-58.md
-    - __agent/log/actions/2026-05-16.jsonl
+    - __agent/log/cycles/cycle-59.md
   fr_status_changes: []
   plan_steps_marked_done:
-    - socket-and-version-sync.plan.md Phase 2.A
-    - socket-and-version-sync.plan.md Phase 2.B
-  commit_sha: bf23ed7
+    - socket-and-version-sync.plan.md Phase 3.A
+    - socket-and-version-sync.plan.md Phase 3.B
+    - socket-and-version-sync.plan.md Phase 4.A
+  commit_sha: b504927
   build_status: success
-  test_status: success                          # LDP 11/11 ✅ + Smoke 2/2 (hello + version-broadcast on mid-flight bump)
+  test_status: success                          # LDP 11/11 ✅ (client-test 13/13 with stub)
 
 foreign_pending:
   first_seen_cycle: 4
@@ -50,8 +56,8 @@ foreign_pending:
 # Plan-folytatás tracking
 active_plan:
   path: __agent/plans/socket-and-version-sync.plan.md     # cycle 57 plan-package B-mode, FR #3f
-  current_step: "Phase 3.A — client A_Socket_ControlService (DyFM_SocketClient_ServiceBase extend, path='/socket')"
-  steps_remaining: 4                                      # Phase 3.A/3.B/4.A/4.B
+  current_step: "Phase 4.B — auto-reload banner UX + dev-mode silencer"
+  steps_remaining: 1                                      # Phase 4.B (final Phase 1-4 step)
 secondary_plan:
   path: __agent/plans/ssot-server-esm-migration.plan.md   # chat-led, dev-agent takeover-elte Phase 3.2 + Phase 6 LDP-fix-eit
   current_step: "Phase 5-6 functional finalization + Phase 1-4 cleanup"

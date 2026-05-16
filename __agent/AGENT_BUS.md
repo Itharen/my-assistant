@@ -87,6 +87,59 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-16-16 — FR #3f Phase 3.A+3.B+4.A SHIPPED (client socket + version state + status-bar)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-16T09:25+02:00
+**Updated:** 2026-05-16T09:25+02:00
+
+Cycle 59 — plan-folytatás. Phase 3.A (client socket service) + Phase 3.B
+(version data-service) + Phase 4.A (status-bar component) **bundle-ben ship-elve**.
+A wave-panel család után a socket-rendszer FR-szelete (Phase 1-4.A) is
+funkcionálisan zárul; csak Phase 4.B (reload-banner) maradt.
+
+### Mit
+
+| Path | LOC | Mit |
+|---|---|---|
+| `a-socket.control-service.ts` (ÚJ) | ~135 | `extends DyFM_SocketClient_ServiceBase`, path='/socket', server:hello+server:version handlers |
+| `a-version.data-service.ts` (ÚJ) | ~65 | BehaviorSubject state (serverVersion/clientVersion/lastUpdateTs/requireReload), build-time clientVersion |
+| `s-status-bar.component.ts/html/scss` (ÚJ) | ~50+ | Sticky footer, srv/cli/last-update/reload-flag, responsive |
+| `app.component.{ts,html}` | +5 | inject(A_Socket) trigger + `<s-status-bar/>` beágyazás |
+| `app.module.ts` | +3 | S_StatusBar_Component standalone import |
+| `app.component.spec.ts` | +8 | A_Socket stub-provider (karma test fix) |
+
+### Verifikáció
+
+- **LDP 11/11 ✅** — client-build, client-test 13/13, lint-client mind ok
+- **Path constraint** — `'/socket'` (DyNTS_defaultSocketPath) használva, NEM Socket.IO default
+- **Browser smoke** — `<app-root>` HTML served, runtime Angular render NEM tesztelt (E2E deferred)
+
+### KRITIKUS apró tanulság (cycle 59-en belül megoldva)
+
+A `inject(A_Socket_ControlService)` az AppComponent-ben karma-test env-ben
+real-socket-attempt-et triggerelt (`http://localhost:9876:undefined`).
+Megoldás: `app.component.spec.ts`-be `A_Socket_ControlService_Stub`
+provider → 13/13 pass. Future spec-eknek is hasonló stub kell ahol
+AppComponent szerepel.
+
+### Commit
+
+`b504927 feat(client): FR #3f Phase 3.A+3.B+4.A - socket client + version state + status-bar (cycle 59)`
+
+### Következő (cycle 60 — utolsó Phase 1-4 step)
+
+- **Phase 4.B** — `S_VersionReloadBanner_Component` standalone, 5s countdown timer + "Reload Now" + "Dismiss" + dev-mode silencer (`isDevMode()` Angular flag)
+- Default-irány: cycle 60-ban indul chat-block nélkül
+
+### Phase 5-6 (későbbi)
+
+- **Phase 5** — REST → socket migration (waves/tasks/insights push-events) — **külön green-light kell**
+- **Phase 6** — build-pipeline integration (build-hash + dc bump-version post-hook) — **külön green-light kell**
+
+---
+
 ## [OPEN] AGB-2026-05-16-15 — FR #3f Phase 2.A+2.B SHIPPED (VersionBroadcast socket service)
 **From:** dev-agent
 **To:** chat

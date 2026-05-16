@@ -88,9 +88,9 @@
 | 1 | **Pattern-research** (master-prompter socket pattern) | ✅ cycle 57 | shipped (lásd Audit szakasz) |
 | **2.A** | **Server: VersionBroadcast_SocketServerService** — `getSocketServices()`-be regisztrálva, `server:hello` boot broadcast | ✅ cycle 58 | shipped |
 | **2.B** | **Server: 30s tick interval** version-check + `server:version` broadcast HA változott | ✅ cycle 58 | shipped |
-| **3.A** | **Client: A_Socket_ControlService** — `DyFM_SocketClient_ServiceBase` extend, connect + reconnect + event-bus | 🚧 | cycle 59 |
-| **3.B** | **Client: A_Version_DataService** — server-version + client-version state, last-update ts | 🚧 | cycle 59 |
-| **4.A** | **Status-bar component** (`s-status-bar.component`) — footer-be ágyazva, `server vX · client vY · last-update HH:mm` | 🚧 | cycle 59 |
+| **3.A** | **Client: A_Socket_ControlService** — `DyFM_SocketClient_ServiceBase` extend, path='/socket', server:hello+server:version handlers | ✅ cycle 59 | shipped |
+| **3.B** | **Client: A_Version_DataService** — BehaviorSubject state (serverVersion + clientVersion + lastUpdateTs + requireReload) | ✅ cycle 59 | shipped |
+| **4.A** | **Status-bar component** (`s-status-bar.component`) — sticky footer, server + client + last-update + reload-flag | ✅ cycle 59 | shipped |
 | **4.B** | **Auto-reload UX** — banner-komponens + 5s countdown + manual reload gomb, `Q-ver-9` dev-mode néma | 🚧 | cycle 60 |
 | 5 | **Domain-events migration** — REST poll → socket push fokozatosan (waves auto-refresh, tasks-updated, …) | 🚧 később | külön green-light |
 | 6 | **Build-pipeline integration** — `dc bump-version` post-hook → socket broadcast trigger; build-hash inject | 🚧 később | külön green-light |
