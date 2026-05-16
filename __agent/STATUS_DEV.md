@@ -2,31 +2,35 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 57                                 # Cycle 57 lezárva (Phase 1 + plan-doc shipped); következő cycle 58 lesz
+cycle: 58                                 # Cycle 58 lezárva (Phase 2.A + 2.B shipped); következő cycle 59 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 57 lezárva 2026-05-16 — FR #3f socket-and-version-sync Phase 1 SHIPPED.
-  Plan-doc B-mode kész (`__agent/plans/socket-and-version-sync.plan.md`, 366 LOC).
-  Pattern-research: master-prompter DyNTS_SocketServerService + DyFM_SocketClient_ServiceBase.
-  9 open Q-ver-* feloldva (research-based). 4-cycle estimate Phase 1-4-re (cycle 57-60).
-  Commit e3565c6. Phase 2.A indul cycle 58-ban (server VersionBroadcast service).
+  Cycle 58 lezárva 2026-05-16 — FR #3f Phase 2.A + 2.B SHIPPED.
+  Új `VersionBroadcast_SocketServerService` (DyNTS_SocketServerService<DyNTS_SocketPresence, ...>)
+  + `getSocketServices()` wiring + 30s tick + `server:hello` per-new-presence + `server:version` broadcast.
+  Smoke ✅: HELLO@0.1.95 → mid-flight bump → VERSION{0.1.95→0.1.195, requireReload:true} kapott a kliens.
+  KRITIKUS FELFEDEZÉS: DyNTS socket path = '/socket' (NEM '/socket.io'). Phase 3.A client cycle 59-ben.
+  LDP 11/11 ✅. Commit bf23ed7.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 57
+  cycle_id: 58
   phase_completed: close-cycle
   files_modified:
-    - __agent/plans/socket-and-version-sync.plan.md           # ÚJ (366 LOC) — FR #3f plan-doc B-mode
+    - server/src/_services/socket-services/version-broadcast.socket-server-service.ts  # ÚJ (~210 LOC)
+    - server/src/app.server.ts                                # +VersionBroadcast import +getSocketServices wiring
+    - __agent/plans/socket-and-version-sync.plan.md           # Phase 2.A ✅ + 2.B ✅
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-57.md
+    - __agent/log/cycles/cycle-58.md
     - __agent/log/actions/2026-05-16.jsonl
   fr_status_changes: []
   plan_steps_marked_done:
-    - socket-and-version-sync.plan.md Phase 1 (pattern-research)
-  commit_sha: e3565c6
-  build_status: success                          # no code changes, doc-only
-  test_status: success                           # LDP unchanged green
+    - socket-and-version-sync.plan.md Phase 2.A
+    - socket-and-version-sync.plan.md Phase 2.B
+  commit_sha: bf23ed7
+  build_status: success
+  test_status: success                          # LDP 11/11 ✅ + Smoke 2/2 (hello + version-broadcast on mid-flight bump)
 
 foreign_pending:
   first_seen_cycle: 4
@@ -45,9 +49,9 @@ foreign_pending:
 
 # Plan-folytatás tracking
 active_plan:
-  path: __agent/plans/socket-and-version-sync.plan.md     # ÚJ — cycle 57 plan-package B-mode, FR #3f
-  current_step: "Phase 2.A — server VersionBroadcast_SocketServerService + getSocketServices() reg + boot broadcast"
-  steps_remaining: 5                                      # Phase 2.A/2.B/3.A/3.B/4.A/4.B (4-6 cycle estimate)
+  path: __agent/plans/socket-and-version-sync.plan.md     # cycle 57 plan-package B-mode, FR #3f
+  current_step: "Phase 3.A — client A_Socket_ControlService (DyFM_SocketClient_ServiceBase extend, path='/socket')"
+  steps_remaining: 4                                      # Phase 3.A/3.B/4.A/4.B
 secondary_plan:
   path: __agent/plans/ssot-server-esm-migration.plan.md   # chat-led, dev-agent takeover-elte Phase 3.2 + Phase 6 LDP-fix-eit
   current_step: "Phase 5-6 functional finalization + Phase 1-4 cleanup"

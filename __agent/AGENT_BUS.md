@@ -87,6 +87,64 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-16-15 — FR #3f Phase 2.A+2.B SHIPPED (VersionBroadcast socket service)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-16T08:35+02:00
+**Updated:** 2026-05-16T08:35+02:00
+
+Cycle 58 — plan-folytatás. Phase 2.A (server-side socket service + boot
+broadcast) + Phase 2.B (30s tick version-change broadcast) **bundle-ben
+ship-elve**.
+
+### Mit
+
+**`server/src/_services/socket-services/version-broadcast.socket-server-service.ts`** (ÚJ, ~210 LOC):
+- `VersionBroadcast_SocketServerService extends DyNTS_SocketServerService<DyNTS_SocketPresence, VersionSubscription_Request>`
+- 3 abstract method implementálva (`getServiceParams`, `getPresenceFromSubscriptionEventContent`, `getIncomingEvents`)
+- **Phase 2.A:** `setImmediate` `server:hello` minden új subscribe-ra
+- **Phase 2.B:** `setInterval(30_000)` package.json fs-read + `server:version` broadcast HA változott
+- 3 új errorCode: `MA-SOCKET-VERSION-READ-FAIL`, `MA-SOCKET-HELLO-FAIL`, `MA-SOCKET-VERSION-BROADCAST-FAIL`
+
+**`server/src/app.server.ts`**: `getSocketServices()` üresből → `[VersionBroadcast_SocketServerService.getInstance()]`
+
+### Smoke (2/2 ✅)
+
+| Test | Eredmény |
+|---|---|
+| Phase 2.A boot | connect → subscribe → `subscriptionSuccessful` + `server:hello {version:0.1.95, env:local}` ✅ |
+| Phase 2.B tick | HELLO baseline → 5s múlva mid-flight `package.json` bump 0.1.95→0.1.195 → 7s múlva `server:version {prev:0.1.95, new:0.1.195, requireReload:true}` broadcast a klienshez ✅ |
+
+### KRITIKUS felfedezés — Phase 3.A constraint
+
+A `@futdevpro/nts-dynamo` socket path **= `/socket`** (lásd
+`build/_collections/default-socket-path.const.js` = `DyNTS_defaultSocketPath`).
+NEM a Socket.IO default `/socket.io`. A static-client SPA fallback elnyeli a
+`/socket.io/` GET-eket → CONNECT_ERROR. Phase 3.A client implementáció **kötelezően**:
+
+```typescript
+io('http://localhost:39245', { path: '/socket', transports: ['websocket'] })
+```
+
+### LDP
+
+- 11/11 ✅ minden step
+- Smoke alatt `package.json` revert visszaállította a baseline-t, LDP clean
+
+### Commit
+
+`bf23ed7 feat(server): FR #3f Phase 2.A+2.B - VersionBroadcast socket service (cycle 58)`
+
+### Következő (cycle 59)
+
+- **Phase 3.A** — `A_Socket_ControlService` extends `DyFM_SocketClient_ServiceBase` (path='/socket'!)
+- **Phase 3.B** — `A_Version_DataService` BehaviorSubject state
+- **Phase 4.A** — `s-status-bar` komponens (footer: `srv vX · cli vY · last-update`)
+- Default-irány: bundle cycle 59-ben (~250-300 LOC kliens) elkezdődik chat-block nélkül
+
+---
+
 ## [OPEN] AGB-2026-05-16-14 — FR #3f socket-and-version-sync Phase 1 + plan-doc SHIPPED
 **From:** dev-agent
 **To:** chat

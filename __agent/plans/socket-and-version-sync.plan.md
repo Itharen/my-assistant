@@ -86,8 +86,8 @@
 |---|---|---|---|
 | 0 | FR doc | ✅ | (forrás) |
 | 1 | **Pattern-research** (master-prompter socket pattern) | ✅ cycle 57 | shipped (lásd Audit szakasz) |
-| **2.A** | **Server: VersionBroadcast_SocketServerService** — `getSocketServices()`-be regisztrálva, `server:hello` + `server:version` events broadcast | 🚧 | cycle 58 |
-| **2.B** | **Server: 30s tick interval** version-check + broadcast HA változott (deploy / bump) | 🚧 | cycle 58 |
+| **2.A** | **Server: VersionBroadcast_SocketServerService** — `getSocketServices()`-be regisztrálva, `server:hello` boot broadcast | ✅ cycle 58 | shipped |
+| **2.B** | **Server: 30s tick interval** version-check + `server:version` broadcast HA változott | ✅ cycle 58 | shipped |
 | **3.A** | **Client: A_Socket_ControlService** — `DyFM_SocketClient_ServiceBase` extend, connect + reconnect + event-bus | 🚧 | cycle 59 |
 | **3.B** | **Client: A_Version_DataService** — server-version + client-version state, last-update ts | 🚧 | cycle 59 |
 | **4.A** | **Status-bar component** (`s-status-bar.component`) — footer-be ágyazva, `server vX · client vY · last-update HH:mm` | 🚧 | cycle 59 |
