@@ -11,6 +11,7 @@ import { Component, Input } from '@angular/core';
 import {
   A_WaveKind,
   type A_DashboardSnapshot,
+  type A_WaveContext,
   type A_WaveRow
 } from '../../../../_models/server-envelope.interface';
 
@@ -72,10 +73,12 @@ export class D_Waves_Component {
   rangeHours: number = 24;
   hasData: boolean = false;
   polylines: D_WavePolyline_Interface[] = [];
+  context: A_WaveContext | null = null;
 
-  /** Snapshot setter — precomputálja a 3 polyline-t, latest értékeket és palettát. */
+  /** Snapshot setter — precomputálja a 3 polyline-t, latest értékeket, palettát és a context-et. */
   @Input() set snapshot(value: A_DashboardSnapshot | null) {
     this.rangeHours = value?.waves.rangeHours ?? 24;
+    this.context = value?.waves.context ?? null;
 
     if (!value) {
       this.hasData = false;

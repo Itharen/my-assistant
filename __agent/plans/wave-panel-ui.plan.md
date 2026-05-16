@@ -47,8 +47,8 @@
 | 0 | FR doc | ✅ | (forrás) |
 | 1 | UI-DIAG | ✅ cycle 44 | shipped (AGB-03) |
 | **2.A** | **Server: unauth `GET /api/wave/get-from-jsonl`** (3x3-log.jsonl read + mapping) | ✅ cycle 52 | shipped |
-| **2.B** | **Client: D_Dashboard_DataService fallback path** (401-kor JSONL endpoint) | 🚧 | cycle 52-53 |
-| **2.C** | **d-waves enrichment**: mood + note megjelenítés snapshot-onként | 🚧 | cycle 53 |
+| **2.B** | **Client: D_Dashboard_ControlService 401-fallback path** (JSONL endpoint) | ✅ cycle 53 | shipped |
+| **2.C** | **d-waves enrichment**: mood + note + vector emoji megjelenítés | ✅ cycle 53 | shipped |
 | **3.A** | **Server: unauth `POST /api/wave/log-public`** (FDPNTS-pattern, mint /error/log) | 🚧 | cycle 54 |
 | **3.B** | **Client: új-snapshot form** (3 dropdown: astral/mental/matter; vector; mood; note) | 🚧 | cycle 54-55 |
 | **4.A** | **Server: jsonl → waves DB sync script** (one-shot import) | 🚧 | cycle 56 |

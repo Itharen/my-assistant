@@ -98,6 +98,20 @@ export interface A_FoTasksResult {
   error?: string;
 }
 
+/**
+ * Latest mood/vector/note kontextus a hullám-paneljéhez. Csak JSONL-fallback
+ * path-en populated (FR #3b-WAVE-UI Phase 2.B+2.C). A normál `/dashboard/snapshot`
+ * útvonalon `null` mert a `Wave` DB schema nem tartalmaz mood/vector mezőt
+ * (Phase 4 előtt schema-bővítés kell).
+ */
+export interface A_WaveContext {
+  ts: string;
+  vector: A_WaveVector | null;
+  vectorEmoji: string;
+  mood: string | null;
+  note: string | null;
+}
+
 /** Aggregált dashboard snapshot — tasks + waves + insights + recent captures. */
 export interface A_DashboardSnapshot {
   serverTime: string;
@@ -106,6 +120,7 @@ export interface A_DashboardSnapshot {
     rangeHours: number;
     series: Record<A_WaveKind, A_WaveRow[]>;
     latest: Partial<Record<A_WaveKind, A_WaveRow>>;
+    context?: A_WaveContext;
   };
   insights: { count: number; items: A_InsightRow[] };
   recentCaptures: { count: number; items: A_CaptureRow[] };
@@ -127,6 +142,31 @@ export interface A_WavePayload {
   value: number;
   source?: string;
   note?: string;
+}
+
+// ── Wave JSONL fallback (FR #3b-WAVE-UI Phase 2.A, AUTH BLOCKER bypass) ───────
+
+/** Hullám-vektor irány — JSONL-fallback path-en megőrzött szándék-mező. */
+export type A_WaveVector = 'up' | 'down' | 'flat';
+
+/**
+ * JSONL-fallback wave row — `GET /api/wave/get-from-jsonl` (unauth) válaszában.
+ * Mood + vector még nincs a `Wave` DB schema-ban (Phase 4 előtt schema-bővítés
+ * kell), tehát ezeket csak JSONL-path-en kapjuk meg.
+ */
+export interface A_WaveJsonl_Row {
+  ts: string;
+  kind: A_WaveKind;
+  value: number;
+  level: string;
+  vector: A_WaveVector | null;
+  mood: string | null;
+  note: string | null;
+}
+
+/** `GET /api/wave/get-from-jsonl` válasz-shape — `{ rows: A_WaveJsonl_Row[] }`. */
+export interface A_WaveJsonlResponse {
+  rows: A_WaveJsonl_Row[];
 }
 
 /** Insight POST payload — kliens által emit-elt új insight bemeneti shape. */

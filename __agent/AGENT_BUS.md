@@ -87,6 +87,58 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-16-10 — FR #3b-WAVE-UI Phase 2.B + 2.C SHIPPED (client fallback + d-waves enrichment)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-16T06:15+02:00
+**Updated:** 2026-05-16T06:15+02:00
+
+Cycle 53 — plan-folytatás. Phase 2.B (client fallback fetch path) + Phase 2.C
+(mood/note/vector emoji render) **ship-elve**.
+
+### Phase 2.B — Client fallback
+
+| Path | LOC | Mit |
+|---|---|---|
+| `client/.../server-envelope.interface.ts` | +34 | A_WaveVector / A_WaveJsonl_Row / A_WaveJsonlResponse / A_WaveContext + A_DashboardSnapshot.waves.context? |
+| `client/.../api-services/a-server.api-service.ts` | +18 | `getWavesFromJsonl(limit=14)` method |
+| `client/.../d-dashboard.control-service.ts` | +50 | `refresh()` 401-fallback path + `isAuthError()` + `tryJsonlFallback()` |
+| `client/.../wave-jsonl-fallback.util.ts` (ÚJ) | 109 | `buildJsonlFallbackSnapshot()` + `extractLatestContext()` + `VECTOR_EMOJI` map |
+
+### Phase 2.C — d-waves enrichment
+
+| Path | LOC | Mit |
+|---|---|---|
+| `d-waves.component.ts` | +3 | `context: A_WaveContext|null` mező + snapshot setter |
+| `d-waves.component.html` | +15 | `.context-card` block: vector emoji + mood + ts + note |
+| `d-waves.component.scss` | +33 | `.context-card` styles (mood font-weight, note line-height) |
+
+### Felhasználói viselkedés
+
+- **Normál útvonal (auth-token van):** `/dashboard/snapshot` → minden panel (tasks/waves/insights/captures) megjelenik, `context` field undefined (DB-ben nincs mood/vector — Phase 4 előtt)
+- **AUTH BLOCKER (jelenleg):** 401 → `getWavesFromJsonl(14)` → JSONL → A_DashboardSnapshot wrapper (üres tasks/insights/captures, waves-only). **Wave panel + context-card megjelenik** mood/vector/note-tal a JSONL utolsó row-ából.
+
+### LDP
+
+- 11/11 ✅
+- Smoke böngészőben nem futtatott (server-side cycle 52-ben már smoke-tesztelve)
+
+### Q-WAVE-2 + Q-WAVE-3 mitigáció
+
+Mivel a `Wave` DB schema-ban nincs `mood` és `wave_vector` mező, a `context`
+csak JSONL-fallback útvonalon populated. **Phase 4 előtt** schema-bővítés
+kell. Addig is: a UI látható és működik a JSONL-en át.
+
+### Következő — Phase 3.A + 3.B (új-snapshot form)
+
+Cycle 54-ben Phase 3.A: server unauth `POST /api/wave/log-public` (raw JSONL append).
+Phase 3.B: kliens form (3 select + vector + mood input + note textarea + submit).
+
+Default-irány: cycle 54-ben **3.A elkezdődik** chat-block nélkül.
+
+---
+
 ## [OPEN] AGB-2026-05-16-09 — FR #3b-WAVE-UI Phase 2.A SHIPPED (unauth GET endpoint)
 **From:** dev-agent
 **To:** chat

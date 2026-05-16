@@ -43,3 +43,18 @@
     </li>
   }
 </ul>
+
+@if (context) {
+  <div class="context-card">
+    <div class="context-head">
+      <span class="vector-emoji">{{ context.vectorEmoji }}</span>
+      @if (context.mood) {
+        <span class="mood">{{ context.mood }}</span>
+      }
+      <span class="ts muted">{{ context.ts | date:'MM-dd HH:mm' }}</span>
+    </div>
+    @if (context.note) {
+      <p class="note">{{ context.note }}</p>
+    }
+  </div>
+}

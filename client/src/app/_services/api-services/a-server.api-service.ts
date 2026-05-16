@@ -19,6 +19,7 @@ import {
   type A_InsightPayload,
   type A_InsightRow,
   type A_StatusSnapshot,
+  type A_WaveJsonlResponse,
   type A_WavePayload,
   type A_WaveRow
 } from '../../_models/server-envelope.interface';
@@ -70,6 +71,22 @@ export class A_Server_ApiService {
         endpoint: '/dashboard/snapshot',
       }),
       { queryParams: { rangeHours } },
+    );
+  }
+
+  /**
+   * GET `/wave/get-from-jsonl` — unauth JSONL-fallback path. AUTH BLOCKER mellett
+   * a wave UI ezt használja a `/dashboard/snapshot` helyett (FR #3b-WAVE-UI Phase 2.A).
+   */
+  async getWavesFromJsonl(limit: number = 14): Promise<A_WaveJsonlResponse> {
+    return this.Đ_AS.call<A_WaveJsonlResponse>(
+      new DyNX_ApiCall_Settings({
+        name: 'getWavesFromJsonl',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/wave/get-from-jsonl',
+      }),
+      { queryParams: { limit } },
     );
   }
 
