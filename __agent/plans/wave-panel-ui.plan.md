@@ -46,7 +46,7 @@
 |---|---|---|---|
 | 0 | FR doc | ✅ | (forrás) |
 | 1 | UI-DIAG | ✅ cycle 44 | shipped (AGB-03) |
-| **2.A** | **Server: unauth `GET /api/wave/get-from-jsonl`** (3x3-log.jsonl read + mapping) | 🚧 next | cycle 52 |
+| **2.A** | **Server: unauth `GET /api/wave/get-from-jsonl`** (3x3-log.jsonl read + mapping) | ✅ cycle 52 | shipped |
 | **2.B** | **Client: D_Dashboard_DataService fallback path** (401-kor JSONL endpoint) | 🚧 | cycle 52-53 |
 | **2.C** | **d-waves enrichment**: mood + note megjelenítés snapshot-onként | 🚧 | cycle 53 |
 | **3.A** | **Server: unauth `POST /api/wave/log-public`** (FDPNTS-pattern, mint /error/log) | 🚧 | cycle 54 |

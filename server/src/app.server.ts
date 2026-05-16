@@ -38,6 +38,7 @@ import { insight_dataParams } from './_models/data-models/insight.data-model';
 import { capture_dataParams } from './_models/data-models/capture.data-model';
 
 import { Wave_Controller } from './_routes/wave/wave.controller';
+import { WaveJsonl_Controller } from './_routes/wave/wave-jsonl.controller';
 import { Insight_Controller } from './_routes/insight/insight.controller';
 import { Capture_Controller } from './_routes/capture/capture.controller';
 import { Dashboard_Controller } from './_routes/dashboard/dashboard.controller';
@@ -109,7 +110,12 @@ export class App extends DyNTS_AppExtended {
     return [
       new DyNTS_RoutingModule({
         route: '/wave',
-        controllers: [ Wave_Controller.getInstance() ],
+        controllers: [
+          Wave_Controller.getInstance(),
+          // FR #3b-WAVE-UI Phase 2.A (cycle 52): unauth GET /api/wave/get-from-jsonl
+          // a `__agent/state/3x3-log.jsonl` fallback olvasáshoz (AUTH BLOCKER bypass).
+          WaveJsonl_Controller.getInstance(),
+        ],
       }),
       new DyNTS_RoutingModule({
         route: '/insight',
