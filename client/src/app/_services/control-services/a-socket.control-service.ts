@@ -19,6 +19,7 @@ import {
 
 import { A_Error_ControlService } from './a-error.control-service';
 import { A_Version_DataService } from '../data-services/a-version.data-service';
+import { A_DomainEvent_DataService, type A_DomainEvent_Interface } from '../data-services/a-domain-event.data-service';
 
 /** Minimal subscription request — public channel, csak clientId. */
 export interface A_SocketSubscription_Request {
@@ -45,6 +46,7 @@ interface A_ServerVersion_Payload {
 export class A_Socket_ControlService extends DyFM_SocketClient_ServiceBase<A_SocketSubscription_Request> {
 
   private readonly version_DS: A_Version_DataService = inject(A_Version_DataService);
+  private readonly domainEvent_DS: A_DomainEvent_DataService = inject(A_DomainEvent_DataService);
   private readonly error_CS: A_Error_ControlService = inject(A_Error_ControlService);
 
   /** clientId — egy session-id-szerű generált string (no localStorage szándékosan). */
@@ -63,7 +65,7 @@ export class A_Socket_ControlService extends DyFM_SocketClient_ServiceBase<A_Soc
     });
   }
 
-  /** Incoming events — server:hello + server:version → A_Version_DataService. */
+  /** Incoming events — server:hello + server:version → A_Version_DataService; domain:* → A_DomainEvent_DataService. */
   getIncomingEvents(): DyFM_SocketEvent<unknown>[] {
     return [
       new DyFM_SocketEvent({
@@ -82,7 +84,46 @@ export class A_Socket_ControlService extends DyFM_SocketClient_ServiceBase<A_Soc
           },
         ],
       }),
+      // FR #3f Phase 5.C (cycle 82): domain:<topic> push-eventek route-olása
+      // a kliens event-bus-on át. A topic-specifikus subscriber-ek (pl.
+      // D_Dashboard_ControlService) saját maga dönt a reakcióról (refresh / merge).
+      new DyFM_SocketEvent({
+        eventKey: 'domain:wave',
+        tasks: [
+          async (content: unknown): Promise<void> => {
+            this.handleDomainEvent(content as A_DomainEvent_Interface);
+          },
+        ],
+      }),
+      new DyFM_SocketEvent({
+        eventKey: 'domain:insight',
+        tasks: [
+          async (content: unknown): Promise<void> => {
+            this.handleDomainEvent(content as A_DomainEvent_Interface);
+          },
+        ],
+      }),
+      new DyFM_SocketEvent({
+        eventKey: 'domain:capture',
+        tasks: [
+          async (content: unknown): Promise<void> => {
+            this.handleDomainEvent(content as A_DomainEvent_Interface);
+          },
+        ],
+      }),
     ];
+  }
+
+  /** Domain-event handler — emit-eli a kliens-oldali bus-ra, hogy a feature-subscriber-ek reagálhassanak. */
+  private handleDomainEvent(payload: A_DomainEvent_Interface): void {
+    try {
+      if (!payload?.topic || !payload?.op) {
+        return;
+      }
+      this.domainEvent_DS.emit(payload);
+    } catch (err) {
+      this.error_CS.showError(err, 'a-socket.handleDomainEvent');
+    }
   }
 
   /** Subscribe payload — public channel, csak clientId. */

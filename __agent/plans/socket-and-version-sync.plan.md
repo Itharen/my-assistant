@@ -95,7 +95,7 @@
 | **5.A** | **Server: domain-events push util** — `broadcastDomainEvent(topic, op, payload)` a VersionBroadcast szervice-en, schema `{topic, op:create\|update\|delete, payload, ts}` | ✅ cycle 80 | shipped |
 | **5.B** | **Server: wave-jsonl `/log-public` push hook** — `domain:wave` create event broadcast a controller-mutation után | ✅ cycle 80 | shipped |
 | **5.B-extra** | **Server: insight/capture/wave-auth create+dismiss hooks** — `domain:<topic>` push (REST endpoints meglévők) | ✅ cycle 81 | shipped |
-| **5.C** | **Client: A_Socket subscribe + dispatch** — `domain:wave/insight/capture/task` handlerek → `D_Dashboard_ControlService.refresh()` trigger | 🚧 cycle 82-83 |  |
+| **5.C** | **Client: event-bus + subscribe + dispatch** — új `A_DomainEvent_DataService` + `A_Socket` domain:wave/insight/capture handlers + `D_Dashboard_ControlService` refresh-trigger | ✅ cycle 82 | shipped |
 | **6.A** | **Server: build-hash + version response headers** (Express middleware) | ⏭️ skipped | DyNTS-ben nincs clean middleware hook (private `startExpresses`); a socket `server:hello` + `/api/version` endpoint lefedi az use case-t |
 | **6.B** | **Server: GET /api/version endpoint** (unauth, json: version + bootTime + gitSha + env) | ✅ cycle 80 | shipped |
 | **6.C** | **LDP integráció** — build-time git-sha inject (`MA_BUILD_HASH` env, `dc bump-version` post-hook) | 🚧 cycle 84 |  |

@@ -14,6 +14,10 @@ import { Subscription, timer } from 'rxjs';
 
 import { A_Server_ApiService } from '../../../_services/api-services/a-server.api-service';
 import { A_Error_ControlService } from '../../../_services/control-services/a-error.control-service';
+import {
+  A_DomainEvent_DataService,
+  type A_DomainEvent_Interface,
+} from '../../../_services/data-services/a-domain-event.data-service';
 import { D_Dashboard_DataService } from './d-dashboard.data-service';
 import { buildJsonlFallbackSnapshot } from './wave-jsonl-fallback.util';
 import {
@@ -34,11 +38,16 @@ export class D_Dashboard_ControlService implements OnDestroy {
   private readonly api: A_Server_ApiService = inject(A_Server_ApiService);
   private readonly data: D_Dashboard_DataService = inject(D_Dashboard_DataService);
   private readonly error_CS: A_Error_ControlService = inject(A_Error_ControlService);
+  private readonly domainEvent_DS: A_DomainEvent_DataService = inject(A_DomainEvent_DataService);
 
   private pollSub: Subscription | null = null;
+  private domainSub: Subscription | null = null;
   private isInFlight: boolean = false;
 
-  /** Elindítja a 30s-os polling timer-t. Idempotens — duplikált hívás no-op. */
+  /** A dashboard-relevant domain topics — ezekre refresh-trigger. */
+  private static readonly DASHBOARD_TOPICS: ReadonlySet<string> = new Set([ 'wave', 'insight', 'capture' ]);
+
+  /** Elindítja a 30s-os polling timer-t + socket-driven refresh-trigger-t. Idempotens — duplikált hívás no-op. */
   startPolling(): void {
     if (this.pollSub) {
       return;
@@ -46,12 +55,26 @@ export class D_Dashboard_ControlService implements OnDestroy {
     this.pollSub = timer(0, POLL_INTERVAL_MS).subscribe((): void => {
       void this.refresh();
     });
+
+    // FR #3f Phase 5.C (cycle 82): socket-driven push-refresh — bárhol a server-en
+    // egy mutation történik, a kliens azonnal frissül (no polling delay).
+    if (!this.domainSub) {
+      this.domainSub = this.domainEvent_DS.events$().subscribe(
+        (e: A_DomainEvent_Interface): void => {
+          if (D_Dashboard_ControlService.DASHBOARD_TOPICS.has(e.topic)) {
+            void this.refresh();
+          }
+        },
+      );
+    }
   }
 
-  /** Leállítja a polling-ot és felszabadítja a Subscription-t. */
+  /** Leállítja a polling-ot és a domain-subscription-t. */
   stopPolling(): void {
     this.pollSub?.unsubscribe();
     this.pollSub = null;
+    this.domainSub?.unsubscribe();
+    this.domainSub = null;
   }
 
   /** Angular lifecycle — service destroy esetén automatikusan stopPolling. */
