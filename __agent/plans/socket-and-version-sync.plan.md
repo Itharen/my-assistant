@@ -92,12 +92,13 @@
 | **3.B** | **Client: A_Version_DataService** — BehaviorSubject state (serverVersion + clientVersion + lastUpdateTs + requireReload) | ✅ cycle 59 | shipped |
 | **4.A** | **Status-bar component** (`s-status-bar.component`) — sticky footer, server + client + last-update + reload-flag | ✅ cycle 59 | shipped |
 | **4.B** | **Auto-reload UX** — `S_VersionReloadBanner_Component` (5s countdown + Reload Now + Dismiss + dev-mode silent reload) | ✅ cycle 60 | shipped |
-| **5.A** | **Server: domain-events push util** — `broadcastDomainEvent(topic, op, payload)` a VersionBroadcast szervice-en, schema `{topic, op:create\|update\|delete, payload, ts}` | 🚧 cycle 80 | in-progress |
-| **5.B** | **Server: wave/insight/capture create hook** — push event broadcast a controller-mutation után (kezdés: wave-jsonl `/log-public`) | 🚧 cycle 80 | in-progress |
-| **5.C** | **Client: A_Socket subscribe + dispatch** — domain-topic event handlerek → `D_Dashboard_DataService.refresh()` trigger | 🚧 cycle 82-83 |  |
-| **6.A** | **Server: build-hash + version response headers** (Express middleware, `X-Build-Hash` + `X-Server-Version`) | 🚧 cycle 80 | in-progress |
-| **6.B** | **Server: GET /api/version endpoint** (unauth, json: version + gitSha + bootTime) | 🚧 cycle 80 | in-progress |
-| **6.C** | **LDP integráció** — build-time git-sha inject (`server/src/_collections/build-info.const.ts` generated) — later opt | 🚧 cycle 84 |  |
+| **5.A** | **Server: domain-events push util** — `broadcastDomainEvent(topic, op, payload)` a VersionBroadcast szervice-en, schema `{topic, op:create\|update\|delete, payload, ts}` | ✅ cycle 80 | shipped |
+| **5.B** | **Server: wave-jsonl `/log-public` push hook** — `domain:wave` create event broadcast a controller-mutation után | ✅ cycle 80 | shipped |
+| **5.B-extra** | **Server: insight/capture/task create hook** — `domain:<topic>` push (REST endpoints meglévők) | 🚧 cycle 81 |  |
+| **5.C** | **Client: A_Socket subscribe + dispatch** — `domain:wave/insight/capture/task` handlerek → `D_Dashboard_ControlService.refresh()` trigger | 🚧 cycle 82-83 |  |
+| **6.A** | **Server: build-hash + version response headers** (Express middleware) | ⏭️ skipped | DyNTS-ben nincs clean middleware hook (private `startExpresses`); a socket `server:hello` + `/api/version` endpoint lefedi az use case-t |
+| **6.B** | **Server: GET /api/version endpoint** (unauth, json: version + bootTime + gitSha + env) | ✅ cycle 80 | shipped |
+| **6.C** | **LDP integráció** — build-time git-sha inject (`MA_BUILD_HASH` env, `dc bump-version` post-hook) | 🚧 cycle 84 |  |
 
 **Cycle 57 ezzel a planning-fázist zárja.** Cycle 58 Phase 2.A+2.B (server-side) bundle indul.
 

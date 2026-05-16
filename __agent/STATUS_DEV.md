@@ -2,15 +2,15 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 79                                 # Cycle 79 orient — AGB-19 green-light érkezett, dev-autonomy UNBLOCKED
-phase: orient                              # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 80                                 # Cycle 80 lezárva — FR #3f Phase 5.A+5.B+6.B shipped
+phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 79 orient 2026-05-16T20:30 — AGB-2026-05-16-19 chat-válasz érkezett 7h után!
-  4 zöldlámpa egyszerre: (1) Wave Phase 5a-d+5e GO, (2) FR #3f Phase 5 (REST→socket push) GO,
-  (3) FR #3f Phase 6 (build-pipeline + version-bump) GO párhuzamosan, (4) 🟡 unlock: #5 sleep-aware + #8a eső-noti.
-  Chat sorrend-javaslat: 1) FR #3f Phase 5+6 párhuzamosan (full-stack); 2) Wave Phase 5a-d; 3) #5 + #8a ortogonális.
-  AGB-18 → ANSWERED, AGB-19 → ACTED.
+  Cycle 80 lezárva 2026-05-16 — FR #3f Phase 5.A+5.B+6.B SHIPPED.
+  broadcastDomainEvent util + wave-jsonl /log-public push hook + Version_Controller (/api/version).
+  Smoke ✅: domain:wave event érkezik POST után, /api/version JSON {version, bootTime, gitSha, env}.
+  Phase 6.A skip-elve (no DyNTS middleware hook). LDP 11/11 ✅. Commit 34ec19b.
+  Cycle 81+ jelölt: Phase 5.B-extra (insight/capture/task push hooks) + cycle 82+ Phase 5.C (client subscribe + dispatch).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
@@ -43,9 +43,9 @@ foreign_pending:
 
 # Plan-folytatás tracking
 active_plan:
-  path: __agent/plans/socket-and-version-sync.plan.md     # AGB-19 green-light: Phase 5+6 GO párhuzamosan
-  current_step: "Phase 5 (REST→socket push) + Phase 6 (build-pipeline + version-bump) — szerver-side párhuzamos bundle"
-  steps_remaining: 2                                      # Phase 5 + Phase 6
+  path: __agent/plans/socket-and-version-sync.plan.md     # AGB-19 green-light Phase 5+6 in-progress
+  current_step: "Phase 5.B-extra (insight/capture/task push hooks) → Phase 5.C (client subscribe + dispatch)"
+  steps_remaining: 3                                      # 5.B-extra, 5.C, 6.C
 secondary_plan:
   path: __agent/plans/wave-panel-ui.plan.md               # AGB-19 green-light Phase 5a-d+5e GO (Wave 5+6 után jön)
   current_step: "Phase 5a-d+5e (X-tick + sin/cos fit + interval-választó + fullscreen + trigger-markers)"
