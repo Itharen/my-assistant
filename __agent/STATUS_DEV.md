@@ -2,35 +2,31 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 60                                 # Cycle 60 lezárva (Phase 4.B shipped); socket-and-version-sync FR Phase 1-4 ZÁRVA
+cycle: 61                                 # Cycle 61 lezárva (M1 grooming + M2 daily report shipped)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 60 lezárva 2026-05-16 — FR #3f Phase 4.B SHIPPED.
-  S_VersionReloadBanner_Component standalone: prod=5s countdown banner + Reload/Dismiss,
-  dev=silent location.reload() 1s grace után. app.module + app.component-be wire-elve.
-  LDP 11/11 ✅. Commit 557350a. **FR #3f Phase 1-4 funkcionálisan ZÁRVA** (Phase 5-6 külön green-light).
-  Cycle 61 candidate-pool: backlog refresh kell (M1 grooming jelölt) vagy AGB-2026-05-16-04 (wave Phase 5a-d).
+  Cycle 61 lezárva 2026-05-16 — maintenance cycle (M1 grooming + M2 daily 2026-05-16).
+  Backlog status mezők frissítve (#3b-WAVE-UI Phase 2-3-4 ✅, #3f Phase 1-4 ✅).
+  Daily report `__agent/reports/2026-05/2026-05-16.md` — történelmi nap (10 cycle 51-60, 1147+1100 LOC, 2 FR funkcionálisan zárva).
+  Cycle 62 candidate-pool: backlog 🟡 (cycle 50 óta nem mozdult), AGB-04/05 Phase 5+ green-light vár.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 60
+  cycle_id: 61
   phase_completed: close-cycle
   files_modified:
-    - client/src/app/_components/s-version-reload-banner/s-version-reload-banner.component.ts   # ÚJ (~120 LOC)
-    - client/src/app/_components/s-version-reload-banner/s-version-reload-banner.component.html # ÚJ
-    - client/src/app/_components/s-version-reload-banner/s-version-reload-banner.component.scss # ÚJ
-    - client/src/app/app.component.html                                                         # +<s-version-reload-banner/>
-    - client/src/app/app.module.ts                                                              # +S_VersionReloadBanner_Component import
-    - __agent/plans/socket-and-version-sync.plan.md                                             # Phase 4.B ✅
+    - __agent/triggers/development-agent-backlog.md       # M1 grooming: header + #3b-WAVE-UI + #3f status
+    - __agent/reports/2026-05/2026-05-16.md               # ÚJ M2 daily report (~110 LOC)
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-60.md
-  fr_status_changes: []
-  plan_steps_marked_done:
-    - socket-and-version-sync.plan.md Phase 4.B (final Phase 1-4)
-  commit_sha: 557350a
-  build_status: success
-  test_status: success                          # LDP 11/11 ✅
+    - __agent/log/cycles/cycle-61.md
+  fr_status_changes:
+    - "#3b-WAVE-UI Phase 2-3-4 backlog status updated to shipped"
+    - "#3f Phase 1-4 backlog status updated to shipped"
+  plan_steps_marked_done: []
+  commit_sha: (maintenance cycle)
+  build_status: unchanged                       # no code changes
+  test_status: unchanged                        # LDP not re-triggered
 
 foreign_pending:
   first_seen_cycle: 4
@@ -59,10 +55,10 @@ secondary_plan:
 
 # Backlog snapshot (a 03-collect-tasks frissíti)
 backlog_snapshot:
-  green_count: 6                           # 🟢 Most-fókusz sorok száma (FR #1-3d)
-  yellow_count: 15                         # 🟡 Második/harmadik hullám (+7g entertainment-integration cycle 20)
+  green_count: 10                          # 🟢 Most-fókusz sorok száma (#1-3f; #3b-WAVE-UI + #3f Phase 1-4 shipped, line marad)
+  yellow_count: 15                         # 🟡 Második/harmadik hullám (unchanged cycle 50 óta)
   parked_count: 9                          # 🅿️ Parkolt
-  last_checked: "2026-05-13T09:05+02:00"   # M1 grooming cycle 20
+  last_checked: "2026-05-16T09:45+02:00"   # M1 grooming cycle 61
 
 # Package (26. alapelv — related-cluster)
 package:

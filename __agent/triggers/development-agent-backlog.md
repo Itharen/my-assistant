@@ -9,10 +9,16 @@
 
 ## 🟢 Most-fókusz (első fejlesztési kör)
 
-> **Grooming cycle 50 (2026-05-16):** FR #3b runtime-error-api server-side
-> mind shipped (Phase 1+2+3+4+4b+5a, cycle 19-48 cumulative). Bónusz cycle 47
-> Phase 5a: `/errors/error/log` unauth → client error-report működik.
-> Phase 5b workflow-doc módosítás chat-OK-ra vár.
+> **Grooming cycle 61 (2026-05-16 09:45):** Két nagy FR funkcionálisan zárva ma:
+> - **FR #3b-WAVE-UI** — Phase 2.A/2.B/2.C/3.A/3.B/4.A/4.B ALL shipped (cycle 52-56, ~1100 LOC).
+>   Phase 5a-d (chart bővítés) AGB-2026-05-16-04 alatt — külön green-light kell.
+> - **FR #3f socket-and-version-sync** — Phase 1/2.A/2.B/3.A/3.B/4.A/4.B ALL shipped
+>   (cycle 57-60, 1147 LOC). Phase 5 (REST→socket migration) + Phase 6 (build-pipeline)
+>   külön green-light kell.
+>
+> **Korábbi (cycle 50 megmarad referenciaként):** FR #3b runtime-error-api
+> server-side mind shipped (Phase 1+2+3+4+4b+5a, cycle 19-48). Phase 5b
+> workflow-doc módosítás chat-OK-ra vár.
 
 | # | FR | Path | Cél | Status |
 |---|---|---|---|---|
@@ -21,10 +27,11 @@
 | 3 | **Dev Agent Phase 1 self-bootstrap** | `__agent/plans/development-agent.plan.md` | dispatcher `agent` mező + per-agent state routing | Phase 1+1.5+2 ✅ (cycle 33/34, +retroaktív 31); Phase 3 CCAP, Phase 4 server |
 | 3b | **Runtime error API — Dynamo Logs Service bevezetés** | `current/feature-requests/runtime-error-api.md` | server-side error-tracking + REST endpoint a Dev Agent audit-fázisához | Phase 1+2+3+4+4b+5a **✅ shipped** (cycle 19-48); Phase 5b workflow-doc chat-OK vár |
 | 3b-UI-DIAG | **Maya UI láthatóság diagnózis** (kapcsolódó akut) | (lent diary 2026-05-16) | "felületen szar se jelenik, hibákat dobál, nem rögzíti" — server smoke + client console + endpoint-térkép | **✅ shipped cycle 44** (AGB-2026-05-16-03 findings) |
-| 3b-WAVE-UI | **Hullám-panel UI — látás + kezelés** | `current/feature-requests/wave-panel-ui.md` | timeline + új snapshot form + trend chart + holdfázis overlay | 🟢 **USER PRIO 2026-05-16** (AGB-2026-05-16-02), UI-DIAG után |
+| 3b-WAVE-UI | **Hullám-panel UI — látás + kezelés** | `current/feature-requests/wave-panel-ui.md` | timeline + új snapshot form + trend chart + holdfázis overlay | Phase 2-3-4 ✅ shipped (cycle 51-56); Phase 5a-d (AGB-04) + Phase 6 holdfázis külön green-light vár |
 | 3c | **IoT integráció — Google Home routine wake/sleep events** | `current/feature-requests/iot-integration-google-home-routine.md` | "Jó reggelt"/"Jó éjt" routine → server REST → sleep-state forrás | 🟢 server-zone, chat Phase 5-6 ütközés |
 | 3d | **Tasks aggregated dashboard view (client/ + server/)** | `current/feature-requests/tasks-dashboard-aggregated-view.md` | aggregátor + UI + interaktív jelölgetés (✅/⏸/🚫/💬) | 🟢 server+client, chat Phase 5-6 ütközés |
 | 3e | **Action-log mint CLI command (A+B+sync)** | `current/feature-requests/action-log-cli-command.md` | `ma action-log emit/sync/list` — PS hook thin wrapper | Phase 1+2 ✅ (cycle 25); Phase 3-6 server-side green-light vár |
+| 3f | **Socket-rendszer + auto-version-update + verzió-info bar** | `current/feature-requests/socket-and-version-sync.md` | WS server↔client + szerver-verzió változás → kliens auto-reload + verzió-info bar UI + LDP version-bump step | Phase 1-4 ✅ shipped (cycle 57-60, 1147 LOC); Phase 5 (REST→socket) + Phase 6 (build-pipeline) külön green-light vár |
 
 ---
 
@@ -43,6 +50,7 @@
 | 7f | Server ESM proper module resolution (.js extension codemod) | `current/feature-requests/server-esm-proper-resolution.md` |
 | 7g | **RAG context-injection (CC hooks + agent ticks)** ⚠️ kritikus dep | `current/feature-requests/rag-context-injection.md` |
 | 8a | **Eső / vihar noti — asztrál-emelő trigger** | `current/feature-requests/weather-rain-notification.md` |
+| 8b | **STT finomhangolás + fix tréner-metódus** | `current/feature-requests/stt-fine-tuning.md` |
 | 7g | Szórakoztatás integráció (Jellyfin + Steam) | `current/feature-requests/entertainment-integration.md` |
 
 ---
