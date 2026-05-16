@@ -2,31 +2,29 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 61                                 # Cycle 61 lezárva (M1 grooming + M2 daily report shipped)
+cycle: 62                                 # Cycle 62 lezárva (test-coverage shipped)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 61 lezárva 2026-05-16 — maintenance cycle (M1 grooming + M2 daily 2026-05-16).
-  Backlog status mezők frissítve (#3b-WAVE-UI Phase 2-3-4 ✅, #3f Phase 1-4 ✅).
-  Daily report `__agent/reports/2026-05/2026-05-16.md` — történelmi nap (10 cycle 51-60, 1147+1100 LOC, 2 FR funkcionálisan zárva).
-  Cycle 62 candidate-pool: backlog 🟡 (cycle 50 óta nem mozdult), AGB-04/05 Phase 5+ green-light vár.
+  Cycle 62 lezárva 2026-05-16 — safe-orthogonal autonomy cycle.
+  Új tesztek: a-version.data-service.spec.ts (7 case, +85 LOC) + s-status-bar.component.spec.ts (8 case, +70 LOC).
+  Client-test 13 → 28 (+15 case). LDP 11/11 ✅. Commit 3c232ef.
+  Cycle 63 candidate-pool: ugyanaz (AGB-04/05 Phase 5+ green-light vár, vagy újabb safe-orthogonal test/refactor).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 61
+  cycle_id: 62
   phase_completed: close-cycle
   files_modified:
-    - __agent/triggers/development-agent-backlog.md       # M1 grooming: header + #3b-WAVE-UI + #3f status
-    - __agent/reports/2026-05/2026-05-16.md               # ÚJ M2 daily report (~110 LOC)
+    - client/src/app/_services/data-services/a-version.data-service.spec.ts   # ÚJ (+85 LOC, 7 case)
+    - client/src/app/_components/s-status-bar/s-status-bar.component.spec.ts  # ÚJ (+70 LOC, 8 case)
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-61.md
-  fr_status_changes:
-    - "#3b-WAVE-UI Phase 2-3-4 backlog status updated to shipped"
-    - "#3f Phase 1-4 backlog status updated to shipped"
+    - __agent/log/cycles/cycle-62.md
+  fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: (maintenance cycle)
-  build_status: unchanged                       # no code changes
-  test_status: unchanged                        # LDP not re-triggered
+  commit_sha: 3c232ef
+  build_status: success
+  test_status: success                          # LDP 11/11 ✅, client-test 13 → 28 (+15 case)
 
 foreign_pending:
   first_seen_cycle: 4
