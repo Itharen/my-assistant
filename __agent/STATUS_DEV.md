@@ -2,26 +2,26 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 42                                 # Cycle 42 lezárva; következő cycle 43 lesz
+cycle: 43                                 # Cycle 43 lezárva; következő cycle 44 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 42 lezárva 2026-05-16 01:25 — M2 daily report 2026-05-15 generálva.
-  9-cycle nap retrospektív (cycle 33-41), 5 ship-commit, Dev Agent Phase 1+1.5
-  + sok maintenance. AGB-03 chat-válasz még nincs. LDP unchanged 11/11.
-  Lásd log/cycles/cycle-42.md.
+  Cycle 43 lezárva 2026-05-16 02:10 — cli/scripts/README.md doc-sync
+  (commit ca624e5). Sub-projektek (action-log/, agent-handlers/) + LDP
+  coverage + error-handling konvenció. AGB-03 chat-válasz még nincs.
+  LDP unchanged 11/11. Lásd log/cycles/cycle-43.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 42
+  cycle_id: 43
   phase_completed: close-cycle
   files_modified:
-    - __agent/reports/2026-05/2026-05-15.md     # ÚJ — M2 daily report
+    - cli/scripts/README.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-42.md
+    - __agent/log/cycles/cycle-43.md
   fr_status_changes: []
-  plan_steps_marked_done: []                    # M2 maintenance
-  commit_sha: "530ab53"
+  plan_steps_marked_done: []                    # doc-sync
+  commit_sha: "ca624e5"
   build_status: success
   test_status: success                          # LDP unchanged 11/11
 
