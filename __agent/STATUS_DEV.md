@@ -2,29 +2,30 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 62                                 # Cycle 62 lezárva (test-coverage shipped)
+cycle: 63                                 # Cycle 63 lezárva (banner spec shipped)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 62 lezárva 2026-05-16 — safe-orthogonal autonomy cycle.
-  Új tesztek: a-version.data-service.spec.ts (7 case, +85 LOC) + s-status-bar.component.spec.ts (8 case, +70 LOC).
-  Client-test 13 → 28 (+15 case). LDP 11/11 ✅. Commit 3c232ef.
-  Cycle 63 candidate-pool: ugyanaz (AGB-04/05 Phase 5+ green-light vár, vagy újabb safe-orthogonal test/refactor).
+  Cycle 63 lezárva 2026-05-16 — safe-orthogonal autonomy folytatás.
+  s-version-reload-banner.component.spec.ts shipped (+115 LOC, 8 case). Component triggerReload
+  private → protected (Chrome window.location.reload non-redefinable workaround). Client-test
+  28 → 36 (+8 case). LDP 11/11 ✅. Commit aed4bd5.
+  Cycle 64 candidate-pool: a-socket.control-service.spec.ts (mock-based DyFM extend), vagy backlog 🟡 sor.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 62
+  cycle_id: 63
   phase_completed: close-cycle
   files_modified:
-    - client/src/app/_services/data-services/a-version.data-service.spec.ts   # ÚJ (+85 LOC, 7 case)
-    - client/src/app/_components/s-status-bar/s-status-bar.component.spec.ts  # ÚJ (+70 LOC, 8 case)
+    - client/src/app/_components/s-version-reload-banner/s-version-reload-banner.component.spec.ts # ÚJ (+115 LOC, 8 case)
+    - client/src/app/_components/s-version-reload-banner/s-version-reload-banner.component.ts     # private → protected triggerReload (1 visibility tweak)
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-62.md
+    - __agent/log/cycles/cycle-63.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: 3c232ef
+  commit_sha: aed4bd5
   build_status: success
-  test_status: success                          # LDP 11/11 ✅, client-test 13 → 28 (+15 case)
+  test_status: success                          # LDP 11/11 ✅, client-test 28 → 36 (+8 case)
 
 foreign_pending:
   first_seen_cycle: 4
