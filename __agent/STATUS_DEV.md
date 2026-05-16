@@ -2,14 +2,14 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 70                                 # Cycle 70 lezárva — DECISIONS.md DEC-MA-010..012 shipped
+cycle: 71                                 # Cycle 71 heartbeat (AGB-18 OPEN 3h 30m, doc-sync pool exhausted)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 70 lezárva 2026-05-16 — safe-orthogonal doc-sync.
-  3 új DEC-MA entry: 010 (Wave denorm), 011 (DyNTS path=/socket), 012 (dev-silent vs prod reload UX).
-  AGB-18 OPEN 3h óta — chat-válasz továbbra is várt.
-  Cycle 71+: pure heartbeat. Minden doc-sync up-to-date (architecture-ref ✅ CHANGELOG ✅ DECISIONS ✅).
+  Cycle 71 heartbeat 2026-05-16T16:30 — pure heartbeat, dev-autonomy blocked-on-chat.
+  AGB-2026-05-16-18 OPEN óta 3h 30m. Doc-sync pool kifogyott (arch-ref + CHANGELOG + DECISIONS mind ✅).
+  Today's roll-up (cycle 51-70 = 20 cycle): 2 FR funkcionálisan zárva, +47 test, 3 DEC-MA, 1 bug-fix.
+  Cycle 72+: continue heartbeat ritka cadence-szel.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:

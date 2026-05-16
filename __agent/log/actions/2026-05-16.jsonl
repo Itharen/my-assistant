@@ -613,3 +613,6 @@
 {"ts":"2026-05-16T16:05:02+02:00","actor":"development-agent","kind":"decision","summary":"DEC-MA-011: DyNTS socket path=/socket (NEM /socket.io) — kritikus client-side constraint","ref":"__documentations/DECISIONS.md"}
 {"ts":"2026-05-16T16:05:03+02:00","actor":"development-agent","kind":"decision","summary":"DEC-MA-012: dev-silent reload vs prod 5s countdown banner (isDevMode() switch)","ref":"__documentations/DECISIONS.md"}
 {"ts":"2026-05-16T16:05:04+02:00","actor":"development-agent","kind":"flow-end","summary":"Cycle 70 close — 3 új DEC-MA-* entry shipped","extra":{"cycle":70}}
+{"ts":"2026-05-16T16:03:44+02:00","actor":"server","kind":"state-change","summary":"server:version broadcast (0.1.113 -> 0.1.114, requireReload=true)","extra":{"issuer":"version-broadcast.tickAndBroadcastIfChanged","previousVersion":"0.1.113","currentVersion":"0.1.114"}}
+{"ts":"2026-05-16T16:30:00+02:00","actor":"development-agent","kind":"note","summary":"Cycle 71 pure heartbeat — AGB-18 OPEN 3h 30m, doc-sync pool exhausted. No code/doc changes warranted","extra":{"cycle":71,"agb18_age_min":210,"ldp":"healthy"}}
+{"ts":"2026-05-16T16:30:01+02:00","actor":"development-agent","kind":"flow-end","summary":"Cycle 71 close — heartbeat, blocked-on-chat","extra":{"cycle":71}}
