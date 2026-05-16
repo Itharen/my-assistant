@@ -48,6 +48,7 @@ import { Google_Controller } from './_routes/google/google.controller';
 import { Version_Controller } from './_routes/version/version.controller';
 
 import { VersionBroadcast_SocketServerService } from './_services/socket-services/version-broadcast.socket-server-service';
+import { WeatherPoll_Service } from './_services/weather-poll.service';
 
 /** my-assistant App bootstrap. DyNTS_AppExtended-t terjeszti — Mongo + routes + static client + sockets. */
 export class App extends DyNTS_AppExtended {
@@ -179,6 +180,14 @@ export class App extends DyNTS_AppExtended {
   // DyNTS_SocketServerService<T> requires T extends DyNTS_SocketPresence;
   // `any` is the master-prompter convention for the socket-service tuples
   // (heterogeneous service types).
+  /**
+   * Root services — boot-időben példányosítandó singleton-ok. FR #8a Phase 1
+   * (cycle 90): WeatherPoll_Service indít egy 15-min OpenMeteo poll-loopot.
+   */
+  override async getRootServices(): Promise<unknown[]> {
+    return [ WeatherPoll_Service.getInstance() ];
+  }
+
   /**
    * Regisztrált socket szolgáltatások — FR #3f Phase 2.A+2.B (cycle 58):
    * `VersionBroadcast_SocketServerService` szerver-verzió broadcast-ot ad
