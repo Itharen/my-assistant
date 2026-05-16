@@ -2,28 +2,30 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 43                                 # Cycle 43 lezárva; következő cycle 44 lesz
-phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 44                                 # Cycle 44 lezárva; következő cycle 45 lesz
+phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | invokes | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 43 lezárva 2026-05-16 02:10 — cli/scripts/README.md doc-sync
-  (commit ca624e5). Sub-projektek (action-log/, agent-handlers/) + LDP
-  coverage + error-handling konvenció. AGB-03 chat-válasz még nincs.
-  LDP unchanged 11/11. Lásd log/cycles/cycle-43.md.
+  Cycle 44 lezárva 2026-05-16 02:30 — AGB-01 task B (Maya UI diag) shipped.
+  Findings AGB-03 announcement. Root cause: AUTH BLOCKER + PASSIVE error
+  interceptor + SPA fallback collateral. Diag-only, no code change.
+  Commit 87a8fbe. AGB-01 task A (#3b runtime-error-api) + AGB-02 (Wave UI)
+  pending (AUTH ad-hoc fix kell előbb). LDP unchanged 11/11.
+  Lásd log/cycles/cycle-44.md + AGB-2026-05-16-03.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 43
+  cycle_id: 44
   phase_completed: close-cycle
   files_modified:
-    - cli/scripts/README.md
+    - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-43.md
+    - __agent/log/cycles/cycle-44.md
   fr_status_changes: []
-  plan_steps_marked_done: []                    # doc-sync
-  commit_sha: "ca624e5"
+  plan_steps_marked_done: []                    # diag-only AGB-01 task B
+  commit_sha: "87a8fbe"
   build_status: success
-  test_status: success                          # LDP unchanged 11/11
+  test_status: success                          # LDP unchanged 11/11 (no code change)
 
 foreign_pending:
   first_seen_cycle: 4
