@@ -31,6 +31,19 @@
                   [attr.points]="p.points"/>
       }
     </g>
+
+    <!-- FR #3b-WAVE-UI Phase 5a (cycle 83): density-aware X-axis ticks + labels, today highlighted. -->
+    <g class="x-axis">
+      @for (tick of xTicks; track tick.label) {
+        <line [attr.x1]="tick.x" [attr.x2]="tick.x"
+              [attr.y1]="xAxisY - 3" [attr.y2]="xAxisY + 2"
+              [attr.stroke]="tick.isToday ? '#fbbf24' : '#4b5563'" stroke-width="1"/>
+        <text [attr.x]="tick.x" [attr.y]="xAxisLabelY"
+              text-anchor="middle" font-size="9"
+              [attr.fill]="tick.isToday ? '#fbbf24' : '#6b7280'"
+              [attr.font-weight]="tick.isToday ? '700' : '400'">{{ tick.label }}</text>
+      }
+    </g>
   </svg>
 }
 

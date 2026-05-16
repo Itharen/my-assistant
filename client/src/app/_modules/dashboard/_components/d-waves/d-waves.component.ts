@@ -30,6 +30,12 @@ interface D_WaveGridTick_Interface {
   y: number;
 }
 
+interface D_WaveXTick_Interface {
+  x: number;
+  label: string;
+  isToday: boolean;
+}
+
 const PALETTE: Record<A_WaveKind, { color: string; label: string; emoji: string }> = {
   astral: { color: '#a78bfa', label: 'Asztrál', emoji: '🌌' },
   mental: { color: '#60a5fa', label: 'Mentál', emoji: '🧠' },
@@ -56,6 +62,58 @@ function pointFor(row: A_WaveRow, tStart: number, tEnd: number): string {
   return `${x.toFixed(1)},${yFor(row.value).toFixed(1)}`;
 }
 
+/** Density-aware X-tick step + format table (FR #3b-WAVE-UI Phase 5a, cycle 83). */
+const X_TICK_DENSITY: { maxHours: number; stepMs: number; format: 'HH:00' | 'MM-dd HH' | 'MM-dd' }[] = [
+  { maxHours: 36, stepMs: 4 * 3600_000, format: 'HH:00' },
+  { maxHours: 72, stepMs: 12 * 3600_000, format: 'MM-dd HH' },
+  { maxHours: 168, stepMs: 24 * 3600_000, format: 'MM-dd' },
+  { maxHours: 720, stepMs: 3 * 24 * 3600_000, format: 'MM-dd' },
+  { maxHours: 1440, stepMs: 7 * 24 * 3600_000, format: 'MM-dd' },
+  { maxHours: Number.POSITIVE_INFINITY, stepMs: 14 * 24 * 3600_000, format: 'MM-dd' },
+];
+
+function pad2(n: number): string {
+  return String(n).padStart(2, '0');
+}
+
+function formatTickLabel(d: Date, fmt: 'HH:00' | 'MM-dd HH' | 'MM-dd'): string {
+  switch (fmt) {
+    case 'HH:00': return `${pad2(d.getHours())}:00`;
+    case 'MM-dd HH': return `${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}`;
+    case 'MM-dd': return `${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  }
+}
+
+/**
+ * Density-aware X-tick computation. Visszaadja a tick-pontokat a tStart..tEnd
+ * intervallumon a `rangeHours`-hoz illő step + label-formatum-mal. Ha egy tick
+ * az aktuális nap-on van, `isToday=true` (HTML kiemeli).
+ */
+function computeXTicks(tStart: number, tEnd: number, rangeHours: number): D_WaveXTick_Interface[] {
+  const density = X_TICK_DENSITY.find((d): boolean => rangeHours <= d.maxHours) ?? X_TICK_DENSITY[X_TICK_DENSITY.length - 1];
+  const todayStart: Date = new Date();
+
+  todayStart.setHours(0, 0, 0, 0);
+  const todayMs: number = todayStart.getTime();
+  const todayEndMs: number = todayMs + 24 * 3600_000;
+
+  // First tick: round down tStart to step boundary.
+  let firstTickMs: number = Math.ceil(tStart / density.stepMs) * density.stepMs;
+  const ticks: D_WaveXTick_Interface[] = [];
+
+  while (firstTickMs <= tEnd) {
+    const d: Date = new Date(firstTickMs);
+    const ratio: number = (firstTickMs - tStart) / (tEnd - tStart);
+    const x: number = VIEW.padX + INNER_W * Math.max(0, Math.min(1, ratio));
+    const isToday: boolean = firstTickMs >= todayMs && firstTickMs < todayEndMs;
+
+    ticks.push({ x, label: formatTickLabel(d, density.format), isToday });
+    firstTickMs += density.stepMs;
+  }
+
+  return ticks;
+}
+
 @Component({
   standalone: true,
   selector: 'd-waves',
@@ -75,6 +133,9 @@ export class D_Waves_Component {
   hasData: boolean = false;
   polylines: D_WavePolyline_Interface[] = [];
   context: A_WaveContext | null = null;
+  xTicks: D_WaveXTick_Interface[] = [];
+  readonly xAxisY: number = VIEW.padTop + INNER_H + 4;          // line position
+  readonly xAxisLabelY: number = VIEW.padTop + INNER_H + 16;    // label baseline
 
   /** Snapshot setter — precomputálja a 3 polyline-t, latest értékeket, palettát és a context-et. */
   @Input() set snapshot(value: A_DashboardSnapshot | null) {
@@ -109,5 +170,8 @@ export class D_Waves_Component {
 
       return { kind, points, latest, ...PALETTE[kind] };
     });
+
+    // FR #3b-WAVE-UI Phase 5a (cycle 83): density-aware X-axis ticks.
+    this.xTicks = computeXTicks(tStart, now, this.rangeHours);
   }
 }
