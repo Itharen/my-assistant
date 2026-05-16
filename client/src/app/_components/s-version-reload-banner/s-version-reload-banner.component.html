@@ -1,0 +1,12 @@
+@if (isVisible) {
+  <div class="reload-banner" role="alert" aria-live="polite">
+    <span class="msg">
+      ⚠ Új szerver-verzió érkezett — frissítés
+      <strong>{{ countdownSec }}s</strong> múlva.
+    </span>
+    <div class="actions">
+      <button type="button" class="reload" (click)="handleReloadNow()">↻ Reload Now</button>
+      <button type="button" class="dismiss" (click)="handleDismiss()">Dismiss</button>
+    </div>
+  </div>
+}

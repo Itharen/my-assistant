@@ -91,7 +91,7 @@
 | **3.A** | **Client: A_Socket_ControlService** — `DyFM_SocketClient_ServiceBase` extend, path='/socket', server:hello+server:version handlers | ✅ cycle 59 | shipped |
 | **3.B** | **Client: A_Version_DataService** — BehaviorSubject state (serverVersion + clientVersion + lastUpdateTs + requireReload) | ✅ cycle 59 | shipped |
 | **4.A** | **Status-bar component** (`s-status-bar.component`) — sticky footer, server + client + last-update + reload-flag | ✅ cycle 59 | shipped |
-| **4.B** | **Auto-reload UX** — banner-komponens + 5s countdown + manual reload gomb, `Q-ver-9` dev-mode néma | 🚧 | cycle 60 |
+| **4.B** | **Auto-reload UX** — `S_VersionReloadBanner_Component` (5s countdown + Reload Now + Dismiss + dev-mode silent reload) | ✅ cycle 60 | shipped |
 | 5 | **Domain-events migration** — REST poll → socket push fokozatosan (waves auto-refresh, tasks-updated, …) | 🚧 később | külön green-light |
 | 6 | **Build-pipeline integration** — `dc bump-version` post-hook → socket broadcast trigger; build-hash inject | 🚧 később | külön green-light |
 

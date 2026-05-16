@@ -13,6 +13,8 @@ import { A_Error_Interceptor } from './_interceptors/a-error.interceptor';
 import { A_ErrorHandler_ControlService } from './_services/control-services/a-error-handler.control-service';
 // FR #3f Phase 4.A (cycle 59): standalone footer status-bar (server + client version).
 import { S_StatusBar_Component } from './_components/s-status-bar/s-status-bar.component';
+// FR #3f Phase 4.B (cycle 60): standalone version-reload banner (5s countdown / dev-silent).
+import { S_VersionReloadBanner_Component } from './_components/s-version-reload-banner/s-version-reload-banner.component';
 
 @NgModule({
   declarations: [ AppComponent ],
@@ -25,6 +27,8 @@ import { S_StatusBar_Component } from './_components/s-status-bar/s-status-bar.c
     DyNX_Fab_Shell_Component,
     // FR #3f Phase 4.A (cycle 59): status-bar standalone component.
     S_StatusBar_Component,
+    // FR #3f Phase 4.B (cycle 60): version-reload banner standalone component.
+    S_VersionReloadBanner_Component,
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
