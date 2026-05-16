@@ -2,30 +2,34 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 44                                 # Cycle 44 lezárva; következő cycle 45 lesz
-phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | invokes | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 45                                 # Cycle 45 lezárva; következő cycle 46 lesz
+phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 44 lezárva 2026-05-16 02:30 — AGB-01 task B (Maya UI diag) shipped.
-  Findings AGB-03 announcement. Root cause: AUTH BLOCKER + PASSIVE error
-  interceptor + SPA fallback collateral. Diag-only, no code change.
-  Commit 87a8fbe. AGB-01 task A (#3b runtime-error-api) + AGB-02 (Wave UI)
-  pending (AUTH ad-hoc fix kell előbb). LDP unchanged 11/11.
-  Lásd log/cycles/cycle-44.md + AGB-2026-05-16-03.
+  Cycle 45 lezárva 2026-05-16 02:45 — FR #3b Phase 4 SHIPPED (A_Error_Interceptor
+  aktívvá, HTTP errors → central pipeline, commit c2ca98c). Major audit-finding:
+  Phase 2+3 retroaktív ✅ (cycle 19-20 + bootstrap). Plan-doc runtime-error-api.plan.md.
+  LDP 11/11 ✅. AGB-04 announcement chat-nek. AUTH BLOCKER ad-hoc fix még
+  chat-decision (AGB-03 opciók a/b/c). Lásd log/cycles/cycle-45.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 44
+  cycle_id: 45
   phase_completed: close-cycle
   files_modified:
+    - client/src/app/_interceptors/a-error.interceptor.ts
+    - __agent/plans/runtime-error-api.plan.md       # ÚJ
+    - current/feature-requests/runtime-error-api.md
     - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-44.md
-  fr_status_changes: []
-  plan_steps_marked_done: []                    # diag-only AGB-01 task B
-  commit_sha: "87a8fbe"
+    - __agent/log/cycles/cycle-45.md
+  fr_status_changes:
+    - { frPath: "current/feature-requests/runtime-error-api.md", phase: 4, fromStatus: "🟢", toStatus: "✅ shipped (Phase 2+3+4)" }
+  plan_steps_marked_done:
+    - { planPath: "__agent/plans/runtime-error-api.plan.md", stepRef: "Phase 4 — A_Error_Interceptor → showError central pipeline" }
+  commit_sha: "c2ca98c"
   build_status: success
-  test_status: success                          # LDP unchanged 11/11 (no code change)
+  test_status: success                          # LDP 11/11 ✅ (cli=26, server=2, client=13)
 
 foreign_pending:
   first_seen_cycle: 4
