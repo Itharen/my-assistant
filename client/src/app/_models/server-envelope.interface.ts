@@ -169,6 +169,28 @@ export interface A_WaveJsonlResponse {
   rows: A_WaveJsonl_Row[];
 }
 
+/** A 3×3 szint-skála kliens-oldali kanonikus értékkészlete (server `ALLOWED_LEVELS`-szel egyezik). */
+export type A_WaveLevel =
+  | 'very-low' | 'low' | 'low-mid' | 'mid' | 'mid+' | 'normal' | 'high' | 'very-high';
+
+/**
+ * `POST /api/wave/log-public` body — kliens-form payload. Server-side a
+ * `WaveJsonlSnapshot_Payload` interface-tükre (egyezőség kötelező).
+ */
+export interface A_WaveJsonlSnapshotPayload {
+  astral?: A_WaveLevel;
+  mental?: A_WaveLevel;
+  material?: A_WaveLevel;
+  wave_vector?: A_WaveVector;
+  mood?: string;
+  note?: string;
+}
+
+/** `POST /api/wave/log-public` válasz-shape — sikeres append vagy validáció-hiba envelope. */
+export type A_WaveJsonlAppendResponse =
+  | { ok: true; ts: string }
+  | { ok: false; errorCode: string; message: string };
+
 /** Insight POST payload — kliens által emit-elt új insight bemeneti shape. */
 export interface A_InsightPayload {
   message: string;

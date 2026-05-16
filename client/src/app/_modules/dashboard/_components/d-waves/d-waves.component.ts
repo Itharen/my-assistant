@@ -14,6 +14,7 @@ import {
   type A_WaveContext,
   type A_WaveRow
 } from '../../../../_models/server-envelope.interface';
+import { D_WavesForm_Component } from '../d-waves-form/d-waves-form.component';
 
 interface D_WavePolyline_Interface {
   kind: A_WaveKind;
@@ -60,7 +61,7 @@ function pointFor(row: A_WaveRow, tStart: number, tEnd: number): string {
   selector: 'd-waves',
   templateUrl: './d-waves.component.html',
   styleUrl: './d-waves.component.scss',
-  imports: [ CommonModule ],
+  imports: [ CommonModule, D_WavesForm_Component ],
 })
 /** Waves panel — 3 vonalas SVG diagram astral/mental/matter time-series-szel, precomputált polyline-okkal. */
 export class D_Waves_Component {

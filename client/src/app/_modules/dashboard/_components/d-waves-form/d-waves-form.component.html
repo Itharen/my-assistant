@@ -1,0 +1,66 @@
+<div class="form-head">
+  <button type="button" class="toggle" (click)="handleToggle()" [class.open]="isOpen">
+    {{ isOpen ? '▾' : '▸' }} ✏️ Új snapshot
+  </button>
+  @if (ack) { <small class="ack">{{ ack }}</small> }
+</div>
+
+@if (isOpen) {
+  <div class="form-body">
+    <div class="row">
+      <label>
+        <span class="lbl">🌌 Asztrál</span>
+        <select [(ngModel)]="astral">
+          @for (opt of levelOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        <span class="lbl">🧠 Mentál</span>
+        <select [(ngModel)]="mental">
+          @for (opt of levelOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        <span class="lbl">🪨 Anyag</span>
+        <select [(ngModel)]="material">
+          @for (opt of levelOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <div class="row">
+      <label class="vector">
+        <span class="lbl">↕ Vektor</span>
+        <select [(ngModel)]="vector">
+          @for (opt of vectorOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </label>
+      <label class="mood">
+        <span class="lbl">💭 Mood</span>
+        <input type="text" [(ngModel)]="mood" [maxlength]="moodMax" placeholder="1-2 szó / rövid hangulat-jelzés"/>
+      </label>
+    </div>
+
+    <label class="note">
+      <span class="lbl">📝 Megjegyzés</span>
+      <textarea [(ngModel)]="note" [maxlength]="noteMax" rows="2"
+                placeholder="Mi vezetett ide? (opcionális)"></textarea>
+      <small class="muted">{{ note.length }} / {{ noteMax }}</small>
+    </label>
+
+    <div class="footer">
+      <button type="button" class="cancel" (click)="handleToggle()" [disabled]="isBusy">Mégse</button>
+      <button type="button" class="submit" [disabled]="isBusy || !hasAnyLevel" (click)="handleSubmit()">
+        {{ isBusy ? '…' : '➜ Rögzít' }}
+      </button>
+    </div>
+  </div>
+}

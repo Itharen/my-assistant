@@ -19,7 +19,9 @@ import {
   type A_InsightPayload,
   type A_InsightRow,
   type A_StatusSnapshot,
+  type A_WaveJsonlAppendResponse,
   type A_WaveJsonlResponse,
+  type A_WaveJsonlSnapshotPayload,
   type A_WavePayload,
   type A_WaveRow
 } from '../../_models/server-envelope.interface';
@@ -87,6 +89,23 @@ export class A_Server_ApiService {
         endpoint: '/wave/get-from-jsonl',
       }),
       { queryParams: { limit } },
+    );
+  }
+
+  /**
+   * POST `/wave/log-public` — unauth új-snapshot append a `3x3-log.jsonl`-be.
+   * A response 200/400 alapján a hívó eldönti az ack/error útvonalat
+   * (FR #3b-WAVE-UI Phase 3.B).
+   */
+  async postWaveLogPublic(payload: A_WaveJsonlSnapshotPayload): Promise<A_WaveJsonlAppendResponse> {
+    return this.Đ_AS.call<A_WaveJsonlAppendResponse, A_WaveJsonlSnapshotPayload>(
+      new DyNX_ApiCall_Settings({
+        name: 'postWaveLogPublic',
+        type: DyFM_HttpCallType.post,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/wave/log-public',
+      }),
+      { body: payload },
     );
   }
 

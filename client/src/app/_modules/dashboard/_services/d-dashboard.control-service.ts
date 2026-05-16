@@ -20,7 +20,9 @@ import {
   type A_CapturePayload,
   type A_DashboardSnapshot,
   type A_InsightPayload,
-  type A_WaveJsonlResponse
+  type A_WaveJsonlAppendResponse,
+  type A_WaveJsonlResponse,
+  type A_WaveJsonlSnapshotPayload
 } from '../../../_models/server-envelope.interface';
 
 const POLL_INTERVAL_MS = 30_000;
@@ -121,6 +123,29 @@ export class D_Dashboard_ControlService implements OnDestroy {
       this.error_CS.showError(fallbackErr, 'd-dashboard.refresh.jsonl-fallback');
 
       return false;
+    }
+  }
+
+  /**
+   * Új hullám-snapshot submit a `POST /api/wave/log-public` (unauth) endpoint-re.
+   * Sikeres append után automatikusan refresh-eli a dashboardot. Validáció-hibát
+   * (`ok: false` envelope-pal) Error-rá konvertál hogy a hívó form ack helyett
+   * error-routing-ot kapjon. FR #3b-WAVE-UI Phase 3.B (cycle 55).
+   */
+  async submitWaveSnapshot(payload: A_WaveJsonlSnapshotPayload): Promise<A_WaveJsonlAppendResponse> {
+    try {
+      const result: A_WaveJsonlAppendResponse = await this.api.postWaveLogPublic(payload);
+
+      if (!result.ok) {
+        throw new Error(`[${result.errorCode}] ${result.message}`);
+      }
+      await this.refresh();
+
+      return result;
+    } catch (err) {
+      this.error_CS.showError(err, 'd-dashboard.submitWaveSnapshot');
+
+      throw err;
     }
   }
 

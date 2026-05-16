@@ -50,7 +50,7 @@
 | **2.B** | **Client: D_Dashboard_ControlService 401-fallback path** (JSONL endpoint) | ✅ cycle 53 | shipped |
 | **2.C** | **d-waves enrichment**: mood + note + vector emoji megjelenítés | ✅ cycle 53 | shipped |
 | **3.A** | **Server: unauth `POST /api/wave/log-public`** (FDPNTS-pattern, mint /error/log) | ✅ cycle 54 | shipped |
-| **3.B** | **Client: új-snapshot form** (3 dropdown: astral/mental/matter; vector; mood; note) | 🚧 | cycle 54-55 |
+| **3.B** | **Client: új-snapshot form** (3 select + vector + mood + note) | ✅ cycle 55 | shipped |
 | **4.A** | **Server: jsonl → waves DB sync script** (one-shot import) | 🚧 | cycle 56 |
 | **4.B** | **Server: auto-sync hook** (új `/wave/log-public` payload → jsonl append + DB insert) | 🚧 | cycle 56 |
 | 5 | Trend mini-chart (sparkline) | 🚧 később | külön green-light |
