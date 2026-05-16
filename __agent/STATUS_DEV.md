@@ -2,30 +2,29 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 63                                 # Cycle 63 lezárva (banner spec shipped)
+cycle: 64                                 # Cycle 64 lezárva (util spec shipped)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 63 lezárva 2026-05-16 — safe-orthogonal autonomy folytatás.
-  s-version-reload-banner.component.spec.ts shipped (+115 LOC, 8 case). Component triggerReload
-  private → protected (Chrome window.location.reload non-redefinable workaround). Client-test
-  28 → 36 (+8 case). LDP 11/11 ✅. Commit aed4bd5.
-  Cycle 64 candidate-pool: a-socket.control-service.spec.ts (mock-based DyFM extend), vagy backlog 🟡 sor.
+  Cycle 64 lezárva 2026-05-16 — safe-orthogonal autonomy folytatás.
+  wave-jsonl-fallback.util.spec.ts shipped (+128 LOC, 13 case): buildJsonlFallbackSnapshot (8 case) +
+  extractLatestContext (5 case). Client-test 36 → 49 (+13 case). LDP 11/11 ✅. Commit 9593cd1.
+  Napi roll-up cycle 51-64: 14 cycle, 2 FR funkcionálisan zárva, +36 test-case kumulatív.
+  Cycle 65 candidate-pool: a-socket spec (complex), backlog 🟡 sor, vagy AGB-escalation chat-nek.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 63
+  cycle_id: 64
   phase_completed: close-cycle
   files_modified:
-    - client/src/app/_components/s-version-reload-banner/s-version-reload-banner.component.spec.ts # ÚJ (+115 LOC, 8 case)
-    - client/src/app/_components/s-version-reload-banner/s-version-reload-banner.component.ts     # private → protected triggerReload (1 visibility tweak)
+    - client/src/app/_modules/dashboard/_services/wave-jsonl-fallback.util.spec.ts # ÚJ (+128 LOC, 13 case)
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-63.md
+    - __agent/log/cycles/cycle-64.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: aed4bd5
+  commit_sha: 9593cd1
   build_status: success
-  test_status: success                          # LDP 11/11 ✅, client-test 28 → 36 (+8 case)
+  test_status: success                          # LDP 11/11 ✅, client-test 36 → 49 (+13 case)
 
 foreign_pending:
   first_seen_cycle: 4
