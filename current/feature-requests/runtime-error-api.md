@@ -54,7 +54,7 @@ A `WORKFLOW_DEV.md` 20. alapelv (Runtime error scan) szerint:
 | Phase | Mit | Felelős |
 |---|---|---|
 | 0 | ez a FR | én ✅ |
-| 1 | `DyNTS_Logs_Service` install + `logs_endpoint` enable a server-en | Dev Agent — pending (külön cycle / chat-engagement) |
+| 1 | `DyNTS_Logs_Service` install + `logs_endpoint` enable a server-en | Dev Agent ✅ cycle 48 |
 | 2 | `Errors_Controller` + `Errors_DataService` setup (FDPNTS-extend) | Dev Agent ✅ retroaktív (cycle 19-20 era) |
 | 3 | `getGlobalErrorHandler()` wiring | Dev Agent ✅ retroaktív (bootstrap) |
 | 4 | **A_Error_Interceptor → showError() routing** (HTTP errors propagálása a kliens central error-pipeline-on át) | Dev Agent ✅ cycle 45 |

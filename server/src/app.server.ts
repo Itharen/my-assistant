@@ -18,6 +18,7 @@ import {
   DyNTS_StaticClient_Settings
 } from '@futdevpro/nts-dynamo';
 import { DyNTS_AppExtended, DyNTS_SocketServerService } from '@futdevpro/nts-dynamo/socket';
+import { DyNTS_Logs_Service, DyNTS_getLogsRoutingModule } from '@futdevpro/nts-dynamo/logs';
 
 import {
   FDP_errors_dataParams,
@@ -40,6 +41,8 @@ import { Wave_Controller } from './_routes/wave/wave.controller';
 import { Insight_Controller } from './_routes/insight/insight.controller';
 import { Capture_Controller } from './_routes/capture/capture.controller';
 import { Dashboard_Controller } from './_routes/dashboard/dashboard.controller';
+import { Spotify_Controller } from './_routes/spotify/spotify.controller';
+import { Google_Controller } from './_routes/google/google.controller';
 
 /** my-assistant App bootstrap. DyNTS_AppExtended-t terjeszti — Mongo + routes + static client + sockets. */
 export class App extends DyNTS_AppExtended {
@@ -63,10 +66,13 @@ export class App extends DyNTS_AppExtended {
     });
   }
 
-  /** DyNTS globális log-beállítások override-ja — api_errors + setup log-okat bekapcsolja. */
+  /** DyNTS globális log-beállítások override-ja — api_errors + setup + logs_endpoint. */
   override overrideDynamoNTSGlobalSettings(): void {
     DyNTS_global_settings.log_settings.api_errors = true;
     DyNTS_global_settings.log_settings.setup = true;
+    // FR #3b Phase 1 (cycle 48): DyNTS_Logs_Service `/api/logs/*` endpoints — server-wide log lekérdezés.
+    DyNTS_global_settings.log_settings.logs_endpoint = { enabled: true };
+    DyNTS_Logs_Service.getInstance().install();
   }
 
   /** Az auth service, error handler, és a DB model registry-t adja vissza a DyNTS bootstrap-nek. */
@@ -125,12 +131,24 @@ export class App extends DyNTS_AppExtended {
         route: '/feedback',
         controllers: [ Feedback_Controller.getInstance() ],
       }),
+      new DyNTS_RoutingModule({
+        route: '/spotify',
+        controllers: [ Spotify_Controller.getInstance() ],
+      }),
+      new DyNTS_RoutingModule({
+        route: '/google',
+        controllers: [ Google_Controller.getInstance() ],
+      }),
+      // FR #3b Phase 1 (cycle 48): /api/logs/* — server-wide log endpoints
+      // (unauth, FDPNTS pattern). Lásd `DyNTS_getLogsRoutingModule` util-t.
+      DyNTS_getLogsRoutingModule(),
     ];
   }
 
   /** Static client (Angular dist) serving config — root path + SPA fallback. */
   override getStaticClientSettings(): DyNTS_StaticClient_Settings | undefined {
-    const clientDist: string = path.resolve(__dirname, '..', '..', 'client', 'dist', 'client', 'browser');
+    // ESM-compat: __dirname nincs ESM-modulban; import.meta.dirname helyettesíti (Node 20.11+).
+    const clientDist: string = path.resolve(import.meta.dirname, '..', '..', 'client', 'dist', 'client', 'browser');
 
     return {
       root: clientDist,

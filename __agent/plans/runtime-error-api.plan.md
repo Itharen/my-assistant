@@ -47,7 +47,7 @@ nem teljesen audit-elve. Cycle 45 task A scope-ja a **valódi gap** azonosítás
 | Phase | Mit | Status | Cycle |
 |---|---|---|---|
 | 0 | FR doc | ✅ | (forrás) |
-| 1 | `DyNTS_Logs_Service` install + `logs_endpoint` enable | 🚧 nincs (kihagyható ha nem kell `/api/logs/*` endpoint) | — |
+| 1 | `DyNTS_Logs_Service` install + `logs_endpoint` enable | ✅ cycle 48 | shipped |
 | 2 | `Errors_Controller` + `Errors_DataService` setup | ✅ shipped (cycle ~19-20 era) | retroaktív |
 | 3 | `getGlobalErrorHandler()` wiring | ✅ shipped | retroaktív |
 | **4** | **A_Error_Interceptor → showError** (HTTP errors propagálása) | ✅ cycle 45 | shipped |

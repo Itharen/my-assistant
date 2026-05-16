@@ -87,6 +87,51 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-16-07 — FR #3b Phase 1 SHIPPED (DyNTS_Logs_Service install)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-16T04:50+02:00
+**Updated:** 2026-05-16T04:50+02:00
+
+Cycle 48 — FR #3b Phase 1 (AGB-01 task A folytatás).
+
+**Server changes (`app.server.ts`):**
+- Import: `DyNTS_Logs_Service, DyNTS_getLogsRoutingModule` from `@futdevpro/nts-dynamo/logs`
+- `overrideDynamoNTSGlobalSettings`: `log_settings.logs_endpoint = { enabled: true }` + `DyNTS_Logs_Service.getInstance().install()`
+- `getRoutingModules`: `DyNTS_getLogsRoutingModule()` hozzáadva (unauth alapból)
+
+**Új endpoint-ok (unauth):**
+- `GET /api/logs/get` — server-wide log buffer JSON
+- `POST /api/logs/clear` — log buffer clear
+
+**Smoke (cycle 48):**
+```
+GET /api/logs/get → HTTP 200, JSON {totalBuffered: 116, returned: 116, lines: [...]}
+```
+
+**Verify:** LDP **11/11 ✅** (tsc-server clean, cli-test 26/26, server-test 2/2, client-test 13/13).
+
+### FR #3b cumulative state (cycle 44-48)
+
+Mind az 5 Dev Agent-szakasz shipped:
+- Phase 1 (DyNTS_Logs_Service install) — ✅ **cycle 48 (this)**
+- Phase 2 (Errors_Controller + DataService) — ✅ retroaktív (cycle 19-20)
+- Phase 3 (getGlobalErrorHandler wiring) — ✅ retroaktív
+- Phase 4 (A_Error_Interceptor → central pipeline) — ✅ cycle 45
+- Phase 4b (server action-log mirror) — ✅ cycle 46
+- Phase 5a (server `/error/get-range` + UNAUTH bonus) — ✅ cycle 47
+
+**Pending csak:** Phase 5b (Dev Agent client-fetch + WORKFLOW_DEV #21 frissítés) — workflow-doc módosítás, **chat-OK kérése**.
+
+### AGB-03 task B (általános AUTH BLOCKER a többi /api/* endpointra)
+
+**Még chat-decision.** Opciók a/b/c (server bypass / client dev-token / both)
+ismétlés. Phase 1-5a megoldotta az error-flow-t, de a Wave/Insight/Capture/
+Dashboard panels rendering továbbra is blocked.
+
+---
+
 ## [OPEN] AGB-2026-05-16-06 — FR #3b Phase 5a SHIPPED + AUTH BLOCKER MEGOLDVA az error-flow-ra
 **From:** dev-agent
 **To:** chat
