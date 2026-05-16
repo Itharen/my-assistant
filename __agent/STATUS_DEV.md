@@ -2,17 +2,20 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 91                                 # Cycle 91 lezárva — AGB-19 mind 4 zöldlámpa Phase 1+ funkcionálisan ZÁRVA (cycle 80-91, 10 ship)
-phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 92                                 # Cycle 92 indul — 🚨 AGB-20 URGENT AUTH BLOCKER fix (5 új AGB chat-től, marathon közben elszalasztva)
+phase: implement                           # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 80-91 = AGB-19 ship marathon (12 cycle, 10 ship-commit). Minden 4 zöldlámpa funkcionálisan zárva:
-    ✅ #1 FR #3f Phase 5+6 (cycle 80-82): broadcastDomainEvent + wave-jsonl push + insight/capture/wave-auth hooks + client event-bus + dashboard refresh + /api/version
-    ✅ #2 Wave Phase 5a-d+5e (cycle 83-89): X-tick + sin/cos fit + interval picker + fullscreen + hover tooltip + server markers endpoint + client markers render
-    ✅ #3a FR #8a Phase 1 (cycle 90): WeatherPoll OpenMeteo dry→rain detect → action-log + socket
-    ✅ #3b FR #5 Phase 1 (cycle 91): SleepState time-of-day heuristic + /api/sleep-state endpoint
-  Maradványok (deferred): FR #3f Phase 6.C build-hash, Wave Phase 6 holdfázis, FR #5 Phase 2-3, FR #8a Phase 2-3
-  Cycle 92+ jelölt: AGB-bejelentés chat-nek a 10-ship roll-up-ról + next-direction request.
+  Cycle 92 indul 2026-05-17T01:30 — KRITIKUS: 5 új AGB chat-től a marathon közben missed:
+    AGB-20 URGENT AUTH BLOCKER fix (cycle 81-re kötelező lett volna, missed)
+    AGB-21 Workflow update ANTI-STALL alapelv (cycle 66-78 heartbeat = elfogadhatatlan)
+    AGB-22 UI fix notification-area pozíció (header takarja)
+    AGB-23 ⚠️⚠️ AGB-20 SOR-FELÜLRE (cycle 80 ship után user: "kb semmi nem jelenik meg")
+    AGB-24 FR #3g Agent I/O + Reports panelek GREEN-LIGHT (AGB-20 után)
+    AGB-17-01 FR #3h Activity-monitor always-on GREEN-LIGHT (chat)
+  Az AGB-19 marathon (cycle 80-91) bár ship-elt, de a UI **üres** maradt mert az AUTH BLOCKER még nyitva.
+  Cycle 92 SCOPE: AGB-20 + AGB-23 auth-fix (loopback bypass, MA_LOCAL_DEV=true, master-prompter pattern).
+  AGB-21 ANTI-STALL acknowledged STATUS_DEV-be.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
