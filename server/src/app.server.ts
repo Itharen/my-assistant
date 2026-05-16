@@ -46,6 +46,7 @@ import { Dashboard_Controller } from './_routes/dashboard/dashboard.controller';
 import { Spotify_Controller } from './_routes/spotify/spotify.controller';
 import { Google_Controller } from './_routes/google/google.controller';
 import { Version_Controller } from './_routes/version/version.controller';
+import { SleepState_Controller } from './_routes/sleep-state/sleep-state.controller';
 
 import { VersionBroadcast_SocketServerService } from './_services/socket-services/version-broadcast.socket-server-service';
 import { WeatherPoll_Service } from './_services/weather-poll.service';
@@ -160,6 +161,11 @@ export class App extends DyNTS_AppExtended {
       new DyNTS_RoutingModule({
         route: '/version',
         controllers: [ Version_Controller.getInstance() ],
+      }),
+      // FR #5 sleep-aware Phase 1 (cycle 91): GET /api/sleep-state — time-of-day heuristic snapshot.
+      new DyNTS_RoutingModule({
+        route: '/sleep-state',
+        controllers: [ SleepState_Controller.getInstance() ],
       }),
     ];
   }
