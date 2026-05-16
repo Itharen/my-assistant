@@ -2,14 +2,13 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 71                                 # Cycle 71 heartbeat (AGB-18 OPEN 3h 30m, doc-sync pool exhausted)
+cycle: 72                                 # Cycle 72 heartbeat (AGB-18 OPEN 4h, weekend szabat-day, low-pressure)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 71 heartbeat 2026-05-16T16:30 — pure heartbeat, dev-autonomy blocked-on-chat.
-  AGB-2026-05-16-18 OPEN óta 3h 30m. Doc-sync pool kifogyott (arch-ref + CHANGELOG + DECISIONS mind ✅).
-  Today's roll-up (cycle 51-70 = 20 cycle): 2 FR funkcionálisan zárva, +47 test, 3 DEC-MA, 1 bug-fix.
-  Cycle 72+: continue heartbeat ritka cadence-szel.
+  Cycle 72 heartbeat 2026-05-16T17:00 — pure heartbeat continued.
+  AGB-2026-05-16-18 OPEN óta 4h. Wake-bundle 2026-05-16 10:00 jelzi: szombat=szabat-nap, low-pressure.
+  Dev-autonomy stable: blocked-on-chat, doc-sync pool kifogyott. Cycle 72-...: ritka heartbeat cadence.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
