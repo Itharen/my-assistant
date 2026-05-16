@@ -1,10 +1,12 @@
-// 3x3-log JSONL reader. Maps `__agent/state/3x3-log.jsonl` (the canonical
-// append-only source-of-truth for 3x3 wave snapshots) to a numeric series
-// the dashboard panel can render without DB access.
+// 3x3-log JSONL reader + writer. Maps `__agent/state/3x3-log.jsonl` (the
+// canonical append-only source-of-truth for 3x3 wave snapshots) to a numeric
+// series the dashboard panel can render without DB access, and accepts new
+// snapshots from the UI form (Phase 3.A).
 //
-// FR #3b-WAVE-UI Phase 2.A (cycle 52): the JSONL-fallback path bypasses
-// AUTH BLOCKER on `/api/dashboard/snapshot` so the wave UI can render even
-// before the chat-decision on AGB-03 task B lands.
+// FR #3b-WAVE-UI Phase 2.A (cycle 52): a read útvonal bypass-eli az AUTH
+// BLOCKER-t a `/api/dashboard/snapshot`-on.
+// FR #3b-WAVE-UI Phase 3.A (cycle 54): a write útvonal egy unauth POST
+// endpoint-en át append-eli a kliens-formról érkező snapshotokat.
 //
 // No-throw kontraktus a read util-en — fájl-olvasási hiba esetén
 // emitServerActionLog + üres `rows: []` vissza, recurse-mentes.
@@ -155,4 +157,145 @@ export async function readWavesFromJsonl(limit: number): Promise<WaveJsonl_Row[]
   }
 
   return rows;
+}
+
+// ── Writer ────────────────────────────────────────────────────────────────────
+
+/** Wave snapshot payload — a kliens-form által POST-olt új-snapshot body shape-je. */
+export interface WaveJsonlSnapshot_Payload {
+  astral?: string;
+  mental?: string;
+  material?: string;
+  wave_vector?: WaveJsonl_Vector;
+  mood?: string;
+  note?: string;
+}
+
+/** Append-result — sikeresség + a generált ts (a hívó visszaadhatja a kliensnek). */
+export interface WaveJsonlAppend_Result {
+  ok: boolean;
+  ts: string;
+  errorCode?: string;
+  message?: string;
+}
+
+const ALLOWED_LEVELS: Set<string> = new Set([
+  'very-low', 'low', 'low-mid', 'mid', 'mid+', 'normal', 'high', 'very-high',
+]);
+const ALLOWED_VECTORS: Set<WaveJsonl_Vector> = new Set([ 'up', 'down', 'flat' ]);
+const MOOD_MAX_LEN: number = 120;
+const NOTE_MAX_LEN: number = 2000;
+
+/** Európa/Budapest ISO timestamp, mint az action-log.util `nowIsoBudapest`. */
+function nowIsoBudapest(): string {
+  const d: Date = new Date();
+  const pad = (n: number): string => String(n).padStart(2, '0');
+  const offMin: number = -d.getTimezoneOffset();
+  const sign: string = offMin >= 0 ? '+' : '-';
+  const abs: number = Math.abs(offMin);
+  const offset: string = `${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`;
+
+  return (
+    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` +
+    `T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}${offset}`
+  );
+}
+
+/**
+ * Snapshot payload validáció. Legalább egy szint (astral/mental/material) kötelező,
+ * a megadott szintek a `ALLOWED_LEVELS` halmazból. Mood/note hossz-korlát.
+ * Hibás → `MA-WAVE-JSONL-INVALID-PAYLOAD` errorCode + leíró message.
+ */
+function validatePayload(payload: WaveJsonlSnapshot_Payload): { ok: true } | { ok: false; errorCode: string; message: string } {
+  const hasAnyLevel: boolean = !!(payload.astral || payload.mental || payload.material);
+
+  if (!hasAnyLevel) {
+    return { ok: false, errorCode: 'MA-WAVE-JSONL-INVALID-PAYLOAD', message: 'At least one of astral/mental/material required' };
+  }
+
+  const levelFields: (keyof WaveJsonlSnapshot_Payload)[] = [ 'astral', 'mental', 'material' ];
+
+  for (const f of levelFields) {
+    const v: string | undefined = payload[f] as string | undefined;
+
+    if (v && !ALLOWED_LEVELS.has(v)) {
+      return { ok: false, errorCode: 'MA-WAVE-JSONL-INVALID-PAYLOAD', message: `Field '${f}' has invalid level '${v}'` };
+    }
+  }
+
+  if (payload.wave_vector && !ALLOWED_VECTORS.has(payload.wave_vector)) {
+    return { ok: false, errorCode: 'MA-WAVE-JSONL-INVALID-PAYLOAD', message: `Invalid wave_vector '${payload.wave_vector}'` };
+  }
+
+  if (payload.mood && payload.mood.length > MOOD_MAX_LEN) {
+    return { ok: false, errorCode: 'MA-WAVE-JSONL-INVALID-PAYLOAD', message: `mood exceeds ${MOOD_MAX_LEN} chars` };
+  }
+
+  if (payload.note && payload.note.length > NOTE_MAX_LEN) {
+    return { ok: false, errorCode: 'MA-WAVE-JSONL-INVALID-PAYLOAD', message: `note exceeds ${NOTE_MAX_LEN} chars` };
+  }
+
+  return { ok: true };
+}
+
+/**
+ * Új wave snapshotot append-el a `__agent/state/3x3-log.jsonl` végére. Payload
+ * validáció előtte (legalább 1 szint, allowed levels, mood/note hossz-cap).
+ *
+ * Sikeres write → `{ ok: true, ts }`. Validáció-hiba / fájl-write hiba →
+ * `{ ok: false, errorCode, message }` + emitServerActionLog. No-throw.
+ */
+export async function appendWaveSnapshotToJsonl(
+  payload: WaveJsonlSnapshot_Payload,
+): Promise<WaveJsonlAppend_Result> {
+  const ts: string = nowIsoBudapest();
+  const validation: ReturnType<typeof validatePayload> = validatePayload(payload);
+
+  if (!validation.ok) {
+    await emitServerActionLog({
+      actor: 'server',
+      kind: 'error',
+      summary: `[${validation.errorCode}] ${validation.message}`,
+      extra: { errorCode: validation.errorCode, issuer: 'wave-jsonl.util.appendWaveSnapshotToJsonl' },
+    });
+
+    return { ok: false, ts, errorCode: validation.errorCode, message: validation.message };
+  }
+
+  const row: Record<string, unknown> = { ts, actor: 'user' };
+
+  if (payload.astral) row.astral = payload.astral;
+  if (payload.mental) row.mental = payload.mental;
+  if (payload.material) row.material = payload.material;
+  if (payload.wave_vector) row.wave_vector = payload.wave_vector;
+  if (payload.mood) row.mood = payload.mood;
+  if (payload.note) row.note = payload.note;
+
+  const jsonlPath: string = resolveJsonlPath();
+
+  try {
+    await fs.mkdir(path.dirname(jsonlPath), { recursive: true });
+    await fs.appendFile(jsonlPath, JSON.stringify(row) + '\n', { encoding: 'utf8' });
+  } catch (err) {
+    const e: Error = err instanceof Error ? err : new Error(String(err));
+    const errorCode: string = 'MA-WAVE-JSONL-WRITE-FAIL';
+
+    await emitServerActionLog({
+      actor: 'server',
+      kind: 'error',
+      summary: `[${errorCode}] ${e.message.slice(0, 200)}`,
+      extra: { errorCode, issuer: 'wave-jsonl.util.appendWaveSnapshotToJsonl', path: jsonlPath, stack: e.stack },
+    });
+
+    return { ok: false, ts, errorCode, message: e.message };
+  }
+
+  await emitServerActionLog({
+    actor: 'server',
+    kind: 'state-change',
+    summary: `wave snapshot appended (astral=${payload.astral ?? '-'}/mental=${payload.mental ?? '-'}/material=${payload.material ?? '-'}/vector=${payload.wave_vector ?? '-'})`,
+    extra: { issuer: 'wave-jsonl.util.appendWaveSnapshotToJsonl', ts },
+  });
+
+  return { ok: true, ts };
 }

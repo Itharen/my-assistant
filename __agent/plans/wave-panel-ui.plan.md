@@ -49,7 +49,7 @@
 | **2.A** | **Server: unauth `GET /api/wave/get-from-jsonl`** (3x3-log.jsonl read + mapping) | ✅ cycle 52 | shipped |
 | **2.B** | **Client: D_Dashboard_ControlService 401-fallback path** (JSONL endpoint) | ✅ cycle 53 | shipped |
 | **2.C** | **d-waves enrichment**: mood + note + vector emoji megjelenítés | ✅ cycle 53 | shipped |
-| **3.A** | **Server: unauth `POST /api/wave/log-public`** (FDPNTS-pattern, mint /error/log) | 🚧 | cycle 54 |
+| **3.A** | **Server: unauth `POST /api/wave/log-public`** (FDPNTS-pattern, mint /error/log) | ✅ cycle 54 | shipped |
 | **3.B** | **Client: új-snapshot form** (3 dropdown: astral/mental/matter; vector; mood; note) | 🚧 | cycle 54-55 |
 | **4.A** | **Server: jsonl → waves DB sync script** (one-shot import) | 🚧 | cycle 56 |
 | **4.B** | **Server: auto-sync hook** (új `/wave/log-public` payload → jsonl append + DB insert) | 🚧 | cycle 56 |

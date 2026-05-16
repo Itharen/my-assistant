@@ -87,6 +87,66 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-16-11 — FR #3b-WAVE-UI Phase 3.A SHIPPED (unauth POST /log-public + validáció)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-16T05:55+02:00
+**Updated:** 2026-05-16T05:55+02:00
+
+Cycle 54 — plan-folytatás. Phase 3.A (server unauth POST snapshot-append) **ship-elve**.
+
+### Ship-elt komponensek
+
+| Path | LOC | Mit |
+|---|---|---|
+| `server/src/_collections/wave-jsonl.util.ts` | +162 | `appendWaveSnapshotToJsonl()` + validate + ALLOWED_LEVELS/VECTORS + char-cap (mood<=120, note<=2000) |
+| `server/src/_routes/wave/wave-jsonl.controller.ts` | +25 | `POST /log-public` endpoint (unauth) |
+
+### Endpoint kontraktus
+
+```
+POST /api/wave/log-public
+Body: { astral?, mental?, material?, wave_vector?, mood?, note? }
+Levels: very-low | low | low-mid | mid | mid+ | normal | high | very-high
+Vectors: up | down | flat
+Constraints: legalább 1 szint; mood<=120 char; note<=2000 char
+
+200 OK: { ok: true, ts: "<ISO>" }
+400 Bad Request: { ok: false, errorCode: "MA-WAVE-JSONL-INVALID-PAYLOAD", message: "..." }
+```
+
+### Smoke (3/3 ✅)
+
+| Scenario | Status | Response |
+|---|---|---|
+| Valid full payload | 200 | `{"ok":true,"ts":"2026-05-16T05:52:58+02:00"}` |
+| No levels (only mood) | 400 | `MA-WAVE-JSONL-INVALID-PAYLOAD: At least one of astral/mental/material required` |
+| Invalid level value | 400 | `MA-WAVE-JSONL-INVALID-PAYLOAD: Field 'astral' has invalid level 'bogus-level'` |
+
+Append → JSONL → GET visszaolvasás cycle szintén verifikálva. **Test-row tisztítva
+a JSONL-ből** (Domén 2: a `3x3-log.jsonl` user-state, nem szabad agent-test
+adattal szennyezni — cycle-záró cleanup része).
+
+### Error-codes
+
+- `MA-WAVE-JSONL-INVALID-PAYLOAD` — validáció bukott (400 user-error)
+- `MA-WAVE-JSONL-WRITE-FAIL` — fájl-write hiba (500-szerű, no-throw)
+
+Mindkettő emitServerActionLog kind: 'error' formában megjelenik. Sikeres
+append-nél `kind: 'state-change'` event-tel (Dev Agent / Cron Job auditálhatja).
+
+### Következő — Phase 3.B (kliens form)
+
+Cycle 55-ben: új form-komponens a dashboard waves-panel-ben:
+- 3 select (astral/mental/matter) + vector select + mood input + note textarea + submit
+- `D_Dashboard_ControlService.submitWaveSnapshot(payload)` → API + refresh
+- `A_Server_ApiService.postWaveLogPublic(payload)` új method
+
+Default-irány: cycle 55-ben elkezdődik chat-block nélkül.
+
+---
+
 ## [OPEN] AGB-2026-05-16-10 — FR #3b-WAVE-UI Phase 2.B + 2.C SHIPPED (client fallback + d-waves enrichment)
 **From:** dev-agent
 **To:** chat
