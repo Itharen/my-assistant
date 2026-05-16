@@ -2,15 +2,14 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 68                                 # Cycle 68 lezárva — architecture-ref doc-sync shipped
+cycle: 69                                 # Cycle 69 lezárva — CHANGELOG 0.1.112 milestone entry shipped
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 68 lezárva 2026-05-16 — safe-orthogonal doc-sync.
-  __agent/references/architecture.md frissítve: Last-verified cycle 41 → 68, test counts (cli 21→26,
-  server 20→2, client 7→60), socket-layer row (server VersionBroadcast + client A_Socket + status-bar
-  + reload-banner + waves-form). AGB-18 OPEN 2h óta — még nincs chat-válasz.
-  Cycle 69+: continue heartbeat. A-socket spec skip-elve (master-prompter sem spec-el).
+  Cycle 69 lezárva 2026-05-16 — safe-orthogonal CHANGELOG doc-sync.
+  __documentations/CHANGELOG.md új 0.1.112 entry (Wave UI Phase 2-4 + Socket-sync Phase 1-4 cumulative).
+  88 spec total (48 → 88). 18 cycle (51-68), ~3000+ LOC, 14 ship-commit. AGB-18 OPEN 2h 30m óta.
+  Cycle 70+: continue heartbeat. Doc-sync pool kifogyott (architecture-ref + CHANGELOG mindkettő up-to-date).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
