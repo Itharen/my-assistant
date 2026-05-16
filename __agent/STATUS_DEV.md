@@ -2,36 +2,36 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 46                                 # Cycle 46 lezárva; következő cycle 47 lesz
+cycle: 47                                 # Cycle 47 lezárva; következő cycle 48 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 46 lezárva 2026-05-16 03:45 — FR #3b Phase 4b SHIPPED (server-error
-  → action-log mirror, commit e7ddcd6). Errors_DataService.handleInternalError
-  override + új action-log.util.ts. Dev Agent 02-audit most két forrásból
-  látja runtime errors-t (file + DB). LDP 11/11 ✅. AGB-05 announcement.
-  Phase 1+5 pending. AGB-03 AUTH BLOCKER opciók még chat-decision.
-  Lásd log/cycles/cycle-46.md.
+  Cycle 47 lezárva 2026-05-16 04:05 — FR #3b Phase 5a SHIPPED + AUTH BLOCKER
+  MEGOLDVA az error-flow-ra (commit 158ca88). FDPNTS-extend refactor — 6 standard
+  endpoint a base-ből, unauth `/log`. End-to-end smoke OK (POST/log, GET/get-range,
+  GET/mark-all-done mind 200). LDP 11/11 ✅. AGB-06 announcement.
+  Cumulative user-pain (cycle 44-47) cumulative: "nem rögzíti" 3 layer-en
+  megoldva. Phase 1, 5b pending; többi /api/* AUTH BLOCKER még chat-decision.
+  Lásd log/cycles/cycle-47.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 46
+  cycle_id: 47
   phase_completed: close-cycle
   files_modified:
-    - server/src/_collections/action-log.util.ts       # ÚJ
-    - server/src/_routes/errors/errors.data-service.ts
+    - server/src/_routes/errors/errors.controller.ts   # FDPNTS-extend refactor
     - __agent/plans/runtime-error-api.plan.md
     - current/feature-requests/runtime-error-api.md
     - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-46.md
+    - __agent/log/cycles/cycle-47.md
   fr_status_changes:
-    - { frPath: "current/feature-requests/runtime-error-api.md", phase: "4b", fromStatus: "pending", toStatus: "✅ shipped" }
+    - { frPath: "current/feature-requests/runtime-error-api.md", phase: "5a", fromStatus: "pending", toStatus: "✅ shipped + UNAUTH /log bonus" }
   plan_steps_marked_done:
-    - { planPath: "__agent/plans/runtime-error-api.plan.md", stepRef: "Phase 4b — action-log emit on every server error" }
-  commit_sha: "e7ddcd6"
+    - { planPath: "__agent/plans/runtime-error-api.plan.md", stepRef: "Phase 5a — server /error/get-range endpoint (FDPNTS-extend)" }
+  commit_sha: "158ca88"
   build_status: success
-  test_status: success                          # LDP 11/11 ✅
+  test_status: success                          # LDP 11/11 ✅ + smoke (POST/log, GET/get-range, GET/mark-all-done all 200)
 
 foreign_pending:
   first_seen_cycle: 4
