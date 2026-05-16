@@ -2,15 +2,14 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 80                                 # Cycle 80 lezárva — FR #3f Phase 5.A+5.B+6.B shipped
+cycle: 81                                 # Cycle 81 lezárva — Phase 5.B-extra shipped
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 80 lezárva 2026-05-16 — FR #3f Phase 5.A+5.B+6.B SHIPPED.
-  broadcastDomainEvent util + wave-jsonl /log-public push hook + Version_Controller (/api/version).
-  Smoke ✅: domain:wave event érkezik POST után, /api/version JSON {version, bootTime, gitSha, env}.
-  Phase 6.A skip-elve (no DyNTS middleware hook). LDP 11/11 ✅. Commit 34ec19b.
-  Cycle 81+ jelölt: Phase 5.B-extra (insight/capture/task push hooks) + cycle 82+ Phase 5.C (client subscribe + dispatch).
+  Cycle 81 lezárva 2026-05-16 — FR #3f Phase 5.B-extra SHIPPED.
+  Insight (add+dismiss) + Capture (add) + Wave-auth (add) controllers most domain:* push-eventet emitnek.
+  Pattern: VersionBroadcast.broadcastDomainEvent uniform schema. LDP 11/11 ✅. Commit 121a42e.
+  Cycle 82+ jelölt: Phase 5.C — client A_Socket domain:* handlers → D_Dashboard_ControlService.refresh() trigger.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
@@ -44,8 +43,8 @@ foreign_pending:
 # Plan-folytatás tracking
 active_plan:
   path: __agent/plans/socket-and-version-sync.plan.md     # AGB-19 green-light Phase 5+6 in-progress
-  current_step: "Phase 5.B-extra (insight/capture/task push hooks) → Phase 5.C (client subscribe + dispatch)"
-  steps_remaining: 3                                      # 5.B-extra, 5.C, 6.C
+  current_step: "Phase 5.C (client A_Socket domain:* handlers → D_Dashboard_ControlService.refresh())"
+  steps_remaining: 2                                      # 5.C, 6.C
 secondary_plan:
   path: __agent/plans/wave-panel-ui.plan.md               # AGB-19 green-light Phase 5a-d+5e GO (Wave 5+6 után jön)
   current_step: "Phase 5a-d+5e (X-tick + sin/cos fit + interval-választó + fullscreen + trigger-markers)"
