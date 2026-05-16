@@ -2,30 +2,29 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 65                                 # Cycle 65 lezárva (d-waves-form spec + bug-fix shipped)
+cycle: 66                                 # Cycle 66 lezárva — AGB-escalation shipped (chat-blocked-on-direction)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 65 lezárva 2026-05-16 — safe-orthogonal cycle + valódi bug-fix.
-  d-waves-form.component.spec.ts shipped (+138 LOC, 11 case). A "handleSubmit success" test
-  felfedezett egy ack-wipe bug-ot: handleReset() utáni ack-set fix-elve. Component change 1 LOC.
-  Client-test 49 → 60 (+11). LDP 11/11 ✅. Commit 992a709.
-  Cycle 66 candidate-pool: a-socket spec (complex), AGB-escalation chat-nek (cycle 50 óta nincs new green-light).
+  Cycle 66 lezárva 2026-05-16 — AGB-escalation cycle.
+  AGB-2026-05-16-18 (request) feltéve chat-nek 4 explicit kérdéssel:
+  (1) wave Phase 5a-d green-light? (2) FR #3f Phase 5 (REST→socket migration)?
+  (3) FR #3f Phase 6 (build-pipeline)? (4) 🟡 unlock egy sorra ha mind vár?
+  Dev autonomy status: blocked-on-chat. Cycle 67+: no-op / minor maintenance amíg válasz nem érkezik.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 65
+  cycle_id: 66
   phase_completed: close-cycle
   files_modified:
-    - client/src/app/_modules/dashboard/_components/d-waves-form/d-waves-form.component.spec.ts # ÚJ (+138 LOC, 11 case)
-    - client/src/app/_modules/dashboard/_components/d-waves-form/d-waves-form.component.ts     # ack/handleReset order fix (1 LOC bug)
+    - __agent/AGENT_BUS.md                      # AGB-2026-05-16-18 next-steps request
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-65.md
+    - __agent/log/cycles/cycle-66.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: 992a709
-  build_status: success
-  test_status: success                          # LDP 11/11 ✅, client-test 49 → 60 (+11 case)
+  commit_sha: (escalation cycle)
+  build_status: unchanged                       # no code changes
+  test_status: unchanged                        # LDP not re-triggered
 
 foreign_pending:
   first_seen_cycle: 4
