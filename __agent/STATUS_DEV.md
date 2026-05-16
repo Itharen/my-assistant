@@ -2,14 +2,20 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 83                                 # Cycle 83 lezárva — Wave Phase 5a shipped
+cycle: 89                                 # Cycle 89 lezárva — Wave Phase 5 KOMPLETT (5a-5e shipped, cycle 83-89, 7 ship-commit)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 83 lezárva 2026-05-16 — Wave Phase 5a SHIPPED (X-tengely density-aware ticks).
-  X_TICK_DENSITY 6-tier table, computeXTicks() helper, today-highlight (#fbbf24 + font-weight 700).
-  LDP 11/11 ✅. Commit 123b1fb.
-  Cycle 84+ jelölt: Phase 5b (sin/cos fit overlay) — most complex item (least-squares).
+  Cycle 84-89 ship-marathon — Wave Phase 5 funkcionálisan ZÁRVA.
+  Roll-up:
+    84: Phase 5b sin/cos fit (9067c25)
+    85: Phase 5c interval picker + localStorage (638dc31)
+    86: Phase 5d fullscreen toggle (e91b654)
+    87: Phase 5e.1 hover tooltip per point (53fdd03)
+    88: Phase 5e.2 server markers endpoint (41f63bb)
+    89: Phase 5e.3 client markers fetch+render (5569b5d)
+  Wave Phase 1-5 ALL ✅. Marad Phase 6 holdfázis-overlay (deferred).
+  Cycle 90+ jelölt: 🟡 unlock items (per AGB-19) — #5 sleep-aware vagy #8a eső-noti.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
@@ -42,9 +48,9 @@ foreign_pending:
 
 # Plan-folytatás tracking
 active_plan:
-  path: __agent/plans/wave-panel-ui.plan.md               # Sorrend #2 per AGB-19 — Wave Phase 5a-d+5e
-  current_step: "Phase 5b (Sin/cos fit overlay, least-squares periódus-becslés)"
-  steps_remaining: 4                                      # Phase 5b/5c/5d/5e
+  path: null                                              # Wave Phase 5 ZÁRVA; sorrend #3 → 🟡 unlock (sleep-aware / eső-noti)
+  current_step: null
+  steps_remaining: 0
 secondary_plan:
   path: __agent/plans/socket-and-version-sync.plan.md     # Phase 5 funkcionálisan ZÁRVA; 6.C deferred
   current_step: "Phase 6.C — build-hash inject (later opt)"

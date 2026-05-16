@@ -55,10 +55,12 @@
 | **4.B** | **Server: auto-sync hook** (`/log-public` payload → JSONL append + DB insert paralel) | ✅ cycle 56 | shipped |
 | 5 | Trend mini-chart (sparkline) | 🚧 később | külön green-light |
 | **5a** | **X-tengely dátum-tick density-aware** (today highlighted) | ✅ cycle 83 | shipped |
-| **5b** | **Sin/cos fit** (least-squares periódus-becslés, kontinuous overlay) | 🚧 cycle 84+ |  |
-| **5c** | **Intervallum-választó** (preset 24h/3d/7d/30d/60d/90d/custom) | 🚧 cycle 85+ |  |
-| **5d** | **Fullscreen gomb** (⛶, esc kilép, state-megőrzés) | 🚧 cycle 86+ |  |
-| **5e** | **Trigger/törés markerek** (action-log szűrve) + universal hover tooltip | 🚧 cycle 87+ |  |
+| **5b** | **Sin/cos fit** (least-squares periódus-becslés, kontinuous overlay) | ✅ cycle 84 | shipped |
+| **5c** | **Intervallum-választó** (preset 24h/3d/7d/30d/60d/90d/custom) | ✅ cycle 85 | shipped |
+| **5d** | **Fullscreen gomb** (⛶, esc kilép, state-megőrzés) | ✅ cycle 86 | shipped |
+| **5e.1** | **Per-point hover tooltip** (native `<title>`) | ✅ cycle 87 | shipped |
+| **5e.2** | **Server `/api/wave/markers`** endpoint (action-log szűrve) | ✅ cycle 88 | shipped |
+| **5e.3** | **Client marker fetch + SVG render** (törés/megoszló/trigger) | ✅ cycle 89 | shipped |
 | 6 | Holdfázis overlay | 🚧 később | külön green-light |
 
 ---
