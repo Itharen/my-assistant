@@ -2,14 +2,14 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 69                                 # Cycle 69 lezárva — CHANGELOG 0.1.112 milestone entry shipped
+cycle: 70                                 # Cycle 70 lezárva — DECISIONS.md DEC-MA-010..012 shipped
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 69 lezárva 2026-05-16 — safe-orthogonal CHANGELOG doc-sync.
-  __documentations/CHANGELOG.md új 0.1.112 entry (Wave UI Phase 2-4 + Socket-sync Phase 1-4 cumulative).
-  88 spec total (48 → 88). 18 cycle (51-68), ~3000+ LOC, 14 ship-commit. AGB-18 OPEN 2h 30m óta.
-  Cycle 70+: continue heartbeat. Doc-sync pool kifogyott (architecture-ref + CHANGELOG mindkettő up-to-date).
+  Cycle 70 lezárva 2026-05-16 — safe-orthogonal doc-sync.
+  3 új DEC-MA entry: 010 (Wave denorm), 011 (DyNTS path=/socket), 012 (dev-silent vs prod reload UX).
+  AGB-18 OPEN 3h óta — chat-válasz továbbra is várt.
+  Cycle 71+: pure heartbeat. Minden doc-sync up-to-date (architecture-ref ✅ CHANGELOG ✅ DECISIONS ✅).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:

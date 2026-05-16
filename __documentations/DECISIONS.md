@@ -184,6 +184,57 @@ Ez egy külön FDP-PR, a my-assistant scope-on kívül.
 
 ---
 
+## DEC-MA-010 — Wave snapshot metadata denormalizált a 3 exploded sorra
+
+**Dátum:** 2026-05-16
+**Forrás:** `wave-panel-ui.plan.md` Q-WAVE-2 + Q-WAVE-3, cycle 56 (FR #3b-WAVE-UI Phase 4.A)
+**Decision:** Egy JSONL snapshot row (`{ ts, astral, mental, material, wave_vector, mood, note }`) a Wave DB-be explode-olódik 3 sorra (astral/mental/matter), és a snapshot-szintű metadata (`wave_vector`, `mood`, `snapshotTs`, `note`) **mind a 3 row-ra denormalizálva** kerül be. Plusz: `level` (eredeti szint-string, pl. "very-low") szintén minden rowon. `snapshotTs+kind` adja az idempotency-kulcsot.
+
+**Indok:**
+- Query-egyszerűség: bármely Wave row önállóan elég kontextust hordoz a UI-nak (mood-card, vector-emoji) — nem kell join vagy snapshot-tábla lookup
+- Marginal storage cost: `mood` rövid text (max 120 char), `wave_vector` enum-string, `level` rövid string → ~50-100 byte / row, 3× duplikálva
+- Idempotens bulk-sync: `findDataList({ snapshotTs, kind })` egyszerű dedup, NEM kell composite-key tervezés
+- Alternatíva (külön WaveSnapshot collection) elvetve: 2-collection join komplexitás > storage savings
+- A `Wave` schema bővítés backward-compatible (mind opt.), régi sorok validak
+
+**Reverzibilitás:** Közepes — ha egyszer külön WaveSnapshot tábla kell, egy migration script lekérdezi a unique `snapshotTs`-eket, beilleszti egy új collection-be, és a 4 redundáns mezőt törli a Wave-rowról. ~50-100 LOC migration + index-frissítés.
+
+---
+
+## DEC-MA-011 — DyNTS socket path = `/socket` (NEM Socket.IO default `/socket.io`)
+
+**Dátum:** 2026-05-16
+**Forrás:** cycle 58 smoke-test (FR #3f Phase 2.A), Explore agent verification `node_modules/@futdevpro/nts-dynamo/build/_collections/default-socket-path.const.js`
+**Decision:** A kliens-oldali socket connect **kötelezően** a `path: '/socket'` option-nal csatlakozik (`DyNTS_defaultSocketPath` const). NEM hagyatkozunk a Socket.IO defaultjára (`/socket.io`).
+
+**Indok:**
+- Az `@futdevpro/nts-dynamo` framework saját default-path-ot definiál (`DyNTS_defaultSocketPath = '/socket'`) — server-side beállítva a `DyNTS_AppExtended` socket-server setup-jában
+- A `/socket.io` GET-eket a `DyNTS_AppExtended` static-client SPA fallback elnyeli → "CONNECT_ERROR server error" / "websocket error" a kliensen
+- Smoke-test cycle 58: 2 failed attempt (websocket-only + default-transport mind connect_error), majd `{ path: '/socket' }` után immediate success → `subscriptionSuccessful` + `server:hello`
+- A `a-socket.control-service.ts` `getParams()`-ben explicit `socketOptions.path = '/socket'`. Master-prompter convention-on át (env-ből) működik, my-assistant-en explicit kódba írva — egyszerűbb tracing/debug-hoz
+
+**Reverzibilitás:** Trivial — ha a DyNTS valaha átvált `/socket.io` default-ra (upstream change), a kliens `getParams()`-ben 1-LOC change (`delete socketOptions.path` vagy `path: '/socket.io'`).
+
+---
+
+## DEC-MA-012 — Server-version-bump → dev-mode silent reload, prod-mode 5s countdown banner
+
+**Dátum:** 2026-05-16
+**Forrás:** `socket-and-version-sync.plan.md` Q-ver-9, cycle 60 (FR #3f Phase 4.B)
+**Decision:** A `S_VersionReloadBanner_Component` az `A_Version_DataService.requireReload` event-re a következőképp reagál:
+- **Dev-mode** (`isDevMode() === true`, no `--prod` build flag): 1s grace timeout, majd silent `window.location.reload()`. Banner NEM jelenik meg.
+- **Prod-mode** (`isDevMode() === false`): banner megjelenik felül-sticky pozícióval, 5s countdown timer, "Reload Now" + "Dismiss" gombok. Countdown 0-nál auto-reload. Dismiss → `clearReloadFlag` + countdown cancel, user a következő version-bump-ra újra prompt-olódik.
+
+**Indok:**
+- Dev-mode rendszeres LDP-rebuild + `dc bump-version` commit-okat triggerel — banner megzavarná a dev workflow-t. Silent 1s grace lehetővé teszi a server-restart befejezését + state-flush-t a reload előtt
+- Prod-mode user-visibility kritikus: ha a server újraindul (deploy / verzió-bump), a kliens stale-állapotba kerülhet. A countdown + manual control mind UX-best-practice
+- `alreadyTriggered` flag — observer multiple-emission (BehaviorSubject replay) edge-case kezelése → exactly-once trigger
+- Cycle 65 spec-jellegű regression test megerősíti a viselkedést (jasmine.clock + spyOn-on-protected pattern)
+
+**Reverzibilitás:** Trivial — ha mindkét módra ugyanazt akarjuk (pl. mindig banner), `handleStateChange` `isDevMode()` elágazás eltávolítása. ~5 LOC.
+
+---
+
 ## Convention új DEC-hez
 
 ```markdown
