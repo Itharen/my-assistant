@@ -51,6 +51,13 @@ interface D_WaveFitPath_Interface {
   periodDays: number;
 }
 
+interface D_WavePoint_Interface {
+  kind: A_WaveKind;
+  cx: number;
+  cy: number;
+  tooltip: string;
+}
+
 const FIT_SAMPLE_COUNT: number = 120;
 const FIT_MIN_POINTS: number = 4;
 
@@ -178,6 +185,8 @@ export class D_Waves_Component implements OnDestroy {
   context: A_WaveContext | null = null;
   xTicks: D_WaveXTick_Interface[] = [];
   fitPaths: D_WaveFitPath_Interface[] = [];
+  /** FR #3b-WAVE-UI Phase 5e.1 (cycle 87): per-pont hover tooltip-hez invisible circle markers. */
+  points: D_WavePoint_Interface[] = [];
   readonly xAxisY: number = VIEW.padTop + INNER_H + 4;          // line position
   readonly xAxisLabelY: number = VIEW.padTop + INNER_H + 16;    // label baseline
 
@@ -220,6 +229,40 @@ export class D_Waves_Component implements OnDestroy {
 
     // FR #3b-WAVE-UI Phase 5b (cycle 84): sin/cos fit overlay per kind.
     this.fitPaths = this.computeFitPaths(s, tStart, now);
+
+    // FR #3b-WAVE-UI Phase 5e.1 (cycle 87): per-pont hover-tooltip markers.
+    this.points = this.computePoints(s, tStart, now);
+  }
+
+  /** Per-snapshot-pont marker + tooltip-string építés (kind/ts/value/note). */
+  private computePoints(
+    series: Record<A_WaveKind, A_WaveRow[]>,
+    tStart: number,
+    tEnd: number,
+  ): D_WavePoint_Interface[] {
+    const result: D_WavePoint_Interface[] = [];
+    const kinds: A_WaveKind[] = [ A_WaveKind.astral, A_WaveKind.mental, A_WaveKind.matter ];
+
+    for (const kind of kinds) {
+      for (const r of series[kind]) {
+        const t: number = new Date(r.__created).getTime();
+        const ratio: number = (t - tStart) / (tEnd - tStart);
+
+        if (ratio < 0 || ratio > 1) continue;
+
+        const cx: number = VIEW.padX + INNER_W * ratio;
+        const cy: number = yFor(r.value);
+        const d: Date = new Date(t);
+        const tsLabel: string = `${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+        const palette = PALETTE[kind];
+        const noteSuffix: string = r.note ? ` · ${r.note}` : '';
+        const tooltip: string = `${tsLabel} · ${palette.emoji} ${palette.label}=${r.value}${noteSuffix}`;
+
+        result.push({ kind, cx, cy, tooltip });
+      }
+    }
+
+    return result;
   }
 
   /** Aktuálisan kiválasztott interval — a preset gombok highlight-jához. */
