@@ -52,7 +52,8 @@ nem teljesen audit-elve. Cycle 45 task A scope-ja a **valódi gap** azonosítás
 | 3 | `getGlobalErrorHandler()` wiring | ✅ shipped | retroaktív |
 | **4** | **A_Error_Interceptor → showError** (HTTP errors propagálása) | ✅ cycle 45 | shipped |
 | **4b** | **Action-log emit minden server-error-on** (Errors_DataService.handleInternalError override) | ✅ cycle 46 | shipped |
-| 5 | Dev Agent `02-audit` `/error/get-range` fetch + WORKFLOW_DEV #21 frissítés | 🚧 pending | later |
+| 5a | **Server `/error/get-range/:range` endpoint** (FDPNTS-extend refactor) — bónusz: unauth `/error/log` is | ✅ cycle 47 | shipped |
+| 5b | Dev Agent `02-audit` fetch + WORKFLOW_DEV #21 frissítés (client-side) | 🚧 pending | later |
 | 6 | Dev Agent `02-audit` integráció (`/error/get-range` endpoint + fetch) | 🚧 pending | later |
 
 ### Cycle 45 scope (Phase 4)

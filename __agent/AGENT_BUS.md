@@ -87,6 +87,79 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-16-06 — FR #3b Phase 5a SHIPPED + AUTH BLOCKER MEGOLDVA az error-flow-ra
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-16T04:05+02:00
+**Updated:** 2026-05-16T04:05+02:00
+
+Cycle 47 — FR #3b Phase 5 server-side (AGB-01 task A folytatás). **MAJOR
+BÓNUSZ:** AUTH BLOCKER az `/errors/error/log` endpointra **MEGOLDVA**.
+
+### Refactor: standalone DyNTS_Controller → FDPNTS_Errors_Controller-extend
+
+A master-prompter mintát követve (`LIVE-projects/master-prompter/server/src/_routes/server/errors/errors.controller.ts`):
+
+```ts
+export class Errors_Controller extends FDPNTS_Errors_Controller<
+  DyFM_Error,
+  FDP_Errors<DyFM_Error>,
+  Errors_DataService
+> {
+  override getError_ControlService(set): Errors_DataService { ... }
+}
+```
+
+A FDPNTS_Errors_Controller-base 6 standard endpoint-ot ad ingyen:
+- `POST /api/errors/error/log` — **UNAUTH** (FDPNTS-base default)
+- `GET /api/errors/error/mark-done/:errorId` — auth
+- `GET /api/errors/error/mark-all-done` — **UNAUTH** (smoke-tested 200)
+- `GET /api/errors/error/get-range/:range` — **Phase 5 endpoint, UNAUTH** (FR #3b spec)
+- `GET /api/errors/error/get-paged/:range/:pageSize/:pageIndex`
+- `GET /api/errors/error/get-last-paged/:range/:pageSize/:pageIndex`
+
+### End-to-end smoke (cycle 47)
+
+```
+POST /api/errors/error/log              → HTTP 200 ✅
+GET  /api/errors/error/get-range/lastHour → HTTP 200 ✅
+GET  /api/errors/error/mark-all-done    → HTTP 200 ✅
+action-log mirror (cycle 46 ship)        → server-error entries flow-olnak ✅
+```
+
+### Hatás (user-pain mapping cumulative)
+
+A 2026-05-16 01:13 user-mandate ("felület szar se jelenik, hibát dobál, nem rögzíti") **cumulative ship cycle 44-47**:
+
+| Pain | Megoldva | Cycle |
+|---|---|---|
+| "nem rögzíti" (UI) | `A_Error_Interceptor` → central pipeline → POST `/errors/error/log` | 45 (Phase 4) |
+| "nem rögzíti" (server) | `handleInternalError` override → action-log mirror | 46 (Phase 4b) |
+| "nem rögzíti" (auth blocker for log endpoint) | FDPNTS-base unauth `/log` | **47** (Phase 5a) |
+| "hibát dobál" (látható) | A_Error_Interceptor → toast (`DyNX_Message_ControlService`) | 45 |
+| **Audit visibility** | Action-log + DB `fdp_errors` collection | 46 |
+
+### Az IGAZI AUTH BLOCKER (még megmarad)
+
+A többi `/api/*` endpoint (`/wave`, `/insight`, `/capture`, `/dashboard`,
+stb.) **TOVÁBBRA IS 401-et ad** localhost dev-en — a Wave UI panel render
+**még blocked** (AGB-02 függőség). Az error-pipeline most működik, de a
+többi feature-endpoint még auth-fix-re vár (AGB-03 task B opciók a/b/c
+chat-decision).
+
+### Verify
+
+LDP **11/11 ✅**, server-test 2/2, cli-test 26/26, tsc-server clean.
+
+### Pending phases
+
+- **Phase 1** (`DyNTS_Logs_Service` install) — külön cycle, optional (`/api/logs/*` endpointok)
+- **Phase 5b** (Dev Agent `02-audit` client-fetch `/error/get-range` → WORKFLOW_DEV #21 frissítés)
+- AGB-03 task B AUTH BLOCKER (a többi endpointra) — chat-decision
+
+---
+
 ## [OPEN] AGB-2026-05-16-05 — FR #3b Phase 4b SHIPPED (server-error → action-log mirror)
 **From:** dev-agent
 **To:** chat
