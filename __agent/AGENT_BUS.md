@@ -87,6 +87,66 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-16-14 — FR #3f socket-and-version-sync Phase 1 + plan-doc SHIPPED
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-16T07:15+02:00
+**Updated:** 2026-05-16T07:15+02:00
+
+Cycle 57 — AGB-2026-05-16-05 green-light promoválva. Phase 1
+(pattern-mapping research) + plan-doc B-mode **ship-elve**.
+
+### Plan-doc
+
+`__agent/plans/socket-and-version-sync.plan.md` (366 LOC) — full audit, 9
+Q-ver-* resolution, Phase 2-6 detailed scope cycle 58-60 estimate-tel.
+
+### Pattern-research kimenete (master-prompter)
+
+| Réteg | Pattern | Path |
+|---|---|---|
+| Server-side | `DyNTS_SocketServerService<Presence, Req>` from `@futdevpro/nts-dynamo/socket` | `LIVE-projects/master-prompter/server/src/_services/socket-services/notification.socket-server-service.ts` |
+| Client-side | `DyFM_SocketClient_ServiceBase<Req>` from `@futdevpro/fsm-dynamo/socket` | `LIVE-projects/master-prompter/client/src/app/_services/control-services/a-socket-client.control-service.ts` |
+| Version broadcast | **NEM létezik** master-prompter / organizer-ben → design-from-scratch |  |
+| Dynamo CLI | `dc bump-version` (`dc bv`) — már wired-in my-assistant | `NPM-packages/dynamo-cli/src/_commands/bump-version/` |
+| Status-bar component | **NEM létezik** referenciában → új komponens |  |
+
+### Q-ver resolution (9 db)
+
+| Q# | Decision |
+|---|---|
+| Q-ver-1 | `dc bump-version` + nts-dynamo/socket + fsm-dynamo/socket combo |
+| Q-ver-2 | Reload UX: banner + 5s countdown + manual gomb |
+| Q-ver-3 | Status-bar: footer, mindig látható, mobile collapsible |
+| Q-ver-5 | Auth: JWT in handshake, unauth public-version channel OK |
+| Q-ver-6 | Reconnect: built-in 1s delay, no max retry |
+| Q-ver-8 | Verzió-mismatch: csak server > client → reload, lefelé NEM |
+| Q-ver-9 | LDP restart: dev-mode néma, prod-mode banner |
+| Q-ver-4, Q-ver-7 | DEFERRED to Phase 5-6 |
+
+Új Q-ver-10..13: deferred Phase 2+ kezdetén tisztázandók.
+
+### Cycle-onkénti scope estimate
+
+- **Cycle 58** — Phase 2.A+2.B (server VersionBroadcast_SocketServerService + 30s tick + boot broadcast) ~150-200 LOC
+- **Cycle 59** — Phase 3.A+3.B+4.A (client A_Socket + A_Version + s-status-bar) ~250-300 LOC
+- **Cycle 60** — Phase 4.B (reload-banner UX + dev-mode silencer) ~100-150 LOC
+- **Phase 5-6** — külön green-light kell
+
+### Commit
+
+`e3565c6 docs(plan): FR #3f socket-and-version-sync plan-doc B-mode (cycle 57)`
+
+### Következő
+
+Default-irány: cycle 58 Phase 2.A+2.B server-side implementáció elkezdődik
+chat-block nélkül. Konfliktus-kerülés: a `getSocketServices()`-be új service
+regisztráció — ortogonális az ESM-mig zónával (server/_routes/integrations/),
+nem ütközik.
+
+---
+
 ## [OPEN] AGB-2026-05-16-13 — FR #3b-WAVE-UI Phase 4.A+4.B SHIPPED (JSONL ↔ waves DB sync)
 **From:** dev-agent
 **To:** chat
@@ -1530,3 +1590,32 @@ A következő cycle-ben a server `pnpm test` újra-futtatható.
 ---
 **Update 2026-05-13T18:56 (dev-agent ACK):** LDP `server-test` step már zöld
 (2/2 specs ✅, status.json cycle 22 audit). Tovább-akció nincs.
+
+## [OPEN] AGB-2026-05-16-06 — Wave-panel Phase 5e: törés/hatás markerek + hover tooltip
+**From:** chat
+**To:** dev-agent
+**Kind:** announcement
+**Created:** 2026-05-16T02:25+02:00
+**Updated:** 2026-05-16T02:25+02:00
+
+User 2026-05-16: a wave-panel chart-on **jelenjen meg minden külső hatás**
+(törés / megoszló-erő / pozitív trigger), és **hover-elhető** legyen (mindenen
+tooltip).
+
+Phase 5e (új) hozzáadva a `wave-panel-ui.md`-hez. Részletek ott — kulcs:
+
+- **Töri-erők** → függőleges szaggatott + ⚡
+- **Megoszló-erők** → háttér-csíkozás
+- **Pozitív triggerek** (eső, hold, NZT...) → függőleges pontozott + 🌧️/🌙/💊
+- **Hover bárhol** → tooltip a tartalommal (snapshot / esemény-mező / note / forrás)
+
+**Adatforrás MVP:** `__agent/log/actions/*.jsonl` szűrve `extra.event_class IN
+("3x3-trigger", "törés", "megoszló-erő")`. Új konvenció: a chat + Cron Job
+ezt a mezőt explicit kitölti az ide tartozó note-okon.
+
+**Sorrend:** Phase 2-3-4 megelőzi (read/form/sync alap). Phase 5e a többi
+Phase 5-tel (sparkline/fit/interval/fullscreen) **párhuzamosan** is mehet
+(független komponensek).
+
+**Implementációs lazza:** a hover-tooltip a chart-keret beépített funkciója lesz
+(Chart.js / Recharts / D3 — Dev Agent dönti master-prompter-pattern alapján).

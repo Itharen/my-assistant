@@ -2,35 +2,31 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 57                                 # Cycle 57 indul — AGB-05 green-light promoválva, FR #3f plan-package mode B
-phase: plan-package                        # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 57                                 # Cycle 57 lezárva (Phase 1 + plan-doc shipped); következő cycle 58 lesz
+phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 57 indul 2026-05-16T07:05 — FR #3f socket-and-version-sync (AGB-2026-05-16-05 green-light) plan-package.
-  Mode B: új plan-doc `__agent/plans/socket-and-version-sync.plan.md` készül. Phase 1 (pattern-mapping
-  research: master-prompter / organizer / nts-dynamo socket / ngx-dynamo socket) ebben a cycle-ben.
-  Phase 2-6 (server wire-up → client socket-client → status-bar → auto-version-update → domain-events
-  → build-pipeline) későbbi cycle-ekben.
-  Pattern-source default: master-prompter (CLAUDE.md "Pattern-based Development" + AGB-05 explicit).
+  Cycle 57 lezárva 2026-05-16 — FR #3f socket-and-version-sync Phase 1 SHIPPED.
+  Plan-doc B-mode kész (`__agent/plans/socket-and-version-sync.plan.md`, 366 LOC).
+  Pattern-research: master-prompter DyNTS_SocketServerService + DyFM_SocketClient_ServiceBase.
+  9 open Q-ver-* feloldva (research-based). 4-cycle estimate Phase 1-4-re (cycle 57-60).
+  Commit e3565c6. Phase 2.A indul cycle 58-ban (server VersionBroadcast service).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 56
+  cycle_id: 57
   phase_completed: close-cycle
   files_modified:
-    - server/src/_models/data-models/wave.data-model.ts       # +Wave_Vector enum +level +wave_vector +mood +snapshotTs (15 LOC)
-    - server/src/_collections/wave-jsonl.util.ts              # +buildWaveRowsFromSnapshot +loadAllSnapshotRowsForSync (~100 LOC)
-    - server/src/_routes/wave/wave-jsonl.controller.ts        # +upsertWaveRowIdempotent +POST /sync-jsonl +/log-public auto-sync (~85 LOC)
-    - __agent/plans/wave-panel-ui.plan.md                     # Phase 4.A ✅ + 4.B ✅
+    - __agent/plans/socket-and-version-sync.plan.md           # ÚJ (366 LOC) — FR #3f plan-doc B-mode
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-56.md
+    - __agent/log/cycles/cycle-57.md
+    - __agent/log/actions/2026-05-16.jsonl
   fr_status_changes: []
   plan_steps_marked_done:
-    - wave-panel-ui.plan.md Phase 4.A
-    - wave-panel-ui.plan.md Phase 4.B
-  commit_sha: c7ccd01
-  build_status: success
-  test_status: success                          # LDP 11/11 ✅ + Smoke 3/3 (bulk + idempotency + auto-sync)
+    - socket-and-version-sync.plan.md Phase 1 (pattern-research)
+  commit_sha: e3565c6
+  build_status: success                          # no code changes, doc-only
+  test_status: success                           # LDP unchanged green
 
 foreign_pending:
   first_seen_cycle: 4
