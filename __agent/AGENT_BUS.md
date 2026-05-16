@@ -87,6 +87,74 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-16-17 — FR #3f Phase 4.B SHIPPED + FR Phase 1-4 ZÁRVA
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-16T09:40+02:00
+**Updated:** 2026-05-16T09:40+02:00
+
+Cycle 60 — plan-folytatás. Phase 4.B (auto-reload banner UX) **ship-elve**.
+A FR #3f socket-and-version-sync **Phase 1-4 funkcionálisan zárul** —
+4 cycle (57-60) alatt 1147 LOC.
+
+### Mit (Phase 4.B)
+
+`s-version-reload-banner.component.ts/html/scss` (ÚJ, ~150 LOC összesen):
+
+- **Dev mode** (`isDevMode()`): 1s grace → silent `window.location.reload()`
+  → LDP-rebuild + dc bump-version commit-ok automatikusan refresh-elik a kliens
+- **Prod mode:** 5s countdown banner top-sticky (z-index=200 status-bar fölött), amber #fbbf24
+  - "Reload Now" → azonnali `location.reload()`
+  - "Dismiss" → flag-clear + countdown-cancel, user a következő bump-on újra megkapja
+- `alreadyTriggered` flag → duplikált observer-emission edge-case kezelése
+- `typeof window !== 'undefined'` guard a reload-on (test/SSR safe)
+
+Integráció: `app.module.ts` standalone import + `app.component.html` top-sticky beágyazás.
+
+### FR #3f Phase 1-4 ROLL-UP
+
+| Phase | Cycle | LOC | Commit |
+|---|---|---|---|
+| Phase 1 (research + plan-doc) | 57 | +366 doc | e3565c6 |
+| Phase 2.A+2.B (server VersionBroadcast + 30s tick) | 58 | +231 server | bf23ed7 |
+| Phase 3.A+3.B+4.A (client socket + version state + status-bar) | 59 | +334 client | b504927 |
+| Phase 4.B (reload-banner UX) | 60 | +216 client | 557350a |
+| **TOTAL** | **4 cycle** | **+1147 LOC** | |
+
+### Acceptance criteria (mind ✅)
+
+- [x] Server `getSocketServices()` non-empty (VersionBroadcast regisztrálva)
+- [x] Server boot → `server:hello` event minden új kliens-connection-re
+- [x] Server 30s tick → ha `package.json` `version` változott, `server:version` broadcast
+- [x] Client Socket.IO connect on app-start (path='/socket'!), auto-reconnect 1s delay
+- [x] Status-bar mindig látható, `server vX · client vY · last-update HH:mm`
+- [x] Server-version-change → reload-banner (prod) / silent reload (dev)
+- [x] Minden socket hibapont action-log + MA-SOCKET-* errorCode
+- [x] LDP 11/11 zöld minden Phase végén
+- [ ] **Browser-smoke (E2E)** — deferred AGB-03 task B külön user-OK
+
+### LDP
+
+- 11/11 ✅ (client-build, client-test 13/13, lint-client mind ok)
+
+### Commit
+
+`557350a feat(client): FR #3f Phase 4.B - version reload banner (cycle 60)`
+
+### Phase 5-6 (későbbi, külön green-light)
+
+- **Phase 5** — REST → socket migration (waves/tasks/insights push-events) — **külön green-light**
+- **Phase 6** — build-pipeline integration (build-hash inject, `dc bump-version` post-hook) — **külön green-light**
+
+### Cycle 61 kandidátus pool
+
+- **AGB-2026-05-16-04** — wave-panel Phase 5a-d expansion (backlog 🟡)
+- **M1 grooming** — cycle 50 óta nem volt
+- **AUTH BLOCKER** — chat-decision pending (jelen rendszer már működik nélküle)
+
+---
+
 ## [OPEN] AGB-2026-05-16-16 — FR #3f Phase 3.A+3.B+4.A SHIPPED (client socket + version state + status-bar)
 **From:** dev-agent
 **To:** chat
