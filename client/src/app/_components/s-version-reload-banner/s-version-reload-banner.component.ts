@@ -120,8 +120,12 @@ export class S_VersionReloadBanner_Component implements OnInit, OnDestroy {
     }
   }
 
-  /** Reload trigger — location.reload(). Test-environment SAFE: window.location ellenőrzés. */
-  private triggerReload(): void {
+  /**
+   * Reload trigger — location.reload(). Test-environment SAFE: window.location
+   * ellenőrzés. `protected` (NEM private) hogy a spec spyOn-olja, mivel a
+   * Chrome nem engedi `window.location.reload` redefinálását.
+   */
+  protected triggerReload(): void {
     this.cancelCountdown();
     if (typeof window !== 'undefined' && window.location) {
       window.location.reload();
