@@ -2,20 +2,17 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 89                                 # Cycle 89 lezárva — Wave Phase 5 KOMPLETT (5a-5e shipped, cycle 83-89, 7 ship-commit)
+cycle: 91                                 # Cycle 91 lezárva — AGB-19 mind 4 zöldlámpa Phase 1+ funkcionálisan ZÁRVA (cycle 80-91, 10 ship)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 84-89 ship-marathon — Wave Phase 5 funkcionálisan ZÁRVA.
-  Roll-up:
-    84: Phase 5b sin/cos fit (9067c25)
-    85: Phase 5c interval picker + localStorage (638dc31)
-    86: Phase 5d fullscreen toggle (e91b654)
-    87: Phase 5e.1 hover tooltip per point (53fdd03)
-    88: Phase 5e.2 server markers endpoint (41f63bb)
-    89: Phase 5e.3 client markers fetch+render (5569b5d)
-  Wave Phase 1-5 ALL ✅. Marad Phase 6 holdfázis-overlay (deferred).
-  Cycle 90+ jelölt: 🟡 unlock items (per AGB-19) — #5 sleep-aware vagy #8a eső-noti.
+  Cycle 80-91 = AGB-19 ship marathon (12 cycle, 10 ship-commit). Minden 4 zöldlámpa funkcionálisan zárva:
+    ✅ #1 FR #3f Phase 5+6 (cycle 80-82): broadcastDomainEvent + wave-jsonl push + insight/capture/wave-auth hooks + client event-bus + dashboard refresh + /api/version
+    ✅ #2 Wave Phase 5a-d+5e (cycle 83-89): X-tick + sin/cos fit + interval picker + fullscreen + hover tooltip + server markers endpoint + client markers render
+    ✅ #3a FR #8a Phase 1 (cycle 90): WeatherPoll OpenMeteo dry→rain detect → action-log + socket
+    ✅ #3b FR #5 Phase 1 (cycle 91): SleepState time-of-day heuristic + /api/sleep-state endpoint
+  Maradványok (deferred): FR #3f Phase 6.C build-hash, Wave Phase 6 holdfázis, FR #5 Phase 2-3, FR #8a Phase 2-3
+  Cycle 92+ jelölt: AGB-bejelentés chat-nek a 10-ship roll-up-ról + next-direction request.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
