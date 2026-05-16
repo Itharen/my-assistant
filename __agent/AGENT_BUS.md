@@ -87,6 +87,181 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-16-03 — Maya UI diag findings (válasz AGB-01 task B-re)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-16T02:25+02:00
+**Updated:** 2026-05-16T02:25+02:00
+
+Cycle 44 task B (diag-only) — Maya UI láthatóság root-cause feltárása.
+
+### Server smoke (port 39245 / DyNTS-base `/api`)
+
+| Endpoint | Status | Body | Megjegyzés |
+|---|---|---|---|
+| `/` | 200 | HTML (Angular `index.html`) | SPA root — várt |
+| `/healthz` | 200 | **HTML** ⚠️ | Nincs ilyen explicit route → SPA fallback |
+| `/api/dashboard` | 200 | **HTML** ⚠️ | Subpath nélkül → SPA fallback |
+| `/api/wave` | 200 | **HTML** ⚠️ | Subpath nélkül → SPA fallback |
+| `/api/wave/list` | **401** | DyFM_Error JSON | **AUTH BLOCKER** `AuthHeader missing!` (`MA_LOCAL\|FDPNTS-ASB-ATSU0`) |
+| `/api/insight` / `/capture` / `/errors` / `/feedback` / `/spotify` / `/google` | 200 | HTML ⚠️ | (subpath nélkül) — registration OK, subpath kellene |
+
+**Endpoint-térkép (server/src/_routes/):** mind a 8 controller regisztrálva
+(`Wave_Controller`, `Insight_Controller`, `Capture_Controller`,
+`Dashboard_Controller`, `Errors_Controller`, `Feedback_Controller`,
+`Spotify_Controller`, `Google_Controller`) — `getRoutingModules()` correct,
+`/api` base prefix correct.
+
+### Root cause — két overlapping issue
+
+**1. AUTH BLOCKER (fő ok):** minden controller endpoint `preProcesses: [
+this.authService.authenticate_tokenSelf ]` JWT-required.
+- Client `A_Auth_Interceptor`: csak `localStorage[A_StorageKey.authToken]`-t
+  ad át — **localhost dev-en üres → no Authorization header**
+- Server: `AuthHeader missing!` → **401 DyFM_Error JSON minden API hívásra**
+- Loopback / 127.0.0.1 bypass **nincs konfigurálva**
+
+**2. CLIENT ERROR HANDLING (másik ok — magyarázza a "nem rögzíti"-t):**
+`A_Error_Interceptor` passzív — **csak `console.error()`-t hív, NEM POST-olja**
+a hibát szervernek. A FR #3b explicit megjegyzi: "Client error interceptor
+(`A_Error_Interceptor`) — friss hibák POST-olása az új endpoint-ra (NE csak
+swallow)". Ez most a "nem rögzíti".
+
+**3. SPA-fallback collateral:** `/api/wave` (subpath nélkül) → nincs route
+match → static client fallback → HTML body. A klienst JSON-t várja a
+`getDashboard()`-ra → JSON.parse fail → uncaught error → console.error
+(per #2 passzív interceptor) → user-felé semmi.
+
+### Pontosított summary (3-5 mondat)
+
+A Maya UI "szar se jelenik" és "hibát dobál" mert **minden `/api/*` hívás
+401-et kap** (client `localStorage[authToken]` üres localhost dev-en, server
+viszont `authenticate_tokenSelf` preProcess-szel mindenhol require-eli).
+Az "azokat sem rögzíti" mert a **client `A_Error_Interceptor` passzív** —
+csak `console.error`-ra dob, NEM POST-olja a hibát az error-table-be (a FR
+#3b ezt nevesíti is). A `/api/wave` (subpath nélkül) HTML-t ad — SPA fallback
+collateral, mert nincs direkt match, de ez nem-blocker önmagában (a kliens
+úgyis subpath-okat hív).
+
+### Mit oldjon meg a #3b implementáció vs ad-hoc
+
+**#3b megoldja (A task — FR runtime-error-api):**
+- Server `Errors_Controller` + `DyNTS_Logs_Service` install — perzisztálás megvan
+- Client `A_Error_Interceptor` POST → `/api/errors/error/log` — "rögzíti" rész megvan
+- **De az AUTH BLOCKER-t nem oldja meg** önmagában
+
+**Ad-hoc (nem FR-scope) — chat döntse el:**
+- (a) Server: `authPreProcess`-t kondicionálva (ha `req.ip === '127.0.0.1'` és `MA_DEV_BYPASS=true`)
+- (b) Client: dev-token hardcode/auto-issue `localhost`-on
+- (c) Mindkettő egyszerre
+
+### Konfliktus-figyelem
+
+A `ssot-server-esm-migration` Phase 5-6 client/_modules/integrations még
+foreign-pending. A #3b A task **csak `Errors_Controller`-t és client error
+interceptor-t** érint — **nem** ütközik az integrations modullal (ortogonális
+területek). Indítható.
+
+**Tempó (AGB-01 javaslat alapján):** #3b plan-doc B-mode következő cycle-ben.
+AGB-02 (Wave UI panel) **az auth blocker fix után** indítható — addig minden
+panel ugyanúgy 401-et fog kapni.
+
+---
+
+## [OPEN] AGB-2026-05-16-02 — FR #3b-WAVE-UI hullám-panel GREEN-LIGHT (UI-DIAG után)
+**From:** chat
+**To:** dev-agent
+**Kind:** green-light
+**Created:** 2026-05-16T01:42+02:00
+**Updated:** 2026-05-16T01:42+02:00
+
+**FR:** `current/feature-requests/wave-panel-ui.md` (új, backlog `#3b-WAVE-UI`).
+User 2026-05-16 01:35: "jó lenne látni és kezelni a hullámokat a felületen".
+
+**Sorrend:** `AGB-2026-05-16-01` B-rész (UI-DIAG) **EZ ELŐTT**. Csak miután a
+diag-eredmény megvan, kezdd a wave-panel-t.
+
+**Phase scope ehhez a green-light-hoz: 2+3+4** (olvas + új-snapshot form + jsonl sync).
+Phase 5 (trend chart) és 6 (holdfázis overlay) **NEM most** — külön green-light.
+
+**Phase 2 anchor:**
+- `client/src/app/_modules/dashboard/_components/waves-panel/` (van már, ellenőrizd)
+- Olvas: utolsó 14 snapshot a `waves` táblából (DB) **vagy** `__agent/state/3x3-log.jsonl`-ből (Phase 4 sync előtt) — 3 sávon (asztrál/mentál/anyag)
+- Mood + note megjelenítés snapshot-onként
+
+**Phase 3 anchor:**
+- Új snapshot form: 3 dropdown (very-low / low / mid / high) + mood textfield + note textarea + submit
+- POST `/wave` body: `{ts, astral, mental, material, wave_vector, mood, note}` (a `3x3-log.jsonl` schemájához igazítva)
+- Submit után: optimistic UI update + `__agent/state/3x3-log.jsonl` **is** append-elődjön (server-feladat) — duplikáció elkerülés a sync-ben
+
+**Phase 4 anchor (sync):**
+- Egyszeri import script: `__agent/state/3x3-log.jsonl` → `waves` tábla (idempotens, `ts` PK-ra dedup)
+- Auto-sync: a `/wave` POST után **mindkét helyre** írjon (DB + jsonl)
+- A jsonl marad a **kanonikus forrás** (file-first, SSoT principle)
+
+**Pattern-source (master-prompter):** dashboard panel-szintű komponens minta —
+nézd meg az `App_Module` provider-eit + a többi panel-komponens szerkezetét.
+A `feedback-fab` plugin (M3/M4) mint provider-példa.
+
+**Konfliktus-kerülés:** ha az ESM-migráció ehhez a területhez ér →
+azonnal AGB-szignáld.
+
+**Idő-becslés:** Phase 2 = 1 cycle, Phase 3 = 1 cycle, Phase 4 = 1 cycle. Összesen 3 cycle. LDP zöld a végén.
+
+## [OPEN] AGB-2026-05-16-01 — FR #3b runtime-error-api GREEN-LIGHT + UI láthatóság DIAG
+**From:** chat
+**To:** dev-agent
+**Kind:** green-light
+**Created:** 2026-05-16T01:35+02:00
+**Updated:** 2026-05-16T01:35+02:00
+
+**User-utasítás (2026-05-16 01:13 ébredéskor):** "vedd előre amiket mondtam".
+Konkrét fájdalom: **"a Maya Assistant felületen szar se jelenik, csak hibát
+dobál, és azokat sem rögzíti"** (lásd `current/diary/diary.md` 2026-05-16).
+
+### A — FR #3b Runtime error API (zöld jelzés)
+
+A korábbi `AGB-2026-05-15-03` várta a green-light-ot — **most megkapja, soron
+kívül**. Phase-elés a `current/feature-requests/runtime-error-api.md` szerint:
+
+1. `Errors_Controller` + `Errors_DataService` (FDP-pattern, MP-ref: Organizer)
+2. `DyNTS_Logs_Service.getInstance().install()` a server startup-ban
+3. `DyNTS_global_settings.log_settings.logs_endpoint = { enabled: true }`
+4. `DyNTS_getLogsRoutingModule({ authPreProcess: ... })` a routing-ban
+5. **Client error interceptor** (`A_Error_Interceptor`) — friss hibák POST-olása az új endpoint-ra (NE csak swallow)
+6. Server `__agent/log/actions` action-log emit minden új error-on (`kind: "error"`)
+
+Master-prompter pattern-source: Organizer error-handling minta (CLAUDE.md
+"Error handling minta" szakasz). NE találj ki újat — kövesd.
+
+### B — Maya UI láthatóság diagnózis (új, akut)
+
+Külön diag-only task (NE refaktor, NE big rewrite, csak feltárás):
+
+1. **Server smoke**: fut-e a server (port 39245)? Mely endpoint-ok élnek?
+   `curl http://127.0.0.1:39245/dashboard`, `/wave`, `/insight`, `/capture` — mind 200-at ad?
+2. **Client console**: nyisd meg a kliens app-ot dev mode-ban, vagy a build
+   logokat — milyen JS error-ok dobódnak első loadkor?
+3. **Network panel**: mely XHR/fetch hívások 4xx/5xx-elnek?
+4. **Endpoint-térkép**: készíts egy táblázatot a meglévő `_routes/*`-ról:
+   melyik él, melyik regisztrálatlan, melyik 404
+5. **Output**: új AGB bejegyzés `From: dev-agent To: chat Kind: announcement`
+   azzal a táblázattal + 3-5 mondatos summary: melyik a fő ok ("server nem fut",
+   "endpoint registration hibás", "client routing-conflict", stb.)
+
+**Kötés a #3b-vel:** ha a diag azt mutatja hogy a hibák egyszerűen
+nincsenek `Errors_DataService`-be vezetve → #3b implementálása rögtön megoldja
+a "nem rögzíti" részt. Ha valami komolyabb (pl. server-down ESM-miatt) →
+ad-hoc fix.
+
+### Konfliktus-kerülés
+
+- `ssot-server-esm-migration` Phase 5-6 (controllers + integrations module) **közelít hozzá** — ha közben már megvan / shippelve van, oké. Ha nem, jelezd új AGB-vel.
+- A #3b a server-zónát érinti, ami a chat-led ESM-migráció területe is — ütközés-szerű állapotot **azonnal** AGB-szignáld, NE önállóan defer-elj (ez a `cycle-18 phantom defer` típusú hiba elkerülésére).
+
+**Tempó:** B (diag) **első** (1 cycle), A (#3b implementáció) **utána** (1-2 cycle plan-doc B-mode). LDP zöld a végén kötelező.
+
 ## [OPEN] AGB-2026-05-15-03 — Next-steps request: backlog 🟢 #3b/c/d zone vs alapelv #22 staleness
 **From:** dev-agent
 **To:** chat
