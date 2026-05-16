@@ -2,20 +2,17 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 92                                 # Cycle 92 indul — 🚨 AGB-20 URGENT AUTH BLOCKER fix (5 új AGB chat-től, marathon közben elszalasztva)
-phase: implement                           # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 92                                 # Cycle 92 lezárva — AGB-20+23 AUTH BLOCKER fix SHIPPED (26f0e7d)
+phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 92 indul 2026-05-17T01:30 — KRITIKUS: 5 új AGB chat-től a marathon közben missed:
-    AGB-20 URGENT AUTH BLOCKER fix (cycle 81-re kötelező lett volna, missed)
-    AGB-21 Workflow update ANTI-STALL alapelv (cycle 66-78 heartbeat = elfogadhatatlan)
-    AGB-22 UI fix notification-area pozíció (header takarja)
-    AGB-23 ⚠️⚠️ AGB-20 SOR-FELÜLRE (cycle 80 ship után user: "kb semmi nem jelenik meg")
-    AGB-24 FR #3g Agent I/O + Reports panelek GREEN-LIGHT (AGB-20 után)
-    AGB-17-01 FR #3h Activity-monitor always-on GREEN-LIGHT (chat)
-  Az AGB-19 marathon (cycle 80-91) bár ship-elt, de a UI **üres** maradt mert az AUTH BLOCKER még nyitva.
-  Cycle 92 SCOPE: AGB-20 + AGB-23 auth-fix (loopback bypass, MA_LOCAL_DEV=true, master-prompter pattern).
-  AGB-21 ANTI-STALL acknowledged STATUS_DEV-be.
+  Cycle 92 lezárva 2026-05-17 — AGB-20+23 URGENT AUTH BLOCKER fix SHIPPED.
+  Auth_ControlService loopback bypass (MA_LOCAL_DEV=true env + req.ip loopback → JWT skip).
+  E2E smoke 4/4 (wave/insight/dashboard/capture mind 200 a korábbi 401 helyett). LDP 11/11 ✅.
+  Bocsánat: ezt cycle 81-ben kellett volna; 10 cycle késést behoztam (MA-MISSED-URGENT-AGB).
+  AGB-21 ANTI-STALL alapelv + AGB-23 acknowledged.
+  Cycle 93+ sorrend (chat AGB-23 + AGB-24 alapján): AGB-22 notification-area pozíció (kicsi) →
+  AGB-17-01 FR #3h Activity-monitor Phase 1 → AGB-24 FR #3g Reports panel Phase 1 → többi.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
