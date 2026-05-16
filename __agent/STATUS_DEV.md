@@ -2,29 +2,30 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 64                                 # Cycle 64 lezárva (util spec shipped)
+cycle: 65                                 # Cycle 65 lezárva (d-waves-form spec + bug-fix shipped)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 64 lezárva 2026-05-16 — safe-orthogonal autonomy folytatás.
-  wave-jsonl-fallback.util.spec.ts shipped (+128 LOC, 13 case): buildJsonlFallbackSnapshot (8 case) +
-  extractLatestContext (5 case). Client-test 36 → 49 (+13 case). LDP 11/11 ✅. Commit 9593cd1.
-  Napi roll-up cycle 51-64: 14 cycle, 2 FR funkcionálisan zárva, +36 test-case kumulatív.
-  Cycle 65 candidate-pool: a-socket spec (complex), backlog 🟡 sor, vagy AGB-escalation chat-nek.
+  Cycle 65 lezárva 2026-05-16 — safe-orthogonal cycle + valódi bug-fix.
+  d-waves-form.component.spec.ts shipped (+138 LOC, 11 case). A "handleSubmit success" test
+  felfedezett egy ack-wipe bug-ot: handleReset() utáni ack-set fix-elve. Component change 1 LOC.
+  Client-test 49 → 60 (+11). LDP 11/11 ✅. Commit 992a709.
+  Cycle 66 candidate-pool: a-socket spec (complex), AGB-escalation chat-nek (cycle 50 óta nincs new green-light).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 64
+  cycle_id: 65
   phase_completed: close-cycle
   files_modified:
-    - client/src/app/_modules/dashboard/_services/wave-jsonl-fallback.util.spec.ts # ÚJ (+128 LOC, 13 case)
+    - client/src/app/_modules/dashboard/_components/d-waves-form/d-waves-form.component.spec.ts # ÚJ (+138 LOC, 11 case)
+    - client/src/app/_modules/dashboard/_components/d-waves-form/d-waves-form.component.ts     # ack/handleReset order fix (1 LOC bug)
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-64.md
+    - __agent/log/cycles/cycle-65.md
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: 9593cd1
+  commit_sha: 992a709
   build_status: success
-  test_status: success                          # LDP 11/11 ✅, client-test 36 → 49 (+13 case)
+  test_status: success                          # LDP 11/11 ✅, client-test 49 → 60 (+11 case)
 
 foreign_pending:
   first_seen_cycle: 4
