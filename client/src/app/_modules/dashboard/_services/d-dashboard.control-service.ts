@@ -44,8 +44,67 @@ export class D_Dashboard_ControlService implements OnDestroy {
   private domainSub: Subscription | null = null;
   private isInFlight: boolean = false;
 
+  /** FR #3b-WAVE-UI Phase 5c (cycle 85): user-választott interval, localStorage-persisted. Default 24h. */
+  private rangeHours: number = 24;
+  private static readonly STORAGE_KEY: string = 'ma:wave-range-hours';
+  private static readonly RANGE_MIN_H: number = 1;
+  private static readonly RANGE_MAX_H: number = 24 * 365;
+
   /** A dashboard-relevant domain topics — ezekre refresh-trigger. */
   private static readonly DASHBOARD_TOPICS: ReadonlySet<string> = new Set([ 'wave', 'insight', 'capture' ]);
+
+  /** Konstruktor — localStorage-ból visszahúzza az utolsó user-választott interval-t. */
+  constructor() {
+    this.rangeHours = this.readPersistedRangeHours();
+  }
+
+  /** Pillanatkép a jelenlegi interval-ról (UI subscribe-hoz). */
+  getRangeHours(): number {
+    return this.rangeHours;
+  }
+
+  /**
+   * User-választott új interval set-elése + localStorage-persist + azonnali refresh.
+   * Clamp-elve [RANGE_MIN_H, RANGE_MAX_H] közé, NaN/0 → no-op.
+   */
+  setRangeHours(hours: number): void {
+    if (!Number.isFinite(hours) || hours <= 0) {
+      return;
+    }
+    const clamped: number = Math.max(D_Dashboard_ControlService.RANGE_MIN_H, Math.min(D_Dashboard_ControlService.RANGE_MAX_H, Math.round(hours)));
+
+    if (clamped === this.rangeHours) {
+      return;
+    }
+    this.rangeHours = clamped;
+    this.persistRangeHours(clamped);
+    void this.refresh();
+  }
+
+  /** localStorage read — fallback 24h ha üres / invalid. */
+  private readPersistedRangeHours(): number {
+    try {
+      const raw: string | null = typeof localStorage !== 'undefined' ? localStorage.getItem(D_Dashboard_ControlService.STORAGE_KEY) : null;
+
+      if (!raw) return 24;
+      const parsed: number = Number(raw);
+
+      return Number.isFinite(parsed) && parsed > 0 ? Math.round(parsed) : 24;
+    } catch {
+      return 24;
+    }
+  }
+
+  /** localStorage write — silently ignore on quota/permission errors. */
+  private persistRangeHours(hours: number): void {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(D_Dashboard_ControlService.STORAGE_KEY, String(hours));
+      }
+    } catch {
+      /* ignore */
+    }
+  }
 
   /** Elindítja a 30s-os polling timer-t + socket-driven refresh-trigger-t. Idempotens — duplikált hívás no-op. */
   startPolling(): void {
@@ -97,7 +156,7 @@ export class D_Dashboard_ControlService implements OnDestroy {
       this.data.setLoading();
     }
     try {
-      const snap: A_DashboardSnapshot = await this.api.getDashboard(24);
+      const snap: A_DashboardSnapshot = await this.api.getDashboard(this.rangeHours);
 
       this.data.setSnapshot(snap);
     } catch (err) {

@@ -6,7 +6,7 @@
 // so the template never calls a method during change detection.
 
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 
 import {
   A_WaveKind,
@@ -15,6 +15,7 @@ import {
   type A_WaveRow
 } from '../../../../_models/server-envelope.interface';
 import { D_WavesForm_Component } from '../d-waves-form/d-waves-form.component';
+import { D_Dashboard_ControlService } from '../../_services/d-dashboard.control-service';
 import {
   ASTRAL_DEFAULT_PERIOD_MS,
   pickBestPeriod,
@@ -52,6 +53,21 @@ interface D_WaveFitPath_Interface {
 
 const FIT_SAMPLE_COUNT: number = 120;
 const FIT_MIN_POINTS: number = 4;
+
+interface D_WaveRangePreset_Interface {
+  label: string;
+  hours: number;
+}
+
+/** FR #3b-WAVE-UI Phase 5c (cycle 85): preset gombok az interval-választóhoz. */
+const RANGE_PRESETS: D_WaveRangePreset_Interface[] = [
+  { label: '24h', hours: 24 },
+  { label: '3d', hours: 72 },
+  { label: '7d', hours: 168 },
+  { label: '30d', hours: 720 },
+  { label: '60d', hours: 1440 },
+  { label: '90d', hours: 2160 },
+];
 
 const PALETTE: Record<A_WaveKind, { color: string; label: string; emoji: string }> = {
   astral: { color: '#a78bfa', label: 'Asztrál', emoji: '🌌' },
@@ -140,11 +156,15 @@ function computeXTicks(tStart: number, tEnd: number, rangeHours: number): D_Wave
 })
 /** Waves panel — 3 vonalas SVG diagram astral/mental/matter time-series-szel, precomputált polyline-okkal. */
 export class D_Waves_Component {
+
+  private readonly control: D_Dashboard_ControlService = inject(D_Dashboard_ControlService);
+
   readonly viewBox: string = `0 0 ${VIEW.width} ${VIEW.height}`;
   readonly axisLeft: number = VIEW.padX;
   readonly axisRight: number = VIEW.width - VIEW.padX;
   readonly gridTicks: D_WaveGridTick_Interface[] =
     Y_GRID_VALUES.map((v: number): D_WaveGridTick_Interface => ({ value: v, y: yFor(v) }));
+  readonly rangePresets: D_WaveRangePreset_Interface[] = RANGE_PRESETS;
 
   rangeHours: number = 24;
   hasData: boolean = false;
@@ -194,6 +214,31 @@ export class D_Waves_Component {
 
     // FR #3b-WAVE-UI Phase 5b (cycle 84): sin/cos fit overlay per kind.
     this.fitPaths = this.computeFitPaths(s, tStart, now);
+  }
+
+  /** Aktuálisan kiválasztott interval — a preset gombok highlight-jához. */
+  get selectedRangeHours(): number {
+    return this.control.getRangeHours();
+  }
+
+  /** Preset gomb click → control-service-en át új interval + refresh. */
+  handleSelectRange(hours: number): void {
+    this.control.setRangeHours(hours);
+  }
+
+  /**
+   * Custom interval — egyszerű prompt() input napokban (1-365 között).
+   * Phase 5c MVP: később date-picker komponens-re cserélhető (~Phase 5c-extra).
+   */
+  handleCustomRange(): void {
+    if (typeof window === 'undefined') return;
+    const raw: string | null = window.prompt('Egyéni intervallum napokban (1-365):', '14');
+
+    if (!raw) return;
+    const days: number = Number(raw.trim());
+
+    if (!Number.isFinite(days) || days <= 0) return;
+    this.control.setRangeHours(Math.round(days * 24));
   }
 
   /**

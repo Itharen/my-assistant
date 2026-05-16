@@ -3,6 +3,16 @@
   <small class="muted">utolsó {{ rangeHours }}h</small>
 </div>
 
+<!-- FR #3b-WAVE-UI Phase 5c (cycle 85): interval-választó preset gombok + custom. -->
+<div class="range-picker">
+  @for (preset of rangePresets; track preset.hours) {
+    <button type="button" class="range-btn"
+            [class.active]="selectedRangeHours === preset.hours"
+            (click)="handleSelectRange(preset.hours)">{{ preset.label }}</button>
+  }
+  <button type="button" class="range-btn custom" (click)="handleCustomRange()">custom…</button>
+</div>
+
 @if (!hasData) {
   <div class="empty">
     Még nincs adat. Vidd az energy snapshot 3 csúszkáját a Quick capture-ben →
