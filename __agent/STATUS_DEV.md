@@ -2,24 +2,25 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 49                                 # Cycle 49 lezárva (no-op); következő cycle 50 lesz
+cycle: 50                                 # Cycle 50 lezárva (M1 grooming); következő cycle 51 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 49 lezárva 2026-05-16 05:00 — no-op cycle (legitimately blocked-on-chat
-  per alapelv #16). FR #3b server-side mind ✅ (cycle 48). Pending mind chat-
-  decision függő: AGB-03 task B AUTH BLOCKER (opciók a/b/c), Phase 5b workflow-
-  doc, AGB-02 Wave UI. LDP 11/11. Lásd log/cycles/cycle-49.md.
+  Cycle 50 lezárva 2026-05-16 05:10 — M1 grooming (10-enkénti, last cycle 40).
+  Backlog FR #3b status: Phase 1+2+3+4+4b+5a all ✅ (cycle 19-48 cumulative).
+  3b-UI-DIAG ✅ shipped (cycle 44). Plan archive PARTIAL ship marad. Action-log
+  rotation no-action. LDP 11/11. Lásd log/cycles/cycle-50.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 49
+  cycle_id: 50
   phase_completed: close-cycle
   files_modified:
+    - __agent/triggers/development-agent-backlog.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-49.md
+    - __agent/log/cycles/cycle-50.md
   fr_status_changes: []
-  plan_steps_marked_done: []                    # no-op blocked-on-chat
+  plan_steps_marked_done: []                    # M1 grooming, no plan-step
   commit_sha: (cycle-close only)
   build_status: success
   test_status: success                          # LDP 11/11 ✅ unchanged
