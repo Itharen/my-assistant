@@ -22,6 +22,7 @@ import {
   type A_WaveJsonlAppendResponse,
   type A_WaveJsonlResponse,
   type A_WaveJsonlSnapshotPayload,
+  type A_WaveMarkers_Response,
   type A_WavePayload,
   type A_WaveRow
 } from '../../_models/server-envelope.interface';
@@ -89,6 +90,23 @@ export class A_Server_ApiService {
         endpoint: '/wave/get-from-jsonl',
       }),
       { queryParams: { limit } },
+    );
+  }
+
+  /**
+   * GET `/wave/markers?sinceMs&untilMs` — unauth action-log szűrt marker-lista
+   * (FR #3b-WAVE-UI Phase 5e.3, cycle 89). Wave-panel hover-markers/törés/
+   * megoszló-erő/trigger render-hez.
+   */
+  async getWaveMarkers(sinceMs: number, untilMs: number): Promise<A_WaveMarkers_Response> {
+    return this.Đ_AS.call<A_WaveMarkers_Response>(
+      new DyNX_ApiCall_Settings({
+        name: 'getWaveMarkers',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/wave/markers',
+      }),
+      { queryParams: { sinceMs, untilMs } },
     );
   }
 

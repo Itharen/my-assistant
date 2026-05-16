@@ -191,6 +191,25 @@ export type A_WaveJsonlAppendResponse =
   | { ok: true; ts: string }
   | { ok: false; errorCode: string; message: string };
 
+/** FR #3b-WAVE-UI Phase 5e (cycle 88): action-log szűrt wave-marker kind. */
+export type A_WaveMarkerKind = 'törés' | 'megoszló-erő' | '3x3-trigger';
+
+/** Egy action-log-eredetű wave-marker rekord (server side `WaveMarkers_Controller`-ből). */
+export interface A_WaveMarker_Row {
+  ts: string;
+  kind: A_WaveMarkerKind;
+  subtype: string;
+  summary: string;
+  durationMin: number;
+}
+
+/** `GET /api/wave/markers` válasz-shape. */
+export interface A_WaveMarkers_Response {
+  rows: A_WaveMarker_Row[];
+  sinceMs: number;
+  untilMs: number;
+}
+
 /** Insight POST payload — kliens által emit-elt új insight bemeneti shape. */
 export interface A_InsightPayload {
   message: string;

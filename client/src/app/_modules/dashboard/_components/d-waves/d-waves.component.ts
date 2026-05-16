@@ -12,6 +12,7 @@ import {
   A_WaveKind,
   type A_DashboardSnapshot,
   type A_WaveContext,
+  type A_WaveMarker_Row,
   type A_WaveRow
 } from '../../../../_models/server-envelope.interface';
 import { D_WavesForm_Component } from '../d-waves-form/d-waves-form.component';
@@ -56,6 +57,17 @@ interface D_WavePoint_Interface {
   cx: number;
   cy: number;
   tooltip: string;
+}
+
+interface D_WaveMarker_Interface {
+  kind: 'törés' | 'megoszló-erő' | '3x3-trigger';
+  subtype: string;
+  x: number;             // SVG x coord
+  x2: number;            // SVG x2 (megoszló-erő spans only)
+  icon: string;          // emoji from subtype mapping
+  tooltip: string;
+  isSpan: boolean;       // true = megoszló-erő (background stripe)
+  dashArray: string;     // 'none' / '4 3' (törés) / '2 4' (trigger)
 }
 
 const FIT_SAMPLE_COUNT: number = 120;
@@ -187,6 +199,12 @@ export class D_Waves_Component implements OnDestroy {
   fitPaths: D_WaveFitPath_Interface[] = [];
   /** FR #3b-WAVE-UI Phase 5e.1 (cycle 87): per-pont hover tooltip-hez invisible circle markers. */
   points: D_WavePoint_Interface[] = [];
+  /** FR #3b-WAVE-UI Phase 5e.3 (cycle 89): action-log eredetű marker-elemek (törés/megoszló/trigger). */
+  markers: D_WaveMarker_Interface[] = [];
+  /** Marker Y koordináta — chart felett, az xAxis fölött. */
+  readonly markerIconY: number = VIEW.padTop + 12;
+  readonly markerLineY1: number = VIEW.padTop;
+  readonly markerLineY2: number = VIEW.padTop + INNER_H;
   readonly xAxisY: number = VIEW.padTop + INNER_H + 4;          // line position
   readonly xAxisLabelY: number = VIEW.padTop + INNER_H + 16;    // label baseline
 
@@ -232,6 +250,71 @@ export class D_Waves_Component implements OnDestroy {
 
     // FR #3b-WAVE-UI Phase 5e.1 (cycle 87): per-pont hover-tooltip markers.
     this.points = this.computePoints(s, tStart, now);
+
+    // FR #3b-WAVE-UI Phase 5e.3 (cycle 89): action-log marker render
+    // — a `markers` @Input alapján számoljuk az SVG-koordinátákat.
+    this.recomputeMarkerLayout(tStart, now);
+  }
+
+  /** @Input action-log markers — D_Dashboard_DataService.state.markers-ből kapja. */
+  @Input() set markerRows(rows: A_WaveMarker_Row[] | null) {
+    this._markerRows = rows ?? [];
+    if (this._lastTStart && this._lastTEnd) {
+      this.recomputeMarkerLayout(this._lastTStart, this._lastTEnd);
+    }
+  }
+
+  private _markerRows: A_WaveMarker_Row[] = [];
+  private _lastTStart: number = 0;
+  private _lastTEnd: number = 0;
+
+  /** Marker SVG-layout újraszámolás — a tStart/tEnd cache-elt értékek alapján. */
+  private recomputeMarkerLayout(tStart: number, tEnd: number): void {
+    this._lastTStart = tStart;
+    this._lastTEnd = tEnd;
+
+    const ICON_BY_SUBTYPE: Record<string, string> = {
+      rain: '🌧️', storm: '⛈️', moon: '🌙', NZT: '💊', nzt: '💊',
+      'idea-burst': '💡', buli: '🎉', party: '🎉',
+    };
+    const DEFAULT_ICON_BY_KIND: Record<'törés' | 'megoszló-erő' | '3x3-trigger', string> = {
+      'törés': '⚡', 'megoszló-erő': '〰️', '3x3-trigger': '✨',
+    };
+    const DASH_BY_KIND: Record<'törés' | 'megoszló-erő' | '3x3-trigger', string> = {
+      'törés': '4 3', 'megoszló-erő': 'none', '3x3-trigger': '2 4',
+    };
+
+    this.markers = this._markerRows
+      .map((r: A_WaveMarker_Row): D_WaveMarker_Interface | null => {
+        const t: number = new Date(r.ts).getTime();
+        const ratio: number = (t - tStart) / (tEnd - tStart);
+
+        if (ratio < -0.05 || ratio > 1.05) return null;
+
+        const x: number = VIEW.padX + INNER_W * Math.max(0, Math.min(1, ratio));
+        const isSpan: boolean = r.kind === 'megoszló-erő' && r.durationMin > 0;
+        const x2: number = isSpan
+          ? VIEW.padX + INNER_W * Math.max(0, Math.min(1, (t + r.durationMin * 60_000 - tStart) / (tEnd - tStart)))
+          : x;
+        const icon: string = ICON_BY_SUBTYPE[r.subtype] ?? DEFAULT_ICON_BY_KIND[r.kind];
+        const d: Date = new Date(t);
+        const tsLabel: string = `${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+        const subtypeSuffix: string = r.subtype ? ` · ${r.subtype}` : '';
+        const summarySuffix: string = r.summary ? ` · ${r.summary.slice(0, 200)}` : '';
+        const tooltip: string = `${tsLabel} · ${r.kind}${subtypeSuffix}${summarySuffix}`;
+
+        return {
+          kind: r.kind,
+          subtype: r.subtype,
+          x,
+          x2,
+          icon,
+          tooltip,
+          isSpan,
+          dashArray: DASH_BY_KIND[r.kind],
+        };
+      })
+      .filter((m): m is D_WaveMarker_Interface => m !== null);
   }
 
   /** Per-snapshot-pont marker + tooltip-string építés (kind/ts/value/note). */

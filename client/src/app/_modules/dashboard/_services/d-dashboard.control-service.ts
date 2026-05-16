@@ -26,7 +26,8 @@ import {
   type A_InsightPayload,
   type A_WaveJsonlAppendResponse,
   type A_WaveJsonlResponse,
-  type A_WaveJsonlSnapshotPayload
+  type A_WaveJsonlSnapshotPayload,
+  type A_WaveMarker_Row
 } from '../../../_models/server-envelope.interface';
 
 const POLL_INTERVAL_MS = 30_000;
@@ -95,6 +96,23 @@ export class D_Dashboard_ControlService implements OnDestroy {
     }
   }
 
+  /**
+   * FR #3b-WAVE-UI Phase 5e.3 (cycle 89): wave-marker fetch a state-be a refresh
+   * mellett. Hiba esetén csendben skip (a marker-overlay opcionális enrichment).
+   */
+  private async fetchMarkers(): Promise<void> {
+    try {
+      const now: number = Date.now();
+      const sinceMs: number = now - this.rangeHours * 3600_000;
+      const resp = await this.api.getWaveMarkers(sinceMs, now);
+      this.data.setMarkers(resp.rows);
+    } catch (err) {
+      // No toast — marker overlay opcionális, NEM blocker. Csak action-log lenne értelmes,
+      // de a server-side hibái már ott vannak (MA-WAVE-MARKERS-*).
+      void err;
+    }
+  }
+
   /** localStorage write — silently ignore on quota/permission errors. */
   private persistRangeHours(hours: number): void {
     try {
@@ -159,6 +177,8 @@ export class D_Dashboard_ControlService implements OnDestroy {
       const snap: A_DashboardSnapshot = await this.api.getDashboard(this.rangeHours);
 
       this.data.setSnapshot(snap);
+      // FR #3b-WAVE-UI Phase 5e.3 (cycle 89): párhuzamos marker fetch, no-throw.
+      void this.fetchMarkers();
     } catch (err) {
       if (this.isAuthError(err)) {
         const fellBack: boolean = await this.tryJsonlFallback();

@@ -9,15 +9,18 @@ import { BehaviorSubject, type Observable } from 'rxjs';
 import {
   type A_DashboardSnapshot,
   type A_WaveKind,
+  type A_WaveMarker_Row,
   type A_WaveRow
 } from '../../../_models/server-envelope.interface';
 
-/** Dashboard reaktív state shape-ja — loading/snapshot/error/lastFetchedAt mezőkkel. */
+/** Dashboard reaktív state shape-ja — loading/snapshot/error/lastFetchedAt/markers mezőkkel. */
 export interface D_DashboardState_Interface {
   isLoading: boolean;
   snapshot: A_DashboardSnapshot | null;
   error: string | null;
   lastFetchedAt: string | null;
+  /** FR #3b-WAVE-UI Phase 5e.3 (cycle 89): action-log eredetű wave-markerek. */
+  markers: A_WaveMarker_Row[];
 }
 
 const EMPTY_STATE: D_DashboardState_Interface = {
@@ -25,6 +28,7 @@ const EMPTY_STATE: D_DashboardState_Interface = {
   snapshot: null,
   error: null,
   lastFetchedAt: null,
+  markers: [],
 };
 
 @Injectable({ providedIn: 'root' })
@@ -46,19 +50,25 @@ export class D_Dashboard_DataService {
     this.state_BS.next({ ...this.state_BS.value, isLoading: true, error: null });
   }
 
-  /** Új snapshot beállítása — loading off, error törlés, lastFetchedAt frissítés. */
+  /** Új snapshot beállítása — loading off, error törlés, lastFetchedAt frissítés. Markers megmarad. */
   setSnapshot(snapshot: A_DashboardSnapshot): void {
     this.state_BS.next({
       isLoading: false,
       snapshot,
       error: null,
       lastFetchedAt: new Date().toISOString(),
+      markers: this.state_BS.value.markers,
     });
   }
 
   /** Error állapot beállítása — loading off, error message megőrzés. */
   setError(message: string): void {
     this.state_BS.next({ ...this.state_BS.value, isLoading: false, error: message });
+  }
+
+  /** FR #3b-WAVE-UI Phase 5e.3 (cycle 89): wave-marker lista beállítása (action-log eredetű). */
+  setMarkers(markers: A_WaveMarker_Row[]): void {
+    this.state_BS.next({ ...this.state_BS.value, markers });
   }
 
   /** Static helper — egy adott wave kind sorozatát adja vissza a snapshot-ból. */
