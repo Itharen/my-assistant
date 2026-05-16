@@ -15,6 +15,13 @@ import {
   type A_WaveRow
 } from '../../../../_models/server-envelope.interface';
 import { D_WavesForm_Component } from '../d-waves-form/d-waves-form.component';
+import {
+  ASTRAL_DEFAULT_PERIOD_MS,
+  pickBestPeriod,
+  sampleSinFit,
+  type FitPoint_Interface,
+  type SinFit_Interface,
+} from '../../_services/wave-sinusoid-fit.util';
 
 interface D_WavePolyline_Interface {
   kind: A_WaveKind;
@@ -35,6 +42,16 @@ interface D_WaveXTick_Interface {
   label: string;
   isToday: boolean;
 }
+
+interface D_WaveFitPath_Interface {
+  kind: A_WaveKind;
+  points: string;   // SVG polyline points
+  color: string;
+  periodDays: number;
+}
+
+const FIT_SAMPLE_COUNT: number = 120;
+const FIT_MIN_POINTS: number = 4;
 
 const PALETTE: Record<A_WaveKind, { color: string; label: string; emoji: string }> = {
   astral: { color: '#a78bfa', label: 'Asztrál', emoji: '🌌' },
@@ -134,6 +151,7 @@ export class D_Waves_Component {
   polylines: D_WavePolyline_Interface[] = [];
   context: A_WaveContext | null = null;
   xTicks: D_WaveXTick_Interface[] = [];
+  fitPaths: D_WaveFitPath_Interface[] = [];
   readonly xAxisY: number = VIEW.padTop + INNER_H + 4;          // line position
   readonly xAxisLabelY: number = VIEW.padTop + INNER_H + 16;    // label baseline
 
@@ -173,5 +191,51 @@ export class D_Waves_Component {
 
     // FR #3b-WAVE-UI Phase 5a (cycle 83): density-aware X-axis ticks.
     this.xTicks = computeXTicks(tStart, now, this.rangeHours);
+
+    // FR #3b-WAVE-UI Phase 5b (cycle 84): sin/cos fit overlay per kind.
+    this.fitPaths = this.computeFitPaths(s, tStart, now);
+  }
+
+  /**
+   * Per-kind sin/cos fit. Asztrálnál bias-T=29.5d (chat AGB-19), mentál/anyag
+   * empirikus scan a PERIOD_CANDIDATES_MS-en. <4 pont → skip.
+   */
+  private computeFitPaths(
+    series: Record<A_WaveKind, A_WaveRow[]>,
+    tStart: number,
+    tEnd: number,
+  ): D_WaveFitPath_Interface[] {
+    const kinds: A_WaveKind[] = [ A_WaveKind.astral, A_WaveKind.mental, A_WaveKind.matter ];
+    const paths: D_WaveFitPath_Interface[] = [];
+
+    for (const kind of kinds) {
+      const points: FitPoint_Interface[] = series[kind].map(
+        (r: A_WaveRow): FitPoint_Interface => ({ t: new Date(r.__created).getTime(), y: r.value }),
+      );
+
+      if (points.length < FIT_MIN_POINTS) continue;
+
+      const bias: number | undefined = kind === A_WaveKind.astral ? ASTRAL_DEFAULT_PERIOD_MS : undefined;
+      const fit: SinFit_Interface | null = pickBestPeriod(points, undefined, bias);
+
+      if (!fit) continue;
+
+      const samples = sampleSinFit(fit, tStart, tEnd, FIT_SAMPLE_COUNT);
+      const svgPoints: string = samples.map((s): string => {
+        const ratio: number = (s.dt - tStart) / (tEnd - tStart);
+        const x: number = VIEW.padX + INNER_W * Math.max(0, Math.min(1, ratio));
+
+        return `${x.toFixed(1)},${yFor(s.y).toFixed(1)}`;
+      }).join(' ');
+
+      paths.push({
+        kind,
+        points: svgPoints,
+        color: PALETTE[kind].color,
+        periodDays: fit.T / (24 * 3600_000),
+      });
+    }
+
+    return paths;
   }
 }

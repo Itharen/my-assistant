@@ -21,6 +21,20 @@
       }
     </g>
 
+    <!-- FR #3b-WAVE-UI Phase 5b (cycle 84): sin/cos least-squares fit overlay (under series). -->
+    <g class="fit-overlay">
+      @for (f of fitPaths; track f.kind) {
+        <polyline fill="none"
+                  [attr.stroke]="f.color"
+                  stroke-width="1"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-dasharray="3 3"
+                  opacity="0.5"
+                  [attr.points]="f.points"/>
+      }
+    </g>
+
     <g class="series">
       @for (p of polylines; track p.kind) {
         <polyline fill="none"
