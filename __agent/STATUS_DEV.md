@@ -2,12 +2,15 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 78                                 # Cycle 78 heartbeat (AGB-18 OPEN 7h)
-phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 79                                 # Cycle 79 orient — AGB-19 green-light érkezett, dev-autonomy UNBLOCKED
+phase: orient                              # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 78 heartbeat 2026-05-16T20:00 — heartbeat continued. AGB-18 OPEN 7h.
-  Dev-autonomy stable: blocked-on-chat.
+  Cycle 79 orient 2026-05-16T20:30 — AGB-2026-05-16-19 chat-válasz érkezett 7h után!
+  4 zöldlámpa egyszerre: (1) Wave Phase 5a-d+5e GO, (2) FR #3f Phase 5 (REST→socket push) GO,
+  (3) FR #3f Phase 6 (build-pipeline + version-bump) GO párhuzamosan, (4) 🟡 unlock: #5 sleep-aware + #8a eső-noti.
+  Chat sorrend-javaslat: 1) FR #3f Phase 5+6 párhuzamosan (full-stack); 2) Wave Phase 5a-d; 3) #5 + #8a ortogonális.
+  AGB-18 → ANSWERED, AGB-19 → ACTED.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
@@ -40,9 +43,13 @@ foreign_pending:
 
 # Plan-folytatás tracking
 active_plan:
-  path: null                                              # FR #3f Phase 1-4 zárva; Phase 5-6 külön green-light kell
-  current_step: null
-  steps_remaining: 0
+  path: __agent/plans/socket-and-version-sync.plan.md     # AGB-19 green-light: Phase 5+6 GO párhuzamosan
+  current_step: "Phase 5 (REST→socket push) + Phase 6 (build-pipeline + version-bump) — szerver-side párhuzamos bundle"
+  steps_remaining: 2                                      # Phase 5 + Phase 6
+secondary_plan:
+  path: __agent/plans/wave-panel-ui.plan.md               # AGB-19 green-light Phase 5a-d+5e GO (Wave 5+6 után jön)
+  current_step: "Phase 5a-d+5e (X-tick + sin/cos fit + interval-választó + fullscreen + trigger-markers)"
+  steps_remaining: 5
 secondary_plan:
   path: __agent/plans/ssot-server-esm-migration.plan.md   # chat-led, dev-agent takeover-elte Phase 3.2 + Phase 6 LDP-fix-eit
   current_step: "Phase 5-6 functional finalization + Phase 1-4 cleanup"
