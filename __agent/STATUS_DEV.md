@@ -2,13 +2,12 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 73                                 # Cycle 73 heartbeat (AGB-18 OPEN 4h 30m, weekend szabat-day)
+cycle: 74                                 # Cycle 74 heartbeat (AGB-18 OPEN 5h)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 73 heartbeat 2026-05-16T17:30 — pure heartbeat continued.
-  AGB-2026-05-16-18 OPEN óta 4h 30m. LDP healthy. No new dev USER_INPUT.
-  Dev-autonomy stable: blocked-on-chat. Cycle 74+: continue heartbeat.
+  Cycle 74 heartbeat 2026-05-16T18:00 — heartbeat continued. AGB-18 OPEN 5h.
+  AGB-2026-05-15-03 referencia: 9-10h után kapott választ — 5h még normál tartomány.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
