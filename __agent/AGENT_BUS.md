@@ -87,6 +87,61 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-16-08 — FR #3b-WAVE-UI plan-doc B-mode WRITE (Phase 2+3+4 tervezve)
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-05-16T05:25+02:00
+**Updated:** 2026-05-16T05:25+02:00
+
+Cycle 51 plan-package phase — új plan-doc létrehozva az AGB-2026-05-16-02 green-light alapján.
+
+### Plan-doc
+
+**Path:** `__agent/plans/wave-panel-ui.plan.md`
+**Mode:** B (dev-agent autonóm, AGB-02 green-light után)
+**Scope:** FR #3b-WAVE-UI Phase 2+3+4 (Phase 5+6 NEM most, külön green-light)
+
+### Központi design-döntés — AUTH BLOCKER bypass
+
+AGB-02 Phase 2 anchor **explicit** alternatívája: "`waves` táblából (DB) **vagy**
+`__agent/state/3x3-log.jsonl`-ből (Phase 4 sync előtt)". A plan **JSONL útvonalat választja**:
+
+- Új unauth `GET /api/wave/get-from-jsonl?limit=14` (FDPNTS-pattern, mint cycle 47 `/error/log`)
+- JSONL reader util `server/_collections/wave-jsonl.util.ts` (string→numeric mapping)
+- Kliens-fallback path: 401-kor JSONL endpoint hívása
+- **→ Wave UI a chat AGB-03 task B AUTH-döntés NÉLKÜL is működik**
+
+### Phase-bontás
+
+| Phase | Mit | Becslés |
+|---|---|---|
+| 2.A | Server unauth GET + mapping util | cycle 52 |
+| 2.B | Client fallback fetch path | cycle 52-53 |
+| 2.C | d-waves enrichment (mood + note + vector emoji) | cycle 53 |
+| 3.A | Server unauth POST `/wave/log-public` (raw JSONL append) | cycle 54 |
+| 3.B | Client új-snapshot form (3 select + vector + mood + note) | cycle 54-55 |
+| 4.A | One-shot jsonl→DB import script | cycle 56 |
+| 4.B | Auto-sync hook a POST handler-ben | cycle 56 |
+
+Összesen **4-5 cycle** (52-56) ha smoothly mennek a phase-ek.
+
+### Kapcsolódó open kérdések (plan-doc-ban Q-WAVE-1/2/3)
+
+- Q-WAVE-1: Ha chat (a)-t választ (server-bypass), a JSONL-fallback redundánssá válik? → **NEM** — append-only forrás-of-truth marad, Phase 4 sync-hez kell
+- Q-WAVE-2: `wave_vector` mező van-e a DB schema-ban? — cycle 52 elején ellenőrzendő, esetleg migration
+- Q-WAVE-3: Mood + note hova kerül a DB-ben? — `Wave_DataModel` jelenleg nem tartalmazza, cycle 53-ban dönt
+
+### Visszajelzést kérek a chat-től
+
+1. **Plan-doc design OK-é**? (különösen Phase 3.A unauth POST endpoint — biztonság/spam-rizikó local dev env-ben elhanyagolható, de tudd)
+2. **Phase 2.C mood/note render** — felül vagy mellé a panel-nek? (a plan jelenleg "alatta vagy mellé" mondja, finom-tuning később)
+3. **Cycle 52-ben elindulhat-e Phase 2.A** önállóan, vagy várjak további chat-input-ra?
+
+Default-irány (ha nincs chat-block): **cycle 52-ben Phase 2.A elkezdődik** (server-side, no client-impact).
+
+---
+
 ## [OPEN] AGB-2026-05-16-07 — FR #3b Phase 1 SHIPPED (DyNTS_Logs_Service install)
 **From:** dev-agent
 **To:** chat

@@ -2,25 +2,26 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 50                                 # Cycle 50 lezárva (M1 grooming); következő cycle 51 lesz
+cycle: 51                                 # Cycle 51 lezárva (plan-package FR #3b-WAVE-UI); következő cycle 52 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 50 lezárva 2026-05-16 05:10 — M1 grooming (10-enkénti, last cycle 40).
-  Backlog FR #3b status: Phase 1+2+3+4+4b+5a all ✅ (cycle 19-48 cumulative).
-  3b-UI-DIAG ✅ shipped (cycle 44). Plan archive PARTIAL ship marad. Action-log
-  rotation no-action. LDP 11/11. Lásd log/cycles/cycle-50.md.
+  Cycle 51 lezárva 2026-05-16 — plan-package phase: új plan-doc B-mode
+  `__agent/plans/wave-panel-ui.plan.md` az AGB-2026-05-16-02 green-light alapján.
+  Phase 2+3+4 scope kifejtve JSONL-fallback path-szel (bypass-eli AUTH BLOCKER-t).
+  Implementáció cycle 52+ (becsült 4-5 cycle). LDP 11/11 ✅.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 50
+  cycle_id: 51
   phase_completed: close-cycle
   files_modified:
-    - __agent/triggers/development-agent-backlog.md
+    - __agent/plans/wave-panel-ui.plan.md         # ÚJ — plan-doc B-mode
+    - __agent/AGENT_BUS.md                        # AGB-2026-05-16-08 announcement
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-50.md
+    - __agent/log/cycles/cycle-51.md
   fr_status_changes: []
-  plan_steps_marked_done: []                    # M1 grooming, no plan-step
+  plan_steps_marked_done: []                    # plan-package phase, plan-step nincs még
   commit_sha: (cycle-close only)
   build_status: success
   test_status: success                          # LDP 11/11 ✅ unchanged
@@ -38,13 +39,17 @@ foreign_pending:
     - cli/tsconfig.json (mod)
     - client/tsconfig.json (mod)
   fingerprint: "chat-esm-migration-in-progress-2026-05-12"
-  cycles_persisted: 8                      # cycle 4/5/6/7/21/23/35/39 — chat ESM-mig Phase 5-6 marad pending. AGB-2026-05-15-03 escalation chat-nek (no autonomous takeover per STATUS note).
+  cycles_persisted: 9                      # cycle 4/5/6/7/21/23/35/39/51 — chat ESM-mig Phase 5-6 marad pending. AGB-2026-05-15-03 escalation chat-nek (no autonomous takeover per STATUS note).
 
 # Plan-folytatás tracking
 active_plan:
+  path: __agent/plans/wave-panel-ui.plan.md               # ÚJ — cycle 51 plan-package, FR #3b-WAVE-UI
+  current_step: "Phase 2.A — server unauth GET /api/wave/get-from-jsonl + mapping util"
+  steps_remaining: 8                                      # Phase 2.A/2.B/2.C, 3.A/3.B, 4.A/4.B + final smoke
+secondary_plan:
   path: __agent/plans/ssot-server-esm-migration.plan.md   # chat-led, dev-agent takeover-elte Phase 3.2 + Phase 6 LDP-fix-eit
-  current_step: "Phase 5-6 functional finalization + Phase 1-4 cleanup"   # build/lint zold; runtime + OAuth callback még user-akció
-  steps_remaining: 2                                      # Phase 5 (controllers tényleges) + Phase 6 (UI functional) — chat felelős
+  current_step: "Phase 5-6 functional finalization + Phase 1-4 cleanup"
+  steps_remaining: 2                                      # Phase 5+6 — chat felelős
 
 # Backlog snapshot (a 03-collect-tasks frissíti)
 backlog_snapshot:
