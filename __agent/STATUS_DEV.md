@@ -2,34 +2,27 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 48                                 # Cycle 48 lezárva; következő cycle 49 lesz
+cycle: 49                                 # Cycle 49 lezárva (no-op); következő cycle 50 lesz
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 48 lezárva 2026-05-16 04:55 — FR #3b Phase 1 SHIPPED (DyNTS_Logs_Service
-  install + /api/logs/{get,clear}, commit 858ca84). **A FR #3b mind az 5 Dev
-  Agent-szakasza ✅** (Phase 1+2+3+4+4b+5a). LDP 11/11, smoke /api/logs/get JSON.
-  AGB-07 announcement. Pending: Phase 5b (workflow-doc chat-OK), AGB-03 task B
-  AUTH BLOCKER chat-decision, AGB-02 Wave UI. Lásd log/cycles/cycle-48.md.
+  Cycle 49 lezárva 2026-05-16 05:00 — no-op cycle (legitimately blocked-on-chat
+  per alapelv #16). FR #3b server-side mind ✅ (cycle 48). Pending mind chat-
+  decision függő: AGB-03 task B AUTH BLOCKER (opciók a/b/c), Phase 5b workflow-
+  doc, AGB-02 Wave UI. LDP 11/11. Lásd log/cycles/cycle-49.md.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 48
+  cycle_id: 49
   phase_completed: close-cycle
   files_modified:
-    - server/src/app.server.ts                        # DyNTS_Logs_Service install + routing
-    - __agent/plans/runtime-error-api.plan.md
-    - current/feature-requests/runtime-error-api.md
-    - __agent/AGENT_BUS.md
     - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-48.md
-  fr_status_changes:
-    - { frPath: "current/feature-requests/runtime-error-api.md", phase: "1", fromStatus: "pending", toStatus: "✅ shipped" }
-  plan_steps_marked_done:
-    - { planPath: "__agent/plans/runtime-error-api.plan.md", stepRef: "Phase 1 — DyNTS_Logs_Service install + logs_endpoint enable" }
-  commit_sha: "858ca84"
+    - __agent/log/cycles/cycle-49.md
+  fr_status_changes: []
+  plan_steps_marked_done: []                    # no-op blocked-on-chat
+  commit_sha: (cycle-close only)
   build_status: success
-  test_status: success                          # LDP 11/11 ✅ + smoke /api/logs/get JSON
+  test_status: success                          # LDP 11/11 ✅ unchanged
 
 foreign_pending:
   first_seen_cycle: 4
