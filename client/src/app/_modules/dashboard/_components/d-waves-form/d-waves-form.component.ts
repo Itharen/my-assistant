@@ -134,8 +134,10 @@ export class D_WavesForm_Component {
 
     try {
       await this.control.submitWaveSnapshot(payload);
-      this.ack = '🌊 Snapshot rögzítve.';
+      // handleReset() ELŐSZÖR (nullázza az ack-et is a form-mezőkkel együtt),
+      // utána settelünk friss ack-üzenetet — különben a reset wipe-olná.
       this.handleReset();
+      this.ack = '🌊 Snapshot rögzítve.';
       this.isOpen = false;
     } catch {
       // control-service már showError-on át routolt; itt csak skip-eljük az ack-ot.
