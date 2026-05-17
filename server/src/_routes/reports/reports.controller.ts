@@ -11,6 +11,7 @@ import { DyFM_HttpCallType } from '@futdevpro/fsm-dynamo';
 import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
 
 import {
+  appendUserInputBlock,
   listAgentBus,
   listAgentLog,
   listCycles,
@@ -18,6 +19,7 @@ import {
   listOpenQuestions,
   listRecentShips,
   listUserInput,
+  markUserInputDone,
   readStatusDev,
   type ReportAgentBus_Row,
   type ReportAgentLog_Row,
@@ -156,6 +158,56 @@ export class Reports_Controller extends DyNTS_Controller {
             const rows: ReportOpenQuestion_Row[] = await listOpenQuestions(limit);
 
             res.send({ rows, limit });
+          },
+        ],
+      }),
+
+      // FR #3g Phase 4 (cycle 101): inline-write endpoints
+      new DyNTS_Endpoint_Params({
+        name: 'postUserInput',
+        type: DyFM_HttpCallType.post,
+        endpoint: '/user-input',
+        // NO preProcesses → unauth (loopback-gated via AGB-20 Auth bypass).
+        tasks: [
+          async (req: Request, res: Response): Promise<void> => {
+            const payload: { title?: string; type?: string; domain?: string; text?: string } = (req.body ?? {}) as typeof payload;
+            const result = await appendUserInputBlock({
+              title: payload.title ?? '',
+              type: payload.type ?? 'instruction',
+              domain: payload.domain ?? 'meta',
+              text: payload.text ?? '',
+            });
+
+            if (!result.ok) {
+              res.status(400).send({ ok: false, errorCode: result.errorCode, message: result.message });
+
+              return;
+            }
+            res.send({ ok: true, ts: result.ts });
+          },
+        ],
+      }),
+
+      new DyNTS_Endpoint_Params({
+        name: 'postUserInputDone',
+        type: DyFM_HttpCallType.post,
+        endpoint: '/user-input/done',
+        tasks: [
+          async (req: Request, res: Response): Promise<void> => {
+            const payload: { title?: string; result?: string } = (req.body ?? {}) as typeof payload;
+            const result = await markUserInputDone({
+              title: payload.title ?? '',
+              result: payload.result ?? 'user-via-ui',
+            });
+
+            if (!result.ok) {
+              const status: number = result.errorCode === 'MA-USER-INPUT-DONE-NOT-FOUND' ? 404 : 400;
+
+              res.status(status).send({ ok: false, errorCode: result.errorCode, message: result.message });
+
+              return;
+            }
+            res.send({ ok: true, ts: result.ts });
           },
         ],
       }),

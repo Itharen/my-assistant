@@ -469,6 +469,172 @@ export async function listUserInput(limit: number = 30): Promise<ReportUserInput
 }
 
 /**
+ * FR #3g Phase 4a (cycle 101): új [NEW] blokk append USER_INPUT.md-be.
+ * A blokk a `<!-- ÚJ BLOKKOK IDE, A LEGÚJABB FELÜL -->` HTML-komment után kerül be.
+ * Hibás title-cím (üres) → MA-USER-INPUT-APPEND-INVALID-PAYLOAD.
+ */
+export async function appendUserInputBlock(payload: {
+  title: string;
+  type: string;
+  domain: string;
+  text: string;
+}): Promise<{ ok: boolean; ts: string; errorCode?: string; message?: string }> {
+  const ts: string = nowIsoBudapestShort();
+  const title: string = (payload.title ?? '').trim();
+  const type: string = (payload.type ?? 'instruction').trim();
+  const domain: string = (payload.domain ?? 'meta').trim();
+  const text: string = (payload.text ?? '').trim();
+
+  if (!title) {
+    return {
+      ok: false,
+      ts,
+      errorCode: 'MA-USER-INPUT-APPEND-INVALID-PAYLOAD',
+      message: 'title required',
+    };
+  }
+
+  const filePath: string = path.join(resolveRepoRoot(), '__agent', 'USER_INPUT.md');
+  const block: string = `\n## [NEW] ${title}\n**Típus:** ${type}\n**Beérkezett:** ${ts}\n**Domain:** ${domain}\n\n${text}\n\n`;
+
+  try {
+    const content: string = await fs.readFile(filePath, 'utf8');
+    const anchor: string = '<!-- ÚJ BLOKKOK IDE, A LEGÚJABB FELÜL -->';
+    const anchorIdx: number = content.indexOf(anchor);
+
+    let next: string;
+
+    if (anchorIdx === -1) {
+      // Fallback: append at end.
+      next = content.trimEnd() + '\n' + block;
+    } else {
+      const insertAt: number = anchorIdx + anchor.length;
+      next = content.slice(0, insertAt) + '\n' + block + content.slice(insertAt);
+    }
+
+    await fs.writeFile(filePath, next, { encoding: 'utf8' });
+
+    await emitServerActionLog({
+      actor: 'server',
+      kind: 'state-change',
+      summary: `user-input new [NEW] block: ${title.slice(0, 80)}`,
+      extra: { issuer: 'reports.util.appendUserInputBlock', title, type, domain, ts },
+    });
+
+    return { ok: true, ts };
+  } catch (err) {
+    const e: Error = err instanceof Error ? err : new Error(String(err));
+    const errorCode: string = 'MA-USER-INPUT-APPEND-WRITE-FAIL';
+
+    await emitServerActionLog({
+      actor: 'server',
+      kind: 'error',
+      summary: `[${errorCode}] ${e.message.slice(0, 150)}`,
+      extra: { errorCode, issuer: 'reports.util.appendUserInputBlock', title, stack: e.stack },
+    });
+
+    return { ok: false, ts, errorCode, message: e.message };
+  }
+}
+
+/**
+ * [NEW] → [DONE] státusz-átállítás title-alapú lookup-pal. A body megmarad,
+ * a fejléc-mezők frissülnek (**Beérkezett:** → **Feldolgozva:** + **Eredmény:**).
+ */
+export async function markUserInputDone(payload: {
+  title: string;
+  result?: string;
+}): Promise<{ ok: boolean; ts: string; errorCode?: string; message?: string }> {
+  const ts: string = nowIsoBudapestShort();
+  const title: string = (payload.title ?? '').trim();
+  const result: string = (payload.result ?? 'user-via-ui').trim();
+
+  if (!title) {
+    return {
+      ok: false,
+      ts,
+      errorCode: 'MA-USER-INPUT-DONE-INVALID-PAYLOAD',
+      message: 'title required',
+    };
+  }
+
+  const filePath: string = path.join(resolveRepoRoot(), '__agent', 'USER_INPUT.md');
+
+  try {
+    const content: string = await fs.readFile(filePath, 'utf8');
+    // Header keresés: `## [NEW] <title>` exact-prefix match.
+    const escapedTitle: string = title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const headerRe: RegExp = new RegExp(`^## \\[NEW\\] ${escapedTitle}\\s*$`, 'm');
+    const headerMatch: RegExpMatchArray | null = content.match(headerRe);
+
+    if (!headerMatch) {
+      return {
+        ok: false,
+        ts,
+        errorCode: 'MA-USER-INPUT-DONE-NOT-FOUND',
+        message: `[NEW] block with title "${title}" not found`,
+      };
+    }
+
+    const headerIdx: number = headerMatch.index ?? -1;
+
+    if (headerIdx < 0) {
+      return {
+        ok: false,
+        ts,
+        errorCode: 'MA-USER-INPUT-DONE-NOT-FOUND',
+        message: 'header index resolution failed',
+      };
+    }
+
+    // Találjuk a következő `## ` header indexét — az adott blokk vége.
+    const nextHeaderIdx: number = content.slice(headerIdx + headerMatch[0].length).search(/^## /m);
+    const blockEnd: number = nextHeaderIdx === -1 ? content.length : headerIdx + headerMatch[0].length + nextHeaderIdx;
+    const block: string = content.slice(headerIdx, blockEnd);
+
+    // Transzformálás: `[NEW]` → `[DONE]`, `**Beérkezett:** XX` → `**Feldolgozva:** ts` + `**Eredmény:** result`.
+    const transformedHeader: string = block.replace(/^## \[NEW\] /m, '## [DONE] ');
+    const transformedHeaderWithFields: string = transformedHeader.replace(
+      /\*\*Beérkezett:\*\*\s*[^\n]+/m,
+      `**Feldolgozva:** ${ts}\n**Eredmény:** ${result}`,
+    );
+
+    const next: string = content.slice(0, headerIdx) + transformedHeaderWithFields + content.slice(blockEnd);
+
+    await fs.writeFile(filePath, next, { encoding: 'utf8' });
+
+    await emitServerActionLog({
+      actor: 'server',
+      kind: 'state-change',
+      summary: `user-input [NEW]→[DONE]: ${title.slice(0, 80)}`,
+      extra: { issuer: 'reports.util.markUserInputDone', title, result, ts },
+    });
+
+    return { ok: true, ts };
+  } catch (err) {
+    const e: Error = err instanceof Error ? err : new Error(String(err));
+    const errorCode: string = 'MA-USER-INPUT-DONE-WRITE-FAIL';
+
+    await emitServerActionLog({
+      actor: 'server',
+      kind: 'error',
+      summary: `[${errorCode}] ${e.message.slice(0, 150)}`,
+      extra: { errorCode, issuer: 'reports.util.markUserInputDone', title, stack: e.stack },
+    });
+
+    return { ok: false, ts, errorCode, message: e.message };
+  }
+}
+
+/** Europe/Budapest ISO timestamp, percre kerekítve (`YYYY-MM-DD HH:mm`). */
+function nowIsoBudapestShort(): string {
+  const d: Date = new Date();
+  const pad = (n: number): string => String(n).padStart(2, '0');
+
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/**
  * Open-questions.md parser. Sorok: `Q-ID | question | context | importance | status`
  * vagy markdown-list bejegyzések. MVP: a fájl szöveges szakaszait scrape-eli.
  */

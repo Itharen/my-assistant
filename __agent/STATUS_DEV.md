@@ -2,19 +2,15 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 100                                # Cycle 100 lezárva — FR #3g Phase 3 User I/O KOMPLETT
-phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 101                                # Cycle 101 indul — FR #3g Phase 4 inline-write (server-side)
+phase: implement                           # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 92-100 = AGB-marathon (9 cycle / 9 ship-commit):
-    92: AGB-20+23 AUTH FIX — 26f0e7d
-    93: AGB-22 notification pozíció — 3a1f171
-    94: AGB-17-01 Activity-monitor Phase 1 — 1b7302f
-    95-96: AGB-24 Phase 1 server+client (Reports kanban) — 6d474f7 / 089245e
-    97-98: AGB-24 Phase 2 server+client (Dev I/O) — a207365 / fd4bee3
-    99-100: AGB-24 Phase 3 server+client (User I/O) — a1db00b / 640aeba
-  Cycle 101+ kandidátus: FR #3g Phase 4 (inline-write forms), Phase 5 (socket-push refresh),
-  Phase 6 (blockers/roadmap), AGB-17-01 Phase 2 (Activity-monitor auto-restart), 🟡 backlog.
+  Cycle 101 indul 2026-05-17T05:00 — FR #3g Phase 4 inline-write Phase 4a (server-side).
+  Scope: 2 új POST endpoint Reports_Controller-ben:
+    POST /api/reports/user-input        → új [NEW] blokk append USER_INPUT.md-be (title/type/domain/text body)
+    POST /api/reports/user-input/done   → [NEW] → [DONE] átállítás (title-alapú lookup, body megőrzés)
+  Client cycle 102: quick-input form + done-button R_UserIO-ban.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
