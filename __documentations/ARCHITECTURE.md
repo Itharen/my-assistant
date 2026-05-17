@@ -1,7 +1,14 @@
 # my-assistant — Architecture
 
-**Last verified:** 2026-05-08
+**Last verified:** 2026-05-17 (cycle 110 doc-sync; covers marathon 92-109)
 **Audience:** developers / Claude sessions; canonical implementation reference.
+
+> **Recent additions** (cycle 51-109, see [`CHANGELOG.md`](CHANGELOG.md) milestones 0.1.112 + 0.1.171):
+> - **Socket layer** — server `VersionBroadcast_SocketServerService` + `broadcastDomainEvent(topic, op, payload)`; client `A_Socket_ControlService` + `A_DomainEvent_DataService` (Subject event-bus) — push-driven refresh path-orthogonal a poll mellett.
+> - **Reports module** (`client/_modules/reports/`) — 3 panel (R_Home/R_DevIO/R_UserIO) — 9 GET + 3 POST unauth endpoint (`server/_routes/reports/`), inline-write USER_INPUT + AGB-reply + status-shift, Phase 5 auto-refresh.
+> - **Sleep + Weather services** — `SleepState_Service` (`/api/sleep-state` env-overridable window) + `WeatherPoll_Service` (OpenMeteo 15min, dry→rain 3x3-trigger emit).
+> - **Wave panel Phase 5a-e** — x-tick density, sin/cos LSQ fit overlay, interval picker + localStorage, fullscreen, marker overlay (action-log scan).
+> - **Tests:** 88 → 102 spec (cycle 106-108 burst: wave-sinusoid-fit + error-extract + d-dashboard.data-service).
 
 ---
 

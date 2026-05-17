@@ -1,6 +1,6 @@
 # my-assistant — tri-tier architecture (implementációs referencia)
 
-**Last verified:** 2026-05-16 (cycle 68 doc-sync)
+**Last verified:** 2026-05-17 (cycle 110 doc-sync; covers marathon 80-109)
 **Status:** Phase 1 ship-elve (cli + server + client skeleton). Cycle 24-38 alatt
 a `cli/scripts/agent-handlers/` dispatcher első-osztályú lett (LDP-coverage,
 dual-agent, throttle, FR/plan-step handlerek) — részletek
@@ -10,6 +10,13 @@ Phase 1-4 funkcionálisan zárva. Új komponensek: server `VersionBroadcast_Sock
 + `wave-jsonl.controller` (unauth read/write + DB sync), kliens `A_Socket_ControlService` +
 `A_Version_DataService` + `S_StatusBar_Component` + `S_VersionReloadBanner_Component` +
 `D_WavesForm_Component`. +47 client-test case (13 → 60).
+**Cycle 80-109 (2026-05-17, marathon):**
+- **Wave Phase 5a-e** — x-tick density, sin/cos LSQ fit (`wave-sinusoid-fit.util.ts`), interval picker, fullscreen, marker overlay (`wave-markers.util.ts` + `/api/wave/markers`).
+- **FR #3f Phase 5 socket-push** — `broadcastDomainEvent(topic, op, payload)` server (wave/insight/capture/wave-jsonl/auth-wave + later user-input/agent-bus) → `A_DomainEvent_DataService` Subject-bus kliensen. `D_Dashboard_ControlService.startPolling()` + `R_DevIO/R_UserIO.ngOnInit` push-driven `refreshFromPush()` (no-flicker).
+- **AGB-20 AUTH** — `Auth_ControlService` loopback-bypass (MA_LOCAL_DEV=true + isLoopbackIp(req.ip)). `server/.env` gitignored.
+- **AGB-24 FR #3g Reports panel TELJES (Phase 1-6)** — `client/_modules/reports/` 3 panel: R_Home (FR-board kanban + cycles + ships + blockers + roadmap), R_DevIO (status-dev + action-log stream + AGENT_BUS inline-reply), R_UserIO (USER_INPUT inbox + quick-form + done-toggle + open-Q). `server/_routes/reports/` 9 GET + 3 POST unauth endpoint, `_collections/reports.util.ts` (1130L) markdown/JSONL parser + write transformers.
+- **FR #5 SleepState** (`server/_services/sleep-state.service.ts`) + **FR #8a WeatherPoll** (`weather-poll.service.ts`) — Phase 1 MVP, OpenMeteo unauth, dry→rain 3x3-trigger action-log + broadcast.
+- **Spec coverage burst** — `wave-sinusoid-fit.util.spec.ts` (12 it) + `error-extract.util.spec.ts` (16 it) + `d-dashboard.data-service.spec.ts` (14 it) = 88 → 102 client spec.
 **Forrás-plan:** [`../plans/refactor-tri-tier.plan.md`](../plans/refactor-tri-tier.plan.md)
 
 > **Magasszintű rendszer-térkép** (5 layer modell, FR-mapping, roadmap,
