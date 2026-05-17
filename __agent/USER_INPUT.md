@@ -37,6 +37,16 @@ Az assistant feldolgozás után átírja:
 
 <!-- ÚJ BLOKKOK IDE, A LEGÚJABB FELÜL -->
 
+## [DONE] Phase 5 broadcast smoke test
+**Típus:** task
+**Feldolgozva:** 2026-05-17 05:38
+**Eredmény:** smoke-shipped
+**Domain:** meta
+
+cycle 104 domain-event push verify
+
+
+
 ## [DONE] cycle 101 smoke test
 **Típus:** task
 **Feldolgozva:** 2026-05-17 05:04
