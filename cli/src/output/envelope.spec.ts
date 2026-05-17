@@ -1,4 +1,4 @@
-import { fail, makeRequestId, ok } from './envelope.js';
+import { fail, makeRequestId, ok, writeEnvelope, type Envelope } from './envelope.js';
 
 describe('envelope', () => {
   describe('ok', () => {
@@ -44,6 +44,53 @@ describe('envelope', () => {
       const ids = new Set();
       for (let i = 0; i < 50; i++) ids.add(makeRequestId());
       expect(ids.size).toBe(50);
+    });
+  });
+
+  // Cycle 118: writeEnvelope coverage — stdout-write contract.
+  describe('writeEnvelope', () => {
+    let writeSpy: jasmine.Spy<typeof process.stdout.write>;
+
+    beforeEach(() => {
+      writeSpy = spyOn(process.stdout, 'write').and.returnValue(true);
+    });
+
+    it('writes minified JSON + newline for pretty=false', () => {
+      const env: Envelope = ok('a', 'r-1', Date.now(), { x: 1 });
+      writeEnvelope(env, false);
+
+      expect(writeSpy).toHaveBeenCalledTimes(1);
+      const out = String(writeSpy.calls.mostRecent().args[0]);
+      // Minified: no newlines inside the JSON body.
+      expect(out.endsWith('\n')).toBe(true);
+      const body = out.slice(0, -1);
+      expect(body.includes('\n')).toBe(false);
+      const parsed = JSON.parse(body) as { ok: boolean };
+      expect(parsed.ok).toBe(true);
+    });
+
+    it('writes indented JSON (2-space) + newline for pretty=true', () => {
+      const env: Envelope = ok('a', 'r-2', Date.now(), { x: 1 });
+      writeEnvelope(env, true);
+
+      const out = String(writeSpy.calls.mostRecent().args[0]);
+      expect(out.endsWith('\n')).toBe(true);
+      // Indented: at least one inner newline.
+      expect(out.split('\n').length).toBeGreaterThan(2);
+      expect(out).toContain('  "ok"');
+    });
+
+    it('round-trips a fail envelope through JSON parse', () => {
+      const env: Envelope = fail('a', 'r-3', Date.now(), 'E_X', 'msg', { hint: 'y' });
+      writeEnvelope(env, false);
+
+      const out = String(writeSpy.calls.mostRecent().args[0]).trim();
+      const parsed = JSON.parse(out) as Envelope;
+      expect(parsed.ok).toBe(false);
+      if (parsed.ok === false) {
+        expect(parsed.error.code).toBe('E_X');
+        expect(parsed.error.message).toBe('msg');
+      }
     });
   });
 });
