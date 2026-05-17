@@ -2,19 +2,20 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 112                                # Cycle 112 lezárva — doc-sync DECISIONS.md (DEC-MA-013/014/015)
+cycle: 113                                # Cycle 113 lezárva — spec-coverage a-error.interceptor (107→112)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 92-112 marathon (21 cycle / 21 ship-commit):
+  Cycle 92-113 marathon (22 cycle / 22 ship-commit):
     92-94: AGB-20/22/17-01 — 26f0e7d / 3a1f171 / 1b7302f
     95-105: AGB-24 FR #3g Phase 1-6 KOMPLETT — 11 cycle
     106-108: spec-coverage burst (sinusoid + error-extract + dashboard-state) — f9f4419 / 480952d / e9e0e1f
     109-110: doc-sync (CHANGELOG + ARCHITECTURE x2) — f113306 / f9f8919
-    111: spec-coverage a-domain-event.data-service (102→107) — d97dc04
-    112: doc-sync DECISIONS.md (DEC-MA-013/014/015 — auth-bypass, broadcastDomainEvent, refreshFromPush) — 1e4f5d5
-  Tests: 107 pass / 0 failure. Doc-sync most TELJES: CHANGELOG + ARCHITECTURE + agent/references + DECISIONS mind aktuálisak.
-  Cycle 113+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (server util-ok), vagy új FR.
+    111: spec-coverage a-domain-event.data-service — d97dc04
+    112: doc-sync DECISIONS.md (DEC-MA-013/014/015) — 1e4f5d5
+    113: spec-coverage a-error.interceptor (107→112) — 762bf8f
+  Tests: 112 pass / 0 failure. Spec-coverage marathon: 60→112 (52 új it 5 cycle alatt).
+  Cycle 114+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (a-auth-interceptor bővítés, a-error.control-service), vagy új FR.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
