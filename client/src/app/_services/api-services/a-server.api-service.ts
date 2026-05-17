@@ -22,8 +22,10 @@ import {
   type A_ReportAgentLog_Row,
   type A_ReportCycle_Row,
   type A_ReportFr_Row,
+  type A_ReportOpenQuestion_Row,
   type A_ReportShip_Row,
   type A_ReportStatusDev_Snapshot,
+  type A_ReportUserInput_Row,
   type A_StatusSnapshot,
   type A_WaveJsonlAppendResponse,
   type A_WaveJsonlResponse,
@@ -192,6 +194,32 @@ export class A_Server_ApiService {
         type: DyFM_HttpCallType.get,
         baseUrl: this.resolveBaseUrl(),
         endpoint: '/reports/agent-bus',
+      }),
+      { queryParams: { limit } },
+    );
+  }
+
+  /** GET `/reports/user-input?limit` — unauth, USER_INPUT.md entries (FR #3g Phase 3). */
+  async getUserInput(limit: number = 30): Promise<{ rows: A_ReportUserInput_Row[]; limit: number }> {
+    return this.Đ_AS.call<{ rows: A_ReportUserInput_Row[]; limit: number }>(
+      new DyNX_ApiCall_Settings({
+        name: 'getUserInput',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/reports/user-input',
+      }),
+      { queryParams: { limit } },
+    );
+  }
+
+  /** GET `/reports/open-questions?limit` — unauth, current/open-questions.md entries. */
+  async getOpenQuestions(limit: number = 50): Promise<{ rows: A_ReportOpenQuestion_Row[]; limit: number }> {
+    return this.Đ_AS.call<{ rows: A_ReportOpenQuestion_Row[]; limit: number }>(
+      new DyNX_ApiCall_Settings({
+        name: 'getOpenQuestions',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/reports/open-questions',
       }),
       { queryParams: { limit } },
     );

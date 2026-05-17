@@ -271,6 +271,25 @@ export interface A_ReportAgentBus_Row {
   preview: string;
 }
 
+/** FR #3g Phase 3 (cycle 100): User I/O panel — USER_INPUT.md entry. */
+export interface A_ReportUserInput_Row {
+  status: 'NEW' | 'DONE' | 'UNKNOWN';
+  title: string;
+  type: string;
+  domain: string;
+  receivedAt: string;
+  body: string;
+}
+
+/** Open-questions.md entry. */
+export interface A_ReportOpenQuestion_Row {
+  qid: string;
+  question: string;
+  context: string;
+  importance: string;
+  status: string;
+}
+
 /** Insight POST payload — kliens által emit-elt új insight bemeneti shape. */
 export interface A_InsightPayload {
   message: string;

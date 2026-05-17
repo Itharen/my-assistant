@@ -4,6 +4,7 @@
     <nav class="sub-nav">
       <a routerLink="/reports" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">Overview</a>
       <a routerLink="/reports/dev-io" routerLinkActive="active">Dev I/O</a>
+      <a routerLink="/reports/user-io" routerLinkActive="active">User I/O</a>
     </nav>
     <button type="button" class="refresh-btn" (click)="handleRefresh()" [disabled]="isLoading">
       {{ isLoading ? '…' : '↻ Refresh' }}

@@ -1,0 +1,59 @@
+<div class="r-user-io">
+  <header class="page-head">
+    <h2>📥 User I/O</h2>
+    <nav class="sub-nav">
+      <a routerLink="/reports" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">Overview</a>
+      <a routerLink="/reports/dev-io" routerLinkActive="active">Dev I/O</a>
+      <a routerLink="/reports/user-io" routerLinkActive="active">User I/O</a>
+    </nav>
+    <button type="button" class="refresh-btn" (click)="handleRefresh()" [disabled]="isLoading">
+      {{ isLoading ? '…' : '↻ Refresh' }}
+    </button>
+  </header>
+
+  @if (isLoading && inbox.length === 0) {
+    <div class="loading">Loading user I/O…</div>
+  }
+
+  <!-- Inbox: USER_INPUT.md -->
+  <section class="section inbox">
+    <h3>📨 Inbox <small class="muted">(USER_INPUT.md, {{ filteredInbox.length }}/{{ inbox.length }})</small></h3>
+    <div class="inbox-tabs">
+      <button type="button" [class.active]="inboxTab === 'new'" (click)="setInboxTab('new')">🟡 NEW</button>
+      <button type="button" [class.active]="inboxTab === 'done'" (click)="setInboxTab('done')">✅ DONE</button>
+      <button type="button" [class.active]="inboxTab === 'all'" (click)="setInboxTab('all')">all</button>
+    </div>
+    <ul class="inbox-list">
+      @for (row of filteredInbox; track $index) {
+        <li class="inbox-row" [class.expanded]="isExpanded($index)">
+          <div class="inbox-head" (click)="toggleInboxExpand($index)">
+            <span [ngClass]="['inbox-status', classForStatus(row.status)]">{{ row.status }}</span>
+            <span class="inbox-type mono">{{ row.type }}</span>
+            <span class="inbox-domain mono">{{ row.domain }}</span>
+            <span class="inbox-title">{{ row.title }}</span>
+            <span class="inbox-ts mono muted">{{ row.receivedAt }}</span>
+          </div>
+          @if (isExpanded($index) && row.body) {
+            <pre class="inbox-body">{{ row.body }}</pre>
+          }
+        </li>
+      }
+    </ul>
+  </section>
+
+  <!-- Outbox: open-questions.md -->
+  <section class="section outbox">
+    <h3>❓ Open Questions <small class="muted">(open-questions.md, {{ openQuestions.length }} open / {{ questions.length }} total)</small></h3>
+    <ul class="q-list">
+      @for (q of openQuestions; track q.qid) {
+        <li class="q-row">
+          <span class="q-id mono">{{ q.qid }}</span>
+          @if (q.importance) {
+            <span [ngClass]="['q-imp', classForImportance(q.importance)]">{{ q.importance }}</span>
+          }
+          <span class="q-text">{{ q.question }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+</div>
