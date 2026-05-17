@@ -76,6 +76,25 @@ export interface ReportAgentBus_Row {
   preview: string;
 }
 
+/** FR #3g Phase 3 (cycle 99): User I/O panel — USER_INPUT.md bejegyzés. */
+export interface ReportUserInput_Row {
+  status: 'NEW' | 'DONE' | 'UNKNOWN';
+  title: string;
+  type: string;
+  domain: string;
+  receivedAt: string;
+  body: string;
+}
+
+/** Open-questions.md egy bejegyzés. */
+export interface ReportOpenQuestion_Row {
+  qid: string;
+  question: string;
+  context: string;
+  importance: string;
+  status: string;
+}
+
 /** Resolve repo root abszolút útja (3 szint up: server/build/_collections vagy server/src/_collections). */
 function resolveRepoRoot(): string {
   const here: string = path.dirname(fileURLToPath(import.meta.url));
@@ -397,6 +416,118 @@ export async function listAgentBus(limit: number = 30): Promise<ReportAgentBus_R
   return result.slice(0, Math.max(1, limit));
 }
 
+/**
+ * FR #3g Phase 3 (cycle 99): USER_INPUT.md `## [STATUS] Title` block parser.
+ * Skip-eli a séma-példa blockokat (sablon-fejlécek).
+ */
+export async function listUserInput(limit: number = 30): Promise<ReportUserInput_Row[]> {
+  const filePath: string = path.join(resolveRepoRoot(), '__agent', 'USER_INPUT.md');
+  const result: ReportUserInput_Row[] = [];
+
+  try {
+    const content: string = await fs.readFile(filePath, 'utf8');
+    const headerRe: RegExp = /^## \[(NEW|DONE)\]\s+(.+?)$/gm;
+    let match: RegExpExecArray | null;
+    const entries: { idx: number; status: 'NEW' | 'DONE'; title: string }[] = [];
+
+    while ((match = headerRe.exec(content)) !== null) {
+      const title: string = match[2].trim();
+
+      // Skip schema illustrations (placeholder titles).
+      if (title === '{rövid cím}') continue;
+
+      entries.push({ idx: match.index, status: match[1] as 'NEW' | 'DONE', title });
+    }
+
+    for (let i: number = 0; i < entries.length; i++) {
+      const e = entries[i];
+      const endIdx: number = i + 1 < entries.length ? entries[i + 1].idx : Math.min(e.idx + 3000, content.length);
+      const block: string = content.slice(e.idx, endIdx);
+
+      result.push({
+        status: e.status,
+        title: e.title,
+        type: parseFieldFromBlock(block, /\*\*Típus:\*\*\s*(.+?)$/m),
+        domain: parseFieldFromBlock(block, /\*\*Domain:\*\*\s*(.+?)$/m),
+        receivedAt: parseFieldFromBlock(block, /\*\*(?:Beérkezett|Feldolgozva):\*\*\s*(.+?)$/m),
+        body: extractUserInputBody(block),
+      });
+    }
+  } catch (err) {
+    const e: Error = err instanceof Error ? err : new Error(String(err));
+
+    await emitServerActionLog({
+      actor: 'server',
+      kind: 'error',
+      summary: `[MA-REPORTS-USER-INPUT-FAIL] ${e.message.slice(0, 150)}`,
+      extra: { errorCode: 'MA-REPORTS-USER-INPUT-FAIL', issuer: 'reports.util.listUserInput' },
+    });
+  }
+
+  // Most-recent first (assume newest are at top of file already per format conv).
+  return result.slice(0, Math.max(1, limit));
+}
+
+/**
+ * Open-questions.md parser. Sorok: `Q-ID | question | context | importance | status`
+ * vagy markdown-list bejegyzések. MVP: a fájl szöveges szakaszait scrape-eli.
+ */
+export async function listOpenQuestions(limit: number = 50): Promise<ReportOpenQuestion_Row[]> {
+  const filePath: string = path.join(resolveRepoRoot(), 'current', 'open-questions.md');
+  const result: ReportOpenQuestion_Row[] = [];
+
+  try {
+    const content: string = await fs.readFile(filePath, 'utf8');
+    // Q-ID pattern: Q-YYYY-MM-DD-NN OR Q-{topic}-N (e.g. Q-3x3-1, Q-WAVE-2).
+    const qidRe: RegExp = /\b(Q-[A-Za-z0-9-]+-\d+|Q-[a-z]+-\d+|Q-ver-\d+|Q-WAVE-\d+)\b/g;
+    const lines: string[] = content.split(/\r?\n/);
+    const seenIds: Set<string> = new Set<string>();
+
+    for (const line of lines) {
+      let m: RegExpExecArray | null;
+
+      qidRe.lastIndex = 0;
+      while ((m = qidRe.exec(line)) !== null) {
+        const qid: string = m[1];
+
+        if (seenIds.has(qid)) continue;
+        seenIds.add(qid);
+
+        // Status hint: keresünk `answered`, `dropped`, `open`, `postponed` szót.
+        const lower: string = line.toLowerCase();
+        let status: string = 'open';
+
+        if (lower.includes('answered') || lower.includes('resolved')) status = 'answered';
+        else if (lower.includes('dropped')) status = 'dropped';
+        else if (lower.includes('postponed') || lower.includes('deferred')) status = 'postponed';
+
+        // Importance hint: l / m / h egy karakter.
+        const impMatch: RegExpMatchArray | null = line.match(/\|\s*(l|m|h)\s*\|/);
+        const importance: string = impMatch ? impMatch[1] : '';
+
+        result.push({
+          qid,
+          question: line.replace(new RegExp(qid, 'g'), '').trim().slice(0, 240),
+          context: '',
+          importance,
+          status,
+        });
+      }
+    }
+  } catch (err) {
+    const e: Error = err instanceof Error ? err : new Error(String(err));
+
+    await emitServerActionLog({
+      actor: 'server',
+      kind: 'error',
+      summary: `[MA-REPORTS-OPEN-Q-FAIL] ${e.message.slice(0, 150)}`,
+      extra: { errorCode: 'MA-REPORTS-OPEN-Q-FAIL', issuer: 'reports.util.listOpenQuestions' },
+    });
+  }
+
+  return result.slice(0, Math.max(1, limit));
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 /** FR title az első `# FR:` / `# ...` heading-ből. */
@@ -502,4 +633,24 @@ function extractAgbPreview(block: string): string {
   }
 
   return '';
+}
+
+/** USER_INPUT body extract — minden, ami a fejléc-mezők után jön (cap 2000ch). */
+function extractUserInputBody(block: string): string {
+  const lines: string[] = block.split(/\r?\n/);
+  let pastHeader: boolean = false;
+  const bodyLines: string[] = [];
+
+  for (const l of lines) {
+    if (l.startsWith('**Beérkezett:**') || l.startsWith('**Feldolgozva:**') || l.startsWith('**Domain:**') || l.startsWith('**Forrás:**') || l.startsWith('**Eredmény:**') || l.startsWith('**Típus:**')) {
+      pastHeader = true;
+      continue;
+    }
+    if (!pastHeader) continue;
+    if (l.startsWith('##')) break;
+
+    bodyLines.push(l);
+  }
+
+  return bodyLines.join('\n').trim().slice(0, 2000);
 }

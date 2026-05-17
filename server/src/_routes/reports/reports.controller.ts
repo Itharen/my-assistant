@@ -15,14 +15,18 @@ import {
   listAgentLog,
   listCycles,
   listFeatureRequests,
+  listOpenQuestions,
   listRecentShips,
+  listUserInput,
   readStatusDev,
   type ReportAgentBus_Row,
   type ReportAgentLog_Row,
   type ReportCycle_Row,
   type ReportFr_Row,
+  type ReportOpenQuestion_Row,
   type ReportShip_Row,
   type ReportStatusDev_Snapshot,
+  type ReportUserInput_Row,
 } from '../../_collections/reports.util';
 
 const SHIPS_DEFAULT_LIMIT: number = 30;
@@ -121,6 +125,35 @@ export class Reports_Controller extends DyNTS_Controller {
           async (req: Request, res: Response): Promise<void> => {
             const limit: number = clampInt(req.query.limit, 1, 200, 30);
             const rows: ReportAgentBus_Row[] = await listAgentBus(limit);
+
+            res.send({ rows, limit });
+          },
+        ],
+      }),
+
+      // FR #3g Phase 3 (cycle 99): User I/O panel endpoints
+      new DyNTS_Endpoint_Params({
+        name: 'listUserInput',
+        type: DyFM_HttpCallType.get,
+        endpoint: '/user-input',
+        tasks: [
+          async (req: Request, res: Response): Promise<void> => {
+            const limit: number = clampInt(req.query.limit, 1, 200, 30);
+            const rows: ReportUserInput_Row[] = await listUserInput(limit);
+
+            res.send({ rows, limit });
+          },
+        ],
+      }),
+
+      new DyNTS_Endpoint_Params({
+        name: 'listOpenQuestions',
+        type: DyFM_HttpCallType.get,
+        endpoint: '/open-questions',
+        tasks: [
+          async (req: Request, res: Response): Promise<void> => {
+            const limit: number = clampInt(req.query.limit, 1, 200, 50);
+            const rows: ReportOpenQuestion_Row[] = await listOpenQuestions(limit);
 
             res.send({ rows, limit });
           },
