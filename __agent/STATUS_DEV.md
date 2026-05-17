@@ -2,15 +2,20 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 101                                # Cycle 101 indul — FR #3g Phase 4 inline-write (server-side)
-phase: implement                           # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 102                                # Cycle 102 lezárva — FR #3g Phase 4a KOMPLETT (server+client)
+phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 101 indul 2026-05-17T05:00 — FR #3g Phase 4 inline-write Phase 4a (server-side).
-  Scope: 2 új POST endpoint Reports_Controller-ben:
-    POST /api/reports/user-input        → új [NEW] blokk append USER_INPUT.md-be (title/type/domain/text body)
-    POST /api/reports/user-input/done   → [NEW] → [DONE] átállítás (title-alapú lookup, body megőrzés)
-  Client cycle 102: quick-input form + done-button R_UserIO-ban.
+  Cycle 92-102 marathon (11 cycle / 11 ship-commit):
+    92: AGB-20+23 AUTH FIX — 26f0e7d
+    93: AGB-22 notification pozíció — 3a1f171
+    94: AGB-17-01 Activity-monitor Phase 1 — 1b7302f
+    95-96: AGB-24 Phase 1 Reports panel — 6d474f7 / 089245e
+    97-98: AGB-24 Phase 2 Dev I/O — a207365 / fd4bee3
+    99-100: AGB-24 Phase 3 User I/O — a1db00b / 640aeba
+    101-102: AGB-24 Phase 4a inline-write (server+client) — 75f92bc / 7d8d0b4
+  Reports panel most ÍRHATÓ: új USER_INPUT POST + [NEW]→[DONE] toggle.
+  Cycle 103+ kandidátus: Phase 4b (AGB inline-reply), Phase 5 (socket-push refresh), Phase 6 (blockers), 🟡.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
