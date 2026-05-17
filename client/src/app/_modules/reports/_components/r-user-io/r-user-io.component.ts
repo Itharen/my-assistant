@@ -7,12 +7,17 @@
 // Phase 4 (cycle 101+): quick-input form, status toggle [NEW]→[DONE].
 
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { A_Server_ApiService } from '../../../../_services/api-services/a-server.api-service';
 import { A_Error_ControlService } from '../../../../_services/control-services/a-error.control-service';
+import {
+  A_DomainEvent_DataService,
+  type A_DomainEvent_Interface,
+} from '../../../../_services/data-services/a-domain-event.data-service';
 import {
   type A_ReportOpenQuestion_Row,
   type A_ReportUserInput_Row,
@@ -31,10 +36,15 @@ const DOMAIN_OPTIONS: string[] = [ 'meta', 'dev', 'tasks', 'calendar', 'wallet',
   imports: [ CommonModule, FormsModule, RouterModule ],
 })
 /** User I/O panel — USER_INPUT inbox + open-Q outbox. Read-only Phase 3 MVP. */
-export class R_UserIO_Component implements OnInit {
+export class R_UserIO_Component implements OnInit, OnDestroy {
 
   private readonly api: A_Server_ApiService = inject(A_Server_ApiService);
   private readonly error_CS: A_Error_ControlService = inject(A_Error_ControlService);
+  private readonly domainEvent_DS: A_DomainEvent_DataService = inject(A_DomainEvent_DataService);
+
+  /** FR #3g Phase 5 (cycle 104): server push-on auto-refresh — relevant topics. */
+  private static readonly REFRESH_TOPICS: ReadonlySet<string> = new Set([ 'user-input' ]);
+  private domainSub: Subscription | null = null;
 
   isLoading: boolean = true;
   inbox: A_ReportUserInput_Row[] = [];
@@ -56,7 +66,7 @@ export class R_UserIO_Component implements OnInit {
   /** Done-button busy state per inbox row (title-set). */
   doneBusyTitles: Set<string> = new Set<string>();
 
-  /** Boot fetch — 2 endpoint párhuzamosan. */
+  /** Boot fetch — 2 endpoint párhuzamosan + domain-event subscribe (Phase 5). */
   async ngOnInit(): Promise<void> {
     this.isLoading = true;
     try {
@@ -71,6 +81,36 @@ export class R_UserIO_Component implements OnInit {
       this.error_CS.showError(err, 'r-user-io.ngOnInit');
     } finally {
       this.isLoading = false;
+    }
+
+    // Phase 5 (cycle 104): subscribe once (idempotens) — push-on auto-refresh.
+    if (!this.domainSub) {
+      this.domainSub = this.domainEvent_DS.events$().subscribe(
+        (e: A_DomainEvent_Interface): void => {
+          if (R_UserIO_Component.REFRESH_TOPICS.has(e.topic)) {
+            void this.refreshFromPush();
+          }
+        },
+      );
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.domainSub?.unsubscribe();
+    this.domainSub = null;
+  }
+
+  /** Push-driven silent refresh — nem set-eli az `isLoading` flag-et (kerüljük a flicker-t). */
+  private async refreshFromPush(): Promise<void> {
+    try {
+      const [ inbox, q ] = await Promise.all([
+        this.api.getUserInput(40),
+        this.api.getOpenQuestions(80),
+      ]);
+      this.inbox = inbox.rows;
+      this.questions = q.rows;
+    } catch (err) {
+      this.error_CS.showError(err, 'r-user-io.refreshFromPush');
     }
   }
 

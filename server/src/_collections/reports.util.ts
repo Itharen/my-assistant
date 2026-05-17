@@ -13,6 +13,19 @@ import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { emitServerActionLog } from './action-log.util';
+import { VersionBroadcast_SocketServerService } from '../_services/socket-services/version-broadcast.socket-server-service';
+
+/**
+ * FR #3g Phase 5 (cycle 104): no-throw domain-event broadcast helper.
+ * A broadcast hibái nem dobják el a fő endpoint-flowt — csak silent skip.
+ */
+async function safeBroadcastDomainEvent(topic: string, op: 'create' | 'update' | 'delete', payload: unknown): Promise<void> {
+  try {
+    await VersionBroadcast_SocketServerService.getInstance().broadcastDomainEvent(topic, op, payload);
+  } catch {
+    // Broadcast failure should never break a write — skip silently (already action-logged on the broadcaster side).
+  }
+}
 
 /** Output shape egy FR-row-hoz. */
 export interface ReportFr_Row {
@@ -521,6 +534,9 @@ export async function appendUserInputBlock(payload: {
       extra: { issuer: 'reports.util.appendUserInputBlock', title, type, domain, ts },
     });
 
+    // FR #3g Phase 5 (cycle 104): client auto-refresh push.
+    await safeBroadcastDomainEvent('user-input', 'create', { title, type, domain, ts });
+
     return { ok: true, ts };
   } catch (err) {
     const e: Error = err instanceof Error ? err : new Error(String(err));
@@ -609,6 +625,9 @@ export async function markUserInputDone(payload: {
       summary: `user-input [NEW]→[DONE]: ${title.slice(0, 80)}`,
       extra: { issuer: 'reports.util.markUserInputDone', title, result, ts },
     });
+
+    // FR #3g Phase 5 (cycle 104): client auto-refresh push.
+    await safeBroadcastDomainEvent('user-input', 'update', { title, result, ts, transition: 'NEW->DONE' });
 
     return { ok: true, ts };
   } catch (err) {
@@ -728,6 +747,9 @@ export async function appendAgentBusReply(payload: {
       summary: `agent-bus reply appended: ${agbId} (${oldStatus}→${finalStatus})`,
       extra: { issuer: 'reports.util.appendAgentBusReply', agbId, oldStatus, newStatus: finalStatus, ts },
     });
+
+    // FR #3g Phase 5 (cycle 104): client auto-refresh push.
+    await safeBroadcastDomainEvent('agent-bus', 'update', { agbId, oldStatus, newStatus: finalStatus, ts });
 
     return { ok: true, ts };
   } catch (err) {

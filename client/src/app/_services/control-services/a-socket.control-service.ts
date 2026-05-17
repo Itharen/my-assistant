@@ -111,6 +111,23 @@ export class A_Socket_ControlService extends DyFM_SocketClient_ServiceBase<A_Soc
           },
         ],
       }),
+      // FR #3g Phase 5 (cycle 104): Reports panel auto-refresh push.
+      new DyFM_SocketEvent({
+        eventKey: 'domain:user-input',
+        tasks: [
+          async (content: unknown): Promise<void> => {
+            this.handleDomainEvent(content as A_DomainEvent_Interface);
+          },
+        ],
+      }),
+      new DyFM_SocketEvent({
+        eventKey: 'domain:agent-bus',
+        tasks: [
+          async (content: unknown): Promise<void> => {
+            this.handleDomainEvent(content as A_DomainEvent_Interface);
+          },
+        ],
+      }),
     ];
   }
 

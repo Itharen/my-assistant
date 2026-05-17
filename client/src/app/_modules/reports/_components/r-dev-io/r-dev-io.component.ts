@@ -8,12 +8,17 @@
 // Cycle 99+ bővítés (Phase 4): inline-AGB-válasz, USER_INPUT új-blokk.
 
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { A_Server_ApiService } from '../../../../_services/api-services/a-server.api-service';
 import { A_Error_ControlService } from '../../../../_services/control-services/a-error.control-service';
+import {
+  A_DomainEvent_DataService,
+  type A_DomainEvent_Interface,
+} from '../../../../_services/data-services/a-domain-event.data-service';
 import {
   type A_ReportAgentBus_Row,
   type A_ReportAgentLog_Row,
@@ -31,10 +36,15 @@ type AgbNewStatus = 'OPEN' | 'ANSWERED' | 'ACTED' | 'DROPPED';
   imports: [ CommonModule, FormsModule, RouterModule ],
 })
 /** Dev Agent I/O panel — 3 szekció read-only, párhuzamos fetch. */
-export class R_DevIO_Component implements OnInit {
+export class R_DevIO_Component implements OnInit, OnDestroy {
 
   private readonly api: A_Server_ApiService = inject(A_Server_ApiService);
   private readonly error_CS: A_Error_ControlService = inject(A_Error_ControlService);
+  private readonly domainEvent_DS: A_DomainEvent_DataService = inject(A_DomainEvent_DataService);
+
+  /** FR #3g Phase 5 (cycle 104): server push-on auto-refresh. */
+  private static readonly REFRESH_TOPICS: ReadonlySet<string> = new Set([ 'agent-bus', 'user-input' ]);
+  private domainSub: Subscription | null = null;
 
   isLoading: boolean = true;
   status: A_ReportStatusDev_Snapshot | null = null;
@@ -50,7 +60,7 @@ export class R_DevIO_Component implements OnInit {
   replyNewStatus: AgbNewStatus = 'ANSWERED';
   readonly replyStatusOptions: AgbNewStatus[] = [ 'OPEN', 'ANSWERED', 'ACTED', 'DROPPED' ];
 
-  /** Boot fetch — 3 endpoint párhuzamosan. */
+  /** Boot fetch — 3 endpoint párhuzamosan + domain-event subscribe (Phase 5). */
   async ngOnInit(): Promise<void> {
     this.isLoading = true;
     try {
@@ -67,6 +77,38 @@ export class R_DevIO_Component implements OnInit {
       this.error_CS.showError(err, 'r-dev-io.ngOnInit');
     } finally {
       this.isLoading = false;
+    }
+
+    // Phase 5 (cycle 104): subscribe once (idempotens) — push-on auto-refresh.
+    if (!this.domainSub) {
+      this.domainSub = this.domainEvent_DS.events$().subscribe(
+        (e: A_DomainEvent_Interface): void => {
+          if (R_DevIO_Component.REFRESH_TOPICS.has(e.topic)) {
+            void this.refreshFromPush();
+          }
+        },
+      );
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.domainSub?.unsubscribe();
+    this.domainSub = null;
+  }
+
+  /** Push-driven silent refresh — nem set-eli az `isLoading` flag-et. */
+  private async refreshFromPush(): Promise<void> {
+    try {
+      const [ status, log, bus ] = await Promise.all([
+        this.api.getStatusDev(),
+        this.api.getAgentLog(undefined, 'development-agent', 50),
+        this.api.getAgentBus(40),
+      ]);
+      this.status = status;
+      this.log = log.rows;
+      this.bus = bus.rows;
+    } catch (err) {
+      this.error_CS.showError(err, 'r-dev-io.refreshFromPush');
     }
   }
 
