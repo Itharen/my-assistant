@@ -2,24 +2,19 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 108                                # Cycle 108 lezárva — spec-coverage d-dashboard.data-service (14 új teszt)
+cycle: 109                                # Cycle 109 lezárva — doc-sync CHANGELOG 0.1.171 milestone (cycle 69-108 lefedve)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 92-108 marathon (17 cycle / 17 ship-commit):
-    92-94: AGB-20/22/17-01 (AUTH, notification, activity-monitor) — 26f0e7d / 3a1f171 / 1b7302f
-    95-96: AGB-24 Phase 1 Reports panel — 6d474f7 / 089245e
-    97-98: AGB-24 Phase 2 Dev I/O — a207365 / fd4bee3
-    99-100: AGB-24 Phase 3 User I/O — a1db00b / 640aeba
-    101-102: AGB-24 Phase 4a inline-write USER_INPUT — 75f92bc / 7d8d0b4
-    103: AGB-24 Phase 4b inline-write AGB-reply — a51de23 / f4ec30c
-    104: AGB-24 Phase 5 socket-push auto-refresh — ed62f3a
-    105: AGB-24 Phase 6 blockers + roadmap (FR #3g TELJES) — f789670
+  Cycle 92-109 marathon (18 cycle / 18 ship-commit):
+    92-94: AGB-20/22/17-01 — 26f0e7d / 3a1f171 / 1b7302f
+    95-105: AGB-24 FR #3g Phase 1-6 KOMPLETT — 11 cycle ship-marathon (FR teljes)
     106: spec-coverage wave-sinusoid-fit (60→72) — f9f4419
     107: spec-coverage error-extract.util (72→88) — 480952d
     108: spec-coverage d-dashboard.data-service (88→102) — e9e0e1f
-  Tests: 102 pass / 0 failure (3 cycle spec-coverage marathon — sinusoid + error-extract + dashboard state).
-  Cycle 109+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (a-domain-event 1-2 it, server-side reports.util), doc-sync, vagy új FR.
+    109: doc-sync CHANGELOG 0.1.171 milestone — f113306
+  Tests: 102 pass / 0 failure. CHANGELOG sync 0.1.112 (cycle 68) → 0.1.171 (cycle 108) lefedve egy összegző entry-vel.
+  Cycle 110+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (a-domain-event, fo-tasks normalise pure helpers), ARCHITECTURE.md sync, vagy új FR.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
