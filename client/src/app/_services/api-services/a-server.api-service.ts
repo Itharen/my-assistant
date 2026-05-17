@@ -18,6 +18,9 @@ import {
   type A_DashboardSnapshot,
   type A_InsightPayload,
   type A_InsightRow,
+  type A_ReportCycle_Row,
+  type A_ReportFr_Row,
+  type A_ReportShip_Row,
   type A_StatusSnapshot,
   type A_WaveJsonlAppendResponse,
   type A_WaveJsonlResponse,
@@ -107,6 +110,44 @@ export class A_Server_ApiService {
         endpoint: '/wave/markers',
       }),
       { queryParams: { sinceMs, untilMs } },
+    );
+  }
+
+  /** GET `/reports/frs` — unauth, FR-board (FR #3g Phase 1, cycle 96). */
+  async getReportFrs(): Promise<{ rows: A_ReportFr_Row[] }> {
+    return this.Đ_AS.call<{ rows: A_ReportFr_Row[] }>(
+      new DyNX_ApiCall_Settings({
+        name: 'getReportFrs',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/reports/frs',
+      }),
+    );
+  }
+
+  /** GET `/reports/cycles?limit` — unauth, cycle archív list. */
+  async getReportCycles(limit: number = 50): Promise<{ rows: A_ReportCycle_Row[]; limit: number }> {
+    return this.Đ_AS.call<{ rows: A_ReportCycle_Row[]; limit: number }>(
+      new DyNX_ApiCall_Settings({
+        name: 'getReportCycles',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/reports/cycles',
+      }),
+      { queryParams: { limit } },
+    );
+  }
+
+  /** GET `/reports/recent-ships?limit&days` — unauth, last N ship-action-log entries. */
+  async getRecentShips(limit: number = 30, days: number = 14): Promise<{ rows: A_ReportShip_Row[]; limit: number; days: number }> {
+    return this.Đ_AS.call<{ rows: A_ReportShip_Row[]; limit: number; days: number }>(
+      new DyNX_ApiCall_Settings({
+        name: 'getRecentShips',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/reports/recent-ships',
+      }),
+      { queryParams: { limit, days } },
     );
   }
 

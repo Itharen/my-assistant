@@ -19,6 +19,20 @@ const routes: Routes = [
         (m: typeof import('./_modules/status/status.module')): Type<unknown> => m.Status_Module,
       ),
   },
+  {
+    path: A_Route.integrations,
+    loadChildren: (): Promise<Type<unknown>> =>
+      import('./_modules/integrations/integrations.module').then(
+        (m: typeof import('./_modules/integrations/integrations.module')): Type<unknown> => m.Integrations_Module,
+      ),
+  },
+  {
+    path: A_Route.reports,
+    loadChildren: (): Promise<Type<unknown>> =>
+      import('./_modules/reports/reports.module').then(
+        (m: typeof import('./_modules/reports/reports.module')): Type<unknown> => m.Reports_Module,
+      ),
+  },
   { path: '**', redirectTo: A_Route.dashboard },
 ];
 

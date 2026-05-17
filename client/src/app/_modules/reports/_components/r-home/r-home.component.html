@@ -1,0 +1,99 @@
+<div class="r-home">
+  <header class="page-head">
+    <h2>📊 Reports</h2>
+    <button type="button" class="refresh-btn" (click)="handleRefresh()" [disabled]="isLoading">
+      {{ isLoading ? '…' : '↻ Refresh' }}
+    </button>
+  </header>
+
+  @if (isLoading && frs.length === 0) {
+    <div class="loading">Loading reports…</div>
+  }
+
+  <!-- FR-board (kanban-style 4 oszlop) -->
+  <section class="section fr-board">
+    <h3>📋 Feature Requests <small class="muted">({{ frs.length }})</small></h3>
+    <div class="kanban">
+      <div class="kanban-col">
+        <h4>🟢 Active <small class="muted">({{ frsByBucket('active').length }})</small></h4>
+        @for (f of frsByBucket('active'); track f.id) {
+          <article class="fr-card">
+            <div class="fr-id">{{ f.id }}</div>
+            <div class="fr-title">{{ f.title }}</div>
+            <div class="fr-status">{{ f.status }}</div>
+          </article>
+        }
+      </div>
+      <div class="kanban-col">
+        <h4>🚀 In progress <small class="muted">({{ frsByBucket('progress').length }})</small></h4>
+        @for (f of frsByBucket('progress'); track f.id) {
+          <article class="fr-card">
+            <div class="fr-id">{{ f.id }}</div>
+            <div class="fr-title">{{ f.title }}</div>
+            <div class="fr-status">{{ f.status }}</div>
+          </article>
+        }
+      </div>
+      <div class="kanban-col">
+        <h4>✅ Done <small class="muted">({{ frsByBucket('done').length }})</small></h4>
+        @for (f of frsByBucket('done'); track f.id) {
+          <article class="fr-card">
+            <div class="fr-id">{{ f.id }}</div>
+            <div class="fr-title">{{ f.title }}</div>
+            <div class="fr-status">{{ f.status }}</div>
+          </article>
+        }
+      </div>
+      <div class="kanban-col">
+        <h4>🅿️ Parked <small class="muted">({{ frsByBucket('parked').length }})</small></h4>
+        @for (f of frsByBucket('parked'); track f.id) {
+          <article class="fr-card">
+            <div class="fr-id">{{ f.id }}</div>
+            <div class="fr-title">{{ f.title }}</div>
+            <div class="fr-status">{{ f.status }}</div>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Cycle history -->
+  <section class="section cycles">
+    <h3>🔄 Recent Cycles <small class="muted">(last {{ cycles.length }})</small></h3>
+    <ul class="cycle-list">
+      @for (c of cycles; track c.cycleId) {
+        <li class="cycle-row">
+          <span class="cycle-id">#{{ c.cycleId }}</span>
+          <span class="cycle-date">{{ c.date }}</span>
+          @if (c.commitSha) {
+            <code class="cycle-sha">{{ c.commitSha }}</code>
+          }
+          <span class="cycle-title">{{ c.title }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+
+  <!-- Recent ships -->
+  <section class="section ships">
+    <h3>🚀 Recent Ships <small class="muted">(last {{ ships.length }})</small></h3>
+    <ul class="ship-list">
+      @for (s of ships; track s.ts + s.summary) {
+        <li class="ship-row">
+          <span class="ship-ts">{{ s.ts | date:'MM-dd HH:mm' }}</span>
+          <span class="ship-actor">{{ s.actor }}</span>
+          @if (s.ref) {
+            <code class="ship-ref">{{ s.ref }}</code>
+          }
+          <span class="ship-summary">{{ s.summary }}</span>
+          @if (s.loc_delta || s.ldp) {
+            <small class="ship-meta muted">
+              @if (s.loc_delta) { LOC {{ s.loc_delta }} }
+              @if (s.ldp) { · LDP {{ s.ldp }} }
+            </small>
+          }
+        </li>
+      }
+    </ul>
+  </section>
+</div>

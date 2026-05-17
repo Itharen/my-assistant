@@ -210,6 +210,33 @@ export interface A_WaveMarkers_Response {
   untilMs: number;
 }
 
+/** FR #3g Reports panel Phase 1 (cycle 96): FR-board row shape. */
+export interface A_ReportFr_Row {
+  id: string;
+  title: string;
+  status: string;
+  lastModifiedMs: number;
+}
+
+/** Cycle archív row shape. */
+export interface A_ReportCycle_Row {
+  cycleId: number;
+  date: string;
+  title: string;
+  commitSha: string;
+  filePath: string;
+}
+
+/** Recent ship row shape (action-log kind:'ship'). */
+export interface A_ReportShip_Row {
+  ts: string;
+  actor: string;
+  summary: string;
+  ref: string;
+  loc_delta: string;
+  ldp: string;
+}
+
 /** Insight POST payload — kliens által emit-elt új insight bemeneti shape. */
 export interface A_InsightPayload {
   message: string;
