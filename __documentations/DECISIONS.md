@@ -235,6 +235,56 @@ Ez egy külön FDP-PR, a my-assistant scope-on kívül.
 
 ---
 
+## DEC-MA-013 — Loopback auth-bypass `MA_LOCAL_DEV` env-flag-gel
+
+**Dátum:** 2026-05-17
+**Forrás:** AGB-2026-05-17-AUTH-FIX (cycle 92), eredeti probléma: minden `/api/*` 401-et adott dev-en mert a kliens nem tartott JWT-t a localStorage-ben
+**Decision:** Az `Auth_ControlService.authenticate_tokenSelf` wrapper-elve van: ha `MA_LOCAL_DEV === 'true'` env-flag és `req.ip` ∈ {`127.0.0.1`, `::1`, `::ffff:127.0.0.1`}, akkor a JWT-check skipped. Production-ban a flag üres / `'false'` — semmilyen bypass nem aktív.
+
+**Indok:**
+- A my-assistant dev-en single-machine loopback only. JWT-store implementálása dev-en költséges + a server-side egy-user kontextus, nincs multi-user attack surface
+- Az `MA_LOCAL_DEV` env-flag explicit opt-in — soha nem default-true. `.env` gitignored
+- `req.ip` ellenőrzés a permissive `isLoopbackIp()` matcher-rel — IPv6-mapped IPv4 forma (`::ffff:127.0.0.1`) is fed
+- A bypass NEM ki-be kapcsolható runtime-on — startup-time check, így nincs poison-attack a flag-en at request-time
+- Foreign-network endpoint exposure-t megakadályozza a `req.ip` non-loopback fallback (továbbra is auth-required)
+
+**Reverzibilitás:** Trivial — `Auth_ControlService` konstruktor-wrap eltávolítása + `.env`-ből `MA_LOCAL_DEV` kihúzása, ~10 LOC. Production-deploy esetén az env-flag csak ne legyen beállítva.
+
+---
+
+## DEC-MA-014 — `broadcastDomainEvent(topic, op, payload)` topic-route push pattern
+
+**Dátum:** 2026-05-17
+**Forrás:** FR #3f Phase 5.A (cycle 80), `socket-and-version-sync.plan.md`
+**Decision:** A `VersionBroadcast_SocketServerService` egyetlen `broadcastDomainEvent(topic, op, payload)` metódussal ad ki minden szerver-oldali mutation-t a kliensnek. Wire-format: `eventKey = 'domain:' + topic`, content = `{ topic, op, payload, ts }`. A kliens egyetlen `handleDomainEvent` route-ol az `A_DomainEvent_DataService` Subject-bus-ra. Feature-modulok (Dashboard, Reports panels) saját filter-rel topic-szerint feliratkoznak.
+
+**Indok:**
+- A_Socket NEM ismeri a feature-modulokat (loose coupling) — csak emit-el a bus-ra, a subscriber dolga a route-olás
+- Új topic bevezetése = 1 sor a kliens `eventKey: 'domain:<topic>'` listához + 1 sor a server caller-nél. Nincs server↔client interface-szerződés széles felülettel
+- Wave / insight / capture / wave-jsonl / weather / sleep + cycle 104-től user-input / agent-bus — mind ugyanazt a pattern-t használja
+- Pull-vs-push: a polling 30s default + push azonnali frissítés komplementer
+- Op-mező (`'create' | 'update' | 'delete'`) — explicit lifecycle, a kliens dönthet hogy refresh vagy merge
+
+**Reverzibilitás:** Közepes — ha el akarjuk dobni a push réteget, minden subscriber `events$()` callout-ot el kell távolítani, és visszamenni tisztán polling-ra. Becsléssel ~50 LOC + 5 fájl. A `broadcastDomainEvent`-emit-eket a server-en simán no-op-ra rakhatjuk minden funkció megőrzésével.
+
+---
+
+## DEC-MA-015 — Reports panel push-driven silent `refreshFromPush()` no-flicker
+
+**Dátum:** 2026-05-17
+**Forrás:** FR #3g Phase 5 (cycle 104), AGB-24
+**Decision:** A R_UserIO + R_DevIO `ngOnInit()` után subscribe a `domainEvent_DS.events$()`-re. Domain-event-relevánsra (`REFRESH_TOPICS` Set match) NEM a teljes `ngOnInit()` újrahívás, hanem dedikált `refreshFromPush()` metódus, ami `isLoading = true` flag-et NEM állít be. Az API-hívás során a régi UI marad a helyén, az új adat hangtalanul felülírja a tömböket.
+
+**Indok:**
+- Inicializációs (`ngOnInit`) loading-spinner indokolt — nincs adat
+- Pushra-frissítéskor a user éppen olvas-ír — flicker (spinner → adat) zavaró + UI-state-loss (scroll-pozíció, expanded inbox row, nyitott reply-form)
+- Hiba esetén az error-toast-on át értesül a user, a régi adat megmarad — graceful degradation
+- Idempotens subscribe (`if (!this.domainSub) ...`) + OnDestroy cleanup — multiple `ngOnInit` (pl. component re-mount) nem hoz létre duplikált subscription-t
+
+**Reverzibilitás:** Trivial — a `refreshFromPush()` helyett `this.ngOnInit()` hívás visszahozza a loading-flickert. ~3 LOC.
+
+---
+
 ## Convention új DEC-hez
 
 ```markdown
