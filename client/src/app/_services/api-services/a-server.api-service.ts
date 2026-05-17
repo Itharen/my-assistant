@@ -225,6 +225,32 @@ export class A_Server_ApiService {
     );
   }
 
+  /** POST `/reports/user-input` — új [NEW] blokk append (FR #3g Phase 4a, cycle 102). */
+  async postUserInput(payload: { title: string; type: string; domain: string; text: string }): Promise<{ ok: boolean; ts: string; errorCode?: string; message?: string }> {
+    return this.Đ_AS.call<{ ok: boolean; ts: string; errorCode?: string; message?: string }, typeof payload>(
+      new DyNX_ApiCall_Settings({
+        name: 'postUserInput',
+        type: DyFM_HttpCallType.post,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/reports/user-input',
+      }),
+      { body: payload },
+    );
+  }
+
+  /** POST `/reports/user-input/done` — [NEW] → [DONE] átállítás. */
+  async postUserInputDone(payload: { title: string; result?: string }): Promise<{ ok: boolean; ts: string; errorCode?: string; message?: string }> {
+    return this.Đ_AS.call<{ ok: boolean; ts: string; errorCode?: string; message?: string }, typeof payload>(
+      new DyNX_ApiCall_Settings({
+        name: 'postUserInputDone',
+        type: DyFM_HttpCallType.post,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/reports/user-input/done',
+      }),
+      { body: payload },
+    );
+  }
+
   /**
    * POST `/wave/log-public` — unauth új-snapshot append a `3x3-log.jsonl`-be.
    * A response 200/400 alapján a hívó eldönti az ack/error útvonalat

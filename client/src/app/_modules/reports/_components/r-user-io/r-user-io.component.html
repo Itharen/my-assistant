@@ -17,7 +17,48 @@
 
   <!-- Inbox: USER_INPUT.md -->
   <section class="section inbox">
-    <h3>📨 Inbox <small class="muted">(USER_INPUT.md, {{ filteredInbox.length }}/{{ inbox.length }})</small></h3>
+    <div class="inbox-head-row">
+      <h3>📨 Inbox <small class="muted">(USER_INPUT.md, {{ filteredInbox.length }}/{{ inbox.length }})</small></h3>
+      <button type="button" class="form-toggle" (click)="toggleForm()" [class.open]="formOpen">
+        {{ formOpen ? '▾ ✏️ Új inputut' : '▸ ✏️ Új input' }}
+      </button>
+      @if (formAck) { <small class="ack">{{ formAck }}</small> }
+    </div>
+
+    <!-- Quick-input form -->
+    @if (formOpen) {
+      <div class="quick-form">
+        <div class="row">
+          <label class="title">
+            <span class="lbl">Cím</span>
+            <input type="text" [(ngModel)]="formTitle" placeholder="rövid cím..." [maxlength]="200"/>
+          </label>
+          <label class="type">
+            <span class="lbl">Típus</span>
+            <select [(ngModel)]="formType">
+              @for (t of typeOptions; track t) { <option [value]="t">{{ t }}</option> }
+            </select>
+          </label>
+          <label class="domain">
+            <span class="lbl">Domain</span>
+            <select [(ngModel)]="formDomain">
+              @for (d of domainOptions; track d) { <option [value]="d">{{ d }}</option> }
+            </select>
+          </label>
+        </div>
+        <label class="text">
+          <span class="lbl">Szöveg</span>
+          <textarea [(ngModel)]="formText" rows="4" placeholder="Szabad szöveg..." [maxlength]="5000"></textarea>
+        </label>
+        <div class="footer">
+          <button type="button" class="cancel" (click)="toggleForm()" [disabled]="formBusy">Mégse</button>
+          <button type="button" class="submit" [disabled]="formBusy || !formTitle.trim()" (click)="handleSubmit()">
+            {{ formBusy ? '…' : '➜ Rögzít' }}
+          </button>
+        </div>
+      </div>
+    }
+
     <div class="inbox-tabs">
       <button type="button" [class.active]="inboxTab === 'new'" (click)="setInboxTab('new')">🟡 NEW</button>
       <button type="button" [class.active]="inboxTab === 'done'" (click)="setInboxTab('done')">✅ DONE</button>
@@ -32,6 +73,13 @@
             <span class="inbox-domain mono">{{ row.domain }}</span>
             <span class="inbox-title">{{ row.title }}</span>
             <span class="inbox-ts mono muted">{{ row.receivedAt }}</span>
+            @if (row.status === 'NEW') {
+              <button type="button" class="done-btn"
+                      [disabled]="isDoneBusy(row.title)"
+                      (click)="$event.stopPropagation(); handleMarkDone(row)">
+                {{ isDoneBusy(row.title) ? '…' : '✓ done' }}
+              </button>
+            }
           </div>
           @if (isExpanded($index) && row.body) {
             <pre class="inbox-body">{{ row.body }}</pre>
