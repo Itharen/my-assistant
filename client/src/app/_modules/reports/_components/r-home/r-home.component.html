@@ -1,6 +1,10 @@
 <div class="r-home">
   <header class="page-head">
     <h2>📊 Reports</h2>
+    <nav class="sub-nav">
+      <a routerLink="/reports" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">Overview</a>
+      <a routerLink="/reports/dev-io" routerLinkActive="active">Dev I/O</a>
+    </nav>
     <button type="button" class="refresh-btn" (click)="handleRefresh()" [disabled]="isLoading">
       {{ isLoading ? '…' : '↻ Refresh' }}
     </button>

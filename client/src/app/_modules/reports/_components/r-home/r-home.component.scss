@@ -6,9 +6,34 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
 
   h2 { margin: 0; font-size: 1.4rem; }
+
+  .sub-nav {
+    display: flex;
+    gap: 4px;
+
+    a {
+      color: var(--ma-fg-muted);
+      text-decoration: none;
+      padding: 4px 10px;
+      border: 1px solid var(--ma-border);
+      border-radius: 4px;
+      font-size: 0.85em;
+      font-family: ui-monospace, monospace;
+
+      &:hover { border-color: var(--ma-accent, #60a5fa); color: var(--ma-fg); }
+      &.active {
+        background: var(--ma-accent, #60a5fa);
+        color: #0f1115;
+        border-color: var(--ma-accent, #60a5fa);
+        font-weight: 600;
+      }
+    }
+  }
 
   .refresh-btn {
     background: transparent;

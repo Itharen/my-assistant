@@ -5,6 +5,7 @@
 
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 import { A_Server_ApiService } from '../../../../_services/api-services/a-server.api-service';
 import { A_Error_ControlService } from '../../../../_services/control-services/a-error.control-service';
@@ -19,7 +20,7 @@ import {
   selector: 'r-home',
   templateUrl: './r-home.component.html',
   styleUrl: './r-home.component.scss',
-  imports: [ CommonModule ],
+  imports: [ CommonModule, RouterModule ],
 })
 /** Reports home container — 3 szekció (FR-board, cycle history, recent ships) read-only fetch + render. */
 export class R_Home_Component implements OnInit {

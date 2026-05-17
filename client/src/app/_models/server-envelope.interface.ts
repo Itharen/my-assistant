@@ -237,6 +237,40 @@ export interface A_ReportShip_Row {
   ldp: string;
 }
 
+/** FR #3g Phase 2 (cycle 98): Dev I/O panel — STATUS_DEV snapshot. */
+export interface A_ReportStatusDev_Snapshot {
+  cycle: number | null;
+  phase: string;
+  phaseNotes: string;
+  lastCycleId: number | null;
+  lastCycleSha: string;
+  activePlan: string;
+  activePlanStep: string;
+  raw: string;
+}
+
+/** Action-log row Dev I/O activity feed-hez. */
+export interface A_ReportAgentLog_Row {
+  ts: string;
+  actor: string;
+  kind: string;
+  summary: string;
+  ref: string;
+}
+
+/** AGENT_BUS bejegyzés. */
+export interface A_ReportAgentBus_Row {
+  id: string;
+  status: 'OPEN' | 'ANSWERED' | 'ACTED' | 'DROPPED' | 'UNKNOWN';
+  title: string;
+  from: string;
+  to: string;
+  kind: string;
+  created: string;
+  updated: string;
+  preview: string;
+}
+
 /** Insight POST payload — kliens által emit-elt új insight bemeneti shape. */
 export interface A_InsightPayload {
   message: string;

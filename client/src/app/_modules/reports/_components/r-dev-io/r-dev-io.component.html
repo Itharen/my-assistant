@@ -1,0 +1,75 @@
+<div class="r-dev-io">
+  <header class="page-head">
+    <h2>🤖 Dev Agent I/O</h2>
+    <nav class="sub-nav">
+      <a routerLink="/reports" [routerLinkActiveOptions]="{ exact: true }" routerLinkActive="active">Overview</a>
+      <a routerLink="/reports/dev-io" routerLinkActive="active">Dev I/O</a>
+    </nav>
+    <button type="button" class="refresh-btn" (click)="handleRefresh()" [disabled]="isLoading">
+      {{ isLoading ? '…' : '↻ Refresh' }}
+    </button>
+  </header>
+
+  @if (isLoading && !status) {
+    <div class="loading">Loading dev-agent state…</div>
+  }
+
+  <!-- 1) Live cycle status -->
+  <section class="section status">
+    <h3>⚙️ Cycle Status</h3>
+    @if (status) {
+      <div class="status-grid">
+        <div class="kv"><span class="k">cycle</span><span class="v mono">#{{ status.cycle }}</span></div>
+        <div class="kv"><span class="k">phase</span><span class="v mono">{{ status.phase }}</span></div>
+        <div class="kv"><span class="k">last cycle</span><span class="v mono">#{{ status.lastCycleId }} {{ status.lastCycleSha }}</span></div>
+        <div class="kv"><span class="k">active plan</span><span class="v mono">{{ status.activePlan || '—' }}</span></div>
+        <div class="kv kv-step"><span class="k">step</span><span class="v">{{ status.activePlanStep || '—' }}</span></div>
+      </div>
+      @if (status.phaseNotes) {
+        <details class="phase-notes">
+          <summary>phase_notes</summary>
+          <pre>{{ status.phaseNotes }}</pre>
+        </details>
+      }
+    }
+  </section>
+
+  <!-- 2) Action-log stream -->
+  <section class="section log-stream">
+    <h3>📜 Action Log <small class="muted">(today, dev-agent, last {{ log.length }})</small></h3>
+    <ul class="log-list">
+      @for (row of log; track row.ts + row.summary) {
+        <li [ngClass]="['log-row', classForKind(row.kind)]">
+          <span class="log-ts mono">{{ row.ts | date:'HH:mm:ss' }}</span>
+          <span class="log-kind">{{ row.kind }}</span>
+          <span class="log-summary">{{ row.summary }}</span>
+          @if (row.ref) { <code class="log-ref">{{ row.ref }}</code> }
+        </li>
+      }
+    </ul>
+  </section>
+
+  <!-- 3) AGENT_BUS view -->
+  <section class="section bus">
+    <h3>📡 Agent Bus <small class="muted">({{ filteredBus.length }} / {{ bus.length }})</small></h3>
+    <div class="bus-tabs">
+      <button type="button" [class.active]="busTab === 'all'" (click)="setBusTab('all')">all</button>
+      <button type="button" [class.active]="busTab === 'to-chat'" (click)="setBusTab('to-chat')">→ chat</button>
+      <button type="button" [class.active]="busTab === 'from-chat'" (click)="setBusTab('from-chat')">← chat</button>
+    </div>
+    <ul class="bus-list">
+      @for (row of filteredBus; track row.id) {
+        <li class="bus-row">
+          <span [ngClass]="['bus-status', classForStatus(row.status)]">{{ row.status }}</span>
+          <span class="bus-id mono">{{ row.id }}</span>
+          <span class="bus-from-to mono">{{ row.from }} → {{ row.to }}</span>
+          <span class="bus-kind">{{ row.kind }}</span>
+          <span class="bus-title">{{ row.title }}</span>
+          @if (row.preview) {
+            <p class="bus-preview muted">{{ row.preview }}</p>
+          }
+        </li>
+      }
+    </ul>
+  </section>
+</div>

@@ -18,9 +18,12 @@ import {
   type A_DashboardSnapshot,
   type A_InsightPayload,
   type A_InsightRow,
+  type A_ReportAgentBus_Row,
+  type A_ReportAgentLog_Row,
   type A_ReportCycle_Row,
   type A_ReportFr_Row,
   type A_ReportShip_Row,
+  type A_ReportStatusDev_Snapshot,
   type A_StatusSnapshot,
   type A_WaveJsonlAppendResponse,
   type A_WaveJsonlResponse,
@@ -148,6 +151,49 @@ export class A_Server_ApiService {
         endpoint: '/reports/recent-ships',
       }),
       { queryParams: { limit, days } },
+    );
+  }
+
+  /** GET `/reports/status-dev` — unauth, STATUS_DEV.md YAML snapshot (FR #3g Phase 2). */
+  async getStatusDev(): Promise<A_ReportStatusDev_Snapshot> {
+    return this.Đ_AS.call<A_ReportStatusDev_Snapshot>(
+      new DyNX_ApiCall_Settings({
+        name: 'getStatusDev',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/reports/status-dev',
+      }),
+    );
+  }
+
+  /** GET `/reports/agent-log?date&actor&limit` — unauth, action-log JSONL filter (default ma + dev-agent). */
+  async getAgentLog(date?: string, actor?: string, limit: number = 100): Promise<{ rows: A_ReportAgentLog_Row[]; date: string; actor: string; limit: number }> {
+    const queryParams: Record<string, string | number> = { limit };
+
+    if (date) queryParams['date'] = date;
+    if (actor) queryParams['actor'] = actor;
+
+    return this.Đ_AS.call<{ rows: A_ReportAgentLog_Row[]; date: string; actor: string; limit: number }>(
+      new DyNX_ApiCall_Settings({
+        name: 'getAgentLog',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/reports/agent-log',
+      }),
+      { queryParams },
+    );
+  }
+
+  /** GET `/reports/agent-bus?limit` — unauth, AGENT_BUS.md entries. */
+  async getAgentBus(limit: number = 30): Promise<{ rows: A_ReportAgentBus_Row[]; limit: number }> {
+    return this.Đ_AS.call<{ rows: A_ReportAgentBus_Row[]; limit: number }>(
+      new DyNX_ApiCall_Settings({
+        name: 'getAgentBus',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/reports/agent-bus',
+      }),
+      { queryParams: { limit } },
     );
   }
 
