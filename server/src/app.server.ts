@@ -47,6 +47,7 @@ import { Spotify_Controller } from './_routes/spotify/spotify.controller';
 import { Google_Controller } from './_routes/google/google.controller';
 import { Version_Controller } from './_routes/version/version.controller';
 import { SleepState_Controller } from './_routes/sleep-state/sleep-state.controller';
+import { Reports_Controller } from './_routes/reports/reports.controller';
 
 import { VersionBroadcast_SocketServerService } from './_services/socket-services/version-broadcast.socket-server-service';
 import { WeatherPoll_Service } from './_services/weather-poll.service';
@@ -166,6 +167,11 @@ export class App extends DyNTS_AppExtended {
       new DyNTS_RoutingModule({
         route: '/sleep-state',
         controllers: [ SleepState_Controller.getInstance() ],
+      }),
+      // FR #3g Reports panel Phase 1 (cycle 95): GET /api/reports/{frs,cycles,recent-ships}.
+      new DyNTS_RoutingModule({
+        route: '/reports',
+        controllers: [ Reports_Controller.getInstance() ],
       }),
     ];
   }

@@ -2,17 +2,16 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 92                                 # Cycle 92 lezárva — AGB-20+23 AUTH BLOCKER fix SHIPPED (26f0e7d)
-phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 95                                 # Cycle 95 indul — AGB-24 FR #3g Reports panel Phase 1 (server-side)
+phase: implement                           # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 92 lezárva 2026-05-17 — AGB-20+23 URGENT AUTH BLOCKER fix SHIPPED.
-  Auth_ControlService loopback bypass (MA_LOCAL_DEV=true env + req.ip loopback → JWT skip).
-  E2E smoke 4/4 (wave/insight/dashboard/capture mind 200 a korábbi 401 helyett). LDP 11/11 ✅.
-  Bocsánat: ezt cycle 81-ben kellett volna; 10 cycle késést behoztam (MA-MISSED-URGENT-AGB).
-  AGB-21 ANTI-STALL alapelv + AGB-23 acknowledged.
-  Cycle 93+ sorrend (chat AGB-23 + AGB-24 alapján): AGB-22 notification-area pozíció (kicsi) →
-  AGB-17-01 FR #3h Activity-monitor Phase 1 → AGB-24 FR #3g Reports panel Phase 1 → többi.
+  Cycle 95 indul 2026-05-17T02:50 — AGB-24 FR #3g Reports panel Phase 1.
+  Scope (server-side): 3 új unauth read endpoint:
+    GET /api/reports/frs        → current/feature-requests/*.md scan (status mező)
+    GET /api/reports/cycles     → __agent/log/cycles/*.md scan (cycle-ID + summary + commit)
+    GET /api/reports/recent-ships → action-log szűrve kind:"ship" utolsó N
+  Roll-up cycle 92-94 (AGB-20+23/22/17-01 mind shipped). Cycle 96+: client Reports panel UI.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
