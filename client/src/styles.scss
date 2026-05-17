@@ -87,3 +87,14 @@ button { font-family: inherit; }
   background: var(--ma-accent);
   color: var(--ma-fg-on-accent);
 }
+
+/* AGB-22 (cycle 93): Material snackbar overlay top-offset, hogy ne takarja a header-t,
+   ha valami `verticalPosition: 'top'`-pal hív (a mi `showError` `bottom`-ot használ, de
+   bármely 3rd-party DyNX hívás default-top, így itt globálisan dropoljuk lejjebb). */
+.cdk-overlay-container .cdk-global-overlay-wrapper {
+  &.cdk-overlay-pane-wrapper-top,
+  > .mat-mdc-snack-bar-container.mat-snack-bar-top {
+    /* Header magasság (kb) + kis padding — visszafogjuk az overlay-pozíciót. */
+    padding-top: 80px;
+  }
+}

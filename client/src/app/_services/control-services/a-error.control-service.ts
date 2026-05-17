@@ -48,7 +48,10 @@ export class A_Error_ControlService {
     this.ngZone.run((): void => {
       const visibleMessage = this.buildVisibleMessage(details);
 
-      this.Đ_message_CS.newErrorMessage(visibleMessage, 10_000);
+      // AGB-22 (cycle 93): DyNX default `verticalPosition:'top'` letakarja a header-t.
+      // Override → `bottom` (right marad). A snackbar a status-bar fölött jelenik meg
+      // Material overlay z-index:1000-en.
+      this.Đ_message_CS.newErrorMessage(visibleMessage, 10_000, undefined, { verticalPosition: 'bottom' });
     });
 
     // Fire-and-forget persistence. Never block the caller; never throw.

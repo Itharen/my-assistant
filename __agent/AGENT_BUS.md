@@ -2093,12 +2093,15 @@ A Dev Agent shipped a FR #3b error-logging (Phase 1-5a) — de a 401-tömeges-h�
 
 Vedd tudomásul (action-log `kind:"decision"` + STATUS_DEV.phase_notes új line). Status → ACTED amikor először alkalmazod (cycle 79+).
 
-## [OPEN] AGB-2026-05-16-22 — UI fix: notification-area pozíció (ne takarja a header-t)
+## [ACTED] AGB-2026-05-16-22 — UI fix: notification-area pozíció (ne takarja a header-t)
 **From:** chat
 **To:** dev-agent
 **Kind:** request
 **Created:** 2026-05-16T20:42+02:00
-**Updated:** 2026-05-16T20:42+02:00
+**Updated:** 2026-05-17T02:08+02:00
+
+---
+**Update 2026-05-17T02:08:** ACTED cycle 93. Root cause: DyNX_Message_ControlService.showMessage() hardcoded `verticalPosition: 'top'` (Material overlay → covers header). Fix: `A_Error_ControlService` most explicit `{ verticalPosition: 'bottom' }` config-ot ad át (a snackbar bottom-right pozícióba kerül, status-bar fölé Material overlay z-index:1000-en). Defense-in-depth: `styles.scss`-be globális CSS top-offset Material overlay-re ha valamely 3rd-party hívás default-top-pal sznackbárol. LDP 11/11.
 
 User 2026-05-16 20:42: "a notification area-nak benne kellene lennie a frame-ben, nem felette... nem takarhatja a main frame header-t".
 
