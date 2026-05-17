@@ -166,3 +166,94 @@
     font-size: 0.78em;
   }
 }
+
+/* FR #3g Phase 6 (cycle 105): Blockers + Roadmap */
+.mono { font-family: ui-monospace, monospace; }
+
+.blocker-list, .plan-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.blocker-row {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--ma-border);
+  font-size: 0.88em;
+  flex-wrap: wrap;
+
+  &:last-child { border-bottom: none; }
+
+  .blocker-age {
+    background: #fbbf24;
+    color: #0f1115;
+    padding: 1px 7px;
+    border-radius: 3px;
+    font-size: 0.78em;
+    font-weight: 600;
+    min-width: 45px;
+    text-align: center;
+  }
+  .blocker-id { color: var(--ma-fg-muted); font-size: 0.82em; }
+  .blocker-kind { color: var(--ma-fg-muted); font-size: 0.82em; font-style: italic; }
+  .blocker-title { flex: 1 1 50%; line-height: 1.3; }
+  .blocker-reason {
+    display: inline-block;
+    padding: 0 7px;
+    border-radius: 3px;
+    font-size: 0.74em;
+    background: rgba(239, 68, 68, 0.18);
+    color: #fca5a5;
+    text-transform: uppercase;
+    font-family: ui-monospace, monospace;
+
+    &.reason-stale {
+      background: rgba(148, 163, 184, 0.18);
+      color: #cbd5e1;
+    }
+  }
+}
+
+.plan-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(200px, 3fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--ma-border);
+  font-size: 0.88em;
+
+  &:last-child { border-bottom: none; }
+
+  .plan-id { color: var(--ma-fg-muted); font-size: 0.82em; }
+  .plan-title { line-height: 1.3; }
+  .plan-progress { font-size: 0.82em; color: var(--ma-fg-muted); }
+  .plan-bar {
+    grid-column: 1 / -1;
+    background: var(--ma-bg-secondary, #1a1d24);
+    border-radius: 3px;
+    height: 6px;
+    overflow: hidden;
+  }
+  .plan-bar-fill {
+    background: var(--ma-accent, #60a5fa);
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+}
+
+.other-plans {
+  margin-top: 8px;
+
+  summary {
+    cursor: pointer;
+    color: var(--ma-fg-muted);
+    font-size: 0.86em;
+    padding: 4px 0;
+
+    &:hover { color: var(--ma-fg); }
+  }
+}

@@ -108,6 +108,22 @@ export interface ReportOpenQuestion_Row {
   status: string;
 }
 
+/** FR #3g Phase 6 (cycle 105): plan-doc summary a roadmap szekcióhoz. */
+export interface ReportActivePlan_Row {
+  id: string;
+  title: string;
+  totalPhases: number;
+  completedPhases: number;
+  lastModifiedMs: number;
+}
+
+/** FR #3g Phase 6 (cycle 105): blocker AGB-row a Reports panel "Blockers" szekciójához. */
+export interface ReportBlocker_Row extends ReportAgentBus_Row {
+  ageHours: number;
+  /** Mi alapján blocker — flag-ek concat-elve (pl. ['question'], ['stale']). */
+  reasons: string[];
+}
+
 /** Resolve repo root abszolút útja (3 szint up: server/build/_collections vagy server/src/_collections). */
 function resolveRepoRoot(): string {
   const here: string = path.dirname(fileURLToPath(import.meta.url));
@@ -779,6 +795,143 @@ function nowIsoBudapestFull(): string {
   const tzM: string = pad(tzAbs % 60);
 
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}${tzSign}${tzH}:${tzM}`;
+}
+
+/**
+ * FR #3g Phase 6 (cycle 105): plan-doc summary scan a roadmap szekcióhoz.
+ *
+ * Plan-doc minta: `## Phase N — title` heading-ek; `✅` prefix-el done.
+ * A `## Audit`, `## Source`, `## Open kérdések` szekciók NEM phase-ek (skip).
+ */
+export async function listActivePlans(): Promise<ReportActivePlan_Row[]> {
+  const dir: string = path.join(resolveRepoRoot(), '__agent', 'plans');
+  const result: ReportActivePlan_Row[] = [];
+
+  try {
+    const files: string[] = await fs.readdir(dir);
+    const planFiles: string[] = files.filter((f): boolean => f.endsWith('.plan.md'));
+
+    for (const fname of planFiles) {
+      const filePath: string = path.join(dir, fname);
+      try {
+        const stat = await fs.stat(filePath);
+        const content: string = await fs.readFile(filePath, 'utf8');
+        const id: string = fname.replace(/\.plan\.md$/, '');
+        const title: string = extractPlanTitle(content) ?? id;
+        // Phase-count: `## Phase N.X — title` headings (skip "## Phase-elés").
+        const phaseHeadingRe: RegExp = /^##\s+Phase\s+[\d.]+[\w-]*\s*[—-]/gm;
+        const phaseHeadings: string[] = content.match(phaseHeadingRe) ?? [];
+        const total: number = phaseHeadings.length;
+
+        // Done-count: a "Cycle-onkénti scope" táblázat sorai ahol `**N.X**` és `✅ cycle` egy sorban.
+        // Mintapélda: `| **2.A** | Server: ... | ✅ cycle 58 | shipped |`
+        const tableRowRe: RegExp = /^\|\s*\*\*[\d.]+[\w-]*\*\*\s*\|.*?\|.*?✅/gm;
+        const doneRows: string[] = content.match(tableRowRe) ?? [];
+        const done: number = Math.min(doneRows.length, total);
+
+        result.push({
+          id,
+          title,
+          totalPhases: total,
+          completedPhases: done,
+          lastModifiedMs: stat.mtimeMs,
+        });
+      } catch (err) {
+        const e: Error = err instanceof Error ? err : new Error(String(err));
+
+        await emitServerActionLog({
+          actor: 'server',
+          kind: 'error',
+          summary: `[MA-REPORTS-PLAN-READ-FAIL] ${fname}: ${e.message.slice(0, 100)}`,
+          extra: { errorCode: 'MA-REPORTS-PLAN-READ-FAIL', issuer: 'reports.util.listActivePlans', fname },
+        });
+      }
+    }
+  } catch (err) {
+    const e: Error = err instanceof Error ? err : new Error(String(err));
+
+    await emitServerActionLog({
+      actor: 'server',
+      kind: 'error',
+      summary: `[MA-REPORTS-PLAN-DIR-FAIL] ${e.message.slice(0, 100)}`,
+      extra: { errorCode: 'MA-REPORTS-PLAN-DIR-FAIL', issuer: 'reports.util.listActivePlans' },
+    });
+  }
+
+  // Sort: in-progress (completed < total && completed > 0) first, then by mtime desc.
+  result.sort((a, b): number => {
+    const aInProg: boolean = a.completedPhases > 0 && a.completedPhases < a.totalPhases;
+    const bInProg: boolean = b.completedPhases > 0 && b.completedPhases < b.totalPhases;
+
+    if (aInProg !== bInProg) return aInProg ? -1 : 1;
+
+    return b.lastModifiedMs - a.lastModifiedMs;
+  });
+
+  return result;
+}
+
+/**
+ * FR #3g Phase 6 (cycle 105): blocker-shortlist a Reports panel-hez.
+ *
+ * Egy AGB blocker, ha mindhárom igaz:
+ *   - status === 'OPEN'
+ *   - Kind === 'question' | 'block', VAGY age > 24h
+ *
+ * `reasons` flag-tömb: ['question'|'block'] és/vagy ['stale'].
+ */
+export async function listBlockers(maxResults: number = 50): Promise<ReportBlocker_Row[]> {
+  const all: ReportAgentBus_Row[] = await listAgentBus(200);
+  const now: number = Date.now();
+  const STALE_MS: number = 24 * 3600 * 1000;
+  const result: ReportBlocker_Row[] = [];
+
+  for (const row of all) {
+    if (row.status !== 'OPEN') continue;
+
+    const createdMs: number = parseAgbTsMs(row.created);
+    const ageMs: number = Number.isFinite(createdMs) ? now - createdMs : 0;
+    const ageHours: number = Math.round(ageMs / (3600 * 1000));
+    const reasons: string[] = [];
+    const kindLower: string = row.kind.toLowerCase();
+
+    if (kindLower === 'question' || kindLower === 'block') reasons.push(kindLower);
+    // Stale csak kérdés/kérés-jellegűre számít — announcement nem blocker.
+    const stalable: boolean = kindLower === 'question' || kindLower === 'block' || kindLower === 'request';
+
+    if (ageMs > STALE_MS && stalable) reasons.push('stale');
+    if (reasons.length === 0) continue;
+
+    result.push({ ...row, ageHours, reasons });
+  }
+
+  // Sort: kind=question|block first, then by age desc (oldest first).
+  result.sort((a, b): number => {
+    const aPrior: boolean = a.reasons.includes('question') || a.reasons.includes('block');
+    const bPrior: boolean = b.reasons.includes('question') || b.reasons.includes('block');
+
+    if (aPrior !== bPrior) return aPrior ? -1 : 1;
+
+    return b.ageHours - a.ageHours;
+  });
+
+  return result.slice(0, Math.max(1, maxResults));
+}
+
+/** Plan title az első `# Plan — ...` heading-ből. */
+function extractPlanTitle(md: string): string | null {
+  const m: RegExpMatchArray | null = md.match(/^#\s+Plan\s*[—-]\s*(.+?)$/m);
+
+  return m ? m[1].trim() : null;
+}
+
+/** AGB Created ts (`2026-05-17T05:18+02:00`) → ms. NaN ha invalid. */
+function parseAgbTsMs(ts: string): number {
+  if (!ts) return NaN;
+  const d: Date = new Date(ts);
+  const t: number = d.getTime();
+
+  return Number.isFinite(t) ? t : NaN;
 }
 
 /** Europe/Budapest ISO timestamp, percre kerekítve (`YYYY-MM-DD HH:mm`). */

@@ -13,8 +13,10 @@ import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
 import {
   appendAgentBusReply,
   appendUserInputBlock,
+  listActivePlans,
   listAgentBus,
   listAgentLog,
+  listBlockers,
   listCycles,
   listFeatureRequests,
   listOpenQuestions,
@@ -22,8 +24,10 @@ import {
   listUserInput,
   markUserInputDone,
   readStatusDev,
+  type ReportActivePlan_Row,
   type ReportAgentBus_Row,
   type ReportAgentLog_Row,
+  type ReportBlocker_Row,
   type ReportCycle_Row,
   type ReportFr_Row,
   type ReportOpenQuestion_Row,
@@ -209,6 +213,34 @@ export class Reports_Controller extends DyNTS_Controller {
               return;
             }
             res.send({ ok: true, ts: result.ts });
+          },
+        ],
+      }),
+
+      // FR #3g Phase 6 (cycle 105): roadmap + blockers
+      new DyNTS_Endpoint_Params({
+        name: 'listActivePlans',
+        type: DyFM_HttpCallType.get,
+        endpoint: '/active-plans',
+        tasks: [
+          async (req: Request, res: Response): Promise<void> => {
+            const rows: ReportActivePlan_Row[] = await listActivePlans();
+
+            res.send({ rows });
+          },
+        ],
+      }),
+
+      new DyNTS_Endpoint_Params({
+        name: 'listBlockers',
+        type: DyFM_HttpCallType.get,
+        endpoint: '/blockers',
+        tasks: [
+          async (req: Request, res: Response): Promise<void> => {
+            const limit: number = clampInt(req.query.limit, 1, 200, 50);
+            const rows: ReportBlocker_Row[] = await listBlockers(limit);
+
+            res.send({ rows, limit });
           },
         ],
       }),

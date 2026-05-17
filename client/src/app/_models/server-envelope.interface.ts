@@ -290,6 +290,21 @@ export interface A_ReportOpenQuestion_Row {
   status: string;
 }
 
+/** FR #3g Phase 6 (cycle 105): active-plan row a roadmap szekcióhoz. */
+export interface A_ReportActivePlan_Row {
+  id: string;
+  title: string;
+  totalPhases: number;
+  completedPhases: number;
+  lastModifiedMs: number;
+}
+
+/** FR #3g Phase 6 (cycle 105): blocker AGB-row (extends agent-bus row). */
+export interface A_ReportBlocker_Row extends A_ReportAgentBus_Row {
+  ageHours: number;
+  reasons: string[];
+}
+
 /** Insight POST payload — kliens által emit-elt új insight bemeneti shape. */
 export interface A_InsightPayload {
   message: string;

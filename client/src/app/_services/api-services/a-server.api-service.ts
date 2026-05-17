@@ -18,8 +18,10 @@ import {
   type A_DashboardSnapshot,
   type A_InsightPayload,
   type A_InsightRow,
+  type A_ReportActivePlan_Row,
   type A_ReportAgentBus_Row,
   type A_ReportAgentLog_Row,
+  type A_ReportBlocker_Row,
   type A_ReportCycle_Row,
   type A_ReportFr_Row,
   type A_ReportOpenQuestion_Row,
@@ -248,6 +250,31 @@ export class A_Server_ApiService {
         endpoint: '/reports/user-input/done',
       }),
       { body: payload },
+    );
+  }
+
+  /** GET `/reports/active-plans` — plan-doc roadmap (FR #3g Phase 6, cycle 105). */
+  async getActivePlans(): Promise<{ rows: A_ReportActivePlan_Row[] }> {
+    return this.Đ_AS.call<{ rows: A_ReportActivePlan_Row[] }>(
+      new DyNX_ApiCall_Settings({
+        name: 'getActivePlans',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/reports/active-plans',
+      }),
+    );
+  }
+
+  /** GET `/reports/blockers?limit` — OPEN AGBs question/block/stale (FR #3g Phase 6, cycle 105). */
+  async getBlockers(limit: number = 50): Promise<{ rows: A_ReportBlocker_Row[]; limit: number }> {
+    return this.Đ_AS.call<{ rows: A_ReportBlocker_Row[]; limit: number }>(
+      new DyNX_ApiCall_Settings({
+        name: 'getBlockers',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/reports/blockers',
+      }),
+      { queryParams: { limit } },
     );
   }
 
