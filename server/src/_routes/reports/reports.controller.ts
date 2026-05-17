@@ -11,6 +11,7 @@ import { DyFM_HttpCallType } from '@futdevpro/fsm-dynamo';
 import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
 
 import {
+  appendAgentBusReply,
   appendUserInputBlock,
   listAgentBus,
   listAgentLog,
@@ -202,6 +203,38 @@ export class Reports_Controller extends DyNTS_Controller {
 
             if (!result.ok) {
               const status: number = result.errorCode === 'MA-USER-INPUT-DONE-NOT-FOUND' ? 404 : 400;
+
+              res.status(status).send({ ok: false, errorCode: result.errorCode, message: result.message });
+
+              return;
+            }
+            res.send({ ok: true, ts: result.ts });
+          },
+        ],
+      }),
+
+      // FR #3g Phase 4b (cycle 103): AGB inline-reply
+      new DyNTS_Endpoint_Params({
+        name: 'postAgentBusReply',
+        type: DyFM_HttpCallType.post,
+        endpoint: '/agent-bus/reply',
+        tasks: [
+          async (req: Request, res: Response): Promise<void> => {
+            const payload: { agbId?: string; reply?: string; newStatus?: string } = (req.body ?? {}) as typeof payload;
+            const newStatus: 'OPEN' | 'ANSWERED' | 'ACTED' | 'DROPPED' | undefined =
+              (payload.newStatus === 'OPEN' || payload.newStatus === 'ANSWERED' ||
+               payload.newStatus === 'ACTED' || payload.newStatus === 'DROPPED')
+                ? payload.newStatus
+                : undefined;
+
+            const result = await appendAgentBusReply({
+              agbId: payload.agbId ?? '',
+              reply: payload.reply ?? '',
+              newStatus,
+            });
+
+            if (!result.ok) {
+              const status: number = result.errorCode === 'MA-AGB-REPLY-NOT-FOUND' ? 404 : 400;
 
               res.status(status).send({ ok: false, errorCode: result.errorCode, message: result.message });
 

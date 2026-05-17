@@ -626,6 +626,139 @@ export async function markUserInputDone(payload: {
   }
 }
 
+/**
+ * FR #3g Phase 4b (cycle 103): AGB inline-reply append.
+ *
+ * Egy AGB-bejegyzéshez (`AGB-YYYY-MM-DD-NN`) hozzáír egy
+ * `**Update <ts>:** <text>` sort, frissíti az **Updated:** mezőt, és
+ * opcionálisan átállítja a status-headert (`[OPEN] → [ANSWERED|ACTED|DROPPED]`).
+ *
+ * Hiba-kódok:
+ *   - MA-AGB-REPLY-INVALID-PAYLOAD — üres agbId vagy reply
+ *   - MA-AGB-REPLY-NOT-FOUND — agbId nem található a fájlban
+ *   - MA-AGB-REPLY-WRITE-FAIL — fs hiba
+ */
+export async function appendAgentBusReply(payload: {
+  agbId: string;
+  reply: string;
+  newStatus?: 'OPEN' | 'ANSWERED' | 'ACTED' | 'DROPPED';
+}): Promise<{ ok: boolean; ts: string; errorCode?: string; message?: string }> {
+  const ts: string = nowIsoBudapestFull();
+  const agbId: string = (payload.agbId ?? '').trim();
+  const reply: string = (payload.reply ?? '').trim();
+  const newStatus: string | undefined = payload.newStatus;
+
+  if (!agbId || !reply) {
+    return {
+      ok: false,
+      ts,
+      errorCode: 'MA-AGB-REPLY-INVALID-PAYLOAD',
+      message: 'agbId and reply required',
+    };
+  }
+
+  const filePath: string = path.join(resolveRepoRoot(), '__agent', 'AGENT_BUS.md');
+
+  try {
+    const content: string = await fs.readFile(filePath, 'utf8');
+    // Header match: `## [STATUS] <agbId> — title`
+    const escapedId: string = agbId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const headerRe: RegExp = new RegExp(`^## \\[(OPEN|ANSWERED|ACTED|DROPPED)\\] ${escapedId}\\s*—\\s*(.+?)$`, 'm');
+    const headerMatch: RegExpMatchArray | null = content.match(headerRe);
+
+    if (!headerMatch || headerMatch.index === undefined) {
+      return {
+        ok: false,
+        ts,
+        errorCode: 'MA-AGB-REPLY-NOT-FOUND',
+        message: `AGB id "${agbId}" not found`,
+      };
+    }
+
+    const headerIdx: number = headerMatch.index;
+    const headerLen: number = headerMatch[0].length;
+    const oldStatus: string = headerMatch[1];
+    const headerTitle: string = headerMatch[2];
+
+    // Block-end: next `## ` line or EOF.
+    const afterHeaderIdx: number = headerIdx + headerLen;
+    const nextRelIdx: number = content.slice(afterHeaderIdx).search(/^## /m);
+    const blockEnd: number = nextRelIdx === -1 ? content.length : afterHeaderIdx + nextRelIdx;
+    const block: string = content.slice(headerIdx, blockEnd);
+
+    // Header reconstruction: [OPEN] → [<newStatus|oldStatus>]
+    const finalStatus: string = newStatus ?? oldStatus;
+    const newHeader: string = `## [${finalStatus}] ${agbId} — ${headerTitle}`;
+
+    // Body transformation (after the header line, before next ##):
+    //   1. Update **Updated:** YYYY-... line to current ts
+    //   2. Append `\n---\n**Update <ts>:** <reply>\n` before block-end (if no trailing `---`, add one)
+    let blockBody: string = block.slice(headerLen); // everything after the header line
+
+    blockBody = blockBody.replace(/\*\*Updated:\*\*\s*([^\n]+)/m, `**Updated:** ${ts}`);
+
+    // Strip trailing whitespace.
+    blockBody = blockBody.replace(/\s+$/, '');
+
+    // Check if the LAST non-empty line is already a `---` — if not, add one.
+    const lines: string[] = blockBody.split(/\r?\n/);
+    let lastNonEmpty: number = lines.length - 1;
+
+    while (lastNonEmpty >= 0 && lines[lastNonEmpty].trim().length === 0) lastNonEmpty--;
+    const hasTrailingSep: boolean = lastNonEmpty >= 0 && lines[lastNonEmpty].trim() === '---';
+
+    const updateLine: string = `**Update ${ts}:** ${reply}`;
+
+    if (hasTrailingSep) {
+      blockBody = `${blockBody}\n${updateLine}\n`;
+    } else {
+      blockBody = `${blockBody}\n\n---\n${updateLine}\n`;
+    }
+
+    // Reattach trailing newline before next block.
+    if (blockEnd < content.length) blockBody = `${blockBody}\n`;
+
+    const next: string = content.slice(0, headerIdx) + newHeader + blockBody + content.slice(blockEnd);
+
+    await fs.writeFile(filePath, next, { encoding: 'utf8' });
+
+    await emitServerActionLog({
+      actor: 'server',
+      kind: 'state-change',
+      summary: `agent-bus reply appended: ${agbId} (${oldStatus}→${finalStatus})`,
+      extra: { issuer: 'reports.util.appendAgentBusReply', agbId, oldStatus, newStatus: finalStatus, ts },
+    });
+
+    return { ok: true, ts };
+  } catch (err) {
+    const e: Error = err instanceof Error ? err : new Error(String(err));
+    const errorCode: string = 'MA-AGB-REPLY-WRITE-FAIL';
+
+    await emitServerActionLog({
+      actor: 'server',
+      kind: 'error',
+      summary: `[${errorCode}] ${e.message.slice(0, 150)}`,
+      extra: { errorCode, issuer: 'reports.util.appendAgentBusReply', agbId, stack: e.stack },
+    });
+
+    return { ok: false, ts, errorCode, message: e.message };
+  }
+}
+
+/** ISO Budapest full (HH:mm), AGB-pattern: `2026-05-17T03:45+02:00`. */
+function nowIsoBudapestFull(): string {
+  const d: Date = new Date();
+  const pad = (n: number): string => String(n).padStart(2, '0');
+  // Offset rendering: Budapest = +02:00 (no DST awareness here — matches AGB convention).
+  const tzMinutes: number = -d.getTimezoneOffset();
+  const tzSign: string = tzMinutes >= 0 ? '+' : '-';
+  const tzAbs: number = Math.abs(tzMinutes);
+  const tzH: string = pad(Math.floor(tzAbs / 60));
+  const tzM: string = pad(tzAbs % 60);
+
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}${tzSign}${tzH}:${tzM}`;
+}
+
 /** Europe/Budapest ISO timestamp, percre kerekítve (`YYYY-MM-DD HH:mm`). */
 function nowIsoBudapestShort(): string {
   const d: Date = new Date();
