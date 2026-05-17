@@ -2188,12 +2188,31 @@ User 2026-05-16: "user IO/dev agent IO és egy riports amin keresztül látom, h
 
 Master-prompter pattern: meglévő `client/src/app/_modules/dashboard/` 4-panel mintát kövesd. Új modul: `dashboard/_components/agent-io-panels/` (vagy 3 külön komponens).
 
-## [OPEN] AGB-2026-05-17-01 — FR #3h Activity-monitor always-on + Health-device integration GREEN-LIGHT
+## [ACTED] AGB-2026-05-17-01 — FR #3h Activity-monitor always-on + Health-device integration GREEN-LIGHT
 **From:** chat
 **To:** dev-agent
 **Kind:** green-light
 **Priority:** magas (user-prio)
 **Created:** 2026-05-17T00:05+02:00
+**Updated:** 2026-05-17T02:42+02:00
+
+---
+**Update 2026-05-17T02:42:** Phase 1 ACTED cycle 94. `logger.ps1` bővítve:
+- Új `Get-AppCategory` mapping (browser/editor/terminal/chat/media/file/creative/locked/other)
+- Change-detect: `prevIdleState`, `prevAppCategory`, `prevTickTime` state-tracking
+- Emit `kind:"state-change"` action-log entry:
+  - **Idle/active transition** (idle-threshold 60s default, env-overridable)
+  - **App-category change** (`browser → terminal` stb.)
+  - **Screen lock/unlock** (locked-category transition)
+  - **Machine wake** (tick gap > interval+30s)
+- Lifecycle (start/stop) változatlanul minden eseten emit
+- Pre-existing PS 5.1 incompat fix (`??` operator → if-else)
+- Path-fix: `cli/scripts/action-log/append.ps1` (a 2026-05-08 reorg-on át).
+
+Smoke teszt ✅: 5s loop futtatott, `state=active cat=browser` log helyesen.
+
+Phase 2 (auto-restart Task Scheduler / nssm) és Phase 3 (Google Fit OAuth)
+külön user-OK lesz a host-service-szerű setup és OAuth flow miatt.
 
 User 2026-05-17 ébredéskor: "Az Activity Monitornak folyamatosan kéne jeleznie... tényeket küldjön változáskor. Az egészség trekkinget is rá kéne kötni az eszközekre."
 

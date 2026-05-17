@@ -18,20 +18,40 @@
 
 param(
     [int]$IntervalSeconds = 60,
+    [int]$IdleThresholdSeconds = 60,  # idleSeconds < threshold → 'active', else 'idle'
     [string]$LogDir = (Join-Path $PSScriptRoot 'data')
 )
 
-# Action-log helper — közös, a my-assistant repo gyökérben
-$projectRoot = Split-Path -Parent $PSScriptRoot
-$actionLogScript = Join-Path $projectRoot 'scripts\action-log\append.ps1'
+# --- App category mapping — FR #3h Phase 1 (cycle 94) ---
+function Get-AppCategory {
+    param([string]$ProcessName)
+    if (-not $ProcessName) { return 'unknown' }
+    $p = $ProcessName.ToLower()
+    if ($p -match 'chrome|firefox|edge|msedge|brave|opera') { return 'browser' }
+    if ($p -match 'code|notepad|sublime|atom|vim|emacs|cursor|claude|webstorm|idea|rider|pycharm') { return 'editor' }
+    if ($p -match 'cmd|powershell|pwsh|wt|windowsterminal|conhost|bash|tmux|alacritty') { return 'terminal' }
+    if ($p -match 'discord|slack|teams|signal|telegram|whatsapp|messenger') { return 'chat' }
+    if ($p -match 'spotify|vlc|music|winmedia|wmplayer|netflix|youtube') { return 'media' }
+    if ($p -match 'explorer|finder|filemanager|totalcmd') { return 'file' }
+    if ($p -match 'photoshop|gimp|krita|inkscape|figma|blender') { return 'creative' }
+    if ($p -match 'lockapp|winlogon') { return 'locked' }
+    return 'other'
+}
+
+# Action-log helper — közös, a my-assistant repo `cli/scripts/action-log/append.ps1`-ben.
+# Cycle 94 fix: a 2026-05-08 reorg óta a scripts/ a cli/ alá került, az eredeti
+# `server/scripts/...` path törött volt.
+$projectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)  # server/activity-monitor → server → my-assistant
+$actionLogScript = Join-Path $projectRoot 'cli\scripts\action-log\append.ps1'
 
 function Write-ActionLog {
     param([string]$Kind, [string]$Summary, [string]$ExtraJson)
     if (-not (Test-Path $actionLogScript)) { return }
     try {
+        $extraArg = if ([string]::IsNullOrEmpty($ExtraJson)) { '' } else { $ExtraJson }
         & powershell -NoProfile -ExecutionPolicy Bypass -File $actionLogScript `
             -Actor 'activity-monitor' -Kind $Kind -Summary $Summary `
-            -ExtraJson ($ExtraJson ?? '') 2>$null | Out-Null
+            -ExtraJson $extraArg 2>$null | Out-Null
     } catch {
         # Swallow — a logging soha ne álljon meg az activity-monitort
     }
@@ -105,14 +125,19 @@ Write-Host "[activity-monitor] Press Ctrl+C to stop." -ForegroundColor Gray
 
 # Lifecycle: start
 Write-ActionLog -Kind 'external-action' `
-    -Summary "activity-monitor started (interval ${IntervalSeconds}s)" `
-    -ExtraJson (@{ intervalSeconds = $IntervalSeconds; logDir = $LogDir; pid = $PID } | ConvertTo-Json -Compress)
+    -Summary "activity-monitor started (interval ${IntervalSeconds}s, idle-threshold ${IdleThresholdSeconds}s)" `
+    -ExtraJson (@{ intervalSeconds = $IntervalSeconds; idleThresholdSeconds = $IdleThresholdSeconds; logDir = $LogDir; pid = $PID } | ConvertTo-Json -Compress)
 
 # Stop hook — Ctrl+C / process exit
 $stopHandler = {
     Write-ActionLog -Kind 'external-action' -Summary 'activity-monitor stopped'
 }
 Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action $stopHandler | Out-Null
+
+# --- FR #3h Phase 1 (cycle 94): change-detect state ---
+$prevIdleState = $null      # 'active' | 'idle'
+$prevAppCategory = $null    # 'browser' | 'editor' | ... | 'locked'
+$prevTickTime = Get-Date    # for sleep/wake detection (large tick-gap)
 
 try {
     while ($true) {
@@ -121,21 +146,64 @@ try {
             $isoTimestamp = $now.ToString('yyyy-MM-ddTHH:mm:sszzz')
             $logFile = Join-Path $LogDir ($now.ToString('yyyy-MM-dd') + '.jsonl')
 
+            $processName = [Win32]::GetActiveProcessName()
+            $windowTitle = [Win32]::GetActiveWindowTitle()
+            $idleSeconds = [Win32]::GetIdleSeconds()
+            $appCategory = Get-AppCategory -ProcessName $processName
+            $idleState = if ($idleSeconds -ge $IdleThresholdSeconds) { 'idle' } else { 'active' }
+
             $entry = [ordered]@{
                 timestamp     = $isoTimestamp
-                processName   = [Win32]::GetActiveProcessName()
-                windowTitle   = [Win32]::GetActiveWindowTitle()
-                idleSeconds   = [Win32]::GetIdleSeconds()
+                processName   = $processName
+                windowTitle   = $windowTitle
+                idleSeconds   = $idleSeconds
+                idleState     = $idleState
+                appCategory   = $appCategory
             }
 
             $json = ($entry | ConvertTo-Json -Compress)
             Add-Content -Path $logFile -Value $json -Encoding utf8
 
-            Write-Host ("[{0}] {1} ({2}) idle={3}s" -f
+            # --- Change-detect: emit state-change action-log on transitions ---
+
+            # Sleep/wake detect — gép aludhatott ha az utolsó tick óta > interval*2 + 30s telt el
+            $gapSeconds = [int]($now - $prevTickTime).TotalSeconds
+            $expectedGap = $IntervalSeconds + 30
+            if ($prevIdleState -ne $null -and $gapSeconds -gt $expectedGap) {
+                Write-ActionLog -Kind 'state-change' `
+                    -Summary "activity-monitor: machine wake detected (gap=${gapSeconds}s)" `
+                    -ExtraJson (@{ event = 'machine-wake'; gapSeconds = $gapSeconds; expectedGap = $expectedGap } | ConvertTo-Json -Compress)
+            }
+            $prevTickTime = $now
+
+            # Idle/active transition
+            if ($prevIdleState -ne $null -and $prevIdleState -ne $idleState) {
+                Write-ActionLog -Kind 'state-change' `
+                    -Summary "activity-monitor: $prevIdleState → $idleState (idle=${idleSeconds}s)" `
+                    -ExtraJson (@{ event = 'idle-transition'; from = $prevIdleState; to = $idleState; idleSeconds = $idleSeconds } | ConvertTo-Json -Compress)
+            }
+            $prevIdleState = $idleState
+
+            # App category change
+            if ($prevAppCategory -ne $null -and $prevAppCategory -ne $appCategory) {
+                # Lock/unlock = 'locked' category → / from
+                $eventSubtype = 'app-category-change'
+                if ($appCategory -eq 'locked') { $eventSubtype = 'screen-locked' }
+                elseif ($prevAppCategory -eq 'locked') { $eventSubtype = 'screen-unlocked' }
+
+                Write-ActionLog -Kind 'state-change' `
+                    -Summary "activity-monitor: $prevAppCategory → $appCategory ($processName)" `
+                    -ExtraJson (@{ event = $eventSubtype; from = $prevAppCategory; to = $appCategory; processName = $processName } | ConvertTo-Json -Compress)
+            }
+            $prevAppCategory = $appCategory
+
+            Write-Host ("[{0}] {1} ({2}) idle={3}s state={4} cat={5}" -f
                 $now.ToString('HH:mm:ss'),
-                $entry.processName,
-                $(if ($entry.windowTitle.Length -gt 60) { $entry.windowTitle.Substring(0,57) + '...' } else { $entry.windowTitle }),
-                $entry.idleSeconds) -ForegroundColor DarkGray
+                $processName,
+                $(if ($windowTitle.Length -gt 50) { $windowTitle.Substring(0,47) + '...' } else { $windowTitle }),
+                $idleSeconds,
+                $idleState,
+                $appCategory) -ForegroundColor DarkGray
         } catch {
             Write-Warning "[activity-monitor] Tick error: $_"
             Write-ActionLog -Kind 'error' -Summary "activity-monitor tick error: $_"
