@@ -2,20 +2,21 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 113                                # Cycle 113 lezárva — spec-coverage a-error.interceptor (107→112)
+cycle: 114                                # Cycle 114 lezárva — spec-coverage a-error.control-service (112→119)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 92-113 marathon (22 cycle / 22 ship-commit):
+  Cycle 92-114 marathon (23 cycle / 23 ship-commit):
     92-94: AGB-20/22/17-01 — 26f0e7d / 3a1f171 / 1b7302f
     95-105: AGB-24 FR #3g Phase 1-6 KOMPLETT — 11 cycle
     106-108: spec-coverage burst (sinusoid + error-extract + dashboard-state) — f9f4419 / 480952d / e9e0e1f
     109-110: doc-sync (CHANGELOG + ARCHITECTURE x2) — f113306 / f9f8919
     111: spec-coverage a-domain-event.data-service — d97dc04
     112: doc-sync DECISIONS.md (DEC-MA-013/014/015) — 1e4f5d5
-    113: spec-coverage a-error.interceptor (107→112) — 762bf8f
-  Tests: 112 pass / 0 failure. Spec-coverage marathon: 60→112 (52 új it 5 cycle alatt).
-  Cycle 114+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (a-auth-interceptor bővítés, a-error.control-service), vagy új FR.
+    113: spec-coverage a-error.interceptor — 762bf8f
+    114: spec-coverage a-error.control-service (112→119) — 65d37fe
+  Tests: 119 pass / 0 failure. Spec-coverage marathon: 60→119 (59 új it 6 cycle alatt).
+  Cycle 115+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (a-server.api-service, a-error-handler.control-service), vagy új FR.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
