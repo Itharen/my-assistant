@@ -2,16 +2,18 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 95                                 # Cycle 95 indul — AGB-24 FR #3g Reports panel Phase 1 (server-side)
-phase: implement                           # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 96                                 # Cycle 96 lezárva — AGB-24 FR #3g Reports panel Phase 1 KOMPLETT (server+client)
+phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 95 indul 2026-05-17T02:50 — AGB-24 FR #3g Reports panel Phase 1.
-  Scope (server-side): 3 új unauth read endpoint:
-    GET /api/reports/frs        → current/feature-requests/*.md scan (status mező)
-    GET /api/reports/cycles     → __agent/log/cycles/*.md scan (cycle-ID + summary + commit)
-    GET /api/reports/recent-ships → action-log szűrve kind:"ship" utolsó N
-  Roll-up cycle 92-94 (AGB-20+23/22/17-01 mind shipped). Cycle 96+: client Reports panel UI.
+  Cycle 92-96 = AGB-20-24 + AGB-17-01 ship-marathon (5 cycle / 5 ship-commit):
+    92: AGB-20+23 URGENT AUTH BLOCKER fix (loopback bypass) — 26f0e7d
+    93: AGB-22 notification-area pozíció (snackbar lent) — 3a1f171
+    94: AGB-17-01 FR #3h Activity-monitor Phase 1 (change-detect) — 1b7302f
+    95: AGB-24 FR #3g Reports panel Phase 1 SERVER (3 endpoint) — 6d474f7
+    96: AGB-24 FR #3g Reports panel Phase 1 CLIENT (kanban + lists) — 089245e
+  Minden AGB Phase 1+ ACTED. Cycle 97+ kandidátus: FR #3g Phase 2 (Dev I/O panel) vagy
+  FR #3h Phase 2 (activity-monitor auto-restart) vagy 🟡 backlog.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:

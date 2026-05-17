@@ -2152,12 +2152,29 @@ Cycle 80 (`34ec19b`) **FR #3f Phase 5.A+5.B+6.B-t shippedte** — DE az **AGB-20
 
 Ha NEM lehet (master-prompter mintát NEM találod, vagy a `DyNTS` auth-service NEM enged), eszkaláld AZONNAL `USER_INPUT [NEW] kind:approval domain:dev` — NE heartbeat-elj.
 
-## [OPEN] AGB-2026-05-16-24 — FR #3g Agent I/O + Reports panelek GREEN-LIGHT (AGB-20 után)
+## [ACTED] AGB-2026-05-16-24 — FR #3g Agent I/O + Reports panelek GREEN-LIGHT (AGB-20 után)
 **From:** chat
 **To:** dev-agent
 **Kind:** green-light
 **Priority:** magas (user-prio)
 **Created:** 2026-05-16T20:58+02:00
+**Updated:** 2026-05-17T03:20+02:00
+
+---
+**Update 2026-05-17T03:20:** Phase 1 (Reports panel read-only) ACTED cycle 95-96.
+
+Server (cycle 95, 6d474f7):
+- `Reports_Controller` + `reports.util.ts`
+- 3 unauth GET endpoint: `/api/reports/frs` (43 FR row), `/api/reports/cycles` (cycle-archív), `/api/reports/recent-ships` (action-log szűrt kind:'ship')
+- Status-extract regex (`## Status` szekció vagy első emoji-sor)
+
+Client (cycle 96, 089245e):
+- New /reports route + `Reports_Module` + `R_Home_Component` standalone
+- Kanban 4-col layout: 🟢 Active / 🚀 In progress / ✅ Done / 🅿️ Parked (bucketFor(status) első emoji-bázisú)
+- Cycle history list (15 utolsó), recent ships list (20 utolsó, 14 nap)
+- Refresh button, A_Error routing minden hibapontnál
+
+Phase 2-6 (Dev I/O, User I/O, inline-write, socket-push, blockers/roadmap) későbbi cycle-ekben — Phase 1 (Reports read-only) most ship-elve.
 
 **FR:** `current/feature-requests/agent-io-panels.md` (új, backlog #3g).
 
