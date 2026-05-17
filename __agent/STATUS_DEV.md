@@ -2,7 +2,7 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 117                                # Cycle 117 lezárva — spec-coverage cli/cast/tts resolveVoice (CLI 31→37)
+cycle: 118                                # Cycle 118 lezárva — spec-coverage cli/output/envelope writeEnvelope (CLI 37→40)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
@@ -16,8 +16,9 @@ phase_notes: |
     113-115: spec-coverage error-flow lefedés (interceptor + control-service + handler) — 762bf8f / 65d37fe / 5e0f8e2
     116: spec-coverage cli/safe-call teardown (CLI 26→31) — a36e0d5
     117: spec-coverage cli/cast/tts resolveVoice (CLI 31→37) — 5403d46
-  Tests: client 123 + cli 37 = 160 pass / 0 failure. Spec-coverage marathon: client 60→123 (63 új it), cli 26→37 (11 új it 2 cycle alatt).
-  Cycle 118+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (volume.command arg-parse, output/envelope bővítés), vagy új FR.
+    118: spec-coverage cli/output/envelope writeEnvelope (CLI 37→40) — d9339ac
+  Tests: client 123 + cli 40 = 163 pass / 0 failure. Spec-coverage marathon: client 60→123 (63 új), cli 26→40 (14 új 3 cycle alatt).
+  Cycle 119+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (volume.command arg-parse, list-interfaces command), vagy új FR.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
