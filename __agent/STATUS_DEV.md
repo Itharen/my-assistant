@@ -2,18 +2,18 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 110                                # Cycle 110 lezárva — doc-sync ARCHITECTURE.md + agent/references (cycle 80-109 lefedve)
+cycle: 111                                # Cycle 111 lezárva — spec-coverage a-domain-event (Subject-bus, 5 it)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 92-110 marathon (19 cycle / 19 ship-commit):
+  Cycle 92-111 marathon (20 cycle / 20 ship-commit):
     92-94: AGB-20/22/17-01 — 26f0e7d / 3a1f171 / 1b7302f
-    95-105: AGB-24 FR #3g Phase 1-6 KOMPLETT — 11 cycle ship-marathon
-    106-108: spec-coverage burst (sinusoid + error-extract + dashboard-state, 88→102) — f9f4419 / 480952d / e9e0e1f
-    109: doc-sync CHANGELOG 0.1.171 milestone — f113306
-    110: doc-sync ARCHITECTURE.md (formal + agent/references both) — f9f8919
-  Tests: 102 pass / 0 failure. Doc-sync most TELJES: CHANGELOG + ARCHITECTURE.md + agent/references mind cycle 109 állapotot tükrözik.
-  Cycle 111+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (a-domain-event tiny, fo-tasks normalise pure), DECISIONS.md sync, vagy új FR.
+    95-105: AGB-24 FR #3g Phase 1-6 KOMPLETT — 11 cycle
+    106-108: spec-coverage burst (sinusoid + error-extract + dashboard-state) — f9f4419 / 480952d / e9e0e1f
+    109-110: doc-sync (CHANGELOG + ARCHITECTURE x2) — f113306 / f9f8919
+    111: spec-coverage a-domain-event.data-service (102→107) — d97dc04
+  Tests: 107 pass / 0 failure.
+  Cycle 112+ kandidátus: 🟡 (#4 triggering / #7e BathCom), DECISIONS.md sync, vagy új FR.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
