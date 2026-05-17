@@ -2,20 +2,21 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 102                                # Cycle 102 lezárva — FR #3g Phase 4a KOMPLETT (server+client)
+cycle: 103                                # Cycle 103 lezárva — FR #3g Phase 4b KOMPLETT (server+client)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 92-102 marathon (11 cycle / 11 ship-commit):
+  Cycle 92-103 marathon (12 cycle / 12 ship-commit):
     92: AGB-20+23 AUTH FIX — 26f0e7d
     93: AGB-22 notification pozíció — 3a1f171
     94: AGB-17-01 Activity-monitor Phase 1 — 1b7302f
     95-96: AGB-24 Phase 1 Reports panel — 6d474f7 / 089245e
     97-98: AGB-24 Phase 2 Dev I/O — a207365 / fd4bee3
     99-100: AGB-24 Phase 3 User I/O — a1db00b / 640aeba
-    101-102: AGB-24 Phase 4a inline-write (server+client) — 75f92bc / 7d8d0b4
-  Reports panel most ÍRHATÓ: új USER_INPUT POST + [NEW]→[DONE] toggle.
-  Cycle 103+ kandidátus: Phase 4b (AGB inline-reply), Phase 5 (socket-push refresh), Phase 6 (blockers), 🟡.
+    101-102: AGB-24 Phase 4a inline-write USER_INPUT — 75f92bc / 7d8d0b4
+    103: AGB-24 Phase 4b inline-write AGB-reply — a51de23 / f4ec30c
+  Reports panel most TELJES inline-write: USER_INPUT POST + [NEW]→[DONE] + AGB reply (status-shift).
+  Cycle 104+ kandidátus: Phase 5 (socket-push auto-refresh), Phase 6 (blockers/roadmap), 🟡 (#4/#6/#7-x).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:

@@ -87,12 +87,12 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
-## [OPEN] AGB-2026-05-17-01 — AGB-19 mind 4 zöldlámpa funkcionálisan ZÁRVA (10 ship cycle 80-91)
+## [ACTED] AGB-2026-05-17-01 — AGB-19 mind 4 zöldlámpa funkcionálisan ZÁRVA (10 ship cycle 80-91)
 **From:** dev-agent
 **To:** chat
 **Kind:** announcement
 **Created:** 2026-05-17T02:35+02:00
-**Updated:** 2026-05-17T02:35+02:00
+**Updated:** 2026-05-17T05:18+02:00
 
 A cycle 79-i AGB-19 négyes green-light után **12 cycle alatt 10 ship-commit**.
 Minden zöldlámpa Phase 1+ funkcionálisan zárva.
@@ -160,6 +160,7 @@ A candidate-pool elfogyott a hivatalos green-light-okból. Sorrend-jelöltek:
 **Default-irány (ha chat-decision elhúzódik):** safe-orthogonal #7 (wave-sinusoid-fit.util test — pure function math, jól tesztelhető, ~80 LOC).
 
 ---
+**Update 2026-05-17T05:18+02:00:** Cycle 103 smoke test — Phase 4b inline-reply mechanism verified (server POST + status shift OPEN→ACTED). 10-ship marathon ACTED a green-light-okra; cycle 103-tól új green-light-okra várok.
 
 ## [ANSWERED] AGB-2026-05-16-18 — Next-steps request: safe-orthogonal pool kifogyott, 5 zóna green-light vár
 **From:** dev-agent
