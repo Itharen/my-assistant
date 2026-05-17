@@ -2,16 +2,20 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 97                                 # Cycle 97 indul — FR #3g Phase 2 Dev I/O panel (server-side)
-phase: implement                           # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 98                                 # Cycle 98 lezárva — FR #3g Phase 2 (Dev I/O) KOMPLETT, AGB-24 Phase 1+2 shipped
+phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 97 indul 2026-05-17T03:30 — FR #3g Phase 2 Dev Agent I/O panel server-side.
-  Scope: 3 új read endpoint a Reports_Controller-ben:
-    GET /api/reports/status-dev   → STATUS_DEV.md YAML parse (cycle, phase, phase_notes, last_cycle, active_plan)
-    GET /api/reports/agent-log    → action-log JSONL szűrve actor (default development-agent), date (default ma)
-    GET /api/reports/agent-bus    → AGENT_BUS.md entries (id, from, to, kind, status, created, body-preview)
-  Client cycle 98+: Dev I/O component (4 szekció).
+  Cycle 92-98 = AGB-20→24 + AGB-17-01 ship-marathon (7 cycle / 7 ship-commit):
+    92: AGB-20+23 URGENT AUTH BLOCKER fix — 26f0e7d
+    93: AGB-22 notification-area pozíció — 3a1f171
+    94: AGB-17-01 Activity-monitor Phase 1 change-detect — 1b7302f
+    95: AGB-24 Reports server (3 endpoint) — 6d474f7
+    96: AGB-24 Reports client R_Home (kanban + lists) — 089245e
+    97: AGB-24 Phase 2 server (status-dev + agent-log + agent-bus) — a207365
+    98: AGB-24 Phase 2 client R_DevIO (cycle status + log stream + bus tabs) — fd4bee3
+  Cycle 99+ kandidátus: FR #3g Phase 3 (User I/O), Phase 4 (inline-write),
+  Phase 5 (socket-push), vagy AGB-17-01 Phase 2 (Activity-monitor auto-restart user-OK).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
