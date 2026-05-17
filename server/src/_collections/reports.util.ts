@@ -42,6 +42,40 @@ export interface ReportShip_Row {
   ldp: string;
 }
 
+/** FR #3g Phase 2 (cycle 97): Dev I/O panel-hez STATUS_DEV YAML snapshot. */
+export interface ReportStatusDev_Snapshot {
+  cycle: number | null;
+  phase: string;
+  phaseNotes: string;
+  lastCycleId: number | null;
+  lastCycleSha: string;
+  activePlan: string;
+  activePlanStep: string;
+  raw: string;
+}
+
+/** Action-log row Dev I/O activity feed-hez (Phase 2). */
+export interface ReportAgentLog_Row {
+  ts: string;
+  actor: string;
+  kind: string;
+  summary: string;
+  ref: string;
+}
+
+/** AGENT_BUS.md egy bejegyzés (Phase 2). */
+export interface ReportAgentBus_Row {
+  id: string;
+  status: 'OPEN' | 'ANSWERED' | 'ACTED' | 'DROPPED' | 'UNKNOWN';
+  title: string;
+  from: string;
+  to: string;
+  kind: string;
+  created: string;
+  updated: string;
+  preview: string;
+}
+
 /** Resolve repo root abszolút útja (3 szint up: server/build/_collections vagy server/src/_collections). */
 function resolveRepoRoot(): string {
   const here: string = path.dirname(fileURLToPath(import.meta.url));
@@ -211,6 +245,158 @@ export async function listRecentShips(limit: number = 30, days: number = 14): Pr
   return result.slice(0, Math.max(1, limit));
 }
 
+/**
+ * FR #3g Phase 2 (cycle 97): STATUS_DEV.md snapshot olvasás + YAML-ish parse.
+ * A fájl tetején van egy ```yaml block; regex-kompatibilis parse.
+ */
+export async function readStatusDev(): Promise<ReportStatusDev_Snapshot> {
+  const filePath: string = path.join(resolveRepoRoot(), '__agent', 'STATUS_DEV.md');
+  const empty: ReportStatusDev_Snapshot = {
+    cycle: null, phase: '', phaseNotes: '',
+    lastCycleId: null, lastCycleSha: '',
+    activePlan: '', activePlanStep: '',
+    raw: '',
+  };
+
+  try {
+    const content: string = await fs.readFile(filePath, 'utf8');
+    const yamlMatch: RegExpMatchArray | null = content.match(/```yaml\s*\n([\s\S]*?)\n```/);
+    const yamlBlock: string = yamlMatch ? yamlMatch[1] : '';
+
+    return {
+      cycle: parseYamlInt(yamlBlock, /^cycle:\s*(\d+)/m),
+      phase: parseYamlString(yamlBlock, /^phase:\s*([^\s#]+)/m),
+      phaseNotes: parseYamlMultiline(yamlBlock, /^phase_notes:\s*\|\s*\n([\s\S]*?)(?=^\w|^#|^$)/m),
+      lastCycleId: parseYamlInt(yamlBlock, /cycle_id:\s*(\d+)/m),
+      lastCycleSha: parseYamlString(yamlBlock, /commit_sha:\s*([^\n#]+)/m),
+      activePlan: parseYamlString(yamlBlock, /active_plan:[\s\S]*?path:\s*([^\n#]+)/m),
+      activePlanStep: parseYamlString(yamlBlock, /active_plan:[\s\S]*?current_step:\s*"?([^"\n#]+)"?/m),
+      raw: yamlBlock.slice(0, 4000),
+    };
+  } catch (err) {
+    const e: Error = err instanceof Error ? err : new Error(String(err));
+
+    await emitServerActionLog({
+      actor: 'server',
+      kind: 'error',
+      summary: `[MA-REPORTS-STATUS-DEV-FAIL] ${e.message.slice(0, 150)}`,
+      extra: { errorCode: 'MA-REPORTS-STATUS-DEV-FAIL', issuer: 'reports.util.readStatusDev' },
+    });
+
+    return empty;
+  }
+}
+
+/** Action-log JSONL szűrt olvasás (default: ma, actor=development-agent). */
+export async function listAgentLog(opts: { date?: string; actor?: string; limit?: number } = {}): Promise<ReportAgentLog_Row[]> {
+  const date: string = opts.date ?? new Date().toISOString().slice(0, 10);
+  const actorFilter: string = opts.actor ?? 'development-agent';
+  const limit: number = Math.max(1, Math.min(500, opts.limit ?? 100));
+  const filePath: string = path.join(resolveRepoRoot(), '__agent', 'log', 'actions', `${date}.jsonl`);
+  const result: ReportAgentLog_Row[] = [];
+
+  try {
+    const content: string = await fs.readFile(filePath, 'utf8');
+    const lines: string[] = content.split(/\r?\n/).filter((l): boolean => l.trim().length > 0);
+
+    for (const line of lines) {
+      try {
+        const raw: { ts?: string; actor?: string; kind?: string; summary?: string; ref?: string } =
+          JSON.parse(line) as typeof raw;
+
+        if (!raw.ts || !raw.actor) continue;
+        if (actorFilter !== '*' && raw.actor !== actorFilter) continue;
+
+        result.push({
+          ts: raw.ts,
+          actor: raw.actor,
+          kind: raw.kind ?? 'unknown',
+          summary: raw.summary ?? '',
+          ref: raw.ref ?? '',
+        });
+      } catch {
+        // Skip bad lines.
+      }
+    }
+  } catch {
+    // No log file for this day — return empty.
+  }
+
+  // Most-recent first.
+  result.sort((a, b): number => new Date(b.ts).getTime() - new Date(a.ts).getTime());
+
+  return result.slice(0, limit);
+}
+
+/**
+ * AGENT_BUS.md bejegyzés-parser. Egy bejegyzés-fej formátum:
+ *
+ *     ## [STATUS] AGB-2026-05-17-NN — Title
+ *     **From:** x
+ *     **To:** y
+ *     **Kind:** z
+ *     **Created:** ...
+ *     **Updated:** ...
+ *
+ *     body...
+ */
+export async function listAgentBus(limit: number = 30): Promise<ReportAgentBus_Row[]> {
+  const filePath: string = path.join(resolveRepoRoot(), '__agent', 'AGENT_BUS.md');
+  const result: ReportAgentBus_Row[] = [];
+
+  try {
+    const content: string = await fs.readFile(filePath, 'utf8');
+    // Split a fő bejegyzés-fejekre.
+    const headerRe: RegExp = /^## \[(OPEN|ANSWERED|ACTED|DROPPED)\] (AGB[-A-Z0-9]+|AGB-EXAMPLE-\d+)\s*—\s*(.+?)$/gm;
+    let match: RegExpExecArray | null;
+    const entries: { idx: number; status: string; id: string; title: string }[] = [];
+
+    while ((match = headerRe.exec(content)) !== null) {
+      entries.push({
+        idx: match.index,
+        status: match[1],
+        id: match[2],
+        title: match[3].trim(),
+      });
+    }
+
+    // Skip the AGB-EXAMPLE-001 séma-illusztráció.
+    const real = entries.filter((e): boolean => !e.id.startsWith('AGB-EXAMPLE'));
+
+    for (let i: number = 0; i < real.length; i++) {
+      const e = real[i];
+      const endIdx: number = i + 1 < real.length ? real[i + 1].idx : Math.min(e.idx + 2000, content.length);
+      const block: string = content.slice(e.idx, endIdx);
+
+      result.push({
+        id: e.id,
+        status: e.status as ReportAgentBus_Row['status'],
+        title: e.title,
+        from: parseFieldFromBlock(block, /\*\*From:\*\*\s*(.+?)$/m),
+        to: parseFieldFromBlock(block, /\*\*To:\*\*\s*(.+?)$/m),
+        kind: parseFieldFromBlock(block, /\*\*Kind:\*\*\s*(.+?)$/m),
+        created: parseFieldFromBlock(block, /\*\*Created:\*\*\s*(.+?)$/m),
+        updated: parseFieldFromBlock(block, /\*\*Updated:\*\*\s*(.+?)$/m),
+        preview: extractAgbPreview(block),
+      });
+    }
+  } catch (err) {
+    const e: Error = err instanceof Error ? err : new Error(String(err));
+
+    await emitServerActionLog({
+      actor: 'server',
+      kind: 'error',
+      summary: `[MA-REPORTS-AGENT-BUS-FAIL] ${e.message.slice(0, 150)}`,
+      extra: { errorCode: 'MA-REPORTS-AGENT-BUS-FAIL', issuer: 'reports.util.listAgentBus' },
+    });
+  }
+
+  // Most-recent first (created ts descending).
+  result.sort((a, b): number => (b.created || '').localeCompare(a.created || ''));
+
+  return result.slice(0, Math.max(1, limit));
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 /** FR title az első `# FR:` / `# ...` heading-ből. */
@@ -259,4 +445,61 @@ function extractCycleCommit(md: string): string | null {
   const m: RegExpMatchArray | null = md.match(/\*\*Commit:\*\*\s*([a-f0-9]{7,40})/);
 
   return m ? m[1] : null;
+}
+
+/** YAML int parse — visszaad null-t ha nincs match. */
+function parseYamlInt(yaml: string, re: RegExp): number | null {
+  const m: RegExpMatchArray | null = yaml.match(re);
+
+  return m ? parseInt(m[1], 10) : null;
+}
+
+/** YAML string parse — visszaad '' ha nincs match. Trim + quote strip. */
+function parseYamlString(yaml: string, re: RegExp): string {
+  const m: RegExpMatchArray | null = yaml.match(re);
+
+  if (!m) return '';
+
+  return m[1].trim().replace(/^["']|["']$/g, '').replace(/\s*#.*$/, '').trim();
+}
+
+/** YAML multi-line value (pipe `|` block). */
+function parseYamlMultiline(yaml: string, re: RegExp): string {
+  const m: RegExpMatchArray | null = yaml.match(re);
+
+  if (!m) return '';
+  // Strip indent (first line's leading whitespace).
+  const lines: string[] = m[1].split(/\r?\n/);
+  const minIndent: number = lines.filter((l): boolean => l.trim().length > 0)
+    .map((l): number => l.match(/^ */)?.[0].length ?? 0)
+    .reduce((min, n): number => Math.min(min, n), 999);
+
+  return lines.map((l): string => l.slice(minIndent)).join('\n').trim();
+}
+
+/** AGENT_BUS block-ból mezőt parsol. */
+function parseFieldFromBlock(block: string, re: RegExp): string {
+  const m: RegExpMatchArray | null = block.match(re);
+
+  return m ? m[1].trim() : '';
+}
+
+/** AGB body preview — első nem-üres, nem-header sor a fejléc-mezők után. */
+function extractAgbPreview(block: string): string {
+  const lines: string[] = block.split(/\r?\n/);
+  let pastHeader: boolean = false;
+
+  for (const l of lines) {
+    if (l.startsWith('**Updated:**')) { pastHeader = true; continue; }
+    if (!pastHeader) continue;
+    const trimmed: string = l.trim();
+
+    if (trimmed.length === 0) continue;
+    if (trimmed.startsWith('---')) continue;
+    if (trimmed.startsWith('##')) break;
+
+    return trimmed.slice(0, 200);
+  }
+
+  return '';
 }

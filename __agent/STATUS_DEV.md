@@ -2,18 +2,16 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 96                                 # Cycle 96 lezárva — AGB-24 FR #3g Reports panel Phase 1 KOMPLETT (server+client)
-phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
+cycle: 97                                 # Cycle 97 indul — FR #3g Phase 2 Dev I/O panel (server-side)
+phase: implement                           # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 92-96 = AGB-20-24 + AGB-17-01 ship-marathon (5 cycle / 5 ship-commit):
-    92: AGB-20+23 URGENT AUTH BLOCKER fix (loopback bypass) — 26f0e7d
-    93: AGB-22 notification-area pozíció (snackbar lent) — 3a1f171
-    94: AGB-17-01 FR #3h Activity-monitor Phase 1 (change-detect) — 1b7302f
-    95: AGB-24 FR #3g Reports panel Phase 1 SERVER (3 endpoint) — 6d474f7
-    96: AGB-24 FR #3g Reports panel Phase 1 CLIENT (kanban + lists) — 089245e
-  Minden AGB Phase 1+ ACTED. Cycle 97+ kandidátus: FR #3g Phase 2 (Dev I/O panel) vagy
-  FR #3h Phase 2 (activity-monitor auto-restart) vagy 🟡 backlog.
+  Cycle 97 indul 2026-05-17T03:30 — FR #3g Phase 2 Dev Agent I/O panel server-side.
+  Scope: 3 új read endpoint a Reports_Controller-ben:
+    GET /api/reports/status-dev   → STATUS_DEV.md YAML parse (cycle, phase, phase_notes, last_cycle, active_plan)
+    GET /api/reports/agent-log    → action-log JSONL szűrve actor (default development-agent), date (default ma)
+    GET /api/reports/agent-bus    → AGENT_BUS.md entries (id, from, to, kind, status, created, body-preview)
+  Client cycle 98+: Dev I/O component (4 szekció).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
