@@ -2,23 +2,22 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 104                                # Cycle 104 lezárva — FR #3g Phase 5 KOMPLETT (socket-push auto-refresh)
+cycle: 105                                # Cycle 105 lezárva — FR #3g Phase 6 KOMPLETT (blockers + roadmap)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 92-104 marathon (13 cycle / 13 ship-commit):
-    92: AGB-20+23 AUTH FIX — 26f0e7d
-    93: AGB-22 notification pozíció — 3a1f171
-    94: AGB-17-01 Activity-monitor Phase 1 — 1b7302f
+  Cycle 92-105 marathon (14 cycle / 14 ship-commit):
+    92-94: AGB-20/22/17-01 (AUTH, notification, activity-monitor) — 26f0e7d / 3a1f171 / 1b7302f
     95-96: AGB-24 Phase 1 Reports panel — 6d474f7 / 089245e
     97-98: AGB-24 Phase 2 Dev I/O — a207365 / fd4bee3
     99-100: AGB-24 Phase 3 User I/O — a1db00b / 640aeba
     101-102: AGB-24 Phase 4a inline-write USER_INPUT — 75f92bc / 7d8d0b4
     103: AGB-24 Phase 4b inline-write AGB-reply — a51de23 / f4ec30c
     104: AGB-24 Phase 5 socket-push auto-refresh — ed62f3a
-  Reports panel most LIVE: server broadcast user-input.create/update + agent-bus.update,
-  R_UserIO + R_DevIO push-driven silent refresh (no flicker, no manual ↻ Refresh).
-  Cycle 105+ kandidátus: Phase 6 (blockers/roadmap + plan-doc step viz), 🟡 (#4/#6/#7-x), spec-coverage.
+    105: AGB-24 Phase 6 blockers + roadmap — f789670
+  FR #3g (Reports/User/Dev I/O panel) most FULL: Phase 1-6 mind shipped.
+  Read + Write + Push + Roadmap + Blockers — 9 GET + 3 POST endpoint, 3 panel, socket-push live.
+  Cycle 106+ kandidátus: 🟡 (#4 triggering / #6 food / #7-x), spec-coverage, doc-sync stale 68+, vagy új FR.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
