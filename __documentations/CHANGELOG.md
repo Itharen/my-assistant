@@ -100,6 +100,70 @@
 
 ---
 
+## 0.1.171 — 2026-05-17 — FR #3g full ship + Wave/Socket Phase 5 + spec-coverage burst (cumulative cycle 69-108)
+
+> **Megjegyzés:** ez a milestone két marathon-burst-öt fed le egy napon belül: AGB-19 zöldlámpa-flotta (Wave Phase 5, FR #3f Phase 5, FR #5/#8a Phase 1) és AGB-24 (Reports/Dev/User I/O panel teljes szériája Phase 1-6). 22 ship-commit + 18 close-commit, ~2500 LOC delta.
+
+**Sub-projekt verziók (mind 0.1.171):**
+- `cli/package.json` → `@my-assistant/cli` v0.1.171
+- `server/package.json` → `@my-assistant/server` v0.1.171
+- `client/package.json` → `@my-assistant/client` v0.1.171
+- `package.json` (root) → `my-assistant` v0.1.171
+
+**Highlights — Wave Phase 5 (cycle 80-89, AGB-2026-05-16-19 green-light):**
+
+- 📈 **X-tengely density-aware ticks** (Phase 5a) — wave-panel x-tick formátum a range alapján (h/d/w/m)
+- 📈 **Sin/cos least-squares fit overlay** (Phase 5b) — 3-paraméteres `y=A·sin(ωt)+B·cos(ωt)+C` regresszió, period-scan SSR-alapon, lunar default 29.5d (`wave-sinusoid-fit.util.ts`)
+- 🎛 **Interval picker + localStorage persist** (Phase 5c) — user-választott rangeHours [1..24×365], `ma:wave-range-hours` kulcs
+- 🖼 **Fullscreen toggle + ESC** (Phase 5d)
+- 💬 **Per-point hover tooltip** (Phase 5e.1) — native tooltip (no Material dep)
+- 🌫 **Wave marker overlay** (Phase 5e.2+.3) — `GET /api/wave/markers` action-log-szűrt (`event_class IN [törés, megoszló-erő, 3x3-trigger]`), kliens render emojikkel a chart-on (`wave-markers.util.ts` + `wave-markers.controller.ts`)
+
+**Highlights — FR #3f Phase 5+6 socket-push (cycle 80-82, AGB-2026-05-16-19):**
+
+- 📡 **Server `broadcastDomainEvent(topic, op, payload)`** — `VersionBroadcast_SocketServerService` bővítés: minden mutation után `domain:<topic>` push. Csatlakozási pontok: wave/insight/capture/wave-jsonl/auth-wave (Phase 5.A+5.B-extra)
+- 📡 **Client `A_DomainEvent_DataService`** — Subject-event-bus, `A_Socket_ControlService` domain:* handler emit-tel rá (Phase 5.C)
+- 🔄 **`D_Dashboard_ControlService` push-driven refresh** — `DASHBOARD_TOPICS = {wave,insight,capture}` subscription, no-polling-delay frissítés
+- 🌐 **`GET /api/version` endpoint** (Phase 6.B) — server runtime version exposed (6.A skipped DyNTS-limitation miatt, 6.C build-hash inject deferred)
+
+**Highlights — FR #5 + #8a Phase 1 (cycle 90-91, AGB-2026-05-16-19 🟡 unlock):**
+
+- 🌧 **`WeatherPoll_Service`** — OpenMeteo polling (15min interval, 5s grace), dry→rain transition: action-log emit (`kind:'note'` + `event_class:'3x3-trigger'` + `subtype:'rain'`) + domain-event broadcast (`weather.create`). `GET /api/weather/snapshot` lekérhető (No-paid-solutions principle: OpenMeteo unauth).
+- 😴 **`SleepState_Service`** + `GET /api/sleep-state` — env-overrideable window (default 02:00-10:00 wrap-around), Cron Job sleep-aware filter számára (FR #5 Phase 1 MVP). MA_SLEEP_START_HOUR / MA_SLEEP_END_HOUR env-flag.
+
+**Highlights — AGB-20/22/17-01 + AGB-23 fixes (cycle 92-94):**
+
+- 🔐 **AGB-20 AUTH BLOCKER fix** — `Auth_ControlService` loopback-bypass (MA_LOCAL_DEV=true + req.ip ∈ {127.0.0.1, ::1, ::ffff:127.0.0.1}). Server `.env` gitignored — minden `/api/*` most 200 dev-en (volt: 401)
+- 📢 **AGB-22 notification position fix** — `verticalPosition: 'bottom'` explicit a DyNX_Message-CS-hez (default top eltakarja a header-t) + defensive global CSS top-padding fallback
+- 🖥 **AGB-17-01 Activity-monitor Phase 1** — `Get-AppCategory` state-change detect (idle-transition, app-category-change, screen-locked/unlocked, machine-wake), PS 5.1 compat fix (`??` → if-else), path-fix (`scripts/` → `cli/scripts/` reorg-aware)
+
+**Highlights — AGB-24 FR #3g Reports/Dev/User I/O panel TELJES (cycle 95-105, 11 cycle):**
+
+- 📊 **3 panel route** — `/reports` (R_Home: FR-board kanban + cycle history + recent ships), `/reports/dev-io` (R_DevIO: status-dev + action-log stream + AGENT_BUS), `/reports/user-io` (R_UserIO: USER_INPUT inbox + open-Q outbox)
+- 🌐 **9 GET endpoint** unauth — `/reports/{frs,cycles,recent-ships,status-dev,agent-log,agent-bus,user-input,open-questions,active-plans,blockers}`
+- ✏️ **3 POST endpoint** inline-write — `/reports/user-input` (új [NEW] blokk), `/reports/user-input/done` ([NEW]→[DONE] toggle), `/reports/agent-bus/reply` (AGB inline-reply + status-shift OPEN→ANSWERED/ACTED/DROPPED). `server/_collections/reports.util.ts` 1130L (parsing helpers + write transformers)
+- 📡 **Phase 5 socket-push auto-refresh** — server `broadcastDomainEvent('user-input'|'agent-bus', ...)`, client R_DevIO+R_UserIO subscribe → silent `refreshFromPush()` no-flicker
+- 🗺 **Phase 6 blockers + roadmap** — `listActivePlans()` (15 plan parsing: title, totalPhases via `## Phase N.X — title`, completedPhases via `**N.X** ... ✅` scope-table) + `listBlockers()` (OPEN AGBs kind=question|block OR stale>24h, announcement-szűréssel)
+- 🎨 **R_Home kanban** (4 col: 🟢/🚀/✅/🅿️) + plan-progress-bar + blocker-list with age-badge
+
+**Highlights — spec-coverage burst (cycle 106-108):**
+
+- 🧪 **`wave-sinusoid-fit.util.spec.ts`** (12 it) — fitSinusoid LSQ recovery + null/degenerate + SSR + pickBestPeriod candidates + sampleSinFit clamp
+- 🧪 **`error-extract.util.spec.ts`** (16 it) — plain Error + string + HttpErrorResponse 5 ág + DyFM_Error 3 ág + unknown/circular fallback + source param
+- 🧪 **`d-dashboard.data-service.spec.ts`** (14 it) — BehaviorSubject state (loading/snapshot/error/markers) + 2 static helper (seriesFor / latestValue)
+
+**Plan-ek lezárva (Phase 5 functionally):**
+- `wave-panel-ui.plan.md` Phase 5a-e ✅ shipped
+- `socket-and-version-sync.plan.md` Phase 5 ✅ shipped (Phase 6.C deferred)
+
+**Tests:** cli 26 + server 2 + client 74 = **102 spec, 0 failure** (88 → 102 a Phase 5 + spec-coverage marathon-nal)
+
+**Cycle stats:** 40 cycle (69-108) ~24h-n belül; ~2500 LOC delta; 22 ship-commit + 18 close-commit. Bump-version 0.1.112 → 0.1.171 (59 patch-bumps).
+
+**Decisions:** lásd [`DECISIONS.md`](DECISIONS.md) (új DEC-MA-* sorok pending — broadcastDomainEvent topic-route, loopback auth-bypass + MA_LOCAL_DEV env-flag, push-driven silent refresh).
+
+---
+
 ## Convention új release-hez
 
 ```markdown
