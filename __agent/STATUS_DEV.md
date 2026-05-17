@@ -2,19 +2,18 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 109                                # Cycle 109 lezárva — doc-sync CHANGELOG 0.1.171 milestone (cycle 69-108 lefedve)
+cycle: 110                                # Cycle 110 lezárva — doc-sync ARCHITECTURE.md + agent/references (cycle 80-109 lefedve)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 92-109 marathon (18 cycle / 18 ship-commit):
+  Cycle 92-110 marathon (19 cycle / 19 ship-commit):
     92-94: AGB-20/22/17-01 — 26f0e7d / 3a1f171 / 1b7302f
-    95-105: AGB-24 FR #3g Phase 1-6 KOMPLETT — 11 cycle ship-marathon (FR teljes)
-    106: spec-coverage wave-sinusoid-fit (60→72) — f9f4419
-    107: spec-coverage error-extract.util (72→88) — 480952d
-    108: spec-coverage d-dashboard.data-service (88→102) — e9e0e1f
+    95-105: AGB-24 FR #3g Phase 1-6 KOMPLETT — 11 cycle ship-marathon
+    106-108: spec-coverage burst (sinusoid + error-extract + dashboard-state, 88→102) — f9f4419 / 480952d / e9e0e1f
     109: doc-sync CHANGELOG 0.1.171 milestone — f113306
-  Tests: 102 pass / 0 failure. CHANGELOG sync 0.1.112 (cycle 68) → 0.1.171 (cycle 108) lefedve egy összegző entry-vel.
-  Cycle 110+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (a-domain-event, fo-tasks normalise pure helpers), ARCHITECTURE.md sync, vagy új FR.
+    110: doc-sync ARCHITECTURE.md (formal + agent/references both) — f9f8919
+  Tests: 102 pass / 0 failure. Doc-sync most TELJES: CHANGELOG + ARCHITECTURE.md + agent/references mind cycle 109 állapotot tükrözik.
+  Cycle 111+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (a-domain-event tiny, fo-tasks normalise pure), DECISIONS.md sync, vagy új FR.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
