@@ -61,13 +61,41 @@
     <ul class="bus-list">
       @for (row of filteredBus; track row.id) {
         <li class="bus-row">
-          <span [ngClass]="['bus-status', classForStatus(row.status)]">{{ row.status }}</span>
-          <span class="bus-id mono">{{ row.id }}</span>
-          <span class="bus-from-to mono">{{ row.from }} → {{ row.to }}</span>
-          <span class="bus-kind">{{ row.kind }}</span>
-          <span class="bus-title">{{ row.title }}</span>
+          <div class="bus-head">
+            <span [ngClass]="['bus-status', classForStatus(row.status)]">{{ row.status }}</span>
+            <span class="bus-id mono">{{ row.id }}</span>
+            <span class="bus-from-to mono">{{ row.from }} → {{ row.to }}</span>
+            <span class="bus-kind">{{ row.kind }}</span>
+            <span class="bus-title">{{ row.title }}</span>
+            <button type="button" class="reply-btn"
+                    [class.open]="isReplyOpen(row.id)"
+                    [disabled]="isReplyBusy(row.id)"
+                    (click)="toggleReplyForm(row.id)">
+              {{ isReplyOpen(row.id) ? '▾ ✏️' : '▸ ✏️ reply' }}
+            </button>
+            @if (replyAckId === row.id) { <small class="ack">✓ rögzítve</small> }
+          </div>
           @if (row.preview) {
             <p class="bus-preview muted">{{ row.preview }}</p>
+          }
+          @if (isReplyOpen(row.id)) {
+            <div class="reply-form">
+              <textarea [(ngModel)]="replyText" rows="3" placeholder="válasz / update szöveg..." [maxlength]="2000"></textarea>
+              <div class="reply-footer">
+                <label class="status-pick">
+                  <span class="lbl">status:</span>
+                  <select [(ngModel)]="replyNewStatus">
+                    @for (s of replyStatusOptions; track s) { <option [value]="s">{{ s }}</option> }
+                  </select>
+                </label>
+                <button type="button" class="cancel" (click)="toggleReplyForm(row.id)" [disabled]="isReplyBusy(row.id)">Mégse</button>
+                <button type="button" class="submit"
+                        [disabled]="isReplyBusy(row.id) || !replyText.trim()"
+                        (click)="handleReplySubmit(row)">
+                  {{ isReplyBusy(row.id) ? '…' : '➜ Küld' }}
+                </button>
+              </div>
+            </div>
           }
         </li>
       }

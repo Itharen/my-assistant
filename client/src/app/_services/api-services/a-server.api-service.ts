@@ -251,6 +251,23 @@ export class A_Server_ApiService {
     );
   }
 
+  /** POST `/reports/agent-bus/reply` — AGB inline-reply append (FR #3g Phase 4b, cycle 103). */
+  async postAgentBusReply(payload: {
+    agbId: string;
+    reply: string;
+    newStatus?: 'OPEN' | 'ANSWERED' | 'ACTED' | 'DROPPED';
+  }): Promise<{ ok: boolean; ts: string; errorCode?: string; message?: string }> {
+    return this.Đ_AS.call<{ ok: boolean; ts: string; errorCode?: string; message?: string }, typeof payload>(
+      new DyNX_ApiCall_Settings({
+        name: 'postAgentBusReply',
+        type: DyFM_HttpCallType.post,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/reports/agent-bus/reply',
+      }),
+      { body: payload },
+    );
+  }
+
   /**
    * POST `/wave/log-public` — unauth új-snapshot append a `3x3-log.jsonl`-be.
    * A response 200/400 alapján a hívó eldönti az ack/error útvonalat

@@ -9,6 +9,7 @@
 
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { A_Server_ApiService } from '../../../../_services/api-services/a-server.api-service';
@@ -20,13 +21,14 @@ import {
 } from '../../../../_models/server-envelope.interface';
 
 type BusTab = 'all' | 'to-chat' | 'from-chat';
+type AgbNewStatus = 'OPEN' | 'ANSWERED' | 'ACTED' | 'DROPPED';
 
 @Component({
   standalone: true,
   selector: 'r-dev-io',
   templateUrl: './r-dev-io.component.html',
   styleUrl: './r-dev-io.component.scss',
-  imports: [ CommonModule, RouterModule ],
+  imports: [ CommonModule, FormsModule, RouterModule ],
 })
 /** Dev Agent I/O panel — 3 szekció read-only, párhuzamos fetch. */
 export class R_DevIO_Component implements OnInit {
@@ -39,6 +41,14 @@ export class R_DevIO_Component implements OnInit {
   log: A_ReportAgentLog_Row[] = [];
   bus: A_ReportAgentBus_Row[] = [];
   busTab: BusTab = 'all';
+
+  /** FR #3g Phase 4b (cycle 103): inline-reply state per AGB row. */
+  replyOpenId: string | null = null;
+  replyBusyIds: Set<string> = new Set<string>();
+  replyAckId: string | null = null;
+  replyText: string = '';
+  replyNewStatus: AgbNewStatus = 'ANSWERED';
+  readonly replyStatusOptions: AgbNewStatus[] = [ 'OPEN', 'ANSWERED', 'ACTED', 'DROPPED' ];
 
   /** Boot fetch — 3 endpoint párhuzamosan. */
   async ngOnInit(): Promise<void> {
@@ -94,5 +104,58 @@ export class R_DevIO_Component implements OnInit {
   /** Színkód a status-hoz: OPEN/sárga, ANSWERED/kék, ACTED/zöld, DROPPED/szürke. */
   classForStatus(status: string): string {
     return `status-${status.toLowerCase()}`;
+  }
+
+  // ── FR #3g Phase 4b (cycle 103): AGB inline-reply ──
+
+  toggleReplyForm(agbId: string): void {
+    if (this.replyOpenId === agbId) {
+      this.replyOpenId = null;
+      this.replyText = '';
+
+      return;
+    }
+    this.replyOpenId = agbId;
+    this.replyText = '';
+    this.replyNewStatus = 'ANSWERED';
+    this.replyAckId = null;
+  }
+
+  isReplyOpen(agbId: string): boolean {
+    return this.replyOpenId === agbId;
+  }
+
+  isReplyBusy(agbId: string): boolean {
+    return this.replyBusyIds.has(agbId);
+  }
+
+  async handleReplySubmit(row: A_ReportAgentBus_Row): Promise<void> {
+    const text: string = this.replyText.trim();
+
+    if (!text || this.replyBusyIds.has(row.id)) return;
+
+    this.replyBusyIds.add(row.id);
+    this.replyAckId = null;
+    try {
+      const result = await this.api.postAgentBusReply({
+        agbId: row.id,
+        reply: text,
+        newStatus: this.replyNewStatus,
+      });
+
+      if (!result.ok) {
+        this.error_CS.showError(new Error(`[${result.errorCode}] ${result.message}`), 'r-dev-io.reply');
+
+        return;
+      }
+      this.replyAckId = row.id;
+      this.replyText = '';
+      this.replyOpenId = null;
+      await this.ngOnInit();
+    } catch (err) {
+      this.error_CS.showError(err, 'r-dev-io.reply');
+    } finally {
+      this.replyBusyIds.delete(row.id);
+    }
   }
 }
