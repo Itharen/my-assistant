@@ -2,11 +2,11 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 105                                # Cycle 105 lezárva — FR #3g Phase 6 KOMPLETT (blockers + roadmap)
+cycle: 106                                # Cycle 106 lezárva — spec-coverage wave-sinusoid-fit (12 új teszt)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 92-105 marathon (14 cycle / 14 ship-commit):
+  Cycle 92-106 marathon (15 cycle / 15 ship-commit):
     92-94: AGB-20/22/17-01 (AUTH, notification, activity-monitor) — 26f0e7d / 3a1f171 / 1b7302f
     95-96: AGB-24 Phase 1 Reports panel — 6d474f7 / 089245e
     97-98: AGB-24 Phase 2 Dev I/O — a207365 / fd4bee3
@@ -14,10 +14,10 @@ phase_notes: |
     101-102: AGB-24 Phase 4a inline-write USER_INPUT — 75f92bc / 7d8d0b4
     103: AGB-24 Phase 4b inline-write AGB-reply — a51de23 / f4ec30c
     104: AGB-24 Phase 5 socket-push auto-refresh — ed62f3a
-    105: AGB-24 Phase 6 blockers + roadmap — f789670
-  FR #3g (Reports/User/Dev I/O panel) most FULL: Phase 1-6 mind shipped.
-  Read + Write + Push + Roadmap + Blockers — 9 GET + 3 POST endpoint, 3 panel, socket-push live.
-  Cycle 106+ kandidátus: 🟡 (#4 triggering / #6 food / #7-x), spec-coverage, doc-sync stale 68+, vagy új FR.
+    105: AGB-24 Phase 6 blockers + roadmap (FR #3g TELJES) — f789670
+    106: spec-coverage wave-sinusoid-fit (60→72 specs) — f9f4419
+  Tests: 72 pass / 0 failure. LDP 11/11 zöld.
+  Cycle 107+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (wave-markers util), doc-sync stale 68+, vagy új FR.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
