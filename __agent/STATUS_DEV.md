@@ -2,23 +2,22 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 115                                # Cycle 115 lezárva — spec-coverage a-error-handler.control-service (119→123)
+cycle: 116                                # Cycle 116 lezárva — spec-coverage cli/safe-call (CLI 26→31, client 123)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
-  Cycle 92-115 marathon (24 cycle / 24 ship-commit):
+  Cycle 92-116 marathon (25 cycle / 25 ship-commit):
     92-94: AGB-20/22/17-01 — 26f0e7d / 3a1f171 / 1b7302f
     95-105: AGB-24 FR #3g Phase 1-6 KOMPLETT — 11 cycle
     106-108: spec-coverage burst (sinusoid + error-extract + dashboard-state) — f9f4419 / 480952d / e9e0e1f
     109-110: doc-sync (CHANGELOG + ARCHITECTURE x2) — f113306 / f9f8919
     111: spec-coverage a-domain-event.data-service — d97dc04
     112: doc-sync DECISIONS.md (DEC-MA-013/014/015) — 1e4f5d5
-    113: spec-coverage a-error.interceptor — 762bf8f
-    114: spec-coverage a-error.control-service — 65d37fe
-    115: spec-coverage a-error-handler.control-service (119→123) — 5e0f8e2
-  Tests: 123 pass / 0 failure. Spec-coverage marathon: 60→123 (63 új it 7 cycle alatt).
-  Error-flow most TELJESEN lefedve: extract util + interceptor + control-service + Angular ErrorHandler.
-  Cycle 116+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (a-server.api-service nagy, a-socket.control-service complex), vagy új FR.
+    113-115: spec-coverage error-flow lefedés (interceptor + control-service + handler) — 762bf8f / 65d37fe / 5e0f8e2
+    116: spec-coverage cli/safe-call teardown (CLI 26→31) — a36e0d5
+  Tests: client 123 + cli 31 = 154 pass / 0 failure. Spec-coverage marathon: client 60→123 (63 új it), cli 26→31 (5 új it).
+  Error-flow most TELJESEN lefedve: extract util + interceptor + control-service + Angular ErrorHandler + cli teardown.
+  Cycle 117+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (a-server.api-service, a-socket.control-service complex, action-log emit command), vagy új FR.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
