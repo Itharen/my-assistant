@@ -28,6 +28,11 @@ a cap-pel. BathCom esetén `min(announcement-volume, 0.50)`.
 megfelelő helye) per-device cap-térkép a `config/groups.json` mellé:
 pl. `config/device-volume-caps.json`.
 
+✅ **Implementálva (Dev Agent cycle 122, 2026-05-17):** `cli/src/cast/device-caps.ts`
+(`loadDeviceVolumeCaps` + `capLevelForDevice`), config: `cli/config/device-volume-caps.json`
+(gitignored, kézzel karbantartott — `{ "BathCom": 0.50 }`). A `notify` UP fázisa
+(`applyVolumeAll` caps-param) per-device `min(announcement-volume, cap)`-et alkalmaz.
+
 ---
 
 ## 2026-05-07 — initial defaults declaration

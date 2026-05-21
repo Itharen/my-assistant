@@ -2,7 +2,7 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 121                                # Cycle 121 lezárva — spec-coverage cli/cast/presets loadPresets (CLI 52→60)
+cycle: 122                                # Cycle 122 lezárva — FR #7e per-device volume cap (BathCom 0.50)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
@@ -20,9 +20,11 @@ phase_notes: |
     119: spec-coverage cli/cast/discover listIPv4Interfaces (CLI 40→44) — f9a65c6
     120: spec-coverage cli/cast/groups bővítés (CLI 44→52) — 1b59aa8
     121: spec-coverage cli/cast/presets loadPresets (CLI 52→60) — ff274bc
-  Tests: client 123 + cli 60 = 183 pass / 0 failure. Spec-coverage marathon: client 60→123 (63 új), cli 26→60 (34 új 6 cycle alatt).
-  Cast cluster (groups + presets + tts + discover + safe-call) most TELJESEN lefedve, kivéve network-side (setReceiverVolume + mDNS).
-  Cycle 122+ kandidátus: 🟡 (#4 triggering / #7e BathCom), további spec-coverage (volume.command arg-parse, action-log-emit command), vagy új FR.
+    122: FR #7e per-device volume cap — BathCom 0.50 hard cap (CLI 60→72) — c087c01
+  Tests: client 123 + cli 72 = 195 pass / 0 failure.
+  FR #7e DONE: cli/cast/device-caps.ts (loadDeviceVolumeCaps + capLevelForDevice),
+  applyVolumeAll caps-param, notify UP fázis per-device clamp. Principle ✅-jelölve.
+  Cycle 123+ kandidátus: 🟡 (#4 triggering — bigger, plan-needs), további spec-coverage (volume.command, mp3-server), vagy új FR.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
