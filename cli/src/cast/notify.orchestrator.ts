@@ -24,6 +24,7 @@ import {
   type VolumeTargetRef,
 } from './volume.js';
 import { loadGroupConfig, resolveVolumeTargets } from './groups.js';
+import { loadDeviceVolumeCaps } from './device-caps.js';
 import {
   loadConfig as loadSpotifyConfig,
   ensureFreshToken,
@@ -167,14 +168,16 @@ export async function notify(opts: NotifyOptions): Promise<NotifyResult> {
     volume.saveFailures = saveRes.failed;
   }
 
-  // 5. Volume UP
+  // 5. Volume UP — per-device cap-pel (FR #7e: pl. BathCom sose 0.50 fölé)
   if (volume.enabled && volume.saved.length > 0) {
+    const deviceCaps = loadDeviceVolumeCaps();
     onLog?.(`volume up to ${announcementVolume.toFixed(2)} on ${volume.saved.length} device(s)`);
     const applyRes = await applyVolumeAll(
       volume.saved.map((s) => ({ name: s.name, address: s.address, port: s.port })),
       announcementVolume,
       8000,
       onLog,
+      deviceCaps,
     );
     volume.applied = applyRes.applied;
     volume.applyFailures = applyRes.failed;

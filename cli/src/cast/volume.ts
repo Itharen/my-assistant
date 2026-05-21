@@ -5,6 +5,8 @@
 // Defaults stratégia: minden eszközt EGYEDILEG mentünk-állítunk. Group-szintű
 // volume manipulációt SOHA nem csinálunk (lásd current/principles/cast-notifier-defaults.md).
 
+import { capLevelForDevice, type DeviceVolumeCaps } from './device-caps.js';
+
 // Lokál típusok (workspace szabály: nincs .d.ts; a használat helyén deklarálunk).
 interface CastVolumeState {
   level: number;
@@ -132,17 +134,23 @@ export async function applyVolumeAll(
   level: number,
   timeoutMs: number = DEFAULT_TIMEOUT_MS,
   onLog?: (msg: string) => void,
+  caps?: DeviceVolumeCaps,
 ): Promise<{ applied: string[]; failed: Array<{ name: string; error: string }> }> {
   const applied: string[] = [];
   const failed: Array<{ name: string; error: string }> = [];
-  const clamped = clampLevel(level);
 
   await Promise.all(
     refs.map(async (ref) => {
+      // Per-device cap (FR #7e): a cap-elt eszközöket (pl. BathCom) sose
+      // emeljük a kemény felső határ fölé — min(level, cap).
+      const capped: number = caps ? capLevelForDevice(ref.name, level, caps) : level;
+      const clamped: number = clampLevel(capped);
+
       try {
         await setReceiverVolume(ref, { level: clamped, muted: false }, timeoutMs);
         applied.push(ref.name);
-        onLog?.(`set ${ref.name}: level=${clamped.toFixed(2)} muted=false`);
+        const capNote: string = capped < level ? ` (capped from ${level.toFixed(2)})` : '';
+        onLog?.(`set ${ref.name}: level=${clamped.toFixed(2)}${capNote} muted=false`);
       } catch (err) {
         const e = err as Error;
         failed.push({ name: ref.name, error: e.message });
