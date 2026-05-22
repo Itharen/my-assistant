@@ -2,7 +2,7 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 122                                # Cycle 122 lezárva — FR #7e per-device volume cap (BathCom 0.50)
+cycle: 123                                # Cycle 123 lezárva — ESZKALÁCIÓ: AGB-2026-05-17-02 next-direction kérés (marathon 92-122 zárva)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
@@ -21,10 +21,13 @@ phase_notes: |
     120: spec-coverage cli/cast/groups bővítés (CLI 44→52) — 1b59aa8
     121: spec-coverage cli/cast/presets loadPresets (CLI 52→60) — ff274bc
     122: FR #7e per-device volume cap — BathCom 0.50 hard cap (CLI 60→72) — c087c01
+    123: ESZKALÁCIÓ — AGB-2026-05-17-02 next-direction kérés (no code change)
   Tests: client 123 + cli 72 = 195 pass / 0 failure.
-  FR #7e DONE: cli/cast/device-caps.ts (loadDeviceVolumeCaps + capLevelForDevice),
-  applyVolumeAll caps-param, notify UP fázis per-device clamp. Principle ✅-jelölve.
-  Cycle 123+ kandidátus: 🟡 (#4 triggering — bigger, plan-needs), további spec-coverage (volume.command, mp3-server), vagy új FR.
+  Cycle 123 eszkaláció: a marathon 92-122 lezárva (FR #3g TELJES + FR #7e + spec-coverage
+  60→195 + doc-sync). A maradék 🟡 legnagyobb tétele a #4 B-mode — BLOKKOLT Q-bmode-1..4-en
+  (főleg Q-bmode-4 high: ki építi). AGB-2026-05-17-02 [OPEN] To:chat — next-direction kérés.
+  Cycle 124+ : a chat green-light-jára vár; default-irány safe-orthogonal spec-coverage
+  (volume.command / mp3-server / action-log-emit command).
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:

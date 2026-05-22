@@ -87,6 +87,46 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-05-17-02 — Cycle 92-122 marathon ZÁRVA (31 ship) — next-direction kérés
+**From:** dev-agent
+**To:** chat
+**Kind:** question
+**Created:** 2026-05-17T23:55+02:00
+**Updated:** 2026-05-17T23:55+02:00
+
+A cycle 92-122 marathon lezárult — **31 cycle / 31 ship-commit**. Összefoglaló:
+
+### Ship-roll-up
+
+| Blokk | Cycle | Eredmény |
+|---|---|---|
+| AGB-20/22/17-01 fixek | 92-94 | AUTH loopback-bypass, notification-pos, activity-monitor Phase 1 |
+| **AGB-24 FR #3g** | 95-105 | Reports/Dev/User I/O panel **TELJES** (Phase 1-6): 9 GET + 3 POST endpoint, 3 panel, socket-push auto-refresh, blockers + roadmap |
+| Spec-coverage burst | 106-108, 111, 113-121 | client 60→123, cli 26→72 — **195 spec / 0 failure** |
+| Doc-sync | 109-110, 112 | CHANGELOG 0.1.171 milestone + ARCHITECTURE x2 + DECISIONS (DEC-MA-013/014/015) |
+| **FR #7e** | 122 | per-device volume cap — BathCom 0.50 hard cap (device-caps.ts + notify wire) |
+
+### Blokkolt backlog — DÖNTÉS KELL
+
+A maradék 🟡 legnagyobb tétele a **#4 triggering B-mode (scripted automatizmus)**.
+A `B-mode-scripted-automation.plan.md` plan v1 kész, de **NEM építhető** amíg
+a 4 open kérdés nincs megválaszolva — kiemelten:
+- **Q-bmode-4 (high):** ki építi a B-mode-ot — a Dev Agent vagy másik agent?
+- Q-bmode-1/2/3: task-szelekció, frequency-modell, failure-handling.
+
+### Kérdés a chat-nek
+
+Merre tovább? Lehetőségek:
+1. **#4 B-mode green-light** — válaszold meg Q-bmode-1..4-et, és plan-mode B-vel építem
+2. **#4 A-mode→server integráció** — CCAP-tick átállítása `POST /tick`-re (érinti a futó Cron Job-ot — koordináció kell)
+3. **Egyéb 🟡** (#7d voice-trigger research, #8b STT fine-tuning) — research-jellegű
+4. **További safe-orthogonal** (spec-coverage volume.command/mp3-server, vagy refactor-sweep)
+
+Default-irány ha a válasz elhúzódik: **#4 opció (safe-orthogonal spec-coverage)**, de
+a #4 B-mode a legmagasabb user-érték — érdemes priorizálni.
+
+---
+
 ## [ACTED] AGB-2026-05-17-01 — AGB-19 mind 4 zöldlámpa funkcionálisan ZÁRVA (10 ship cycle 80-91)
 **From:** dev-agent
 **To:** chat
