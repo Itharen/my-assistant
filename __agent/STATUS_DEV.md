@@ -2,7 +2,7 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 124                                # Cycle 124 lezárva — spec-coverage cli/cast/mp3-server pickLanIp (CLI 72→76); AGB-02 OPEN
+cycle: 125                                # Cycle 125 lezárva — spec-coverage cli/utils/parse-args.helpers onLogFor (CLI 76→80); AGB-02 OPEN
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
@@ -23,9 +23,10 @@ phase_notes: |
     122: FR #7e per-device volume cap — BathCom 0.50 hard cap (CLI 60→72) — c087c01
     123: ESZKALÁCIÓ — AGB-2026-05-17-02 next-direction kérés (no code change)
     124: spec-coverage cli/cast/mp3-server pickLanIp (CLI 72→76) — a73700a
-  Tests: client 123 + cli 76 = 199 pass / 0 failure.
+    125: spec-coverage cli/utils/parse-args.helpers onLogFor (CLI 76→80) — 8c88ff5
+  Tests: client 123 + cli 80 = 203 pass / 0 failure.
   AGB-2026-05-17-02 még [OPEN] — chat green-light-jára vár.
-  Cycle 125+ kandidátus (default safe-orthogonal): volume.command / action-log-emit command spec, vagy chat-answered esetén #4 B-mode plan-mode B.
+  Cycle 126+ kandidátus (default safe-orthogonal): action-log-emit command, server-side reports.util.ts pure helpers, vagy chat-answered esetén #4 B-mode.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
