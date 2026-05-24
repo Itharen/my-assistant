@@ -1,4 +1,4 @@
-import { numericOption, parseList, stringOption } from './parse-args.helpers.js';
+import { numericOption, onLogFor, parseList, stringOption } from './parse-args.helpers.js';
 
 describe('parse-args.helpers', () => {
   describe('numericOption', () => {
@@ -53,6 +53,41 @@ describe('parse-args.helpers', () => {
 
     it('drops empty entries', () => {
       expect(parseList('a,,b,')).toEqual(['a', 'b']);
+    });
+  });
+
+  // Cycle 125: onLogFor coverage — verbose-gated stderr writer.
+  describe('onLogFor', () => {
+    it('returns undefined when verbose=false (silent mode)', () => {
+      expect(onLogFor('any', false)).toBeUndefined();
+    });
+
+    it('returns a function when verbose=true', () => {
+      const fn = onLogFor('cast', true);
+      expect(typeof fn).toBe('function');
+    });
+
+    it('writes "[prefix] msg\\n" to stderr when the returned fn is called', () => {
+      const writeSpy = spyOn(process.stderr, 'write').and.returnValue(true);
+      const fn = onLogFor('cast', true)!;
+
+      fn('hello world');
+
+      expect(writeSpy).toHaveBeenCalledTimes(1);
+      expect(String(writeSpy.calls.mostRecent().args[0])).toBe('[cast] hello world\n');
+    });
+
+    it('uses a distinct prefix per call (no shared closure)', () => {
+      const writeSpy = spyOn(process.stderr, 'write').and.returnValue(true);
+      const a = onLogFor('A', true)!;
+      const b = onLogFor('B', true)!;
+
+      a('x');
+      b('y');
+
+      const calls = writeSpy.calls.allArgs().map((args) => String(args[0]));
+      expect(calls).toContain('[A] x\n');
+      expect(calls).toContain('[B] y\n');
     });
   });
 });
