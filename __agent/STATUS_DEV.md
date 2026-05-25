@@ -2,7 +2,7 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 125                                # Cycle 125 lezárva — spec-coverage cli/utils/parse-args.helpers onLogFor (CLI 76→80); AGB-02 OPEN
+cycle: 126                                # Cycle 126 lezárva — spec-coverage server SleepState_Service (server 2→10); AGB-02 OPEN
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
@@ -24,9 +24,11 @@ phase_notes: |
     123: ESZKALÁCIÓ — AGB-2026-05-17-02 next-direction kérés (no code change)
     124: spec-coverage cli/cast/mp3-server pickLanIp (CLI 72→76) — a73700a
     125: spec-coverage cli/utils/parse-args.helpers onLogFor (CLI 76→80) — 8c88ff5
-  Tests: client 123 + cli 80 = 203 pass / 0 failure.
+    126: spec-coverage server SleepState_Service (server 2→10) — c80fbf5
+  Tests: client 123 + cli 80 + server 10 = 213 pass / 0 failure.
+  Server-side most lefedve első valódi unit-spec-szel (eddig csak sanity baseline).
   AGB-2026-05-17-02 még [OPEN] — chat green-light-jára vár.
-  Cycle 126+ kandidátus (default safe-orthogonal): action-log-emit command, server-side reports.util.ts pure helpers, vagy chat-answered esetén #4 B-mode.
+  Cycle 127+ kandidátus: weather-poll.service spec, vagy chat-answered esetén #4 B-mode.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
