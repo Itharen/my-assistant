@@ -2,7 +2,7 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 126                                # Cycle 126 lezárva — spec-coverage server SleepState_Service (server 2→10); AGB-02 OPEN
+cycle: 127                                # Cycle 127 lezárva — spec-coverage cli/action-log.client bővítés (CLI 80→86); AGB-02 OPEN
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
@@ -25,10 +25,13 @@ phase_notes: |
     124: spec-coverage cli/cast/mp3-server pickLanIp (CLI 72→76) — a73700a
     125: spec-coverage cli/utils/parse-args.helpers onLogFor (CLI 76→80) — 8c88ff5
     126: spec-coverage server SleepState_Service (server 2→10) — c80fbf5
-  Tests: client 123 + cli 80 + server 10 = 213 pass / 0 failure.
-  Server-side most lefedve első valódi unit-spec-szel (eddig csak sanity baseline).
+    127: spec-coverage cli/action-log.client optional-fields + ts-format (CLI 80→86) — b3bb180
+  Tests: client 123 + cli 86 + server 10 = 219 pass / 0 failure.
+  Cycle 127 megjegyzés: wave-jsonl.util.ts spec törölve — ESM-import bug a foreign-pending
+  chat-led migrációból (`'./action-log.util'` no `.js` extension Node ESM-ben break-el).
+  Server-side spec-coverage korlátozva amíg az ESM-mig nem fejeződik be.
   AGB-2026-05-17-02 még [OPEN] — chat green-light-jára vár.
-  Cycle 127+ kandidátus: weather-poll.service spec, vagy chat-answered esetén #4 B-mode.
+  Cycle 128+ kandidátus: cli command-wrapper spec-ek (parsing path), vagy chat-answered esetén #4 B-mode.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
