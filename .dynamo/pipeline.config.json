@@ -1,0 +1,117 @@
+{
+  "name": "my-assistant LDP",
+  "outputDir": "./logs/live-dev-pipeline",
+
+  "watch": {
+    "paths": [
+      "./cli/src",
+      "./server/src",
+      "./client/src",
+      "./cli/spec",
+      "./server/spec",
+      "./cli/scripts/agent-handlers/src",
+      "./cli/scripts/agent-handlers/tsconfig.json",
+      "./cli/scripts/agent-handlers/package.json",
+      "./cli/package.json",
+      "./server/package.json",
+      "./client/package.json",
+      "./cli/tsconfig.json",
+      "./server/tsconfig.json",
+      "./client/tsconfig.json",
+      "./cli/pnpm-workspace.yaml",
+      "./pnpm-workspace.yaml",
+      "./pipeline.config.json"
+    ],
+    "extensions": ["ts", "json", "html", "scss", "yaml"],
+    "ignore": [
+      "node_modules",
+      "build",
+      "dist",
+      ".angular",
+      "data"
+    ],
+    "delayMs": 2000,
+    "legacyWatch": true
+  },
+
+  "timing": {
+    "debounceQuietMs": 30000,
+    "serverGraceMs": 120000,
+    "stepCooldownMs": 1000,
+    "stepTimeoutMs": 600000,
+    "teeMaxRuntimeMs": 600000,
+    "pendingCheckMs": 2000
+  },
+
+  "log": {
+    "runtimeMaxBytes": 102400,
+    "trimCheckEveryN": 200
+  },
+
+  "versionBump": {
+    "enabled": false
+  },
+
+  "serverRestart": {
+    "enabled": true,
+    "postPipelineCommand": "npm --prefix server run start-prod"
+  },
+
+  "steps": [
+    {
+      "label": "rimraf-cli-dist",
+      "command": "cd cli && rimraf ./dist",
+      "fatal": true
+    },
+    {
+      "label": "tsc-cli",
+      "command": "cd cli && npx tsc -p tsconfig.json --pretty",
+      "fatal": true
+    },
+    {
+      "label": "cli-test",
+      "command": "cd cli && jasmine --config=spec/support/jasmine.json",
+      "fatal": false
+    },
+    {
+      "label": "tsc-agent-handlers",
+      "command": "cd cli && npx tsc --noEmit -p scripts/agent-handlers/tsconfig.json --pretty",
+      "fatal": false
+    },
+    {
+      "label": "rimraf-server-dist",
+      "command": "cd server && rimraf ./dist",
+      "fatal": true
+    },
+    {
+      "label": "tsc-server",
+      "command": "cd server && npx tsc -p tsconfig.json --pretty",
+      "fatal": true
+    },
+    {
+      "label": "server-test",
+      "command": "cd server && jasmine --config=spec/support/jasmine.json",
+      "fatal": false
+    },
+    {
+      "label": "lint-server",
+      "command": "cd server && eslint src",
+      "fatal": false
+    },
+    {
+      "label": "client-build",
+      "command": "cd client && ng build --configuration production --base-href /",
+      "fatal": false
+    },
+    {
+      "label": "client-test",
+      "command": "cd client && ng test --watch=false --browsers=ChromeHeadless",
+      "fatal": false
+    },
+    {
+      "label": "lint-client",
+      "command": "cd client && eslint src",
+      "fatal": false
+    }
+  ]
+}
