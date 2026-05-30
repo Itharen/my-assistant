@@ -2,7 +2,7 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 129                                # Cycle 129 lezárva — spec-coverage cli/spotify.client pure helpers (CLI 93→102); AGB-02 OPEN
+cycle: 130                                # Cycle 130 lezárva — FR #5b-DISCORD Phase 2+3 notify-discord webhook handler (bfc76ea); AGB-22-02 ACTED (7-nap stall-miss korrekció)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
@@ -28,25 +28,39 @@ phase_notes: |
     127: spec-coverage cli/action-log.client optional-fields + ts-format (CLI 80→86) — b3bb180
     128: spec-coverage cli/action-log-emit.command (CLI 86→93) — 0dd477f
     129: spec-coverage cli/spotify.client pure helpers (CLI 93→102) — fee2ccd
-  Tests: client 123 + cli 102 + server 10 = 235 pass / 0 failure.
+    130: FR #5b-DISCORD Phase 2+3 — notify-discord webhook handler (HTTP POST embed + mention + throttle + MA-DISCORD-* errors) — bfc76ea
+  Tests: client 123 + cli 102 + server 10 = 235 pass / 0 failure. agent-handlers: typecheck zöld + Discord E2E mock-smoke (4/4 PASS).
   Cycle 127 megjegyzés: wave-jsonl.util.ts spec törölve — ESM-import bug a foreign-pending
   chat-led migrációból. Server-side spec-coverage korlátozva amíg az ESM-mig nem fejeződik be.
-  AGB-2026-05-17-02 még [OPEN] — chat green-light-jára vár (6 cycle óta, 124-129 mind safe-orthogonal spec).
-  Cycle 130+ kandidátus: cli google.client pure helpers, client api-service smoke, vagy chat-answered #4 B-mode.
+  ⚠️ STALL-MISS KORREKCIÓ (cycle 130): AGB-2026-05-22-02 (Discord) + AGB-22-01 (ntfy) TOP PRIO green-light-ok
+  2026-05-22 óta [OPEN] To: dev-agent voltak, de a cycle 124-129 nem scannelte újra a teljes AGENT_BUS-t és
+  spec-coverage-et csinált helyettük (AGB-17-02 várakozás miatt). Cycle 130 korrigálta: Discord ship-elve.
+  ANTI-STALL TANULSÁG: minden 00-orient → teljes [OPEN] To: dev-agent scan a candidate-döntés ELŐTT.
+  Cycle 131+ kandidátus: AGB-22-01 ntfy.sh Phase 1 (második kör, Discord-minta clone), FR #5b-DISCORD Phase 4
+  (communication-forms dispatcher discord channel), vagy cli google.client pure helpers spec.
+  Megjegyzés: env-blocker — a lokál node_modules elavult symlinkekkel (régi path), tsx/esbuild broken;
+  tsc + node dist/ workaround működik. Reinstall (pnpm i) kéne valamikor, de nem blokkol.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 66
+  cycle_id: 130
   phase_completed: close-cycle
   files_modified:
-    - __agent/AGENT_BUS.md                      # AGB-2026-05-16-18 next-steps request
-    - __agent/STATUS_DEV.md
-    - __agent/log/cycles/cycle-66.md
-  fr_status_changes: []
+    - cli/scripts/agent-handlers/src/handlers/notify-discord.ts   # ÚJ handler
+    - cli/scripts/agent-handlers/src/types.ts                      # NotifyDiscordAction + ActionType + union
+    - cli/scripts/agent-handlers/src/schema.ts                     # validáció + ACTION_TYPES + REQUIRED_TIER
+    - cli/scripts/agent-handlers/src/dispatch.ts                   # import + switch case
+    - cli/scripts/agent-handlers/test/sample-discord.json          # ÚJ smoke sample
+    - cli/scripts/agent-handlers/package.json                      # smoke-discord script
+    - cli/scripts/agent-handlers/README.md                         # handler-mapping + env-var doc
+    - current/feature-requests/discord-webhook-notification.md     # ÚJ FR + Phase 2+3 SHIPPED status
+    - __agent/AGENT_BUS.md                                         # AGB-22-02 ACTED + anti-stall tanulság
+  fr_status_changes:
+    - "discord-webhook-notification.md: 🔴 TOP PRIO → 🟢 Phase 2+3 SHIPPED"
   plan_steps_marked_done: []
-  commit_sha: (escalation cycle)
-  build_status: unchanged                       # no code changes
-  test_status: unchanged                        # LDP not re-triggered
+  commit_sha: bfc76ea
+  build_status: green                           # tsc --noEmit zöld (agent-handlers)
+  test_status: green                            # Discord E2E mock-smoke 4/4 PASS (pure + POST + no-env + HTTP-400)
 
 foreign_pending:
   first_seen_cycle: 4
