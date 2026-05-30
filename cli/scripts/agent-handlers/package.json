@@ -10,7 +10,8 @@
     "dispatch": "tsx src/dispatch.ts",
     "smoke": "tsx src/dispatch.ts < test/sample-output.json",
     "smoke-dev": "tsx src/dispatch.ts < test/sample-development-agent.json",
-    "smoke-multi": "tsx src/dispatch.ts < test/sample-multi.json"
+    "smoke-multi": "tsx src/dispatch.ts < test/sample-multi.json",
+    "smoke-discord": "tsx src/dispatch.ts < test/sample-discord.json"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

@@ -13,6 +13,7 @@ const ACTION_TYPES: ReadonlySet<ActionType> = new Set([
   'update-status',
   'notify-cast',
   'ccap-notify',
+  'notify-discord',
   'task-create',
   'task-update',
   'fr-status-change',
@@ -26,6 +27,7 @@ const REQUIRED_TIER: Record<ActionType, ActionTier> = {
   'update-status': 1,
   'notify-cast': 1,
   'ccap-notify': 1,
+  'notify-discord': 1,
   'task-create': 2,
   'task-update': 2,
   'fr-status-change': 1,
@@ -34,6 +36,9 @@ const REQUIRED_TIER: Record<ActionType, ActionTier> = {
 
 const VALID_CCAP_NOTIFY_TYPES = new Set(['message', 'confirm', 'option-select', 'question']);
 const VALID_CCAP_PRIORITIES = new Set(['info', 'warning', 'success', 'error']);
+
+const VALID_DISCORD_PRIORITIES = new Set(['info', 'warning', 'success', 'error']);
+const VALID_DISCORD_MENTIONS = new Set(['user', 'none']);
 
 const VALID_USER_INPUT_KINDS = new Set([
   'task',
@@ -190,6 +195,28 @@ function validateAction(action: unknown, index: number, errors: ValidationError[
       }
       if (args.wait !== undefined && typeof args.wait !== 'boolean') {
         errors.push({ path: `${path}.args.wait`, message: 'must be a boolean' });
+      }
+      if (args.cooldownMs !== undefined && (typeof args.cooldownMs !== 'number' || args.cooldownMs < 0)) {
+        errors.push({ path: `${path}.args.cooldownMs`, message: 'must be a non-negative number' });
+      }
+      break;
+    case 'notify-discord':
+      requireString(args, 'title', `${path}.args`, errors);
+      requireString(args, 'message', `${path}.args`, errors);
+      if (args.priority !== undefined && (typeof args.priority !== 'string' || !VALID_DISCORD_PRIORITIES.has(args.priority))) {
+        errors.push({
+          path: `${path}.args.priority`,
+          message: `must be one of: ${[...VALID_DISCORD_PRIORITIES].join(', ')}`,
+        });
+      }
+      if (args.mention !== undefined && (typeof args.mention !== 'string' || !VALID_DISCORD_MENTIONS.has(args.mention))) {
+        errors.push({
+          path: `${path}.args.mention`,
+          message: `must be one of: ${[...VALID_DISCORD_MENTIONS].join(', ')}`,
+        });
+      }
+      if (args.color !== undefined && (typeof args.color !== 'number' || args.color < 0)) {
+        errors.push({ path: `${path}.args.color`, message: 'must be a non-negative number (decimal RGB)' });
       }
       if (args.cooldownMs !== undefined && (typeof args.cooldownMs !== 'number' || args.cooldownMs < 0)) {
         errors.push({ path: `${path}.args.cooldownMs`, message: 'must be a non-negative number' });

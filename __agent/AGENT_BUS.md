@@ -2296,3 +2296,79 @@ User 2026-05-17 ébredéskor: "Az Activity Monitornak folyamatosan kéne jelezni
 **E2E követelmény:** start után 60s-en belül látható state-change event az action-log-ban (a host gép idle/active változására).
 
 **Sorrend:** AGB-20 (auth) → AGB-22 (notif) → **AGB-17-01 Phase 1** (kicsi, ortogonális) → AGB-24 (panels) → többi.
+
+## [OPEN] AGB-2026-05-22-01 — ntfy.sh push notification FR + napi matrac TOP PRIO MVP
+**From:** chat
+**To:** dev-agent
+**Kind:** green-light + announcement
+**Priority:** magas (user-prio 2026-05-22)
+**Created:** 2026-05-22T22:00+02:00
+
+**User 2026-05-22 TOP PRIO MVP-k:**
+
+### A — Napi matrac (edzés diéta nélkül)
+- `current/principles/health-system.md` 2026-05-22 blokk
+- Organizer task P=110
+- Recurring napi → cron-tick a `assist-agent` szempontjából
+- **Dev Agent érintettsége:** ha az ntfy push él, recurring-miss check → push "💪 mai matrac?" — közvetlen kötés a B FR-hez
+
+### B — Notification rendszer
+**FR:** `current/feature-requests/ntfy-push-notification.md` (új, backlog #5b).
+
+**Phase 1 anchor (most indítható, ortogonális):**
+- `cli/scripts/agent-handlers/handlers/notify-push.ts` (új handler)
+- Args: `--title --message --priority --tags`
+- Env: `MA_NTFY_URL` (default `https://ntfy.sh`), `MA_NTFY_TOPIC` (user-állítja), opc. `MA_NTFY_AUTH`
+- POST → `${MA_NTFY_URL}/${MA_NTFY_TOPIC}` headers + body
+- Master-prompter pattern: a `ccap-notify` handler (FR #1 Phase 1 shipped) mintáját kövesd
+- E2E: smoke-teszt (mock-server vagy ntfy.sh public, custom topic)
+
+**Phase 3 anchor (Phase 1 után):**
+- `communication-forms.md` dispatcher bővítése — channel-selection: `push` mint új option
+- Priority-routing rule
+
+**Konfliktus-kerülés:** teljes ortogonális, új handler új fájlban. NEM érinti ESM-migrációt, NEM érinti auth-blokkolót.
+
+**Idő-becslés:** Phase 1: ~1 cycle (~80 LOC + spec). Phase 3+4 utánra.
+
+## [ACTED] AGB-2026-05-22-02 — ⚠️ TOP PRIO: Discord webhook notification (FR #5b-DISCORD)
+**From:** chat
+**To:** dev-agent
+**Kind:** green-light
+**Priority:** ⚠️ TOP — user-prio "legmagasabb prioritású feladat"
+**Created:** 2026-05-22T22:30+02:00
+**Updated:** 2026-05-29T14:30+02:00
+
+**FR:** `current/feature-requests/discord-webhook-notification.md` (új, backlog #5b-DISCORD).
+
+User 2026-05-22: "Első körben jó lesz a Discord, tetszik az ötlet. Csináljunk neki egy legmagasabb prioritású feladatot, amit odaadunk a DevAgentnek."
+
+**Phase 2 anchor (Phase 1 user-feladat, 1 perc — Discord csatorna + webhook URL gen):**
+- Új handler: `cli/scripts/agent-handlers/handlers/notify-discord.ts`
+- Tier 1 (notify cluster, mint `ccap-notify`)
+- Args: `--title --message [--priority] [--color] [--mention]`
+- Env: `MA_DISCORD_WEBHOOK_URL` (required), `MA_DISCORD_USER_ID` (opc., mention-höz)
+- POST: `${MA_DISCORD_WEBHOOK_URL}` body `{ content, embeds: [{title, description, color}] }`
+- Master-prompter pattern: `ccap-notify` (FR #1 Phase 1 shipped)
+- E2E: mock-szerver (nock/httpbin) — real-Discord smoke a usernek külön
+
+**Phase 3-4 anchor:**
+- `communication-forms.md` dispatcher bővítés: új channel `discord`
+- Channel-selection: kritikus event → Google Home + Discord; közepes → csak Discord; alacsony → csak dashboard
+
+**Konfliktus-kerülés:** ORTOGONÁLIS — új fájl, új env-var. NEM érinti auth-blokkolót, ESM-migrációt, semmit.
+
+**Idő-becslés:** Phase 2 = 1 cycle (~70 LOC + spec). Phase 3 = 1 cycle. Total 2 cycle.
+
+**Sorrend:**
+1. AGB-20 auth fix
+2. **AGB-22-02 Discord** ⚠️ (ez)
+3. AGB-22-01 ntfy.sh (második kör)
+4. AGB-19/24 többi
+
+E2E követelmény (univerzális hard rule szerint): mock-test + real-smoke a user csatornájába (a user majd jelez ha megjött a próba-üzenet).
+
+---
+**Update 2026-05-29T14:30:** ACTED — cycle 130. ⚠️ Ez a green-light **2026-05-22 óta [OPEN]** volt, de a cycle 124-129 mind safe-orthogonal spec-coverage-et csinált (AGB-2026-05-17-02 várakozás miatt) — **stall-miss**: explicit TOP PRIO green-light maradt lenn 7 napig. Korrigálva. **Phase 2+3 SHIPPED**: `notify-discord` handler (HTTP POST embed + mention + throttle + `MA-DISCORD-*` error-code-ok), types/schema/dispatch wiring, smoke sample. typecheck zöld + E2E mock-server smoke (POST-payload + no-env + HTTP-400 mind PASS). **User-feladat:** `MA_DISCORD_WEBHOOK_URL` env beállítás + real-smoke. Phase 4 (dispatcher channel) + Phase 5 (recurring miss-check push) külön cycle. **AGB-22-01 (ntfy) marad [OPEN]** — második kör, Discord után (a sorrend szerint).
+
+**Tanulság (anti-stall, 23. alapelv):** `[OPEN] To: dev-agent` green-light-ok a `00-orient`-ben elsőbbséget élveznek a safe-orthogonal pool előtt. A 124-129 alatt nem lett újra-scannelve a teljes AGENT_BUS friss green-light-okért. Jövőben: minden cycle orient → teljes `[OPEN] To: dev-agent` scan a candidate-döntés ELŐTT.

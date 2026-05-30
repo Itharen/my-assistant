@@ -12,6 +12,7 @@ export type ActionType =
   | 'update-status'
   | 'notify-cast'
   | 'ccap-notify'
+  | 'notify-discord'
   | 'task-create'
   | 'task-update'
   | 'fr-status-change'
@@ -76,6 +77,20 @@ export interface CcapNotifyAction extends BaseAction {
   };
 }
 
+export interface NotifyDiscordAction extends BaseAction {
+  type: 'notify-discord';
+  tier: 1;
+  args: {
+    title: string;
+    message: string;
+    priority?: 'info' | 'warning' | 'success' | 'error';
+    color?: number;                            // decimal RGB embed-szín override
+    mention?: 'user' | 'none';                 // @user ping via MA_DISCORD_USER_ID
+    throttleId?: string;                       // Phase 4 közös throttle (FR #1)
+    cooldownMs?: number;
+  };
+}
+
 export interface TaskCreateAction extends BaseAction {
   type: 'task-create';
   tier: 2;
@@ -124,6 +139,7 @@ export type Action =
   | UpdateStatusAction
   | NotifyCastAction
   | CcapNotifyAction
+  | NotifyDiscordAction
   | TaskCreateAction
   | TaskUpdateAction
   | FrStatusChangeAction

@@ -17,6 +17,7 @@ import { handleUserInputNew } from './handlers/user-input-new.js';
 import { handleUpdateStatus } from './handlers/update-status.js';
 import { handleNotifyCast } from './handlers/notify-cast.js';
 import { handleCcapNotify } from './handlers/ccap-notify.js';
+import { handleNotifyDiscord } from './handlers/notify-discord.js';
 import { handleTaskCreate } from './handlers/task-create.js';
 import { handleTaskUpdate } from './handlers/task-update.js';
 import { handleFrStatusChange } from './handlers/fr-status-change.js';
@@ -66,6 +67,8 @@ async function executeAction(action: Action): Promise<void> {
       return handleNotifyCast(action);
     case 'ccap-notify':
       return handleCcapNotify(action);
+    case 'notify-discord':
+      return handleNotifyDiscord(action);
     case 'task-create':
       return handleTaskCreate(action);
     case 'task-update':

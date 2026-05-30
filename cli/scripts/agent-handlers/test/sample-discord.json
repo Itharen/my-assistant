@@ -1,0 +1,22 @@
+{
+  "verdict": "soft-nudge",
+  "reason": "Smoke teszt: notify-discord handler kipróbálva (FR #5b-DISCORD Phase 2). Élő POST-hoz MA_DISCORD_WEBHOOK_URL env-var kell — anélkül MA-DISCORD-NO-WEBHOOK-URL error (szándékolt, strukturált).",
+  "actions": [
+    {
+      "type": "notify-discord",
+      "tier": 1,
+      "args": {
+        "title": "💪 Mai matrac?",
+        "message": "Recurring napi edzés (matrac) emlékeztető — health-system.md 2026-05-22.",
+        "priority": "info",
+        "mention": "user",
+        "throttleId": "discord-matrac",
+        "cooldownMs": 3600000
+      }
+    }
+  ],
+  "tickMeta": {
+    "tickedAt": "2026-05-29T14:10:00+02:00",
+    "inputDigest": "smoke teszt — notify-discord"
+  }
+}
