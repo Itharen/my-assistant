@@ -2,7 +2,7 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 130                                # Cycle 130 lezárva — FR #5b-DISCORD Phase 2+3 notify-discord webhook handler (bfc76ea); AGB-22-02 ACTED (7-nap stall-miss korrekció)
+cycle: 131                                # Cycle 131 lezárva — FR #5b Phase 1 notify-push ntfy.sh handler (49e3177); AGB-22-01 ACTED; emoji-ByteString bug elkapva+javítva (JSON publish)
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
@@ -29,38 +29,42 @@ phase_notes: |
     128: spec-coverage cli/action-log-emit.command (CLI 86→93) — 0dd477f
     129: spec-coverage cli/spotify.client pure helpers (CLI 93→102) — fee2ccd
     130: FR #5b-DISCORD Phase 2+3 — notify-discord webhook handler (HTTP POST embed + mention + throttle + MA-DISCORD-* errors) — bfc76ea
-  Tests: client 123 + cli 102 + server 10 = 235 pass / 0 failure. agent-handlers: typecheck zöld + Discord E2E mock-smoke (4/4 PASS).
+    131: FR #5b Phase 1 — notify-push ntfy.sh handler (JSON publish emoji-safe + priority/tags map + throttle + MA-NTFY-* errors) — 49e3177
+  Tests: client 123 + cli 102 + server 10 = 235 pass / 0 failure. agent-handlers: typecheck zöld + Discord & ntfy E2E mock-smoke (4/4 + 4/4 PASS).
+  Cycle 131 bug-catch: a notify-push első verziója HTTP-header-rel publikált → emoji a Title-ben "Cannot convert to ByteString" → átírva ntfy JSON publish formátumra (UTF-8-safe). E2E hard rule fogta el.
   Cycle 127 megjegyzés: wave-jsonl.util.ts spec törölve — ESM-import bug a foreign-pending
   chat-led migrációból. Server-side spec-coverage korlátozva amíg az ESM-mig nem fejeződik be.
   ⚠️ STALL-MISS KORREKCIÓ (cycle 130): AGB-2026-05-22-02 (Discord) + AGB-22-01 (ntfy) TOP PRIO green-light-ok
   2026-05-22 óta [OPEN] To: dev-agent voltak, de a cycle 124-129 nem scannelte újra a teljes AGENT_BUS-t és
   spec-coverage-et csinált helyettük (AGB-17-02 várakozás miatt). Cycle 130 korrigálta: Discord ship-elve.
   ANTI-STALL TANULSÁG: minden 00-orient → teljes [OPEN] To: dev-agent scan a candidate-döntés ELŐTT.
-  Cycle 131+ kandidátus: AGB-22-01 ntfy.sh Phase 1 (második kör, Discord-minta clone), FR #5b-DISCORD Phase 4
-  (communication-forms dispatcher discord channel), vagy cli google.client pure helpers spec.
+  Cycle 132+ kandidátus: FR #5b-DISCORD Phase 4 + ntfy Phase 3 (communication-forms dispatcher discord+push channel,
+  összevonható — közös dispatcher-bővítés), FR #5b Phase 4 (sleep/presence-gate), vagy cli google.client pure helpers spec.
+  ⚠️ Minden [OPEN] To: dev-agent green-light most ACTED/stale — nincs több friss pre-approved candidate.
+  Anti-stall: ha nincs nyitott green-light → safe-orthogonal (spec-coverage / dispatcher-bővítés) mehet autonóm.
   Megjegyzés: env-blocker — a lokál node_modules elavult symlinkekkel (régi path), tsx/esbuild broken;
   tsc + node dist/ workaround működik. Reinstall (pnpm i) kéne valamikor, de nem blokkol.
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 130
+  cycle_id: 131
   phase_completed: close-cycle
   files_modified:
-    - cli/scripts/agent-handlers/src/handlers/notify-discord.ts   # ÚJ handler
-    - cli/scripts/agent-handlers/src/types.ts                      # NotifyDiscordAction + ActionType + union
+    - cli/scripts/agent-handlers/src/handlers/notify-push.ts       # ÚJ handler (ntfy JSON publish)
+    - cli/scripts/agent-handlers/src/types.ts                      # NotifyPushAction + ActionType + union
     - cli/scripts/agent-handlers/src/schema.ts                     # validáció + ACTION_TYPES + REQUIRED_TIER
     - cli/scripts/agent-handlers/src/dispatch.ts                   # import + switch case
-    - cli/scripts/agent-handlers/test/sample-discord.json          # ÚJ smoke sample
-    - cli/scripts/agent-handlers/package.json                      # smoke-discord script
+    - cli/scripts/agent-handlers/test/sample-push.json             # ÚJ smoke sample
+    - cli/scripts/agent-handlers/package.json                      # smoke-push script
     - cli/scripts/agent-handlers/README.md                         # handler-mapping + env-var doc
-    - current/feature-requests/discord-webhook-notification.md     # ÚJ FR + Phase 2+3 SHIPPED status
-    - __agent/AGENT_BUS.md                                         # AGB-22-02 ACTED + anti-stall tanulság
+    - current/feature-requests/ntfy-push-notification.md           # Phase 1 SHIPPED status
+    - __agent/AGENT_BUS.md                                         # AGB-22-01 ACTED + bug-catch note
   fr_status_changes:
-    - "discord-webhook-notification.md: 🔴 TOP PRIO → 🟢 Phase 2+3 SHIPPED"
+    - "ntfy-push-notification.md: 🟢 MAGAS prio → 🟢 Phase 1 SHIPPED"
   plan_steps_marked_done: []
-  commit_sha: bfc76ea
+  commit_sha: 49e3177
   build_status: green                           # tsc --noEmit zöld (agent-handlers)
-  test_status: green                            # Discord E2E mock-smoke 4/4 PASS (pure + POST + no-env + HTTP-400)
+  test_status: green                            # ntfy E2E mock-smoke 4/4 PASS (pure emoji-safe + JSON-POST + no-topic + HTTP-403)
 
 foreign_pending:
   first_seen_cycle: 4
