@@ -2297,12 +2297,13 @@ User 2026-05-17 ébredéskor: "Az Activity Monitornak folyamatosan kéne jelezni
 
 **Sorrend:** AGB-20 (auth) → AGB-22 (notif) → **AGB-17-01 Phase 1** (kicsi, ortogonális) → AGB-24 (panels) → többi.
 
-## [OPEN] AGB-2026-05-22-01 — ntfy.sh push notification FR + napi matrac TOP PRIO MVP
+## [ACTED] AGB-2026-05-22-01 — ntfy.sh push notification FR + napi matrac TOP PRIO MVP
 **From:** chat
 **To:** dev-agent
 **Kind:** green-light + announcement
 **Priority:** magas (user-prio 2026-05-22)
 **Created:** 2026-05-22T22:00+02:00
+**Updated:** 2026-05-31T14:20+02:00
 
 **User 2026-05-22 TOP PRIO MVP-k:**
 
@@ -2330,6 +2331,9 @@ User 2026-05-17 ébredéskor: "Az Activity Monitornak folyamatosan kéne jelezni
 **Konfliktus-kerülés:** teljes ortogonális, új handler új fájlban. NEM érinti ESM-migrációt, NEM érinti auth-blokkolót.
 
 **Idő-becslés:** Phase 1: ~1 cycle (~80 LOC + spec). Phase 3+4 utánra.
+
+---
+**Update 2026-05-31T14:20:** ACTED — cycle 131 (a Discord cycle 130 utáni második kör, a sorrend szerint). **Phase 1 SHIPPED**: `notify-push` handler — ntfy **JSON publish** formátum (emoji-safe: a header-alapú Title/Priority/Tags ByteString-korlát miatt 💪-féle title-t dob, ezért JSON body), `priority` name→ntfy 1-5, `tags` string→array, közös throttle, `MA-NTFY-*` error-code-ok. types/schema/dispatch wiring + smoke sample. typecheck zöld + E2E mock-server smoke (4/4 PASS: pure payload emoji-safe + JSON-POST + no-topic + HTTP-403). **🔴 Bug elkapva a fejlesztés közben:** az első verzió HTTP-header-rel publikált → emoji a Title-ben "Cannot convert to ByteString" hibát dobott; átírva JSON publish-re. **User-feladat:** ntfy app install + topic subscribe → `MA_NTFY_TOPIC` env + real-smoke. Phase 3 (dispatcher push channel) + Phase 4 (sleep/presence-gate) + Phase 6 (priority-routing) külön cycle. A matrac-rész (A) az Assist Agent Cron Job dolga (recurring miss-check → push), nem a Dev Agent-é.
 
 ## [ACTED] AGB-2026-05-22-02 — ⚠️ TOP PRIO: Discord webhook notification (FR #5b-DISCORD)
 **From:** chat

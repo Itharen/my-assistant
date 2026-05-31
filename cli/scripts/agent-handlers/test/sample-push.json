@@ -1,0 +1,22 @@
+{
+  "verdict": "soft-nudge",
+  "reason": "Smoke teszt: notify-push (ntfy.sh) handler kipróbálva (FR #5b Phase 1). Élő POST-hoz MA_NTFY_TOPIC env-var kell — anélkül MA-NTFY-NO-TOPIC error (szándékolt, strukturált).",
+  "actions": [
+    {
+      "type": "notify-push",
+      "tier": 1,
+      "args": {
+        "title": "💪 Mai matrac?",
+        "message": "Recurring napi edzés (matrac) emlékeztető — health-system.md 2026-05-22.",
+        "priority": "high",
+        "tags": "muscle,warning",
+        "throttleId": "ntfy-matrac",
+        "cooldownMs": 3600000
+      }
+    }
+  ],
+  "tickMeta": {
+    "tickedAt": "2026-05-31T14:05:00+02:00",
+    "inputDigest": "smoke teszt — notify-push"
+  }
+}

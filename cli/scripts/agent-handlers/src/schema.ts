@@ -14,6 +14,7 @@ const ACTION_TYPES: ReadonlySet<ActionType> = new Set([
   'notify-cast',
   'ccap-notify',
   'notify-discord',
+  'notify-push',
   'task-create',
   'task-update',
   'fr-status-change',
@@ -28,6 +29,7 @@ const REQUIRED_TIER: Record<ActionType, ActionTier> = {
   'notify-cast': 1,
   'ccap-notify': 1,
   'notify-discord': 1,
+  'notify-push': 1,
   'task-create': 2,
   'task-update': 2,
   'fr-status-change': 1,
@@ -39,6 +41,8 @@ const VALID_CCAP_PRIORITIES = new Set(['info', 'warning', 'success', 'error']);
 
 const VALID_DISCORD_PRIORITIES = new Set(['info', 'warning', 'success', 'error']);
 const VALID_DISCORD_MENTIONS = new Set(['user', 'none']);
+
+const VALID_NTFY_PRIORITIES = new Set(['min', 'low', 'default', 'high', 'max']);
 
 const VALID_USER_INPUT_KINDS = new Set([
   'task',
@@ -217,6 +221,22 @@ function validateAction(action: unknown, index: number, errors: ValidationError[
       }
       if (args.color !== undefined && (typeof args.color !== 'number' || args.color < 0)) {
         errors.push({ path: `${path}.args.color`, message: 'must be a non-negative number (decimal RGB)' });
+      }
+      if (args.cooldownMs !== undefined && (typeof args.cooldownMs !== 'number' || args.cooldownMs < 0)) {
+        errors.push({ path: `${path}.args.cooldownMs`, message: 'must be a non-negative number' });
+      }
+      break;
+    case 'notify-push':
+      requireString(args, 'title', `${path}.args`, errors);
+      requireString(args, 'message', `${path}.args`, errors);
+      if (args.priority !== undefined && (typeof args.priority !== 'string' || !VALID_NTFY_PRIORITIES.has(args.priority))) {
+        errors.push({
+          path: `${path}.args.priority`,
+          message: `must be one of: ${[...VALID_NTFY_PRIORITIES].join(', ')}`,
+        });
+      }
+      if (args.tags !== undefined && typeof args.tags !== 'string') {
+        errors.push({ path: `${path}.args.tags`, message: 'must be a string (comma-separated)' });
       }
       if (args.cooldownMs !== undefined && (typeof args.cooldownMs !== 'number' || args.cooldownMs < 0)) {
         errors.push({ path: `${path}.args.cooldownMs`, message: 'must be a non-negative number' });

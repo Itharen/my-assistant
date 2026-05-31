@@ -13,6 +13,7 @@ export type ActionType =
   | 'notify-cast'
   | 'ccap-notify'
   | 'notify-discord'
+  | 'notify-push'
   | 'task-create'
   | 'task-update'
   | 'fr-status-change'
@@ -91,6 +92,19 @@ export interface NotifyDiscordAction extends BaseAction {
   };
 }
 
+export interface NotifyPushAction extends BaseAction {
+  type: 'notify-push';
+  tier: 1;
+  args: {
+    title: string;
+    message: string;
+    priority?: 'min' | 'low' | 'default' | 'high' | 'max';   // ntfy Priority header
+    tags?: string;                             // ntfy Tags header (comma-separated emoji shortcodes)
+    throttleId?: string;                       // Phase 4 közös throttle (FR #1)
+    cooldownMs?: number;
+  };
+}
+
 export interface TaskCreateAction extends BaseAction {
   type: 'task-create';
   tier: 2;
@@ -140,6 +154,7 @@ export type Action =
   | NotifyCastAction
   | CcapNotifyAction
   | NotifyDiscordAction
+  | NotifyPushAction
   | TaskCreateAction
   | TaskUpdateAction
   | FrStatusChangeAction

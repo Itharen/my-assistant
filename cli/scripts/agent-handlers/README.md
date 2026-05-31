@@ -75,6 +75,7 @@ Részletes validátor: `src/schema.ts` (manual). Entrypoint:
 | `notify-cast` | 1 | `src/handlers/notify-cast.ts` | 29, 30 | ✅ valódi shell-out (`ma cast notify`) + throttle |
 | `ccap-notify` | 1 | `src/handlers/ccap-notify.ts` | 24, 30 | ✅ shell-out (`ccap notify send`) + throttle |
 | `notify-discord` | 1 | `src/handlers/notify-discord.ts` | 130 | ✅ HTTP POST Discord webhook (embed + mention) + throttle (FR #5b-DISCORD Phase 2) |
+| `notify-push` | 1 | `src/handlers/notify-push.ts` | 131 | ✅ HTTP POST ntfy.sh (JSON publish, emoji-safe) + throttle (FR #5b Phase 1) |
 | `task-create` | 2 | `src/handlers/task-create.ts` | — | 🅿️ placeholder |
 | `task-update` | 2 | `src/handlers/task-update.ts` | — | 🅿️ placeholder |
 | `fr-status-change` | 1 | `src/handlers/fr-status-change.ts` | 31 | ✅ FR `## Status` preflight + replace + atomic write |
@@ -82,11 +83,11 @@ Részletes validátor: `src/schema.ts` (manual). Entrypoint:
 
 ### Throttle (cycle 30)
 
-A `notify-cast`, `ccap-notify` és `notify-discord` handler-ek közös throttle-eljárást használnak
+A `notify-cast`, `ccap-notify`, `notify-discord` és `notify-push` handler-ek közös throttle-eljárást használnak
 (`src/throttle.ts`):
 - State: `__agent/state/notify-throttle.json` (`{ throttleId: lastSentIso }`)
 - Default cooldown: 5 perc; per-action `args.cooldownMs` override
-- Cooldown-on belül → `MA-{NOTIFY-CAST|CCAP-NOTIFY|DISCORD}-THROTTLED` action-log note, NEM hajtja végre
+- Cooldown-on belül → `MA-{NOTIFY-CAST|CCAP-NOTIFY|DISCORD|NTFY}-THROTTLED` action-log note, NEM hajtja végre
 - Sikeres send után `recordThrottle(throttleId)` (atomic write, tmp+rename)
 
 ### Error-handling
@@ -98,6 +99,7 @@ A handler-ek strukturált `MA-*` error code-okkal throw-olnak (per
 - `MA-PLAN-FILE-NOT-FOUND`, `MA-PLAN-STEP-NOT-FOUND`, `MA-PLAN-STEP-ALREADY-DONE` (note, not error), `MA-PLAN-WRITE-FAIL`, `MA-PLAN-READ-FAIL`
 - `MA-NOTIFY-CAST-BUILD-MISSING`, `MA-NOTIFY-CAST-SPAWN-FAIL`, `MA-NOTIFY-CAST-EXIT-N`
 - `MA-DISCORD-NO-WEBHOOK-URL` (env hiányzik), `MA-DISCORD-POST-FAIL` (fetch hiba), `MA-DISCORD-HTTP-ERROR` (4xx/5xx)
+- `MA-NTFY-NO-TOPIC` (env hiányzik), `MA-NTFY-POST-FAIL` (fetch hiba), `MA-NTFY-HTTP-ERROR` (4xx/5xx)
 - `MA-THROTTLE-READ-FAIL` (stderr, fallback empty)
 
 ### notify-discord env-var (FR #5b-DISCORD)
@@ -107,6 +109,14 @@ A handler-ek strukturált `MA-*` error code-okkal throw-olnak (per
 - Args: `title` (req), `message` (req), `priority?` (info/warning/success/error → embed-szín), `color?` (decimal RGB override), `mention?` (user/none), `throttleId?`, `cooldownMs?`
 - Discord siker = `204 No Content`. A `content` csak a mention-ping-et hordozza, a strukturált tartalom az embed-ben (title + description).
 
+### notify-push env-var (FR #5b ntfy.sh)
+
+- `MA_NTFY_TOPIC` (**required**) — a topic, amire a user subscribe-olt
+- `MA_NTFY_URL` (opc., default `https://ntfy.sh`) — public vagy self-hosted ntfy base-URL
+- `MA_NTFY_AUTH` (opc.) — Bearer token (self-host / reserved topic)
+- Args: `title` (req), `message` (req), `priority?` (min/low/default/high/max → ntfy 1-5), `tags?` (vesszővel-tagolt emoji shortcode-ok), `throttleId?`, `cooldownMs?`
+- ntfy siker = `200 OK`. **JSON publish formátum** (POST a base-URL-re, `{topic,title,message,priority,tags}`) — NEM HTTP-header (Title/Priority/Tags), mert a header-ek csak ByteString-ek → emoji a title-ben (💪) hibát dobna. A JSON body UTF-8-safe.
+
 ## Smoke teszt
 
 ```bash
@@ -114,6 +124,7 @@ pnpm smoke           # log-handler smoke (test/sample-output.json)
 pnpm smoke-multi     # multi-handler smoke (log + user-input-new + notify-cast)
 pnpm smoke-dev       # Dev Agent routing smoke — validálja cycle 33+34 work-öt
 pnpm smoke-discord   # notify-discord smoke (MA_DISCORD_WEBHOOK_URL env kell az élő POST-hoz)
+pnpm smoke-push      # notify-push (ntfy.sh) smoke (MA_NTFY_TOPIC env kell az élő POST-hoz)
 ```
 
 A smoke-dev validálja:
