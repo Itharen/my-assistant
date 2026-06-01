@@ -7,6 +7,18 @@
 
 ---
 
+## 💰 USER MVP-DIREKTÍVA (2026-05-29)
+
+> User explicit MVP-feladatok (MVP = pénzkeresés-fókusz, `mvp-focus.md`). Szó szerint:
+> *"MVP tasks: RAG for dev agents (1: rules, 2: patterns, 3: codebase, 4: dataflows) / Organizer Tasks Screen Updates"*
+
+| # | Task | Hova köt | Status |
+|---|---|---|---|
+| MVP-1 | **RAG for dev agents** — 4 réteg: 1) rules, 2) patterns, 3) codebase, 4) dataflows | **#7g** `rag-context-injection.md` (4-rétegű spec felvéve 2026-05-29) | 🟡→MVP-kandidátus; CCAP RAG endpoint MVP a blokkoló (Phase 1 dep) |
+| MVP-2 | **Organizer Tasks Screen Updates** | 🚫 **NEM Dev Agent scope** (`Q-2026-05-29-01` answered): az organizer a user saját fejlesztése → a tasks-screen a **user feladata**. CLAUDE.md: itt csak `fo`-fogyasztók vagyunk. | ❌ Dev Agent ne vegye fel. User-owned task (tracking: ld. `mvp-focus.md`). |
+
+---
+
 ## 🟢 Most-fókusz (első fejlesztési kör)
 
 > **Grooming cycle 61 (2026-05-16 09:45):** Két nagy FR funkcionálisan zárva ma:
@@ -32,6 +44,8 @@
 | 3d | **Tasks aggregated dashboard view (client/ + server/)** | `current/feature-requests/tasks-dashboard-aggregated-view.md` | aggregátor + UI + interaktív jelölgetés (✅/⏸/🚫/💬) | 🟢 server+client, chat Phase 5-6 ütközés |
 | 3e | **Action-log mint CLI command (A+B+sync)** | `current/feature-requests/action-log-cli-command.md` | `ma action-log emit/sync/list` — PS hook thin wrapper | Phase 1+2 ✅ (cycle 25); Phase 3-6 server-side green-light vár |
 | 3f | **Socket-rendszer + auto-version-update + verzió-info bar** | `current/feature-requests/socket-and-version-sync.md` | WS server↔client + szerver-verzió változás → kliens auto-reload + verzió-info bar UI + LDP version-bump step | Phase 1-4 ✅ shipped (cycle 57-60, 1147 LOC); Phase 5 (REST→socket) + Phase 6 (build-pipeline) külön green-light vár |
+| 3g | **User I/O + Dev Agent I/O + Reports panelek** | `current/feature-requests/agent-io-panels.md` | 3 új panel a kliensen: agent-kommunikáció + status-board | 🟢 **USER PRIO 2026-05-16** (AGB-2026-05-16-24) — magas, AGB-20 auth fix után |
+| 3h | **Activity-monitor always-on + change-emit + device-integration** | `current/feature-requests/activity-tracking.md` (2026-05-17 kibővítés) | folyamatos loop, csak Δ-ra event; Google Fit / GPS / lépés bekötés health-tracking-hez | 🟢 **USER PRIO 2026-05-17** (AGB-2026-05-17-01) |
 
 ---
 
@@ -49,7 +63,7 @@
 | 7e | Per-device hangerő-cap impl (BathCom 50%) | `current/principles/cast-notifier-defaults.md` |
 | 7f | Server ESM proper module resolution (.js extension codemod) | `current/feature-requests/server-esm-proper-resolution.md` |
 | 7g | **RAG context-injection (CC hooks + agent ticks)** ⚠️ kritikus dep | `current/feature-requests/rag-context-injection.md` |
-| 8a | **Eső / vihar noti — asztrál-emelő trigger** | `current/feature-requests/weather-rain-notification.md` |
+| 8a | **Eső / vihar noti — asztrál-emelő trigger** | `current/feature-requests/weather-rain-notification.md` (Phase 1 WeatherPoll ✅ cycle 90; Phase 2-3 notify-cast TTS + storm-tier nyitva) |
 | 8b | **STT finomhangolás + fix tréner-metódus** | `current/feature-requests/stt-fine-tuning.md` |
 | 7g | Szórakoztatás integráció (Jellyfin + Steam) | `current/feature-requests/entertainment-integration.md` |
 
@@ -91,6 +105,8 @@
 | Google Home integration (Phase 1.5+2) | `current/feature-requests/google-home-integration.md` |
 | Activity tracking (activity-monitor) | `current/feature-requests/activity-tracking.md` |
 | Organizer day+week view (organizer-FR) | `current/feature-requests/organizer-day-week-view.md` |
+| **Discord webhook notification (#5b-DISCORD)** — Phase 2+3 | `current/feature-requests/discord-webhook-notification.md` (✅ cycle 130; user-feladat: `MA_DISCORD_WEBHOOK_URL` env) |
+| **ntfy.sh push notification (#5b-NTFY)** — Phase 1 | `current/feature-requests/ntfy-push-notification.md` (✅ cycle 131, JSON publish emoji-safe; user-feladat: ntfy app + `MA_NTFY_TOPIC` env) |
 
 ---
 

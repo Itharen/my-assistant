@@ -87,6 +87,43 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-06-01-01 — Mindkét TOP PRIO notif green-light SHIPPED — candidate-pool kifogyott, decision kell
+**From:** dev-agent
+**To:** chat
+**Kind:** request
+**Created:** 2026-06-01T14:10+02:00
+**Updated:** 2026-06-01T14:10+02:00
+
+A két 2026-05-22-i TOP PRIO notification green-light **ship-elve** (cycle 130-131):
+- ✅ **#5b-DISCORD** notify-discord handler (cycle 130, `bfc76ea`)
+- ✅ **#5b-NTFY** notify-push ntfy.sh handler (cycle 131, `49e3177`, emoji-ByteString bug elkapva+javítva)
+
+Mobil notification rendszer **handler-szinten kész**. Cycle 132 = M1 grooming (backlog rekonszolidáció).
+
+### A candidate-pool kiürült — minden maradék blokkolt
+
+| Pool | Tétel | Miért nem indítható autonóm |
+|---|---|---|
+| 🟢 #3c IoT Google Home | server endpoints | **ESM-mig collision** (foreign pending, chat-felelős, 9+ cycle) |
+| 🟢 #3d Tasks dashboard | server+client | **ESM-mig collision** |
+| 🟢 #3g agent-io-panels | 3 kliens-panel | **AGB-20 auth-fix után** (auth-blokkoló) |
+| 🟢 #3e action-log CLI Phase 3-6 | server-side | **server-side green-light vár** |
+| 🟢 #3h activity-monitor always-on | folyamatos loop + device | nagy server-feladat, külön green-light |
+| #1 comm-forms Phase 3 | channel-selection | **chat-felelős** (Cron Job entrypoint workflow-doc), NEM Dev Agent |
+| **MVP-1 RAG (#7g)** ⭐ | dev-agent RAG 4-réteg | **hard-blocked**: Phase 1 CCAP RAG query API (CCAP-projekt, user). My-assistant Phase 3+ csak utána. Ingestion-config előre = spekulatív rework. |
+
+### Döntés kell (egyet válassz)
+
+1. **ESM-mig befejezés** (chat-felelős) → unlock #3c/#3d server-zone. A 9+ cycle óta foreign-pending blokkolja a server-fejlesztés nagy részét.
+2. **AGB-20 auth-fix green-light** → unlock #3g (USER PRIO 2026-05-16) + üres dashboard.
+3. **CCAP RAG endpoint MVP** (CCAP-projekt) → unlock MVP-1 (a user 2026-05-29 explicit MVP-prio-ja).
+4. **Új green-light** egy 🟡-ra (pl. #8a weather Phase 2-3 notify-cast TTS — notification-cluster, részben ortogonális) vagy egy ✅-handler dispatcher-channel kibővítésére.
+5. **Safe-orthogonal** (spec-coverage / doc-sync) — de a notification-handler-eknek nincs committed regression-test (az agent-handlers package-nek nincs test-framework-je → ez **új-minta-döntés**, user-OK kell).
+
+**Default ha nincs válasz:** további safe-orthogonal grooming/doc-sync, DE érdemi feature-haladás csak a fenti blokkok feloldásával lehet. A leg-user-értékesebb: **opció 3 (RAG MVP)** vagy **opció 1 (ESM-unblock)**.
+
+---
+
 ## [OPEN] AGB-2026-05-17-02 — Cycle 92-122 marathon ZÁRVA (31 ship) — next-direction kérés
 **From:** dev-agent
 **To:** chat

@@ -2,7 +2,7 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 131                                # Cycle 131 lezárva — FR #5b Phase 1 notify-push ntfy.sh handler (49e3177); AGB-22-01 ACTED; emoji-ByteString bug elkapva+javítva (JSON publish)
+cycle: 132                                # Cycle 132 lezárva — M1 grooming (notif FR-ek → ✅ Shipped) + ESZKALÁCIÓ (AGB-2026-06-01-01): candidate-pool kifogyott, minden maradék blokkolt, decision kell
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
@@ -30,6 +30,7 @@ phase_notes: |
     129: spec-coverage cli/spotify.client pure helpers (CLI 93→102) — fee2ccd
     130: FR #5b-DISCORD Phase 2+3 — notify-discord webhook handler (HTTP POST embed + mention + throttle + MA-DISCORD-* errors) — bfc76ea
     131: FR #5b Phase 1 — notify-push ntfy.sh handler (JSON publish emoji-safe + priority/tags map + throttle + MA-NTFY-* errors) — 49e3177
+    132: M1 grooming (5b-DISCORD + 5b-NTFY → ✅ Shipped szekció, 8a Phase 1 jelölés) + ESZKALÁCIÓ AGB-2026-06-01-01 — no code change
   Tests: client 123 + cli 102 + server 10 = 235 pass / 0 failure. agent-handlers: typecheck zöld + Discord & ntfy E2E mock-smoke (4/4 + 4/4 PASS).
   Cycle 131 bug-catch: a notify-push első verziója HTTP-header-rel publikált → emoji a Title-ben "Cannot convert to ByteString" → átírva ntfy JSON publish formátumra (UTF-8-safe). E2E hard rule fogta el.
   Cycle 127 megjegyzés: wave-jsonl.util.ts spec törölve — ESM-import bug a foreign-pending
@@ -47,6 +48,19 @@ phase_notes: |
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
+  cycle_id: 132
+  phase_completed: close-cycle
+  files_modified:
+    - __agent/triggers/development-agent-backlog.md   # M1 grooming: 5b-DISCORD/5b-NTFY → ✅ Shipped, 8a Phase 1 jelölés
+    - __agent/AGENT_BUS.md                             # ESZKALÁCIÓ AGB-2026-06-01-01 (candidate-pool kifogyott)
+    - __agent/STATUS_DEV.md
+  fr_status_changes: []
+  plan_steps_marked_done: []
+  commit_sha: (grooming + escalation cycle, no code)
+  build_status: unchanged
+  test_status: unchanged
+
+last_cycle_prev:
   cycle_id: 131
   phase_completed: close-cycle
   files_modified:
@@ -101,10 +115,10 @@ secondary_plan:
 
 # Backlog snapshot (a 03-collect-tasks frissíti)
 backlog_snapshot:
-  green_count: 10                          # 🟢 Most-fókusz sorok száma (#1-3f; #3b-WAVE-UI + #3f Phase 1-4 shipped, line marad)
-  yellow_count: 15                         # 🟡 Második/harmadik hullám (unchanged cycle 50 óta)
+  green_count: 10                          # 🟢 Most-fókusz — DE mind blokkolt (ESM-mig/auth/server-side/out-of-scope). Lásd AGB-2026-06-01-01.
+  yellow_count: 13                         # 🟡 (5b-DISCORD + 5b-NTFY kivéve → ✅ Shipped, cycle 130/131)
   parked_count: 9                          # 🅿️ Parkolt
-  last_checked: "2026-05-16T09:45+02:00"   # M1 grooming cycle 61
+  last_checked: "2026-06-01T14:10+02:00"   # M1 grooming cycle 132
 
 # Package (26. alapelv — related-cluster)
 package:
