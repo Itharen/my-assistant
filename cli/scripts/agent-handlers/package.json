@@ -7,6 +7,8 @@
   "scripts": {
     "prep": "pnpm i",
     "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json",
+    "test": "tsc -p tsconfig.json && node --test test/*.test.mjs",
     "dispatch": "tsx src/dispatch.ts",
     "smoke": "tsx src/dispatch.ts < test/sample-output.json",
     "smoke-dev": "tsx src/dispatch.ts < test/sample-development-agent.json",

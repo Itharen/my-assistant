@@ -117,6 +117,25 @@ A handler-ek strukturált `MA-*` error code-okkal throw-olnak (per
 - Args: `title` (req), `message` (req), `priority?` (min/low/default/high/max → ntfy 1-5), `tags?` (vesszővel-tagolt emoji shortcode-ok), `throttleId?`, `cooldownMs?`
 - ntfy siker = `200 OK`. **JSON publish formátum** (POST a base-URL-re, `{topic,title,message,priority,tags}`) — NEM HTTP-header (Title/Priority/Tags), mert a header-ek csak ByteString-ek → emoji a title-ben (💪) hibát dobna. A JSON body UTF-8-safe.
 
+## Unit teszt (regresszió)
+
+```bash
+pnpm test            # tsc build + node --test test/*.test.mjs
+```
+
+`node:test` (Node stdlib — **nulla új dependency**, a `cli` jasmine-on-`build/`
+mintát tükrözi: a compiled `dist/`-et teszteli). Fedi:
+- `notify-handlers.test.mjs` — notify-discord + notify-push pure helper-ek
+  (`buildDiscordPayload` / `buildNtfyPayload`), HTTP-integráció lokál mock-szerverrel,
+  error-path-ok (no-env / HTTP-4xx). **Regresszió-guard:** ntfy emoji-a-title-ben
+  (JSON publish, NEM HTTP-header — cycle 131 fix).
+- `schema-notify.test.mjs` — `validateAgentOutput` a notify-discord + notify-push
+  action-típusokra (valid + tier/priority/mention/tags hibák).
+
+> Megjegyzés: a `node --test` a compiled `dist/`-et importálja, ezért a `test`
+> script előbb buildel (`tsc`). A `test/*.test.mjs` fájlok ESM-ek, a `tsconfig`
+> kizárja a `test/`-et a fordításból.
+
 ## Smoke teszt
 
 ```bash
