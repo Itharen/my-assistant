@@ -2,7 +2,7 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 132                                # Cycle 132 lezárva — M1 grooming (notif FR-ek → ✅ Shipped) + ESZKALÁCIÓ (AGB-2026-06-01-01): candidate-pool kifogyott, minden maradék blokkolt, decision kell
+cycle: 133                                # Cycle 133 lezárva — regression-tesztek notify-discord + notify-push (node:test stdlib, 22 pass) — be427c5; emoji-ByteString regresszió-guard
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
@@ -31,6 +31,10 @@ phase_notes: |
     130: FR #5b-DISCORD Phase 2+3 — notify-discord webhook handler (HTTP POST embed + mention + throttle + MA-DISCORD-* errors) — bfc76ea
     131: FR #5b Phase 1 — notify-push ntfy.sh handler (JSON publish emoji-safe + priority/tags map + throttle + MA-NTFY-* errors) — 49e3177
     132: M1 grooming (5b-DISCORD + 5b-NTFY → ✅ Shipped szekció, 8a Phase 1 jelölés) + ESZKALÁCIÓ AGB-2026-06-01-01 — no code change
+    133: regression-tesztek notify-discord + notify-push (node:test stdlib, 22 pass: pure builders + HTTP-integráció + error-path + emoji-ByteString guard) — be427c5
+  Server-zone verifikálhatatlan ebben a környezetben (nincs lokál tsc, LDP stale 05-26) → ortogonális agent-handlers zónában dolgozom.
+  Teszt-eszköz döntés (cycle 133): node:test stdlib, NEM jasmine/vitest (nulla új dep). Jelezve AGB-2026-06-01-02-ben chat-objection-re. Reversible.
+  Új npm script: `pnpm test` (tsc build + node --test test/*.test.mjs).
   Tests: client 123 + cli 102 + server 10 = 235 pass / 0 failure. agent-handlers: typecheck zöld + Discord & ntfy E2E mock-smoke (4/4 + 4/4 PASS).
   Cycle 131 bug-catch: a notify-push első verziója HTTP-header-rel publikált → emoji a Title-ben "Cannot convert to ByteString" → átírva ntfy JSON publish formátumra (UTF-8-safe). E2E hard rule fogta el.
   Cycle 127 megjegyzés: wave-jsonl.util.ts spec törölve — ESM-import bug a foreign-pending
@@ -48,17 +52,23 @@ phase_notes: |
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 132
+  cycle_id: 133
   phase_completed: close-cycle
   files_modified:
-    - __agent/triggers/development-agent-backlog.md   # M1 grooming: 5b-DISCORD/5b-NTFY → ✅ Shipped, 8a Phase 1 jelölés
-    - __agent/AGENT_BUS.md                             # ESZKALÁCIÓ AGB-2026-06-01-01 (candidate-pool kifogyott)
-    - __agent/STATUS_DEV.md
+    - cli/scripts/agent-handlers/test/notify-handlers.test.mjs   # ÚJ — pure builders + HTTP-integráció + error-path
+    - cli/scripts/agent-handlers/test/schema-notify.test.mjs     # ÚJ — schema-validáció notify-discord + notify-push
+    - cli/scripts/agent-handlers/package.json                    # ÚJ build + test script
+    - cli/scripts/agent-handlers/README.md                       # Unit teszt szekció
   fr_status_changes: []
   plan_steps_marked_done: []
+  commit_sha: be427c5
+  build_status: green                           # tsc -p tsconfig.json zöld
+  test_status: green                            # node --test 22/22 pass
+
+last_cycle_prev:
+  cycle_id: 132
+  phase_completed: close-cycle
   commit_sha: (grooming + escalation cycle, no code)
-  build_status: unchanged
-  test_status: unchanged
 
 last_cycle_prev:
   cycle_id: 131

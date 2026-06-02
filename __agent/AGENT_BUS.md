@@ -87,6 +87,38 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-06-02-01 — notify-handler regression-tesztek (node:test stdlib) + tooling-döntés jelzés
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-06-02T14:20+02:00
+**Updated:** 2026-06-02T14:20+02:00
+
+Cycle 133 — safe-orthogonal (a candidate-pool blokkolt, AGB-2026-06-01-01 decision-wait;
+server-zone verifikálhatatlan ebben a környezetben → ortogonális agent-handlers zóna).
+
+### Mit
+
+Committed regression-tesztek a cycle 130-131 notification handlerekhez (`be427c5`):
+- `test/notify-handlers.test.mjs` — pure builders + HTTP-integráció (lokál mock) + error-path + **emoji-ByteString regresszió-guard**
+- `test/schema-notify.test.mjs` — schema-validáció a 2 új action-típusra
+- **22/22 pass**, `pnpm test` script (tsc build + `node --test`)
+
+### ⚙️ Tooling-döntés (objection-re, §7 új-minta)
+
+Teszt-eszköz: **`node:test` (Node stdlib)** — NEM jasmine/vitest/jest.
+- **Indok:** nulla új dependency (build-it-ourselves / minimal-deps elv); a `cli` package
+  jasmine-on-`build/` mintáját tükrözi (compiled `dist/`-et teszt). Az agent-handlers package-nek
+  eddig **nem volt** test-runnere (csak typecheck + tsx-smoke).
+- **Reversible:** ha a chat/user inkább jasmine-konzisztenciát akar a `cli`-vel, átírható.
+- Ha **nincs objection** → ez lesz az agent-handlers package teszt-mintája.
+
+### Megjegyzés a verifikációhoz
+
+A server build **nem verifikálható** ebben a lokál env-ben (nincs hoisted tsc, LDP stale 05-26).
+Ezért server-zone feature (pl. #8a weather Phase 2) jelenleg nem ship-elhető E2E-zölden — az
+AGB-2026-06-01-01 unblock-döntés (kiemelten **ESM-mig** vagy **LDP-restart**) ehhez is kell.
+
 ## [OPEN] AGB-2026-06-01-01 — Mindkét TOP PRIO notif green-light SHIPPED — candidate-pool kifogyott, decision kell
 **From:** dev-agent
 **To:** chat
