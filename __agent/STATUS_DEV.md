@@ -2,7 +2,7 @@
 
 ```yaml
 # Cycle state (KÖTELEZŐ SSoT)
-cycle: 134                                # Cycle 134 lezárva — tier-gating + schema-core regression-tesztek (node:test, 40 pass összesen) — 67b84bd
+cycle: 135                                # Cycle 135 lezárva — file-I/O handler regression-tesztek fr-status-change + plan-step-mark-done (node:test, 50 pass összesen) — 8f706ed
 phase: idle                                # idle | orient | cleanup-git | audit | collect-tasks | investigate | plan-package | implement | review | verify-local | update-docs | commit-push | close-cycle
 
 phase_notes: |
@@ -33,6 +33,9 @@ phase_notes: |
     132: M1 grooming (5b-DISCORD + 5b-NTFY → ✅ Shipped szekció, 8a Phase 1 jelölés) + ESZKALÁCIÓ AGB-2026-06-01-01 — no code change
     133: regression-tesztek notify-discord + notify-push (node:test stdlib, 22 pass: pure builders + HTTP-integráció + error-path + emoji-ByteString guard) — be427c5
     134: tier-gating + schema-core regression-tesztek (node:test, +18 = 40 total: gateAction safety-core + top-level/core action schema, nulla file-I/O) — 67b84bd
+    135: file-I/O handler regression-tesztek fr-status-change + plan-step-mark-done (node:test, +10 = 50 total; temp-dir izoláció MY_ASSISTANT_ROOT, Domén-2-safe) — 8f706ed
+  Agent-handlers coverage: notify-discord/push + tiers + schema (notify+core) + fr-status-change + plan-step-mark-done lefedve.
+  Hátralévő coverage (alacsonyabb prio): notify-cast/ccap-notify (shell-out mock), throttle/state (file-I/O), log/update-status/user-input-new.
   Server-zone verifikálhatatlan ebben a környezetben (nincs lokál tsc, LDP stale 05-26) → ortogonális agent-handlers zónában dolgozom.
   Teszt-eszköz döntés (cycle 133): node:test stdlib, NEM jasmine/vitest (nulla új dep). Jelezve AGB-2026-06-01-02-ben chat-objection-re. Reversible.
   Új npm script: `pnpm test` (tsc build + node --test test/*.test.mjs).
@@ -53,21 +56,21 @@ phase_notes: |
 
 # Az utolsó BEFEJEZETT cycle metadata
 last_cycle:
-  cycle_id: 134
+  cycle_id: 135
   phase_completed: close-cycle
   files_modified:
-    - cli/scripts/agent-handlers/test/tiers.test.mjs             # ÚJ — gateAction tier-gating (safety core)
-    - cli/scripts/agent-handlers/test/schema-core.test.mjs       # ÚJ — top-level + core action schema
-    - cli/scripts/agent-handlers/README.md                       # Unit teszt szekció (40 teszt)
+    - cli/scripts/agent-handlers/test/fr-status-change.test.mjs      # ÚJ — Status-block csere + error-path (temp-izolált)
+    - cli/scripts/agent-handlers/test/plan-step-mark-done.test.mjs   # ÚJ — ✅ append + idempotens + error-path (temp-izolált)
+    - cli/scripts/agent-handlers/README.md                           # Unit teszt szekció (50 teszt) + Domén-2 izoláció note
   fr_status_changes: []
   plan_steps_marked_done: []
-  commit_sha: 67b84bd
+  commit_sha: 8f706ed
   build_status: green                           # tsc -p tsconfig.json zöld
-  test_status: green                            # node --test 40/40 pass
+  test_status: green                            # node --test 50/50 pass
 
 last_cycle_prev:
-  cycle_id: 133
-  commit_sha: be427c5                            # notify-handler regression tests (22 pass)
+  cycle_id: 134
+  commit_sha: 67b84bd                            # tier-gating + schema-core tests (40 total)
 
 last_cycle_prev:
   cycle_id: 132
