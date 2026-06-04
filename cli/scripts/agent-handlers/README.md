@@ -124,7 +124,7 @@ pnpm test            # tsc build + node --test test/*.test.mjs
 ```
 
 `node:test` (Node stdlib — **nulla új dependency**, a `cli` jasmine-on-`build/`
-mintát tükrözi: a compiled `dist/`-et teszteli). **40 teszt**, fedi:
+mintát tükrözi: a compiled `dist/`-et teszteli). **50 teszt**, fedi:
 - `notify-handlers.test.mjs` — notify-discord + notify-push pure helper-ek
   (`buildDiscordPayload` / `buildNtfyPayload`), HTTP-integráció lokál mock-szerverrel,
   error-path-ok (no-env / HTTP-4xx). **Regresszió-guard:** ntfy emoji-a-title-ben
@@ -136,6 +136,15 @@ mintát tükrözi: a compiled `dist/`-et teszteli). **40 teszt**, fedi:
 - `schema-core.test.mjs` — top-level struktúra (verdict/reason/tickMeta/max-5/agent) +
   core action-típusok (log / user-input-new / update-status / task-create
   "Forrás-szabály" kényszer / task-update).
+- `fr-status-change.test.mjs` — FR `## Status`-blokk csere: sikeres replace,
+  **csak-a-blokkon-belül** (body-decoy érintetlen), MA-FR-FILE-NOT-FOUND /
+  STATUS-MISSING / STATUS-MISMATCH. Temp-dir izoláció (`MY_ASSISTANT_ROOT`).
+- `plan-step-mark-done.test.mjs` — list-item + tábla-cella ✅ append,
+  **idempotens** skip (nincs dupla ✅), MA-PLAN-STEP-NOT-FOUND / FILE-NOT-FOUND.
+
+> **Domén-2 izoláció:** a file-I/O handler-tesztek `MY_ASSISTANT_ROOT`-ot egy
+> tmp `__agent/`-re állítják + abszolút temp FR/plan fájlokkal dolgoznak →
+> a valódi `current/` / `__agent/` SOHA nem szennyeződik (tmp `test.after` törli).
 
 > Megjegyzés: a `node --test` a compiled `dist/`-et importálja, ezért a `test`
 > script előbb buildel (`tsc`). A `test/*.test.mjs` fájlok ESM-ek, a `tsconfig`
