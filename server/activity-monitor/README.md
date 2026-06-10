@@ -38,7 +38,7 @@ Az `idleSeconds` használható ébredés / lefekvés detektálásra:
 ### Foreground (debugging / tesztelés)
 
 ```powershell
-cd E:\Programming\Own\CURSOR\my-assistant
+cd E:\Programming\Own\CURSOR\LIVE-projects\my-assistant
 pwsh -File activity-monitor/logger.ps1
 ```
 
@@ -56,8 +56,8 @@ Start-Process pwsh -ArgumentList "-NoProfile","-File","activity-monitor/logger.p
 **B) Windows Task Scheduler (auto-start boot-on, ajánlott):**
 ```powershell
 $action = New-ScheduledTaskAction -Execute "pwsh.exe" `
-    -Argument "-NoProfile -WindowStyle Hidden -File E:\Programming\Own\CURSOR\my-assistant\activity-monitor\logger.ps1" `
-    -WorkingDirectory "E:\Programming\Own\CURSOR\my-assistant"
+    -Argument "-NoProfile -WindowStyle Hidden -File E:\Programming\Own\CURSOR\LIVE-projects\my-assistant\activity-monitor\logger.ps1" `
+    -WorkingDirectory "E:\Programming\Own\CURSOR\LIVE-projects\my-assistant"
 $trigger = New-ScheduledTaskTrigger -AtLogon
 Register-ScheduledTask -TaskName "my-assistant-activity-logger" `
     -Action $action -Trigger $trigger `

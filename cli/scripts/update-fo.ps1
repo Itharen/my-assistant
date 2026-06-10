@@ -1,13 +1,13 @@
 # update-fo.ps1
 # Always-latest fo install: git pull + build + global install + ping verify.
 # Usage: from any directory, run:
-#   E:\Programming\Own\CURSOR\my-assistant\scripts\update-fo.ps1
+#   E:\Programming\Own\CURSOR\LIVE-projects\my-assistant\scripts\update-fo.ps1
 
 $ErrorActionPreference = 'Stop'
 
 $cliRepo = 'E:\Programming\Own\CURSOR\LIVE-projects\organizer-cli'
 $cliPkg = Join-Path $cliRepo 'cli'
-$envFile = 'E:\Programming\Own\CURSOR\my-assistant\.env'
+$envFile = 'E:\Programming\Own\CURSOR\LIVE-projects\my-assistant\.env'
 
 if (-not (Test-Path $cliRepo)) {
   Write-Error "organizer-cli repo not found at $cliRepo. Clone it first: git clone git@github.com:futdevpro/organizer-cli.git"

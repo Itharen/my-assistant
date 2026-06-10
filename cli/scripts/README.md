@@ -22,7 +22,7 @@ Helper scriptek és segéd-projektek a my-assistant rendszer karbantartásához.
 ### `update-fo.ps1` (PowerShell, Windows):
 
 ```powershell
-E:\Programming\Own\CURSOR\my-assistant\cli\scripts\update-fo.ps1
+E:\Programming\Own\CURSOR\LIVE-projects\my-assistant\cli\scripts\update-fo.ps1
 ```
 
 Ha execution policy hiba: `powershell -ExecutionPolicy Bypass -File cli\scripts\update-fo.ps1`.
