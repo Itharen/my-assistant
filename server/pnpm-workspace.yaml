@@ -1,7 +1,7 @@
-allowBuilds:
-  esbuild: false
-  lmdb: false
-  msgpackr-extract: false
+# `packages: []` REQUIRED — pnpm@9 (Path B Dockerfile) a workspace.yaml-t
+# workspace-deklaraciokent kezeli es `packages:` mezot kovetel (kulonben:
+# "packages field missing or empty"). Ures tomb = settings-only workspace.
+packages: []
 
 minimumReleaseAgeExclude:
   # `@futdevpro/*` wildcard — KOTELEZO workspace-global szabaly: a sajat bedrock
