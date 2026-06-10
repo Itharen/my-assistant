@@ -43,6 +43,7 @@ Minden tickkor friss:
 - `WORKFLOW_ASSIST.md` (ezt)
 - `STATUS_ASSIST.md`
 - `USER_INPUT.md`
+- `__agent/AGENT_BUS.md` — `[OPEN]` `To: assist-agent` bejegyzések feldolgozandóak
 - `current/principles/recurring-tasks.md` (Strukturált összefoglaló tábla)
 - `current/diary/diary.md` (utolsó nap)
 - `fo tasks.list --filter '{"done":false}' --limit 30`

@@ -1,5 +1,0 @@
-{"ts":"2026-05-11T15:07:29+02:00","actor":"user","kind":"note","summary":"IKEA shopping bovites: agynemu, takaro, agytakaro, takarohuzat, parnahuzat"}
-{"ts":"2026-05-11T15:07:29+02:00","actor":"claude","kind":"ship","summary":"shopping/ikea.md uj szakasz: Agynemu (5 tetel) - meret-info hianyzik mindegyikre","ref":"current/shopping/ikea.md"}
-{"ts":"2026-05-11T20:39:50+02:00","actor":"user","kind":"feedback","summary":"Frusztracios FR: agensek pattern-megsertesek ismetlodoek. Review tool mar letezik CCAP Revision projektben, de nincs befejezve es nincs bevezetve mas projektekbe. Mielobb!"}
-{"ts":"2026-05-11T20:39:50+02:00","actor":"claude","kind":"ship","summary":"current/feature-requests/review-tool-rollout.md - cross-project rollout terv + 8 projekt rangsor + 6 open Q","ref":"current/feature-requests/review-tool-rollout.md"}
-{"ts":"2026-05-11T20:39:50+02:00","actor":"claude","kind":"ship","summary":"open-questions.md +W)Review tool (Q-review-1..6)","ref":"current/open-questions.md"}

@@ -65,7 +65,7 @@ A `.env` a `.gitignore`-ban szerepel (`my-assistant/.gitignore:6`). **Soha ne co
 ### Init parancs (egyszer kell, vagy key-frissítéskor)
 
 ```powershell
-cd E:\Programming\Own\CURSOR\my-assistant
+cd E:\Programming\Own\CURSOR\LIVE-projects\my-assistant
 $env:FDP_ORGANIZER_API_KEY = (Get-Content .env | Select-String '^FDP_ORGANIZER_API_KEY=').Line.Split('=',2)[1]
 fo dev-switch --target test
 fo init --no-prompt --api-key $env:FDP_ORGANIZER_API_KEY
@@ -74,7 +74,7 @@ fo organizer.ping    # ellenőrzés
 
 bash-ből (Git Bash):
 ```bash
-cd /e/Programming/Own/CURSOR/my-assistant
+cd /e/Programming/Own/CURSOR/LIVE-projects/my-assistant
 export $(grep -v '^#' .env | xargs)
 fo dev-switch --target test
 fo init --no-prompt --api-key "$FDP_ORGANIZER_API_KEY"
@@ -120,7 +120,7 @@ A my-assistant projekten belül van egy script ami a teljes flow-t lefuttatja
 (git pull, build, install, ping):
 
 ```powershell
-E:\Programming\Own\CURSOR\my-assistant\scripts\update-fo.ps1
+E:\Programming\Own\CURSOR\LIVE-projects\my-assistant\scripts\update-fo.ps1
 ```
 
 Lásd: [`../../scripts/update-fo.ps1`](../../scripts/update-fo.ps1).

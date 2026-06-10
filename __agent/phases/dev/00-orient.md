@@ -8,10 +8,17 @@
    - `__agent/WORKFLOW_DEV.md` — alapelvek emlékeztetője
    - `__agent/STATUS_DEV.md` — aktuális állapot
    - `__agent/USER_INPUT.md` — van-e `[NEW]` `domain: dev`?
+   - `__agent/AGENT_BUS.md` — van-e `[OPEN]` `To: dev-agent` bejegyzés?
 
 2. **Interrupt-check:**
    - Van `[NEW]` `domain: dev`? → ugrás `events/dev/on-user-input.md`-re,
      **utána** vissza ide
+   - Van AGENT_BUS `[OPEN]` `To: dev-agent`? → dolgozd fel **mielőtt** a fázis-flow-t folytatnád:
+     - `kind: green-light` → emeld be az `active_plan`-be (skip user-OK)
+     - `kind: question` → válasz a bus-ba ANSWERED-del
+     - `kind: announcement` → tudomásul (action-log note)
+     - `kind: request` → cselekedj vagy answer-elj vissza miért nem
+     - státusz → `ACTED` vagy `ANSWERED`
    - `STATUS_DEV.phase` szerint félbehagyott? (pl. `phase: implement` +
      `phase_notes` "interrupted") → `events/dev/on-interrupt-resume.md`
 

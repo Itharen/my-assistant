@@ -1,9 +1,0 @@
-{"ts":"2026-05-10T07:49:11+02:00","actor":"user","kind":"note","summary":"Life-event: once-in-a-lifetime esemeny a Kossuth teren, \"hatalmas buli\". Diary-be felveve.","ref":"current/diary/diary.md"}
-{"ts":"2026-05-10T08:02:40+02:00","actor":"user","kind":"note","summary":"Onreflexio: MVP=penzkereses (barmilyen es tobbfele formaban). Mai napi kitero utan iranymegerositves."}
-{"ts":"2026-05-10T08:02:40+02:00","actor":"claude","kind":"ship","summary":"current/principles/mvp-focus.md uj alapelv: MVP=penzkereses + penzkereso projekt-terkep (snapshot) + my-assistant-kovetkezmenyek","ref":"current/principles/mvp-focus.md"}
-{"ts":"2026-05-10T08:02:40+02:00","actor":"claude","kind":"state-change","summary":"CLAUDE.md principles index bovitve: mvp-focus.md felveve","ref":"CLAUDE.md"}
-{"ts":"2026-05-10T21:50:33+02:00","actor":"user","kind":"note","summary":"Vasarnap: nagyon masnapos+farradt elozo napi Kossuth ter+tanc+sok seta utan, korai lefekves terv, most film/sorozat. UJ FR keres: media tracking + uj-release figyelo."}
-{"ts":"2026-05-10T21:50:33+02:00","actor":"claude","kind":"ship","summary":"current/feature-requests/media-tracking.md - filmek/sorozatok library + uj-release figyelo (TMDb/Trakt/TVDB jeloltek + adatsema)","ref":"current/feature-requests/media-tracking.md"}
-{"ts":"2026-05-10T21:50:33+02:00","actor":"claude","kind":"ship","summary":"diary uj 2026-05-10 entry: masnapos, korai lefekves terv, media-tracking FR","ref":"current/diary/diary.md"}
-{"ts":"2026-05-10T21:57:26+02:00","actor":"user","kind":"note","summary":"Media-tracking implementacio kerdes: hogyan trekkelni lokal mappakat + uj release detekcio honnan"}
-{"ts":"2026-05-10T21:57:28+02:00","actor":"claude","kind":"ship","summary":"media-tracking.md kibovitve: 2 szint (A) lokal scan: 5 megkozelites + watch | B) release detekcio: 6 forras + diff-workflow + adat-sema + 6 open Q (impl-1..6)","ref":"current/feature-requests/media-tracking.md"}

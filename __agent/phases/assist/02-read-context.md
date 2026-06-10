@@ -16,6 +16,9 @@
    - Aktív / idle
 5. **`current/projects.md`** + **`current/life-goals.md`** + **`current/principles/mvp-focus.md`**
    - Pénzkereső projekt-state, hosszú-távú irány
+6. **`__agent/AGENT_BUS.md`** — van-e `[OPEN]` `To: assist-agent` bejegyzés?
+   - `kind: request|question` → válasz / cselekvés a `04-emit-actions`-ban
+   - státusz → `ACTED` vagy `ANSWERED`
 
 ## Recurring miss-detekció
 

@@ -37,6 +37,34 @@ Az assistant feldolgozás után átírja:
 
 <!-- ÚJ BLOKKOK IDE, A LEGÚJABB FELÜL -->
 
+## [DONE] Interfood ESZKALÁCIÓ — deadline-ciklus lezárva (moot 06-01)
+**Feldolgozva:** 2026-06-01 14:00
+**Eredmény:** Deadline-relatív urgencia lejárt (hétfő 3.0× cutoff — jövő hét elejére már nem rendelhető). 4 nudge + 1 kérdés válasz nélkül → escalation parkolva. **Jövő-heti kaja-státusz ISMERETLEN** (user non-responsive, nem feltételezem hogy leadva). Next actionable instance: csütörtök 06-04 (a rákövetkező hétre). Lokál-only tükör, organizer AUTH-fail miatt org-ref nincs.
+
+🍱🔴 A csütörtöki (05-28) Interfood-deadline elmúlt. **Ma szombat = 2.0× "kritikus high priority"** (a TE saját szabályod szerint ez ilyenkor a legfontosabb prioritás). Vasárnap 2.5×, **hétfő 3.0×** (akkor már hétfő-keddre nem érne be a kaja → hét eleji éhezés).
+
+**1 kérdés:** leadtad már jövő hétre? Ha igen → zárom. Ha nem → ma a legolcsóbb még megmaradt ablak.
+
+
+## [DONE] Interfood-reminder 2026-05-26 — deadline-ciklus lezárva (moot 06-01)
+**Feldolgozva:** 2026-06-01 14:00
+**Eredmény:** Lásd a fenti escalation [DONE]-t — deadline-ciklus moot, jövő-heti kaja-státusz ismeretlen, next instance csü 06-04.
+**Típus:** instruction
+**Beérkezett:** 2026-05-26 14:00
+**Domain:** food-order
+**Forrás:** assistant-agent-cron tick #62, recurring-tasks.md (Interfood eskalációs szabály)
+
+🍱 **Interfood-rendelés jövő hétre** — utolsó-fedett-hét kedd MA, deadline **csütörtök 2026-05-28** (2 nap). Az eskalációs tábla (`recurring-tasks.md`) szerint **pénzügyileg drágul**, ha csúszik:
+- csütörtök (deadline) = 1.0×
+- péntek = 1.5×
+- szombat = **2.0× kritikus**
+- hétfő késett = **3.0×** (nem tud hétfő-kedd-ra rendelni)
+
+**Egyetlen kérdés:** ma/holnap leadod, vagy jó hogy emlékeztetek **csütörtök reggelre**?
+
+*Megj.: ez az egyetlen kivétel a low-nudge directive alól — kritikus + konkrét + pénz-veszteség (MVP-fókusz). 4 napja silent maradtam.*
+
+
 ## [DONE] Phase 5 broadcast smoke test
 **Típus:** task
 **Feldolgozva:** 2026-05-17 05:38

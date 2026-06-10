@@ -105,6 +105,11 @@ USER_INPUT [NEW] blokkban javasolj.
 Lásd `events/dev/on-user-needed.md`. 5 csatorna sürgősség szerint —
 default: `USER_INPUT.md [NEW] domain: dev kind: instruction/approval`.
 
+**Inter-agent kommunikáció** (chat ↔ dev ↔ assist) → **`__agent/AGENT_BUS.md`**.
+`[OPEN] To: dev-agent` bejegyzéseket a `00-orient` előtt feldolgozod
+(green-light → plan-promócó user-OK nélkül; question → válasz). User-irányú
+kérdés továbbra is `USER_INPUT.md [NEW]`.
+
 ### 17. Persistencia-takeover
 Foreign pending git changes / persisted error 3+ cycle után **te vagy a
 felelős** — investigate + befejezés / revert / log.
@@ -113,7 +118,7 @@ felelős** — investigate + befejezés / revert / log.
 A Dev Agent **CSAK ÉS KIZÁRÓLAG** a my-assistant projektet fejleszti:
 
 ✅ **Scope (file-edit / commit / push):**
-- `E:\Programming\Own\CURSOR\my-assistant\` — minden almappa:
+- `E:\Programming\Own\CURSOR\LIVE-projects\my-assistant\` — minden almappa:
   `__agent/`, `current/`, `cli/`, `server/`, `client/`, `activity-monitor/`,
   `scripts/` (ha lesz), `__documentations/`, `__specifications/`
 
@@ -167,6 +172,20 @@ Prioritás-szabály:
 
 A jövőben (server Phase 2+) a `server/` REST-en lesz `/errors` endpoint —
 akkor azt is olvasd.
+
+### 23. Anti-stall — NEM AKADHATSZ MEG (KRITIKUS — új 2026-05-16)
+
+A Dev Agent **soha** nem heartbeat-elhet 2+ consecutive cycle-en át. A `cycle 66-78`
+mintázat (7h heartbeat-elés AGB-18 várakozás miatt) **TILOS**. Részletek:
+`phases/dev/03-collect-tasks.md` "Anti-stall szabály" szekció.
+
+**Lényeg, 3 mondatban:**
+1. A 🟢 backlog tételek **alapértelmezett zöld** — chat-OK csak ha a FR vagy egy AGB explicit "GREEN-LIGHT vár"-t mond.
+2. A 🟡 tételek **autonóm indíthatóak**, ha ortogonálisak (active_plan + foreign_pending nem érinti) és nem Tier 3 / nem workspace-szintű.
+3. Heartbeat helyett: **safe-orthogonal munka** (spec/doc/refactor/dead-code) → 2. cycle-től **eszkaláció** USER_INPUT + AGENT_BUS-on át, NEM néma heartbeat.
+
+**Saját óvatosság-túl-OK értelmezés TILOS.** Ha a workflow nem mond explicit
+blokkot → HALADJ.
 
 ### 22. LDP-first (KRITIKUS — új 2026-05-12)
 A build / typecheck / test állapot **kanonikus forrása** a
