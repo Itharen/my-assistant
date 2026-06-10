@@ -96,3 +96,31 @@ Minden új code change-nél átfutni:
 - Új FR-ben formalizálva a server-side bevezetés: `current/feature-requests/runtime-error-api.md` (DyNTS_Logs_Service install + endpoint-ok)
 - Backlog 3b sor a Dev Agent 🟢 Most-fókusz listán
 - `__agent/WORKFLOW_DEV.md` 20a alapelv hivatkozik vissza ide
+
+---
+
+## 2026-05-16 — KRITIKUS megerősítés: minden errorhoz error-bejegyzés (zero-tolerance)
+
+> Nagyon fontos, hogy minden minden mindenen legyen error kezelés, mindenen
+> legyen globál error kezelés, mindenről készüljön error bejegyzés. Ez nagyon
+> nagyon nagyon nagyon nagyon fontos. és hogy ezeket az errorokat dolgozza fel,
+> javítsa ki, stb. stb. És hogyha egy errorról nem készül error bejegyzés,
+> az kritikus és elfogadhatatlan.
+
+### Zero-tolerance szabály
+
+- **Minden** code path → global error handler-rel
+- **Minden** error → **action-log + Errors_DataService** bejegyzés (kettős)
+- **Minden** swallow / silent catch / `console.error(...)`-without-emit = **KRITIKUS BUG**
+- Hiányzó error-bejegyzés = **ELFOGADHATATLAN** (nem "nice-to-have", hanem **alapkövetelmény**)
+
+### Dev Agent kötelezettség
+
+1. **Audit phase (#02):** minden új / módosított catch blokk emittál-e error-log entry-t? Ha nem → blokkolja a commit-ot
+2. **Implementation phase (#06):** új throw / új API endpoint / új handler **mindig** rendelkezzen explicit error-pályával + emit-tel
+3. **Error-feldolgozás (új kötelezettség):** a Dev Agent **olvassa** az action-log `kind:"error"` bejegyzéseket + az `Errors_DataService`-t (amikor élni fog), és **minden új errort** vagy oldja meg ugyanabban a cycle-ben, vagy backlog-FR-t emel rá
+
+### Implicit FR-ek (chat felveheti külön ha szükséges)
+
+- **Auto-error-triage** a Dev Agent cron-tickén — friss error-bejegyzések pásztázása + kategorizálás (transient / blocker / fix-required) + akció
+- **Error-coverage smoke** a LDP-ben — minden új code change-nek error-pálya teszttel kell járnia (mock-test a catch ágra)

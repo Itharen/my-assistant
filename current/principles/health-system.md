@@ -2,6 +2,37 @@
 
 > **Forrás: a user szövege. SZÓ SZERINT őrizzük.** Új kiegészítés alá fűzve,
 > dátum-bélyeggel.
+>
+> **Napi konkrét entry-k** (séta, hegy, arc-mosás, fit) → `current/health-journal.md`.
+> Ez a fájl **csak szabályok / alapelvek**.
+
+---
+
+## 2026-05-12 — krónikus alapprobléma: feltöltődési források nehéz megtalálása
+
+> "az egyik legnehezebb dolog az életemben, hogy nagyon nehéz megtalálnom,
+> hogy mivel tudok feltöltődni, hogy mi az, ami fixen feltölti az
+> energiaszintjeimet. Általában az evés, de az evéstől meg kövér leszek,
+> attól meg szomorú megint... Itt van egy csomó számítógépes játékom is.
+> Egyikkel sincsen kedvem játszani."
+
+**Negatív feedback loop:**
+
+```
+evés → feltöltődés ↑ → de elhízás → testkép-szomorúság → mélypont
+```
+
+**Részleges feltöltő-források** (user által explicit említve):
+- 🚶 Séta (fizikai energiaszint emelés → overall ↑)
+- 💃 Tánc (felfelé "lesztezi" a testet — `fit-system.md`)
+- ⛈️ Vihar / hideg időjárás (szereti, de kollektív hatás ronthatja —
+  `three-by-three-system.md` kapcsolat-tengely)
+- 🎉 Once-in-a-lifetime event-ek (mint 2026-05-09 Kossuth tér — DE a buli
+  utóhatása is komoly: napokon át tartó kimerültség)
+- 🎮 Számítógépes játékok — **jelenleg NEM hatékony**: a user-nek nincs kedve
+
+A 3×3 hullám-tracking + egyéb megfigyelés folyamatosan finomítja, mi
+tölt fel és mi nem.
 
 ---
 
@@ -74,3 +105,33 @@ kibukik. Ez egy klasszikus deferred-task → forgotten-task minta.
 - **Q-h-3**: Más health-elemek később? (fogmosás-tracking, vitamin, gyógyszer-bevétel,
   bőrgyógyász check-in — utóbbi már külön task)
 - **Q-h-4**: Anti-deferral küszöb: hányadik "majd"-nál vált át "kemény heads-up"-ra?
+
+---
+
+## 2026-05-22 — TOP PRIO MVP: napi matrac (edzés diéta nélkül)
+
+> A két legfőbb prioritású és MVP feladat, prió-prio-prio, nagyon-nagyon-nagyon,
+> az az, hogy kezdjem el az edzést diéta nélkül, első körben a legfontosabb,
+> hogy minden nap feküdjek le a matracra. Ha kell, akkor meditáció, ha kell,
+> akkor nyújtás, ha kell, akkor edzés. Illetve ha tudok, akkor edzés.
+
+### Szabály
+
+**Minden nap → matrac.** Ez a kötelező minimum. A többi opcionális:
+
+| Lépés | Kötelező? |
+|---|---|
+| **1. Lefekvés a (yoga) matracra** | ✅ kötelező MINDEN nap |
+| 2. Meditáció (ha kell) | opcionális |
+| 3. Nyújtás (ha kell) | opcionális |
+| 4. Edzés (ha tudok) | opcionális |
+
+### Filozófia
+
+**Diéta NINCS, csak mozgás.** A küszöb radikálisan alacsony (csak lefeküdni a matracra) → minden nap teljesíthető a legrosszabb napon is. Onnan **bármi extra már bónusz**.
+
+### Recurring (asszisztens-feladat)
+
+- Napi notification / nudge: "matrac ✅?"
+- Health-journal entry: `matrac: yes|no`, opcionális: `meditation|stretch|workout`
+- Streak-tracking: szabályosan teljesített napok száma

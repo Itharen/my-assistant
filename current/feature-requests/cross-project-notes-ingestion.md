@@ -52,3 +52,17 @@
 - A user "Rengeteg jegyzetem is van, amit regisztrálni kell, meg rendszerezni,
   meg priorizálni" — `current/notes/ccap-tasks-batch-later.md`-ben is utalt rá
 - A CCAP-task-cluster batch-feldolgozás **része** ennek a nagyobb meta-feladatnak
+
+## 2026-05-12 — kapcsolódás: CCAP RAG
+
+A user frusztrációja: CC usage limit-ekbe ütközik folyamatosan. Megoldás-irány:
+**CCAP RAG + VectorDB** felokosítása (a CCAP-csapat scope-ja, **NEM** my-assistant).
+
+Ha a CCAP RAG működik:
+- A my-assistant adatai (`action-log`, `principles/`, `feature-requests/`,
+  `plans/`, `diary`, `STATUS_*.md`) **vector-forrásként** bekapcsolhatók
+- Session-resume **gyorsabb** (CCAP-RAG előgenerálja a chat-kontextust)
+- CC usage **csökken**
+
+A my-assistant oldali bekötési endpoint (server-en) **jövő FR** lesz, amikor
+a CCAP RAG kész és elérhető.

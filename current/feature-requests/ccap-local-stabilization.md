@@ -33,3 +33,17 @@
 ❓ Q-ccap-local-2: Melyik agent-feladatokra elég a lokál? (A-mode tick? B-mode? Plan-execution?)
 ❓ Q-ccap-local-3: GPT integráció — OpenAI API vagy Azure OpenAI?
 ❓ Q-ccap-local-4: Routing logika — provider-választás per task / per user-decision / cost-aware?
+
+
+---
+
+## 2026-05-22 — Super-agent stratégia keretben
+
+A user `mvp-focus.md` 2026-05-22 blokkjában leírta a **super-agent stratégiát**:
+NEM agent-hadsereg, hanem **EGY super-agent** ami:
+- CCAP + Anthropic (multi-model, fastest-best-shorts)
+- A CCAP **okosításával** a lokál mikro-modellek is stabil munkát végeznek
+
+→ Ez a FR **ennek operacionális magja**. Aktualizálva: a "lokál AI is alkalmas
+legyen" cél = a super-agent lokál-modell-modje. A `rag-context-injection.md` =
+a super-agent emléktömege, ami nélkül a lokál modell elveszik.

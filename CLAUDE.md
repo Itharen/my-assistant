@@ -33,7 +33,8 @@ Sorrendben olvasd:
    ezzel állítsd vissza a fonalat ha az előző session összeomlott. Lásd lentebb
    a teljes "Action log" szakaszt.
 5. **`__agent/USER_INPUT.md`** — `[NEW]` blokkok feldolgozandóak.
-6. **`__agent/WORKFLOW.md`** — governance (event-ek, prioritás, authority).
+6. **`__agent/AGENT_BUS.md`** — inter-agent csatorna (chat ↔ dev ↔ assist). `[OPEN] To: chat` bejegyzéseket válaszold meg.
+7. **`__agent/WORKFLOW.md`** — governance (event-ek, prioritás, authority).
 
 Ha aktív flow van → folytasd ott, ahol abbamaradt. Ha nincs → kérdezd a user-t,
 vagy futtass esedékes recurring flow-t.
@@ -47,6 +48,8 @@ vagy futtass esedékes recurring flow-t.
 | Local dev env setup | `__documentations/dev/LOCAL_DEV_ENVIRONMENT.md` |
 | Dated session-doksik (mit csináltunk a múltban) | `__documentations/developments/` |
 | Workspace-szintű projektek (FDP / NPM / OGS inventory) | `__agent/references/workspace-projects.md` |
+| 3×3 kutatás (felfedezések, mood-mapping, állapot-átmenetek) | `current/3x3-research/findings.md` |
+| Egészség napló (séta, hegy, arc-mosás, fit napi entry-k) | `current/health-journal.md` |
 | Tri-tier (cli/server/client) AI-quick-ref | `__agent/references/architecture.md` |
 | Pattern-megfelelőségi audit | `__agent/references/pattern-audit.md` |
 | Organizer integráció részletek | `__agent/references/organizer{,-modules,-cli-setup}.md` |
@@ -303,6 +306,7 @@ megfogalmazása lesz a referencia.
 | `current/principles/recurring-tasks.md` | Takarítás / séta / mosás / fürdés / bevásárlás / kaja-rendelés szabályok |
 | `current/principles/stock-system.md` | Itthoni készlet alapérték + újrarendelési küszöb elemenként |
 | `current/principles/sleep-system.md` | Csúszó alvás-ébrenlét ciklus (**18h fix** ébren / 8h alvás) + bedtime emlékeztető logika |
+| `current/principles/nzt-system.md` | NZT használati szabályok: max 2 on-nap, off ≥ on. User-eszköz a mélypontok / üresség-érzés kiszedésére |
 | `current/principles/methodology-authority.md` | **A my-assistant a kanonikus minta**, az organizer ehhez alkalmazkodik (nem fordítva) |
 | `current/principles/shopping-lists.md` | Bolt-típus szerint szeparált bevásárló-listák (tesco / clothing / ikea / ...) |
 | `current/principles/fit-system.md` | Fit zóna: séta + Gellért-hegy edzés szabályok, heti horgonyok (szombat/péntek tilalmak) |
@@ -313,9 +317,13 @@ megfogalmazása lesz a referencia.
 | `current/principles/two-domains.md` | **Asszisztensi vs szoftverfejlesztési** feladatok elhatárolása — ne keveredjenek |
 | `current/principles/system-components.md` | **Kanonikus 7-komponens elhatárolás** (Development Agent, Server, Client, CLI, Assistant Agent, Cron Job, Automation Scripts) — minden hivatkozás ezekre a nevekre |
 | `current/principles/full-autonomy-expectation.md` | **Top-level cél**: teljes autonómia a rendszertől, chat-vezérelt vezénylés |
-| `current/principles/error-handling.md` | **Univerzális hard rule**: minden fejlesztésnél debug-level error handling, semmi csendes swallow |
+| `current/principles/error-handling.md` | **Univerzális hard rule**: minden fejlesztésnél debug-level error handling, semmi csendes swallow + **2026-05-16 zero-tolerance**: minden errorhoz error-bejegyzés, hiányzó = elfogadhatatlan |
+| `current/principles/e2e-validation.md` | **Univerzális hard rule**: minden új feature/Phase end-to-end teszttel ship-el (Dev Agent felelőssége) |
+| `current/principles/client-visualization.md` | **Univerzális hard rule**: minden feature-höz kötelező kliens-oldali vizualizáció (start: socket connection-indicator) |
 | `current/principles/ssot.md` | **Univerzális hard rule**: SSoT — egy adat = egy kanonikus forrás, többi cache/hivatkozás |
+| `current/principles/weekly-rhythm.md` | **Heti ciklus munkanap-alapú** (NEM naptári) — péntek=utolsó munkanap, szombat=szabat, csúszik szabadságok/event-ek mentén |
 | `current/principles/cast-notifier-defaults.md` | Cast-notifier operacionális default-ok: All Speakers target, férfi HU TTS, volume save→up→restore (NEM duck), Spotify resume |
+| `current/principles/recording-discipline.md` | **Univerzális hard rule**: "jegyezz fel" = kötelező rögzítés MINDENHOL, **elsősorban az organizerbe** (`fo {modul}.create`) + lokál tükör org-ref-fel. Lokál-only = félrevezető. Elmaradt rögzítés = kritikus hiba. Organizer-down = P0 blokkoló + fallback `current/tasks/inbox.md` |
 
 **Új alapelv kezelése:** ha a user új szabály-szerű dolgot mond, **soha ne csak
 "vegyük tudomásul"** — minden esetben:

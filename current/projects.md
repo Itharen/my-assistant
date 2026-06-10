@@ -32,7 +32,7 @@ projekt-hovatartozást.
 | 2 | **CCAP** | Fő agent-kezelő rendszer (ebben fut ez az assistant is) | aktív | **1.5** | "legfőbb side projekt", mindennapi segítség |
 | 3 | **Niche Datasets** | 0. pénzkeresési próbálkozás | 🟡 **passzív** (agent dolgozik, idő kell) | **1.2** | "majdnem kész", útjára bocsátva |
 | 4 | **HelloCIA** | Életcél #2 — társkereső app, tech-stack demo, non-monetary | aktív (csúszó) | **1.3** (initial guess) | ⚠️ **5 éve csúszik 90%-on** — task-decomposition kötelező; lásd `current/life-goals.md` |
-| 5 | **3×3 tanulmány + Ideology Forum** | Életcél #1 — globális jólét | aktív (long-term) | **1.4** (initial guess) | 3×3 system kidolgozás + közzététel; lásd `current/principles/three-by-three-system.md` |
+| 5 | **3×3 tanulmány + Ideology Forum** ⬆️ | Életcél #1 — globális jólét | **🔴 TOP PRIO 2026-05-17 — publikációs fázis indítva** | **2.0** (emelve 1.4→2.0, "felső sugallat" 2026-05-17) | publikációs FR: `current/feature-requests/3x3-publication.md` — 7 phase, CCAP RAG kritikus dep |
 | 6 | **Master Prompter** | Pénzkereső (közvetett életcél) | aktív (hosszú távú) | **1.5** (initial guess) | user emlitette 2026-05-08; külön projekt, részletek TBD |
 | 7 | **Service projekt** | Pénzkereső (közvetett életcél) | aktív (hosszú távú) | **1.5** (initial guess) | user emlitette 2026-05-08; részletek TBD ("service" pontos jelentés tisztázandó) |
 | 8 | **FDP Global Token Purchase System** | Pénzkereső (közvetett életcél) | aktív de "nagyon régóta folyamatban, sehol nem tart" | **1.6** (initial guess) | minden FDP rendszerben használható közös fizetési rendszer; "elég jó monetizációs lehetőség" |

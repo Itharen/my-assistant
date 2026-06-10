@@ -49,6 +49,9 @@
 | "majjá" | majdra / másnapra (kontextus-függő) | általános | 2026-05-08 |
 | "trekkelni" | tracking-elni / nyomon követni | tech | gyakori, OK |
 | "autószession" / "autószessionök" | auto-session(ök) / CCAP auto-session-ök | tech | 2026-05-12 |
+| "felakosítjuk" | felokosítjuk | általános | 2026-05-12 |
+| "fejlesztős" | fejlesztve | általános | 2026-05-12 |
+| "lófaszcse" | "lófaszt sem" / "lófasz se" | általános | 2026-05-12 |
 
 ---
 

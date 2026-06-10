@@ -52,6 +52,18 @@
 
 A 2. útvonal a default a kisebb plan-eknél — mindig próbáljam először 3 pontba sűríteni.
 
+## 2026-05-12 — tömörség pontosítás: max 2-3 mondat alapesetben
+
+> ennél rövidebb szövegeket várok. De valami ilyesmit csak nem ilyen hosszan.
+
+**Default:** **max 2-3 mondat** üzenetenként. Egy gondolatot **egy mondatba**
+sűríteni, NEM hárompont-listába vagy paragráfusba. Csak akkor lépjen át 1
+paragráfusra, ha a téma tényleg ennyit igényel — pl. új principle-leírás,
+plan-vázlat, vagy ha a user explicit hosszabbat kér.
+
+A TTS auto-felolvasás még nincs élben (Phase 2 `ccap-notify`/`notify-cast`) →
+a user olvasnia kell → fáradt állapotban különösen rövid kell.
+
 ## 2026-05-12 — időpont-érzékenység (assistant-figyelmeztetés)
 
 A chat (én) **kerüljem a "este" / "reggel" / "délután" implicit
@@ -220,3 +232,29 @@ D) Csak pihenés / TV — 0p, ha a hullám lefelé tart (3×3 elv)
   menjünk mélyebbre.
 - A tömörség **felülírja** a részletességet: inkább maradjon ki egy nüansz,
   minthogy a user ne olvassa végig.
+
+## 2026-05-12 — csak írj fel mindent, ne kérdezz vissza
+
+> te csak írj fel mindent amit mondok/mondtam
+
+**Univerzális default — primary action minden user-inputra: RÖGZÍTÉS.**
+
+Amikor a user bedob egy gondolatot / kérést / megjegyzést / szabályt:
+
+1. **Először** rögzítsd a megfelelő perzisztens helyre (FR / principle /
+   open-question / action-log / `current/{modul}/`)
+2. **Csak utána** rövid heads-up a chat-ben: hol van, mit jelent
+3. **NE** kérdezz vissza több-opciós döntéssel ("a / b / c — melyik legyen?")
+   ha a user nem kérte explicit a választást
+4. Ha tényleg bizonytalan vagyok hogy hova rögzítsem vagy helyesen értem-e —
+   **EGY** rövid clarification kérdés OK, több nem
+
+**Anti-pattern:**
+- Több-pontos kérdés-záró ("Csináljuk most? Vagy később? Vagy másra menjünk?")
+- "Smoke-teszt vs FR-elemzés vs továbblépés — mit szeretnél?"-szerű
+  follow-up döntés-prompt amikor a user csak inputot dobott be
+- Imperatív next-action javaslat user-prompt nélkül
+
+**Indok:** a user inputot dobál be, én legyek a perzisztens memória.
+A "mi a következő lépés" az ő döntése — ne én terjesszem elő minden
+inputnál. Ha kell instrukció, megkérdezi.

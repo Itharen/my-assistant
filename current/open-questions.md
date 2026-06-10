@@ -104,6 +104,10 @@
 | Q-2026-05-07-62 | Mikor csináljunk FR-batch upload-ot az organizer-be (kritikus tömeg után)? | `methodology-authority.md` | medium | open |
 | Q-2026-05-07-63 | LinkedIn csúszás-küszöb: heti 0-1 poszt → halogatás-szorzó megerősítése | `recurring-tasks.md` LinkedIn | low | open |
 | Q-2026-05-07-64 | Hogyan tudjuk hogy egy organizer-feature eltér a my-assistant elvárásától? | `methodology-authority.md` | medium | open |
+| Q-2026-05-29-02 | Organizer `fo` API-kulcs miért tűnt el? (encrypted store üres volt → `test-key` fallback → minden organizer-művelet AUTH-failt dobott). Projekt-áthelyezés / gép-state / `fo init` elmaradás? Hogyan előzzük meg újra? | `recording-discipline.md` (P0 blokkoló volt) | high | open |
+| Q-kitchen-1 | Konyhai capture preferált irány: hangvezérelt (voice-trigger) / dedikált eszköz (régi telefon) / mobil quick-capture widget? | `kitchen-note-capture.md` | medium | open |
+| Q-kitchen-2 | A capture célja: my-assistant chat, organizer notes-inbox, vagy mindkettő (recording-discipline szerint mindkettő)? | `kitchen-note-capture.md` | medium | open |
+| Q-2026-05-29-01 | "Organizer Tasks Screen Updates" (user MVP-task 2026-05-29) — melyik projekt scope-ja? (a) **organizer** saját tasks-képernyő → kívül esik a my-assistant dev-scope-on (mi csak `fo` fogyasztók vagyunk), vagy (b) a my-assistant kliens **#3d tasks-dashboard** view frissítése? | `development-agent-backlog.md` #3d + CLAUDE.md scope | high | answered 2026-05-29: (a) — az organizer a user saját fejlesztése, a tasks-screen fejlesztés a **user feladata**, NEM a my-assistant Dev Agenté. Kívül esik a my-assistant dev-scope-on. Indok: a user az élete során sokat küzd a feladatok rendszerezésével → ez sokat segíthetne. |
 
 ### G3) Health 🏥
 
@@ -188,6 +192,8 @@
 | Q-3x3-6 | Vektor-irány **kiszámítása** trend-elemzésből (utolsó 3-5 mérés deriváltja)? | `three-by-three-system.md` | medium | open |
 | Q-3x3-7 | "Összesített hullám" képlete: súlyozott átlag / mértani / saját? | `three-by-three-system.md` | medium | open |
 | Q-3x3-8 | A user "tudománya" — van írott formában? Hol találjuk? | `three-by-three-system.md` | high | open |
+| Q-3x3-color-1 | Mentál szín? (Asztrál = 🟡 sárga, user-döntés 2026-05-12) | `three-by-three-system.md` | low | open |
+| Q-3x3-color-2 | Anyag szín? | `three-by-three-system.md` | low | open |
 
 ### M) Életcélok 🌟
 
@@ -281,7 +287,7 @@
 | Q# | Kérdés | Kontextus | Fontosság | Status |
 |---|---|---|---|---|
 | Q-package-1 | `pnpm approve-builds` egy gépenként user-state — repo-szinten reprodukálható-e? Workspace-szintű `pnpm-workspace.yaml` `onlyBuiltDependencies` segíthet? | cycle 3, cli protobufjs build-script approval | m | answered |
-| Q-package-2 | `@futdevpro/ngx-dynamo-models@1.15.8` 404 az npm registry-n. Master-prompter is használja — privát publikálva? lokál tgz csak? Honnan installálható a my-assistant server/-en? | cycle 3, server `pnpm test` blocker | h | open |
+| Q-package-2 | `@futdevpro/ngx-dynamo-models@1.15.8` 404 az npm registry-n. Master-prompter is használja — privát publikálva? lokál tgz csak? Honnan installálható a my-assistant server/-en? | cycle 3, server `pnpm test` blocker | h | answered 2026-05-13: nem registry-issue — rossz token volt a projekt-szintű `.npmrc`-ben (felülírta a globált, 401 → privát scope 404-ként látszott). User törölte, `npm whoami` → `itharen` ✅, csomag elérhető. Token-rotation task: `org:task:6a049f19d440d3f484cee052` (due 2026-06-05). |
 | Q-ldp-1 | A `dc ldp` képes-e a `pipeline.config.json` config-reload-ra futás közben, vagy minden config-change után manuális restart kell? Ha igen, hogyan? | cycle 6, watch coverage bővítés után stale state | m | open |
 
 ### Z) 2.5-agent rendszer 🤖🤖
@@ -345,6 +351,20 @@
 | Q-fit-tanc-2 | Súlyzós tánc — milyen súlyok? (otthon megvannak vagy beszerzendő?) | `fit-system.md` | medium | open |
 | Q-fit-tanc-3 | Tánc-tracking: csak "csináltad-e" / időtartam / szívritmus? | `fit-system.md` | low | open |
 | Q-fit-tanc-4 | Tánc önmagában (otthon zenére) is opció, vagy csak séta-közben? | `fit-system.md` | low | open |
+
+### DD) Socket + auto-version-update 🔌🔄
+
+| Q# | Kérdés | Kontextus | Fontosság | Status |
+|---|---|---|---|---|
+| Q-ver-1 | Melyik Dynamo CLI / package konkrétan? (`cli-dynamo` dc / `ngx-dynamo` client / `nts-dynamo` server / mind?) | `socket-and-version-sync.md` | high | open |
+| Q-ver-2 | Reload UX: néma / banner+OK / countdown? | `socket-and-version-sync.md` | medium | open |
+| Q-ver-3 | Status-bar: footer / header / collapsible? | `socket-and-version-sync.md` | low | open |
+| Q-ver-4 | Build-hash inject: `dc cdp` step / pre-commit hook? | `socket-and-version-sync.md` | medium | open |
+| Q-ver-5 | Socket-auth: meglévő `A_Auth` JWT / külön socket-token? | `socket-and-version-sync.md` | medium | open |
+| Q-ver-6 | Reconnect-policy: exponential backoff default? max retry? | `socket-and-version-sync.md` | low | open |
+| Q-ver-7 | Mely REST-endpointok migráljanak socket-re Phase 5-ben? | `socket-and-version-sync.md` | medium | open |
+| Q-ver-8 | Verzió-mismatch policy: csak srv > cli, vagy fordítva is? | `socket-and-version-sync.md` | low | open |
+| Q-ver-9 | LDP restart során a verzió változik? Dev vs prod UX? | `socket-and-version-sync.md` | medium | open |
 
 ### EE) Időjárás integráció 🌦️
 

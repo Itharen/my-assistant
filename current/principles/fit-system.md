@@ -214,3 +214,22 @@ A 8-12h-ás cél **több session-t** jelent (nem egyben), és **építés** alá
 - **Q-fit-tanc-2**: Súlyzós tánc — milyen súlyok? (otthon megvannak vagy beszerzendő — kapcsolódik Q-edz-4-hez)
 - **Q-fit-tanc-3**: Tánc-tracking: csak "csináltad-e" / időtartam / szívritmus?
 - **Q-fit-tanc-4**: Tánc önmagában (otthon zenére) is opció, vagy csak séta-közben?
+
+---
+
+## 2026-05-13 — Hegymenet előkészület: vízpalack kötelező
+
+> **Vízpalack kötelező hegymenet előtt — felírni a séta-előkészületekhez** (user-tanulság, diary 2026-05-13)
+
+**Kontextus:** a user megindult Gellért-hegyre, de **visszafordult vízért**, mert palack nélkül nem érdemes hegymenetnek nekiindulni. Ez **megtörte a lendületet**, de a user **újrakezdte**.
+
+### Séta-előkészület checklist (assistant-jegyzet, bővíthető)
+
+| ✓ | Tétel | Mikor kötelező |
+|---|---|---|
+| ☐ | 🥤 **Vízpalack** | **Hegymenetnél kötelező** (Gellért-hegy) — palack nélkül VISSZAFORDÍTÓ-szabály |
+| ☐ | (opcionális) Telefon töltöttség | Voice I/O használathoz |
+| ☐ | (opcionális) Kabát/réteg | Időjárás-függő |
+| ☐ | (opcionális) STT-eszköz | Diktáláshoz, ha LinkedIn-poszt-építés is megy |
+
+→ A **vízpalack** az első konkrét előkészületi tétel; az assistant a hegymenet-emlékeztetőjében (séta-recurring / fit-recurring) szóljon: **"Vízpalack megvan?"** triggert.

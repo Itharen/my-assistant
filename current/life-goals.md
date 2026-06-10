@@ -44,6 +44,8 @@ emberiségnek **még ebben az életben**.
 **Hogyan (jelenlegi tervek):**
 - 📚 **3×3 tanulmány** alapos kidolgozása + közzététele
   → lásd `current/principles/three-by-three-system.md`
+  → **Aktív emlékeztető-task** (user 2026-05-29: "El ne felejtsen folytatni a
+    tanulmányírást. Ez az egyik life goal, fontos."): `org:task:6a1f7a6a7550efa6b0e01252`
 - 🏛️ **Ideology Forum** — "komoly megoldást jelenthet" (részletek TBD,
   open kérdés alább)
 - 🎓 Egyéb értékes tudás strukturálása + átadása

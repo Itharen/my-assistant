@@ -25,7 +25,7 @@ node --version  # >= 20
 ## 2. Első futás
 
 ```bash
-cd E:\Programming\Own\CURSOR\my-assistant
+cd E:\Programming\Own\CURSOR\LIVE-projects\my-assistant
 pnpm prep                  # Telepíti a 3 sub-projektet (cli + server + client)
 ```
 
@@ -133,8 +133,8 @@ A logger nem fut by default. Ha akarod, hogy automatikusan induljon belépéskor
 
 ```powershell
 $action = New-ScheduledTaskAction -Execute "pwsh.exe" `
-    -Argument "-NoProfile -WindowStyle Hidden -File E:\Programming\Own\CURSOR\my-assistant\server\activity-monitor\logger.ps1" `
-    -WorkingDirectory "E:\Programming\Own\CURSOR\my-assistant"
+    -Argument "-NoProfile -WindowStyle Hidden -File E:\Programming\Own\CURSOR\LIVE-projects\my-assistant\server\activity-monitor\logger.ps1" `
+    -WorkingDirectory "E:\Programming\Own\CURSOR\LIVE-projects\my-assistant"
 $trigger = New-ScheduledTaskTrigger -AtLogon
 Register-ScheduledTask -TaskName "my-assistant-activity-logger" `
     -Action $action -Trigger $trigger `

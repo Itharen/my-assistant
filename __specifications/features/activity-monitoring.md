@@ -60,7 +60,7 @@ interface ActivitySample {
 ### 5.1 Foreground (debug)
 
 ```powershell
-cd E:\Programming\Own\CURSOR\my-assistant
+cd E:\Programming\Own\CURSOR\LIVE-projects\my-assistant
 pwsh -File server/activity-monitor/logger.ps1
 ```
 
@@ -68,8 +68,8 @@ pwsh -File server/activity-monitor/logger.ps1
 
 ```powershell
 $action = New-ScheduledTaskAction -Execute "pwsh.exe" `
-    -Argument "-NoProfile -WindowStyle Hidden -File E:\Programming\Own\CURSOR\my-assistant\server\activity-monitor\logger.ps1" `
-    -WorkingDirectory "E:\Programming\Own\CURSOR\my-assistant"
+    -Argument "-NoProfile -WindowStyle Hidden -File E:\Programming\Own\CURSOR\LIVE-projects\my-assistant\server\activity-monitor\logger.ps1" `
+    -WorkingDirectory "E:\Programming\Own\CURSOR\LIVE-projects\my-assistant"
 $trigger = New-ScheduledTaskTrigger -AtLogon
 Register-ScheduledTask -TaskName "my-assistant-activity-logger" `
     -Action $action -Trigger $trigger `

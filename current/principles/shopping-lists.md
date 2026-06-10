@@ -48,3 +48,60 @@ ténylegesen meg lehet venni / leadni a rendelést. Ezzel:
   jelölni kell hogy melyik shopping fájlba kerüljön (új mező: `preferredStore`)
 - **Manuális override**: a user közvetlenül beírhat egy listára anélkül hogy
   a stock-rendszer áthajtaná
+
+---
+
+## ⚠️ 2026-05-22 — Tesco időzítési szabály VISSZAVONVA
+
+> User 2026-05-22: "rájöttem, hogy most már nem csak hétköznap lehet rendelni,
+> úgyhogy azt a szabályunkat feloldhatjuk, ami bekorlátozza, hogy mikor lehet
+> Tesco rendelést leadni."
+
+**A teljes lenti (2026-05-13 + 2026-05-16) Tesco-időzítési szabály ÉRVÉNYTELEN.**
+A Tesco-rendelés **bármikor leadható, bármelyik napra** — nincs nap-korlát se a
+rendelésre, se a szállításra. Csak az **esedékesség** (recurring 2-3 hetente)
+számít, az időzítés napjára semmi megkötés.
+
+> Az alábbi szakaszok **archív** — történeti okból maradnak, de NEM aktívak.
+
+---
+
+## ~~2026-05-13 — Tesco-rendelés időzítési szabálya~~ (ARCHÍV — visszavonva 2026-05-22)
+
+> A Tesco-s rendeléshez fel kéne írni, hogy azt úgy kéne időzíteni, hogy
+> általában a következő két nap, tehát holnap után aztán érték rendelni,
+> és az jó lenne, ha nem péntek lenne. Szóval a tesco rendelést azt
+> vasárnap/hétfő/kedd kéne megejteni.
+
+### Strukturált összefoglaló (assistant-jegyzet)
+
+**Tesco-rendelés időzítés:**
+- **Szállítási cél:** rendelés napja **+2 nap** (általában; nem "ma vagy holnap")
+- **TILTOTT szállítási nap:** péntek
+- **Megengedett rendelési napok:** vasárnap / hétfő / kedd
+  - vasárnap → kedd-i szállítás ✅
+  - hétfő → szerda-i szállítás ✅
+  - kedd → csütörtök-i szállítás ✅
+- **Miért nem szerda-csütörtök-szombat?**
+  - szerda → péntek-i szállítás ❌
+  - csütörtök → szombat-i szállítás (heti horgony, lásd `fit-system.md` — szombat = szabat)
+  - szombat → hétfő-i szállítás (vasárnap a Tesco home delivery általában szünetel)
+
+### Asszisztens-szabály
+
+Amikor a Tesco-rendelés esedékes (`recurring-tasks.md` 2-3 hetente):
+- Ha **vasárnap/hétfő/kedd** van → javasolt rendelni MA
+- Ha **szerda/csütörtök/péntek/szombat** van → halaszd vasárnapra (vagy a következő hétfőre, ha vasárnap a user inaktív)
+- Soft-nudge a megengedett napok reggelén, NEM a tiltottakon
+
+### Pontosítás 2026-05-16 (user-korrekció)
+
+**A `rendelés` maga BÁRMIKOR leadható** (rendelést NEM tilt semmi a héten).
+A korlátozás kizárólag a **szállítási napra** vonatkozik:
+- Vasárnap: szállítás szünetel (nem létezik)
+- Péntek: tiltott (user-preferencia)
+- Szombat: kerülendő (szabat, user-rituálé)
+
+A rendelés-leadás napja tehát csak addig "korlátozott", hogy a +2 nap kimenetel **valós szállítási napra** essen. De **leadhatod bármikor**, ha a megfelelő szállítási napot választod.
+
+Pl. **ma (vasárnap)** rendelés → +2 nap = **kedd szállítás** ✅.

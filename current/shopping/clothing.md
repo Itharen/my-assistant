@@ -46,3 +46,22 @@ amikor szükség van rá, nem fix ütem) + stock-jellegű tételek a
 - Kapcsolódó stock-tételek (zokni, alsógatya) felvéve a `current/stock/items.md`
   "Ruházat" szekciójába → ha lecsökken X-re, automatikusan visszakerülnek
   a listára
+
+---
+
+## 2026-05-17 — Decathlon Budaörs (nagy prio)
+
+| Tétel | Bolt | Prio | Megjegyzés |
+|---|---|---|---|
+| ✅ 🩳 **Nadrág** | Decathlon Budaörs | — | **MEGVÉVE 2026-05-22** |
+| ✅ 👟 **Cipő** | Decathlon Budaörs | — | **MEGVÉVE 2026-05-22** |
+
+**Útvonal-tipp:** Budaörsre kombinált út — **Decathlon-nal kezdeni**, utána IKEA.
+Amikor amúgy is megyünk → együtt intézni.
+
+### 2026-05-17 (frissítés) — Decathlon yoga matrac
+- [x] 🧘 **Yoga matrac** — legvastagabb (Decathlon Budaörs) — **MEGVÉVE 2026-05-22**
+
+
+### 2026-05-22 — Skechers cipő (Allee, külön)
+- [ ] 👟 **Skechers cipő** — **Allee-ban** kell megvenni (külön út, NEM Decathlon/IKEA)

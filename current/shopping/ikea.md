@@ -17,25 +17,40 @@ szeparálás). Ütem: esetenkénti.
 ## Aktuális batch
 
 ### 🍽️ Étkezés / konyha
-- [ ] **Eszközkészlet** — STT-bizonytalan; kontextus alapján valószínűleg
+- [x] **Eszközkészlet** ✅ MEGVÉVE 2026-05-22 — — STT-bizonytalan; kontextus alapján valószínűleg
   evőeszköz-készlet (kanál/villa/kés), de pontosítandó (lehet konyhai
   eszközkészlet is)
-- [ ] **Tányérok** — db-szám TBD
+- [x] **Tányérok** ✅ MEGVÉVE 2026-05-22
 
 ### 🗑️ Kuka
-- [ ] **Kuka × 2-3** — "legalább 2, inkább 3" → cél = **3 db** (általános
+- [x] **Kuka × 2-3** ✅ MEGVÉVE 2026-05-22 — — "legalább 2, inkább 3" → cél = **3 db** (általános
   háztartási kuka, méret nem említve)
-- [ ] **Kis kuka × 1** — fürdőbe
+- [ ] **Kis kuka × 1** — fürdőbe ⚠️ **NEM sikerült 2026-05-22, marad nyitva**
 
 ### 🛏️ Ágynemű (2026-05-10 hozzáadva)
-- [ ] **Ágynemű** (alap-szettek, db-szám TBD)
-- [ ] **Takaró**
-- [ ] **Ágytakaró**
-- [ ] **Takaróhuzat**
-- [ ] **Párnahuzat**
+- [x] **Ágynemű** ✅ MEGVÉVE 2026-05-22
+- [x] **Takaró** ✅
+- [x] **Ágytakaró** ✅
+- [x] **Takaróhuzat** ✅
+- [x] **Párnahuzat** ✅
 
 > ⚠️ Méret-info hiányzik mindegyikre (ágy-méret? párna-méret?) — IKEA-ban
 > helyben dönthető, vagy előzetes tisztázás kell.
+
+---
+
+## 2026-05-29 — új batch (user chat)
+
+> Forrás (szó szerinti idézet a user-től):
+> *"Nagy párna és nagy párna húzat az IKEA-ból. Két nagy párna és négy vagy hat
+> nagy párna húzat."*
+
+### 🛏️ Párna
+- [ ] **Nagy párna × 2** — **teljesen töltött / fullos** (teli párna, nem lapos) *(spec 2026-05-29)*
+- [ ] **Nagy párna húzat × 4–6** — cél: a 2 párnához tartalék-huzattal (4 = 2×, 6 = 3×)
+
+### 🪝 Egyéb
+- [ ] **Kampók** *(2026-05-29)*
 
 ---
 

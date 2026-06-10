@@ -17,9 +17,6 @@ Szabályok: `current/principles/recurring-tasks.md` (2-3 hetente megrendelés) +
 
 ### Italok 🥤
 - [ ] **Energiaital** ⏰ (2026-05-09: elfogyott)
-- [ ] Vodka
-- [ ] Rum (alap)
-- [ ] Kapitány (Captain Morgan rum) **× 2** (ma 2-t vettünk, de 4-re dúsítunk → 2 még kell; bolt out-of-stock volt)
 - [ ] Víz — sok
 - [ ] Sprite
 - [ ] Tej
@@ -44,6 +41,7 @@ Szabályok: `current/principles/recurring-tasks.md` (2-3 hetente megrendelés) +
 - [ ] Aftershave
 
 > **Megjegyzés (2026-05-12):** cigi **NEM** Tesco-ból (dohánybolt) — eltávolítva.
+> **Megjegyzés (2026-05-22):** tömény szesz (vodka/rum/Kapitány) **NEM** Tesco-ból → `kinai.md`.
 
 ---
 
@@ -54,3 +52,8 @@ Szabályok: `current/principles/recurring-tasks.md` (2-3 hetente megrendelés) +
 - Manuálisan hozzáadható tétel: ha valamit a stock-rendszer nem fed le, ide
   beírható közvetlenül.
 - A 💊 patikai tételek **nem** itt vannak — külön task: `🏥 Patika` (organizer).
+- **Szabály (2026-05-29):** 🍕 **csipsz helyett** inkább **mini pizza + fagyasztott pékáru**. Org-tükör: `org:note:6a21306c4b53d12a1922ecd3`.
+
+- [ ] **Sprite** (elfogyott 2026-05-16) — italok
+
+- [ ] **Coccolino öblítő — Blue Splash** × **2 db** (egy elfogyott, egy maradt = stock-dúsítás 2-re), **minél nagyobb kiszerelés** (2026-05-17)

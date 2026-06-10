@@ -106,6 +106,38 @@ Ha jövőben átköltözünk az organizer-be, a leképezés:
 - **Tasks aggregated dashboard view** (`client/` + `server/`) → backlog 3d
   — a chat-szerű prio-lista interaktívan a felületen (mark-done/snooze/drop/comment)
 
+### 😤 Mood update (18:30 + 19:00)
+- **Nyűgös, hisztis, ingerlékeny, ideges** — a 3 napos workflow-meló + CC limit + a heti ciklus felborulása mind kumulál
+- 3×3 state 19:00: **astral=very-low**, mental=normal, material=low, vektor=down-bottom
+- Krónikus alapprobléma kiemelve: **nehéz megtalálni mi tölt fel** (evés → elhízás → szomorúság feedback-loop)
+- Részleges feltöltők: séta (a mai már egy kicsit emelt), tánc, vihar/hideg (DE kollektíva ronthatja — 3×3 kapcsolat)
+- Pozitív: a séta már egy kicsit emelte a fizikai energiaszintet → overall ↑
+
+### 🔄 Heti-ciklus-felborulás magyarázat
+- A user heti-ciklusa **munkanap-alapú** (NEM naptári) → új principle: `weekly-rhythm.md`
+- Általában: péntek=buli, szombat=szabat, vasárnap=bemelegítés, hétfő=rajt
+- Most: **2026-05-09 szombat-event** eltolta a ciklust 2 nappal → vasárnap-szabat, hétfő-bemelegítés, kedd ("ma") = rajt
+- Kedden még alig sikerült beindulni → mélypont magyarázata
+
+### 💸 Upwork halogatás
+- "Mindig csak vázlatolok" — a user explicit csalódás
+- Ma már biztosan nem fog ezzel foglalkozni (saját döntés)
+
+### 🌀 Kollektív rezgés
+- A user érzékeny a kollektíva hangulatára (3×3 kapcsolat-tengely)
+- Vihar: ő szereti, de a kollektíva nem → lerántja
+- Felvéve a `three-by-three-system.md`-be új szakaszként
+
+### 📋 Új organizer task
+- **TERA workspace migráció VM-be** (P=90, `org:task:6a0385f5...`) — account-szétválasztás, hogy a TERA a VM-account-ot használja, ne a desktop-CC-t (CC limit-csökkentés)
+
+### 😩 Frusztráció: CC usage + CCAP RAG hiánya
+- Újra és újra CC usage limit-be ütközik (Claude Code keret)
+- **Megoldás-irány**: CCAP **felokosítása RAG + VectorDB**-vel
+- A spec/fejlesztés **elméletileg megvan**, de "lófaszt sem lát belőle" + "nincs rendesen bekötve"
+- **Nem a my-assistant scope-ja** (CCAP team feladata)
+- Kapcsolódó my-assistant FR: `cross-project-notes-ingestion.md` (out-of-scope) — ha a CCAP RAG működik, ide is be lehet kötni a my-assistant adatait (action-log, principles, FR-ek) mint vector-forrás → session-resume gyorsabb
+
 ---
 
 ## 2026-05-10 — Vasárnap
@@ -225,3 +257,106 @@ Ha jövőben átköltözünk az organizer-be, a leképezés:
 - `current/principles/` mappa felállítva 4 fájllal (working-style, priority-system, recurring-tasks, stock-system) — a user szövegei szó szerint őrizve
 - `CLAUDE.md` bővítve: working-style + időkezelés + alapelv-rögzítési szabály
 
+
+---
+
+## 2026-05-13 (szerda) — agresszív + hegy
+
+- **Mood:** agresszív (tegnap szomorú/asztrál-mélypont után fordulás)
+- **Hegy:** felindult Gellértre, ami erős edzés (fit-system). Agresszív state ezt megkönnyíti.
+- **Voice I/O séta közben:** nem teljesen fluid, ezért dump-üzenetek
+- **Blokkolók a fejlesztő-munkára (user szövege):**
+  - CC usage limit továbbra is idő előtt lejárogat -> akadozó munka
+  - LinkedIn most teljesen kizárt
+  - CCAP RAG + stabil token-kezelés megoldana sokat, **ha végre elkészülne**
+- **Jövőbeli terv (user, nem most):** átadni a feladatot egy CCAP-agentnek (QWEN 3.6 35B modellel)
+
+### Séta-update (folytatás)
+
+- Megindultam felfelé Gellért-hegyre, de **visszafordultam** vízért (palack nélkül nem érdemes hegymenetnek nekiindulni)
+- Megtörte a lendületet, de **újrakezdtem**
+- Most ~2 utcával följebb (bizonytalan)
+- Hegy összesen ~4-5 utca + park + el-jobbra-balra ágak
+- Lehet, hogy ma már nem érem el a csúcsot, **de** már a kimozdulás és a hegymenet is **siker / progress** (tegnap is sétáltam, ma is, ma már hegymenet)
+
+### Tanulság
+
+- **Vízpalack kötelező** hegymenet előtt — felírni a séta-előkészületekhez
+
+---
+
+## 2026-05-16 (szombat 01:13) — 2 nap chat-szünet után
+
+> **Korrekció (user):** nem aludtam ~50 órát — csak 2 napja nem beszéltünk.
+> Eredeti tévedésem törölve.
+
+- **Mood:** üresnek érzem magam; "minden projektem zsákutcába futott" érzés
+- **Konkrét blokkok:**
+  - **Niche datasets** projekt: LinkedIn person-verification kéri az agent-account-tól → **teljesen blokkolva** (LinkedIn lockout-ot már jelezted 05-13)
+  - my-assistant UI (Maya Assistant felület): "szar se jelenik, csak hibát dobál, és azokat sem rögzíti" → runtime-error-api FR akkut
+- **Háztartás:**
+  - 🧹 **Konyhai porszívó elromlott** → szerviz (NEM shopping, household issue)
+  - 🥤 **Sprite elfogyott** → Tesco
+- **Állapot:** "nem tudom most mit kéne csináljak" — irányt vesztett érzés
+- **Tudás-igény:** CC hook-ok mélyebb megértése a RAG-rendszer tervezéséhez
+
+### 🌀 3×3 snapshot 2026-05-16 01:30
+
+- **Anyag:** kicsit jobb, de nem jó → **low-mid**
+- **Asztrál:** nem nagyon rossz, nem jó → **mid** (közép-semleges)
+- **Mentál:** magamhoz képest rossz → **low** (saját magas-szokott normájához mérve)
+
+---
+
+## 2026-05-17 (vasárnap kora hajnal) — visszatérés + holnapi terv
+
+### Mood/állapot
+- Szarkedv lecsengőben, kezdek összeszedődni
+- Még nem 100% — vasárnap-kollektíva-hatás (mások pihennek → nehéz dolgoznom)
+- Felfedezés rögzítve: `current/3x3-research/findings.md` 2026-05-17 blokk
+
+### Mai nap terve
+- **Skip** a komoly munkát (kollektíva-hatás miatt)
+- Tesco-rendelés (vasárnap → kedd-i szállítás ✅)
+- Étkezés UTÁN: séta (több napos slip, soft re-start)
+- Recurring miss-ek (takarítás ~11 nap slip, fürdés ~10 nap slip) — vasárnap minimumra
+
+### Holnap (hétfő 2026-05-18) terve — repülőrajt
+- 💊 **NZT** indul (max 2 nap on / off ≥ on, lásd `nzt-system.md` + szombat-este organizer task)
+- Mozgás újraindítás
+- Agy újraindítás
+- Határozott irányváltás
+
+### Chat-pattern változás
+- "Kevesebb chat-foglalkozás" — ehelyett **kétirányú komm a my-assistant rendszeren**
+- Google Home az egyik fő csatorna (cast notify megvan, **voice-input back-channel** hiányzik)
+- Új design-kérdés: **user-event-ek → chat** (HOW)
+
+### Folytatás (2026-05-17)
+
+- **Hullámvölgyből kifelé jövök** ("jó nagy hullámvölgyből")
+- Új 3×3 felfedezések: kapcsolat-tengely (hurok/körbeérés/szuper-középpont) + asztrál **multi-wave** hipotézis (holdciklus + heti + évszak + ismeretlen al-hullámok)
+- **Decathlon Budaörs** felírva: nadrág + cipő nagy prio
+- **Temu**: háromszögkulcs felírva
+- **Lakógyűlés**: el kell menni + kérdés-lista (kapucsengő, Ulászló utca kód)
+
+### Önkép-megfogalmazás (2026-05-17)
+- Reflexió rögzítve: `current/notes/self-reflection.md` 2026-05-17 blokk
+- Lényeg: reálgondolkodású **de** spirituálisan nyitott, channeling-elfogadó, **éjszakai életmód**, "megfigyelőket" lát + kommunikál velük → ez az életcél #1 (2000 év magyarázata) háttér-narratívája
+
+---
+
+## 2026-05-22 (péntek) — IKEA + Decathlon megvolt, Tesco leadva
+
+- 🏠 **IKEA:** minden megvéve amit akart — **kivéve a kiskuka** (marad nyitva)
+- 🏃 **Decathlon:** nadrág + cipő + yoga matrac megvéve ✅
+- 🛒 **Tesco:** nagy rendelés leadva, **holnap (05-23) jön**
+- 📋 Szabály-feloldás: Tesco bármikor rendelhető (nincs nap-korlát) — `shopping-lists.md`
+- 🥃 Pontosítás: tömény szesz (vodka/rum/Kapitány) a Kínaiból, nem Tesco
+- 👟 Új: Skechers cipő — Allee-ban, külön
+- 🔑 NPM token lejár **2026-08-20** → rotation task frissítve (Overseer, Test/Prod Server, összes VM, RAVEN, Yoda)
+
+### Hő-attakk 2026-05-22 (késő este)
+- ☀️ **30°C megérkezett** → **teljes passzivitás, túlélő üzemmód**
+- Self-reflection rögzítve: `current/notes/self-reflection.md` 2026-05-22 blokk
+- Asszisztens-mód: minimum-effort, soft-nudge gyengébb, halogatás-szorzó türelmes

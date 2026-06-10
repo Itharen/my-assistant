@@ -66,7 +66,7 @@ egy projekt-prio, egy task-státusz, egy felhasználói preferencia) **EGY**
 | Diary | `current/diary/diary.md` | — |
 | Hookok config | `.claude/settings.json` | — |
 | Globális workspace-szabályok | `E:\Programming\Own\CURSOR\CLAUDE.md` (külső) | — |
-| Projekt-szintű szabályok | `E:\Programming\Own\CURSOR\my-assistant\CLAUDE.md` | — |
+| Projekt-szintű szabályok | `E:\Programming\Own\CURSOR\LIVE-projects\my-assistant\CLAUDE.md` | — |
 
 ---
 
@@ -100,3 +100,112 @@ A chat (én) **minden új adat-felvétel előtt** megnézi:
 - `current/principles/working-style.md` — én = vezénylő, workflow-doc karbantart
 - `__agent/WORKFLOW_DEV.md` 1. alapelv — SSoT a STATUS_DEV.md YAML
 - `__agent/WORKFLOW_ASSIST.md` 1. alapelv — SSoT a STATUS_ASSIST.md YAML
+
+---
+
+## 2026-05-08 — kiegészítés: cross-subproject pattern (TypeScript)
+
+> Egyrészt mivel TypeScript rendszer, másrészt mivel amúgy is ez a pattern
+> mindig és mindenkor, használhatunk cross-referenzt a különféle
+> subprojektjeink között. Menj körbe, nézzél körül, más rendszerekben ezt
+> hogy csináljuk, általában van, a kliencen szoktuk főként használni, a
+> szerverről a data modelleket. Ugyanezt a patternt fogjuk megcélozni itt is.
+>
+> Arra kell csak majd nagyon odafigyelni ennél, hogy ezek a klasszok, meg
+> ezek a fájlok nem használhatnak olyan dolgot, ami például nincsen a
+> kliencen. szükség, akkor egy extension-t csinálunk, és az extension-t
+> fogja kizárólagosan a szerver használni, de a base class-t meg mindenki.
+
+### A pattern (FDP-style — `master-prompter` minta)
+
+A 3 subproject (`cli`, `server`, `client`) között az SSoT-ot **TypeScript path
+mapping-gel** valósítjuk meg — NEM npm-package, NEM duplikáció.
+
+```
+client/tsconfig.json paths:
+  "@server/*":      [ "./../server/src/*" ]                  ← raw direct mapping
+  "@server-models": [ "./src/app/_models/server-index.ts" ]   ← barrel re-export
+```
+
+→ Client-fájl így importál:
+```typescript
+import type { Foo, Bar } from '@server-models';
+```
+
+A TS resolve-olja a server-oldali source fájlt **build/compile-time-ban**.
+
+### Cross-reference irányok (my-assistant)
+
+```
+client → server (csak TYPES, FDP-szerű)
+   paths:    @server/*, @server-models
+   szabály:  csak `import type` — runtime kód NEM hívható
+
+server → cli (RUNTIME, integrációkhoz)
+   paths:    @cli/*
+   szabály:  server controllers használják a CLI integration-szolgáltatásait
+             (spotify-client, google-assistant-client, cast-client) library-ként
+
+cli → server (csak TYPES)
+   paths:    @server/*
+   szabály:  CLI is innen veszi a kanonikus type-okat
+```
+
+**Egyirányú a runtime függőség**: csak `server → cli`. A CLI standalone marad
+(server futása nélkül is használható).
+
+### Type ownership szabály
+
+| Mit | Hol él | Ki importálja |
+|---|---|---|
+| **DTO interfészek** (config, status, snapshot) | `server/src/_models/interfaces/...` | client + cli + server |
+| **Mongoose data-models** (osztályok DB-shape-ekkel) | `server/src/_models/data-models/...` | client csak `import type`, server runtime |
+| **Control models** (helper class, computed mezők) | `server/src/_models/control-models/...` | client + server |
+| **Enums** | `server/src/_enums/...` | mind |
+| **Integration runtime** (Cast/Spotify/Google API hívások) | `cli/src/{cast,spotify,google}/` | server runtime; client SOHA |
+
+### Base + Extension elv
+
+Ha egy class olyat használ amit a kliens **nem tud** (pl. `node:fs`,
+`node:http`, `castv2-client`, `mongoose`):
+
+1. **Base class** kliens-importálható fájlban — csak DTO mezők, computed
+   getterek, helper logika node-specifikus dolog **nélkül**
+2. **Extension** server-only fájlban — extends Base-t, hozzáadja a Node-API-t
+   használó metódusokat
+3. Server az extension-t használja, kliens a base-t
+
+Példa séma:
+```
+server/src/_models/data-models/foo.data-model.ts          ← Base (kliens-importálható)
+server/src/_models/data-models/foo.extension.data-model.ts ← Extension (server-only mongoose-szal)
+client → import { Foo } from '@server-models'              ← base-t kapja
+server → import { FooExtension } from '@server/_models/...' ← extension-t használja
+```
+
+### Kritikus implementációs feltételek
+
+1. **TypeScript csak**: minden subproject TypeScript, build/runtime config
+   konzisztens (ESM mindenhol — keverés `await import()` mintát igényel).
+2. **`import type`** kötelező mindenhol ahol type-only import van — különben
+   bundler/runtime megpróbálja behúzni a teljes modult, ami szerver-only
+   függőségeket vinne a kliensbe.
+3. **Path mapping mindkét végpontban**: a forrás (server) és minden konzument
+   (client/cli) tsconfig.json-jában is ott van.
+4. **Barrel file** ergonomikus aliasokhoz (`@server-models`) — raw `@server/*`
+   mindig elérhető fallback-ként.
+
+### Mit NEM csinálunk
+
+- **Nem hozunk létre `shared/` package-et** — a path mapping ezt megoldja
+- **Nem publish-olunk semmit npm-re** — minden monorepo-belül marad
+- **Nem futtatunk runtime sync-et** (kódgenerálás, fájlmásolás)
+
+### Implementációs státusz (élő)
+
+- 2026-05-08: terv kész, lépésenként bevezetve (`__agent/plans/ssot-server-esm-migration.plan.md`)
+  1. Server ESM-re upgrade (különben CommonJS server nem tud ESM CLI-t natívan importálni)
+  2. Path mapping bekonfigurálás mindhárom subprojectbe
+  3. Types mozgatás `cli/src/{spotify,google}/`-ből → `server/src/_models/interfaces/integrations/`
+  4. Client barrel létrehozás (`client/src/app/_models/server-index.ts`)
+  5. Server controllers + client UI moduláris konzumálással

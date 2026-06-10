@@ -14,3 +14,14 @@
 - A kínai boltban vannak az aprócikkek + snack jellegű dolgok amiket a Tesco
   nem visz
 - Pénteki vendégség (László + alkalmilag mások) → rákcsa-szerű snack főbb fogyás
+
+---
+
+## 2026-05-22 — Tömény szesz (minden, NEM Tesco)
+
+> User-pontosítás: a Kapitány, a rum és a vodka — **minden tömény szesz** — a
+> Kínai boltból jön, NEM a Tesco-ból.
+
+- [ ] **Vodka**
+- [ ] **Rum** (alap)
+- [ ] **Kapitány** (Captain Morgan rum) × 2 — 4-re dúsítás cél

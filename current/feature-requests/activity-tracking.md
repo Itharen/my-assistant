@@ -112,3 +112,52 @@ következtessen az aktuális tevékenységre, vagy passzív jelekből megtudja.
 - **Q-act-4**: Privacy küszöb — meeting-címeket logoljunk-e? Mit NEM tárolunk?
 - **Q-act-5**: Milyen "natural language summary"-t generáljunk a logból? (pl. session elején: "Az utolsó interakció óta TERA-ban dolgoztál 2 órát + 1 óra séta")
 - **Q-act-6**: Wearable: van valami eszköz amit használsz? (Garmin / Apple Watch / Fitbit / semmi)
+
+---
+
+## 2026-05-17 — kibővítés: always-on + event-emit + device-integration
+
+### User szövege
+
+> Az Activity Monitornak folyamatosan kéne jeleznie, hogy mi van, és kéne
+> tény gyereket [tényeket / esemény-jelentéseket] küldjön, amikor változás van.
+> Az egészség trekkinget is rá kéne kötni az eszközekre.
+
+### Új scope-elemek
+
+**A — Always-on activity-monitor + change-event emit:**
+- A `activity-monitor/` ne legyen one-shot — **folyamatos loop** (a host gépen szolgáltatás-szerűen)
+- Periodikus snapshot (pl. 60s vagy 30s)
+- **Csak változáskor** emit-eljen `kind:"state-change"` event-et az action-log-ba (NEM minden snapshot, csak ha eltér az előzőtől)
+- Detektálandó változások: idle/active transition, ablak-fókusz váltás (csak categorize: dev/browser/idle, NEM tartalom), session lock/unlock, gép sleep/wake
+- Lifecycle event-ek (start/stop/crash) **mindig** loggolva (`current/CLAUDE.md` action-log szabály szerint)
+
+**B — Health-tracking eszköz-integráció:**
+
+A séta / hegy / fit / arc-mosás / fürdés tracking **NEM** csak passzív gép-aktivitásból derülhet ki. Eszközök bekötése:
+
+| Eszköz / forrás | Mit ad | Integráció |
+|---|---|---|
+| **Telefon (Android)** | lépésszám, GPS, képernyő-on/off, screen-time, app-usage | Google Fit REST API (already auth-set lehet); vagy direct Android intent / Tasker bridge |
+| **Okosóra** (ha lesz) | szívverés, alvás, lépés, fizikai aktivitás-detect | brand-függő API (Fitbit / Garmin / Wear OS) |
+| **Google Maps timeline** | lokáció-history, hegyre-érés, séta-útvonalak | Google Takeout / Timeline export |
+| **Google Home aktivitás** | "Hey Google" parancs-log, broadcast-tartalom | (limit: nincs publikus API, lásd `google-home-integration.md`) |
+
+### Phase-elés
+
+| Phase | Mit | Felelős |
+|---|---|---|
+| 0 | ez a kiterjesztés | chat ✅ |
+| 1 | Activity-monitor always-on loop + change-event emit (csak Δ-ra) | Dev Agent |
+| 2 | Activity-monitor lifecycle hardening (auto-restart, host-service-szerű) | Dev Agent |
+| 3 | Google Fit REST API integration (lépés, GPS, screen-on) — server-side | Dev Agent (külön green-light) |
+| 4 | Health-journal auto-emit (séta-detect → `current/health-journal.md` entry) | Dev Agent |
+| 5 | Okosóra-integráció (ha lesz device) | későbbi |
+
+### Backlog módosítás
+
+A backlog `#3c` IoT integráció (Google Home routine wake/sleep) **testvér FR** — kombinálható: a wake/sleep event-ek az `activity-monitor`-ba is folynának be (event-fúzió).
+
+### Status
+
+🟢 **MAGAS prio** — user 2026-05-17 explicit kérés. Phase 1+2 self-contained (host-side script + Node loop), Phase 3+ a server / külső API-kra vár.

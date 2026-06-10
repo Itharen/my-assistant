@@ -51,11 +51,15 @@
 
 ### Az ember 3 része
 
-| # | Test | Mit fed le |
-|---|---|---|
-| 1 | 🌬️ **Asztrál** | érzelmi test — érzelmek, hangulat |
-| 2 | 🧠 **Mentál** | tudat — gondolkodás, fókusz |
-| 3 | 💪 **Anyag** | fizikai test — egészség, energia |
+| # | Test | Szín | Mit fed le |
+|---|---|---|---|
+| 1 | 🌬️ **Asztrál** | 🟡 sárga | érzelmi test — érzelmek, hangulat |
+| 2 | 🧠 **Mentál** | ? | tudat — gondolkodás, fókusz |
+| 3 | 💪 **Anyag** | ? | fizikai test — egészség, energia |
+
+**Szín-konvenció (kliens-vizualizáció):**
+- 🟡 **Sárga** = Asztrál (user-döntés 2026-05-12)
+- Mentál + Anyag színe nyitott (lásd open kérdés Q-3x3-color-1/2)
 
 **Egyensúly = a 3 rész egyensúlya.**
 **Összenergia = a 3 rész energiaszintjének együttese.**
@@ -98,11 +102,41 @@ hogy egy adott pillanatban érdemes-e energiát befektetni:
 ### Külső hatások a hullámra
 
 A hullámra **töri-** és **megoszló-erők** hatnak:
-- **Töréspontok** — éles diszruptív események
-- **Lenyomások** — tartós nyomó hatások
+
+| Típus | Hogyan hat | Kimenet a hullám-formán |
+|---|---|---|
+| **Megoszló-erő** | folyamatos, eloszló nyomás | **elhajlás** — folyamatos görbület (2026-05-13 finomítás) |
+| **Töri-erő (instant)** | hirtelen up-down vektor | **törés** — diszkontinuitás, töréspont (2026-05-13 finomítás) |
 
 Ezek nemcsak az egyes hullámokra, hanem az **összesített hullámra** is
 hatnak.
+
+### Domain-mapping: fizikai analógiák (2026-05-13)
+
+A három hullám-domain fizikai megfelelői:
+
+| Hullám | Fizikai analóg |
+|---|---|
+| **Mentál** | elektromosság, elektrosztatika |
+| **Asztrál** | hőmérséklet, folyadékok |
+| **Anyag** | (?) — még tisztázandó |
+
+### Kapcsolat-tengely — kollektív rezgés-érzékenység (2026-05-12)
+
+> a háromszor háromból a kapcsolat az a minden és minden között, és
+> mindenki és mindenki között létező kapcsolat, amit most úgy érzem,
+> nagyon érzek.
+
+A 3×3 mátrix **második tengelyén** a "kapcsolat" eleme = mindenki/minden
+közötti rezonancia. A user **kollektív hangulat-érzékeny**:
+
+- A kollektíva hangulata (városi szintű, közösség-szintű) hatással van rá
+- Pl. **vihar** — a user szereti a hideget+vihart, **de** a kollektíva
+  nem szereti → a kollektíva alacsony rezgése **lerántja** a user saját
+  hullámát is
+- Ez a **rezonancia-jelenség** része a 3×3 rendszer-szintű hatásainak
+- Tracking: lehet hogy a heti / havi 3×3 állapot-trendekben látszik majd
+  (időjárás × kollektív hangulat × user-állapot korreláció)
 
 ---
 
