@@ -47,7 +47,10 @@
       "fatal": true,
       "discord": {
         "emoji": "🏗️",
-        "name": "Build"
+        "name": "Build",
+        "group": "build-test",
+        "groupName": "Build and Test",
+        "groupEmoji": "🏗️"
       }
     },
     {
@@ -56,7 +59,8 @@
       "fatal": true,
       "discord": {
         "emoji": "🧪",
-        "name": "Tests"
+        "name": "Tests",
+        "group": "build-test"
       }
     },
     {
