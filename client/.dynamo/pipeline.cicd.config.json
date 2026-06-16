@@ -1,5 +1,5 @@
 {
-  "name": "my-assistant Server CI/CD Pipeline",
+  "name": "my-assistant Client CI/CD Pipeline",
   "outputDir": "./logs/cicd-pipeline",
   "timing": {
     "stepTimeout": "10m",
@@ -22,7 +22,7 @@
   "steps": [
     {
       "label": "discord-start",
-      "command": "dc ci-dn-s '{\"appName\":\"my-assistant Server\",\"appEmoji\":\"🛰️\",\"commitMessage\":\"$COMMIT_MESSAGE\",\"branchName\":\"$GITHUB_REF_NAME\",\"author\":\"$GITHUB_ACTOR\",\"runNumber\":\"$GITHUB_RUN_NUMBER\",\"runId\":\"$GITHUB_RUN_ID\",\"repository\":\"$GITHUB_REPOSITORY\",\"eventName\":\"$GITHUB_EVENT_NAME\",\"eventDateTime\":\"$EVENT_DATETIME\"}'",
+      "command": "dc ci-dn-s '{\"appName\":\"my-assistant Client\",\"appEmoji\":\"🪟\",\"commitMessage\":\"$COMMIT_MESSAGE\",\"branchName\":\"$GITHUB_REF_NAME\",\"author\":\"$GITHUB_ACTOR\",\"runNumber\":\"$GITHUB_RUN_NUMBER\",\"runId\":\"$GITHUB_RUN_ID\",\"repository\":\"$GITHUB_REPOSITORY\",\"eventName\":\"$GITHUB_EVENT_NAME\",\"eventDateTime\":\"$EVENT_DATETIME\"}'",
       "fatal": false,
       "discord": {
         "hide": true
@@ -35,7 +35,7 @@
     },
     {
       "label": "install",
-      "command": "cd server && pnpm i",
+      "command": "cd client && pnpm i",
       "fatal": true,
       "discord": {
         "hide": true
@@ -43,7 +43,7 @@
     },
     {
       "label": "build",
-      "command": "cd server && pnpm run build-base",
+      "command": "cd client && pnpm run build-base",
       "fatal": true,
       "discord": {
         "emoji": "🏗️",
@@ -55,7 +55,7 @@
     },
     {
       "label": "test",
-      "command": "cd server && pnpm exec jasmine --config=spec/support/jasmine.json",
+      "command": "cd client && pnpm test",
       "fatal": true,
       "discord": {
         "emoji": "🧪",
@@ -65,7 +65,7 @@
     },
     {
       "label": "coverage",
-      "command": "cd server && pnpm run test:coverage",
+      "command": "cd client && pnpm run test:coverage",
       "fatal": false,
       "discord": {
         "emoji": "📈",
@@ -74,7 +74,7 @@
     },
     {
       "label": "pipeline-report",
-      "command": "fdp pipeline-report --report ./logs/cicd-pipeline/cicd-report.json --server-dir ./server --overseer-url $OVERSEER_URL --overseer-secret $OVERSEER_SECRET_KEY --branch $GITHUB_REF_NAME",
+      "command": "fdp pipeline-report --report ./logs/cicd-pipeline/cicd-report.json --server-dir ./client --overseer-url $OVERSEER_URL --overseer-secret $OVERSEER_SECRET_KEY --branch $GITHUB_REF_NAME",
       "fatal": false,
       "always": true,
       "discord": {
@@ -89,7 +89,7 @@
     },
     {
       "label": "discord-result",
-      "command": "fdp pipeline-notify --report ./logs/cicd-pipeline/cicd-report.json --config ./pipeline.cicd.config.json --app-name 'my-assistant Server' --app-emoji 🛰️ --webhook-id $DISCORD_WEBHOOK_ID --webhook-token $DISCORD_WEBHOOK_TOKEN --overseer-url $OVERSEER_DASHBOARD_URL",
+      "command": "fdp pipeline-notify --report ./logs/cicd-pipeline/cicd-report.json --config ./.dynamo/pipeline.cicd.config.json --app-name 'my-assistant Client' --app-emoji 🪟 --webhook-id $DISCORD_WEBHOOK_ID --webhook-token $DISCORD_WEBHOOK_TOKEN --overseer-url $OVERSEER_DASHBOARD_URL",
       "fatal": false,
       "retryOnFail": 2,
       "retryDelaySec": 5,
