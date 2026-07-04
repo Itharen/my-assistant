@@ -95,6 +95,42 @@ mutatná → és a fogyasztók ezt **vágyják is**.
 
 ---
 
+## 2026-05-29 #3 — Migráció-kezelés (3-level rendszer)
+
+> Az Ideológia Fórumba szánt **társadalom-politikai tézis** a migráns-kérdésről.
+> Verbatim (STT-tisztított), a user saját politikai álláspontja a platformjához.
+> 🔗 Org-tükör: `org:note:6a2b8fccca5f063c4e662f93`.
+
+### A tézis — 3 szintű rendszer
+
+| Szint | Mit |
+|---|---|
+| **Level 1 — Átsegítés** | Segítünk **keresztüljutni az országon** — „szépen átbuszoztatjuk őket". |
+| **Level 2 — Maradás (szigorú feltételekkel)** | Aki **maradni** szeretne, arra van lehetőség, de **nagyon komoly, szigorú szabályok** mentén: <br>• **nyelvet** megtanulni <br>• **iskolát** elvégezni (ált.+közép), ugyanúgy mint minden magyarnak <br>• utána **munkát** vállalni, **3 éven át dolgozni**, **bizonyítani, hogy használ** <br>• **kultúra elfogadása/befogadása kötelező** — ha a vallásra/kultúrára hivatkozva „ezt-azt nem csinálsz", akkor „továbbállni" <br>• **könnyített verzió** lehetne a **szép nőknek** („miért is ne"); **szigorúbb** a **férfiaknak**, **fiatal férfiaknak pláne** |
+| **Level 3 — Kikényszerítés / körözés** | Akik **megkerülik** a szabályokat, vagy színleg elfogadják majd **eltűnnek** (nem jelentkeznek be időről időre a szabályok szerint) → **automatikusan körözési listára** kerülnek. |
+
+### Operatív elemek
+- **Regisztrációkor kötelező fotó** legalább **3 irányból** (tipikus körözési
+  plakát) — „lehet hogy nem tetszik, de akkor is elkészítjük". Plusz: **levágott
+  haj/szakáll** változat is → nehezebb elkerülni a rendszert.
+- **Szoftveres támogatás** (külön ideológiai kérdés): **felismerő szoftverek**,
+  amik ezeket az embereket könnyebben **felismerik, beazonosítják, megtalálják**.
+
+---
+
+## 2026-05-29 #4 — Civilizált ember vs. vadember
+
+> 🔗 Org-tükör: `org:note:6a3e76dd59295790375ab0f9`. Verbatim:
+
+> Azt nevezem én civilizált embernek, aki képes úrrá lenni az ösztönein és az
+> intruzív gondolatokon. Mindenki más vadember.
+
+**Tézis:** a **civilizáltság** mércéje az **önuralom** — az **ösztönök** és az
+**intruzív gondolatok** feletti kontroll. Aki erre nem képes → „vadember".
+Kapcsolódik a #1 (kiválóság) tézishez: a mentális önuralom egy kiválóság-dimenzió.
+
+---
+
 ## A fájl célja (összefoglaló)
 
 Ez a fájl **a 3×3 tanulmány TESTVÉR-csatornája** lesz az Ideology Forum

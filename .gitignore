@@ -25,3 +25,10 @@ server/activity-monitor/data/
 # NPM auth tokens — soha ne pusholjuk
 .npmrc
 */.npmrc
+
+# Compiled TS output in src (TS-only projekt; a .js/.map build-artifact)
+**/src/**/*.js
+**/src/**/*.js.map
+
+# Windows crash dumps
+*.stackdump

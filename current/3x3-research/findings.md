@@ -11,6 +11,20 @@
 
 ---
 
+## 2026-05-29 — A 3×3 legelső célja (purpose-framing)
+
+> 🔗 Org-tükör: `org:note:6a3e76de59295790375ab0ff`. Verbatim:
+
+> Az egész 3×3-os elméletnek legelső célja, hogy jobban megértsük magunkat és
+> egymást. De mivel az általunk érzékelhető világra is alkalmazható és
+> kapcsolódik, ezért úgy sejtem, hogy az egész világunk megértését is elősegíti.
+
+**Strukturált:** elsődleges cél = **ön- és egymás-megértés**. Tágabb (sejtett)
+hatókör = mivel a 3×3 az **érzékelhető világra** is alkalmazható → **az egész
+világ megértését** segíti. (Ez a `methodology` / életcél #1 narratíva alátámasztása.)
+
+---
+
 ## 2026-05-13 — Mood-mapping: nyűgös vs agresszív
 
 ### User szövege (verbatim, séta közbeni voice-dump)

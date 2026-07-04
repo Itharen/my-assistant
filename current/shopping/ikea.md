@@ -52,6 +52,13 @@ szeparálás). Ütem: esetenkénti.
 ### 🪝 Egyéb
 - [ ] **Kampók** *(2026-05-29)*
 
+### 🛌 Ágynemű-batch (2026-05-29)
+- [ ] **Ágynemű** (újra)
+- [ ] **Ágyhuzat** ⭐ (főleg ez kell) — több
+- [ ] **Takaróhuzat(ok)** — több
+- [ ] **Ágy kereszt-lécek** (ágyrács-lécek)
+- [ ] **Új szivacsok** (matrac-szivacs)
+
 ---
 
 ## Megjegyzések

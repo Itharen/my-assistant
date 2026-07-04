@@ -15,6 +15,10 @@ Szabályok: `current/principles/shopping-lists.md` (bolt/kategória szerinti sze
 - [ ] **Szervergép**
 - [ ] **Winchester-ek a szerverbe** (HDD/SSD)
 - [ ] **AI szerver**
+- [ ] **Working station** (munkaállomás) *(2026-05-29)*
+- [ ] **3D nyomtató** *(2026-05-29)*
+- [ ] **Flipper Zero** (hack kit — Janó ajánlotta) *(2026-05-29)*
+- [ ] **Powerbank** *(2026-05-29)*
 
 ### 🔧 Szolgáltatás / munka
 - [ ] **Szerver update**

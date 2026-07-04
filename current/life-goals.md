@@ -46,8 +46,12 @@ emberiségnek **még ebben az életben**.
   → lásd `current/principles/three-by-three-system.md`
   → **Aktív emlékeztető-task** (user 2026-05-29: "El ne felejtsen folytatni a
     tanulmányírást. Ez az egyik life goal, fontos."): `org:task:6a1f7a6a7550efa6b0e01252`
-- 🏛️ **Ideology Forum** — "komoly megoldást jelenthet" (részletek TBD,
-  open kérdés alább)
+- 🏛️ **Ideology Forum** — **a főbb életcélok egyike** (user 2026-05-29). Részletes
+  architektúra: `current/notes/ideology-forum-design.md`. Tartalom-tézisek:
+  `current/notes/ideology-thoughts.md`.
+  - 🕯️ **Titkos cél:** alternatív **kormányzási rend** kialakítása.
+  - 🌐 **Nyilvános cél:** platform, ahol ideológiákat/filozófiákat vitatnak meg,
+    **hatókör-szintek** szerint (család → város → ország → globál + köztes: kontinens/EU).
 - 🎓 Egyéb értékes tudás strukturálása + átadása
 
 ### 💰 Pénzkeresés = közvetett életcél
@@ -106,7 +110,10 @@ javasolt.
 
 ## Open kérdések
 
-- **Q-life-1**: "Ideology Forum" mi pontosan? Saját platform / létező közösség / koncepció? Hogyan kapcsolódik a 3×3-hoz?
+- **Q-life-1**: ~~"Ideology Forum" mi pontosan?~~ **ANSWERED 2026-05-29:** saját
+  építendő **platform**. Titkos cél = alternatív kormányzási rend; nyilvános cél =
+  ideológia/filozófia-vitató platform hatókör-szintekkel. Architektúra:
+  `ideology-forum-design.md`. (3×3 = testvér-projekt, természet-filozófia oldal.)
 - **Q-life-2**: Az "egyéb értékes tudás" — mik konkrétan? Melyik tudásterületek?
 - **Q-life-3**: HelloCIA hátralévő ~10% — bontható-e konkrét sub-task-okra (lásd `task-decomposition.md`)?
 - **Q-life-4**: Életcél-priorizálás: a 2 cél egyenrangú, vagy egyik magasabb-prio (a daily task-ok cross-project ranking-jénél)?

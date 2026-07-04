@@ -14,7 +14,8 @@
 | Task | Org-ref | Felvéve | Status |
 |---|---|---|---|
 | **Mutti-nak odaadni a fagyasztott zöldségeket** | `org:task:6a1af22c1aaf1ebfb627df10` | 2026-05-29 | ✅ organizerben |
-| 🔴 **Üzemorvosnak utánanézni** (magas prió, P=100) | `org:task:6a1c5b69daaf57307ecb6f58` | 2026-05-29 | ✅ organizerben |
+| 🚗 **Jogosítvány megszerzése** — **TOP PRIO (P=120, legmagasabb)** | `org:task:6a49435b1a4a07c9fb0d36ef` | 2026-07-04 | ✅ organizerben |
+| 🔴 **Üzemorvosnak utánanézni** (magas prió, **P=118**, jogosítvánnyal hasonló szint) | `org:task:6a1c5b69daaf57307ecb6f58` | 2026-05-29 (prio ↑ 2026-07-04) | ✅ organizerben |
 | **MediaMarkt számla** | `org:task:6a1c5b6adaaf57307ecb6f5e` | 2026-05-29 | ✅ organizerben |
 | 🌐 **Frontend performance eszköz** (dev-domain) | `org:task:69a05561c1f77dfa09287eae` | 2026-05-29 | 🔀 **ÖSSZEVONVA** a meglévő Core-Web-Vitals taskba; a mai duplikátum (`…6f64`) archiválva |
 | 💰 **Sales-est szerezni** (eladni amit csinálunk) | `org:task:6a1c5c6edaaf57307ecb6f8b` | 2026-05-29 | ✅ organizerben (retro-sync) |
@@ -27,6 +28,10 @@
 | 🗂️ **Research: multi-tab közös szervizek** (háttérigény ↓) | `org:task:6a20accda2fa18b3a838639c` | 2026-05-29 | ✅ organizerben (dev-domain) |
 | 🤖 **Marketing master agent** (lead gathering + active sales) | `org:task:6a21306a4b53d12a1922ecc7` | 2026-05-29 | ✅ organizerben · kötődik Sales-es taskhoz |
 | 🧠 **Kutatás: tudat/gondolat-digitalizálás** (végakarat #3) | `org:task:6a2212204b53d12a1922f0c0` | 2026-05-29 | ✅ organizerben · ld. `current/will.md` |
+| 🛋️ **IKEA megvett termékek dokumentálása** (újravásárláshoz) | `org:task:6a3e76df59295790375ab105` | 2026-05-29 | ✅ organizerben |
+| 🥤 **Turmixgép vétele + egészségesebb étkezés** | `org:task:6a3e76e059295790375ab10b` | 2026-05-29 | ✅ organizerben |
+| 🖥️ **GPU-átrendezés** (kisebb kártya a fő gépbe, tehermentesítés) | `org:task:6a3e76e159295790375ab111` | 2026-05-29 | ✅ organizerben (dev/hw) |
+| 🔄 **Mirror-mode auto-sync** (lokál ↔ organizer) | `org:task:6a3e776c59295790375ab11f` | 2026-05-29 | ✅ organizerben (dev) · a manuális recording-discipline automatizálása |
 
 ### ⏰ Társasági adó — jövőbeli befizetések (due date-tel, "mindig elmarad")
 

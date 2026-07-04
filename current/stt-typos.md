@@ -22,7 +22,7 @@
 |---|---|---|---|
 | Terra | **TERA** | projekt-név | 2026-05-07 user korrekció (kétszer) |
 | **⚠️ KRITIKUS — assistant-failure**: Neach Adata Set / Niesche / Nietzsche / Nitzche | **niche datasets** (kisbetűvel — niche piaci szegmens dataset-csomagok) | projekt-név | 2026-05-07 user korrekció (KÉT KÖR — eredetileg az assistant TÉVESEN normalizálta a "niche"-t a filozófus Nietzsche-re. A projekt valódi neve: **niche datasets**, nem köze Nietzsche-hez.) |
-| serikók | ❓ TBD | snack — még nem tisztázva | `current/stock/items.md` |
+| serikók | **Cherry Coke** | ital (snack) | 2026-05-29 user korrekció ✅ |
 | ~~rákcsa~~ | **rákcsa** (helyes — nem typo, ez a tényleges szó a user szókincsében) | snack | 2026-05-09 megerősítve |
 | "kenyérhez ezt meg azt" | ? (második fele homályos) | étel-alapanyag | `current/stock/items.md` |
 | kézkaja | kész kaja | étel-kategória | `current/stock/items.md` |

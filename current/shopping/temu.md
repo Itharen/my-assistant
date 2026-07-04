@@ -8,6 +8,7 @@ hogy ne legyen szétaprózott szállítás).
 ## Aktív tételek
 
 - [ ] **Háromszögkulcs** (2026-05-17 felvéve)
+- [ ] **Jéggránát (jégakku) × 12** (3×4) *(2026-05-29)*
 
 ---
 

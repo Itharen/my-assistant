@@ -94,6 +94,29 @@ Ez egy **ismétlődő, kiszámítható mintázat** (nyári hónapokra):
 
 ---
 
+## 2026-05-29 — Hő-rosszullét hideg, klímás szobában is
+
+> 🔗 Org-tükör: `org:note:6a3e76dc59295790375ab0f3`. Verbatim:
+
+> Érdekes jelenség, hogy itt vagyok benne a szépen beklímázott hideg szobában, a
+> sötétben, és mégis rosszul vagyok, olyanfajta rosszullétet érzek, mint amikor
+> nagy melegben az ember megszédül, mintha a napsugárzás mindenen át, a falon
+> keresztül is elérne a nagy melegben nyár közben.
+
+**Megfigyelés:** a hő-rosszullét **klímás hideg, sötét szobában is** jelentkezik
+→ nem (csak) a közvetlen hő/fény a kiváltó, hanem a **nyári időszak általános
+hatása** (a 2026-05-22 hő-passzivitás pattern **kiterjesztése**: a tünet a
+környezeti hűtéstől függetlenül is fennáll).
+
+**✅ Megoldás (visszatérő felismerés, amit mindig elfelejt):** ilyenkor **átáll
+éjszakai életmódra**, és **minden szép és jó lesz**. → Ez a hő-rosszullét
+**counter-intervenciója**: nappali tünet esetén **váltás éjszakai ritmusra**.
+Konzisztens a `sleep-system.md` csúszó-ciklussal + az "éjszakában él" önképpel.
+**Asszisztens-implikáció:** ha nyári hő-rosszullét jön, **emlékeztetni** erre a
+megoldásra (mert a user hajlamos elfelejteni).
+
+---
+
 ## 2026-05-29 — "One vision, one goal" — egyedül is komoly versenytárs
 
 > Org-tükör: `org:note:6a21306b4b53d12a1922eccd`. Verbatim:

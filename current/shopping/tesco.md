@@ -33,12 +33,13 @@ Szabályok: `current/principles/recurring-tasks.md` (2-3 hetente megrendelés) +
 - [ ] Mozzarella
 
 ### Snack / nasi 🥨
-- [ ] ❓ Serikók (STT-bizonytalan)
+- [ ] **Cherry Coke** *(2026-05-29: a korábbi „serikók" STT-elírás = Cherry Coke)*
 - [ ] ❓ Rákcsa (valószínűleg rágcsa / rágcsálnivaló)
 - [ ] Nasi (általános)
 
 ### Drogéria / higiénia 🧴
 - [ ] Aftershave
+- [ ] **Hajkefe × 2** *(2026-05-29)*
 
 > **Megjegyzés (2026-05-12):** cigi **NEM** Tesco-ból (dohánybolt) — eltávolítva.
 > **Megjegyzés (2026-05-22):** tömény szesz (vodka/rum/Kapitány) **NEM** Tesco-ból → `kinai.md`.
