@@ -623,3 +623,14 @@ A commit+push = deploy (auto CI/CD); ezért a CI/CD-eredményeket kell nézni. L
   `appliedVersion` csak audit. → prod verzió-gap-pel is lefut az első induláskor (a hiányzó verzió „old").
 - **Rögzítve a kánonba** + 2 kötelező következmény: az entry VÉGLEG regisztrálva marad; a `run()`-ban nincs
   verzió-check (idempotencia = ledger + DYENC1). A devnek is elküldve emlékeztetőként (az MP-red-fix mellett).
+
+---
+
+## 42. FÁZIS-35 (2026-07-27 00:37) — deploy-verify: mindkettő recovery-ben (nincs teendő, várni kell)
+- **token-service:** a re-fire (`aec494a`) MŰKÖDÖTT — a `fdp pipeline-jobs` szerint **FUT egy fdp-token-service
+  pipeline** (deploy-olja a v180 consent Phase C-t). A build-results v177-je csak lemaradás (a build folyamatban).
+  **NEM rearm-eltem** (duplikálná). `fdp rearm-trigger --project <n> --commit <sha>` = a missed-webhook eszköz, ha kell.
+- **MP:** a dev **még buildeli a Phase 2-t** (00:28 „installing deps", MP Phase 2 kód kész: migráció-entry +
+  registry + postProcess + ledger regisztrálva + standalone nyugdíjazva) — még nem pusholt, ezért a piros a régi
+  (21:56). A MP-push majd a check-dev-leftovers/client-build fixet is viszi.
+- **Következő wakeup:** verify — token-service SUCCESS (v180) + MP zöld (dev push után) + Phase 2 (MP+adventor) landolt.
