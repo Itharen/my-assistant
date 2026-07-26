@@ -428,3 +428,15 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 - **Az ügyvéd-levél KÉSZ és küldésre vár** (reminder-body + consent form; ttb→Dániel, meglévő szál) — csak a
   **helyes PDF** hiányzik. Amint a `dc`-fix landol → regenerálom a PDF-et, ellenőrzöm az ő/ű-t, és **küldöm**.
 - **DEV-queue:** (1) at-rest titkosítás terv, (2) consent-napló impl, (3) bedrock-pontosítás, (4) dc PDF-font fix.
+
+---
+
+## 25. FÁZIS-18 (2026-07-26) — dev-vezénylés prioritással + never-idle + saját wakeup
+- **Mért állapot:** a dev jelenleg a **`dc` PDF-font fixen** dolgozik (gyökér-ok közelítve: valószínűleg stale
+  global install / build-asset-layout mismatch). A korábbi 2 taszk eddig jórészt PLAN.
+- **Kiadott prioritás-sorrend a devnek:** (1) `dc`-font fix BEFEJEZÉSE + publish + globális `dc` frissítés +
+  ő/ű-verify (ez blokkolja az ügyvéd-emailt) → (2) consent-napló **IMPLEMENTÁLÁSA** (bedrock nts-fdp-templates +
+  token-service) → (3) at-rest titkosítás: a TERVET vissza review-ra, implementáció csak jóváhagyás után.
+  **Never-idle:** folyamatosan haladjon, taszkok közt ne álljon meg; várakozásnál használjon ScheduleWakeup-ot.
+- **Saját folyamatosság:** ScheduleWakeup ~20 perc — feloldáskor regenerálom a helyes PDF-et, ellenőrzöm az
+  ő/ű-t, és **elküldöm az ügyvéd-emailt** (owner-jóváhagyás megvan), majd dokumentálom a küldést.
