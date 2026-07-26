@@ -534,3 +534,14 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
   App-rétegű (createData + modifyData a findByIdAndUpdate ELŐTT; decrypt a `stringifyDataId` egyetlen choke-pointban).
   Teszt: util 10/0, db.service CREATE+UPDATE 2/0, **teljes nts suite 1588 spec zöld**, opt-in default-off = nulla regresszió.
 - **A dev helyesen MEGÁLLT** + rám vár a publish-verifikálásra → utána app-oldal (MP+adventor encrypt:true + migráció).
+
+---
+
+## 34. FÁZIS-27 (2026-07-26 21:35) — nts 1.15.118 PUBLIKÁLT → encryption app-oldal kiadva
+- **Bedrock-titkosítás alapréteg KÉSZ + publikálva:** fsm-dynamo **1.16.26** + nts-dynamo **1.15.118** (npm-verifikált).
+- **App-oldal KIADVA (kód, szinkron):** MP + adventor dep-bump (fsm/nts) + `encrypt:true` az érzékeny mezőkön
+  (MP flow prompt/values/results + dupla-ágyazott sourceFlow; adventor generation prompt/content + campaign
+  story-state/memory/epilogue) + idempotens migrációs script (dry-run + count, DYENC1-gate).
+- **🚩 GO-LIVE OWNER-GATE:** a LIVE migrációt + prod-deployt NEM futtatjuk, amíg (a) a `FDP_CORE_DBCONTENT_CRYPT_KEY`
+  értéke nincs **provisionálva az FDP Keystore-ban** (MP+adventor CI-env), és (b) nincs **owner go-ahead** a
+  migrációra (prod-adat művelet). A dev most csak a KÓD-ot + scriptet + teszteket szállítja.
