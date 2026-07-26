@@ -592,3 +592,15 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
   app-verzió + lefutott migrációk id+idő) → utána az at-rest titkosítás-migráció regisztrálása ezen (a meglévő
   `_scripts` DYENC1-gate/dupla-ágyazott-sourceFlow/dry-run logika beemelve). Fázis-szinkron, poll-mentes.
 - Nem-triviális design-döntést (ledger-séma, migráció-id konvenció) a dev előbb visszaküldi.
+
+---
+
+## 39. FÁZIS-32 (2026-07-26 23:19) — migráció-ledger bedrock KÉSZ (nts 1.15.119) → app-oldal (Phase 2) kiadva
+- **Phase 1 (bedrock ledger) KÉSZ + publikálva:** `dynamo-nts 55041e9 → 1.15.119` (npm-verifikált). A token-service
+  `schema-migration`-je bedrock-ba emelve: `DyNTS_SchemaMigration` ledger (migrationId unique + appliedAt +
+  appliedVersion; per-app `dynts_schema_migrations`) + `DyNTS_MigrationEntry` (id: `YYYY-MM-DD-NNN-...`) +
+  `DyNTS_Migration_Runner.runPending` — **RUN-ONCE (unique-index race-safe = a CCAP párhuzam-bug ellen is véd) +
+  BOOT-SAFE**. 1593 nts-spec zöld.
+- **Phase 2 (app-oldal, MP+adventor) KIADVA:** nts-bump + `schemaMigration_dataParams` dbModels-be + az at-rest
+  titkosítás regisztrált `DyNTS_MigrationEntry`-ként + `runPending` az `app.server.postProcess`-ben + a standalone
+  `_scripts` átkötése. → utána a **go-live automatikus** a titkosított verzió következő deploy-jánál.
