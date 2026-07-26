@@ -262,3 +262,27 @@ re-verify + rendes dokumentált report (`documentations/business/`), mielőtt b�
   felmérés CSAK memóriában volt és elavulhat → ez a friss, dokumentált csere.
 - **Kimenet:** dátumozott, alaposan dokumentált report(ok) a `documentations/business/`-be (My Assistant 3 írja
   a verifikációk alapján). Ez teljesíti a „MINDENT dokumentálni" + „friss report" direktívát.
+
+---
+
+## 15. FÁZIS-8 EREDMÉNY (2026-07-26) — friss reportok KÉSZ + sub-session kimenetek
+
+### 15.1 ✅ Friss, dokumentált launch/profitability-report KIÍRVA + pusholva
+- **Hely:** `documentations/business/launch-readiness-2026-07-26/` — README (fastest-money index) + 5 termék-report
+  (master-prompter · adventor · nis-datasets · dynamo-builder · art-tarot). Live-HTTP + kód-verifikált (file:line),
+  NEM memória. Commit `f5df067`.
+- **KULCS-FELISMERÉS:** MP + Adventor UGYANAZON gaten (közös `fdp-token-service` élesítése: Stripe live + ügyvéd-ÁSZF)
+  → egy akció két terméket nyit. NIS ma Gumroad-on jogi nélkül tud pénzt fogadni, de **demand-gated** (0 sales).
+  Art Tarot: untrusted TLS-cert falazza (gyors fix), utána csak manuális eladás. Dynamo Builder: hónapok.
+- A „csak ügyvéd kell" framing KORRIGÁLVA (l. README).
+
+### 15.2 DEV sub-session — böngésző-spec KÉSZ, de push-blokkolt
+- A DEV-session befejezte a `unblockable-browser-handler-tool` **SPEC-jét** (kétréteg OS-input + MV3-extension,
+  no-OCR, CAPTCHA human-in-loop). Kód nincs (spec-first, ahogy kértük). Most `waiting-input` (idle).
+- 🔴 **BLOKKOLÓ (owner-akció):** a push nem megy — **nincs GitHub repo létrehozva** a `futdevpro` alatt + nincs
+  `gh`/PAT a repo-createhez. Kell: (a) `futdevpro/unblockable-browser-handler-tool` repo létrehozása, vagy
+  (b) egy gh-auth/PAT, amivel az agent létrehozza. Amíg nincs, a spec lokálban áll.
+
+### 15.3 FAM sub-session — idle (Problem 1 kész)
+- `stalled` (idle timeout) a scan-summary weight-cap fix után. Problem 2 (heti cron re-scan) + Problem 3
+  (config-hangolás) még kiadható neki, ha most kell.
