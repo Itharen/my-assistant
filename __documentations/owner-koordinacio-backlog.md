@@ -659,3 +659,15 @@ A commit+push = deploy (auto CI/CD); ezért a CI/CD-eredményeket kell nézni. L
   docker/prod-build lokálisan → valós hiba → fix → push.
 - **✅ token-service consent:** deployolt (v181), ÉLES (csak e2e-deep-timeout flake piros).
 - **Élő-állapot:** encryption+migráció még SEHOL nincs deployolva (MP red, adventor deploy 💤). token-service ✅.
+
+---
+
+## 45. FÁZIS-38 (2026-07-27 01:52) — 🎉 MP ENCRYPTION + PHASE-2 MIGRÁCIÓ DEPLOYOLT (ÉLES)
+- **✅✅ MP v01.15.748 (01:30):** `client-build` ZÖLD (a fix működött) → `docker-build` ✅ → **`deploy` (53s) ✅ +
+  `deploy-verify` (16s) ✅ + `e2e-smoke` (2m54s) ✅** → **az at-rest encryption + a deploy-integrált Phase-2
+  migráció MOST ÉLES a test-instance-en.** (deploy-prod/smoke-prod 💤 = test-env, normál.)
+  - **1 piros: `e2e-api` (43s)** deploy UTÁN. NEM deploy-blokkoló (deploy már lefutott zölden). Dev-nek kiadva:
+    verifikálja flake vs. encryption-regresszió (user ciphertext/decrypt-hiba az olvasási úton). e2e-smoke átment → instance él.
+- **🔄 adventor:** új fix-build FUT (`e5d438d2`, adventor@master) — a dev a dc-review+docker-build pirosat javította. Várom.
+- **✅ token-service consent:** ÉLES (v181).
+- **ÖSSZKÉP:** token-service ✅ ÉLES · **MP encryption ✅ ÉLES** · adventor Phase-2 = deploy-build fut (utolsó hiányzó).
