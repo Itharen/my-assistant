@@ -646,3 +646,16 @@ A commit+push = deploy (auto CI/CD); ezért a CI/CD-eredményeket kell nézni. L
   pre-compile/config/invocation, nem TS-compile). → dev-nek kiadva: futtassa lokálisan a CI kliens-build parancsot,
   olvassa a valós hibát, javítsa. A MP deploy addig 💤 (nem deployol).
 - **🔵 adventor Phase 2** (migráció-regisztráció) még PENDING — MP zöld után.
+
+---
+
+## 44. FÁZIS-37 (2026-07-27 01:25) — MP re-build fut; adventor Phase 2 landolt de dc-review+docker-build piros
+- **MP:** új pipeline-job FUT (`e16273ea`, master-prompter@master running) — a dev client-build fixe buildel. Várom.
+  v747 még FAILED (client-build 0s), de ez az előző; az új build kimenete dönt.
+- **✅ adventor Phase 2 landolt (v171, commit `ececc76`):** a `client-build` MOST ZÖLD (1m57s) + `check-dev-leftovers`
+  ZÖLD (deps rendben) + server-test + client-test zöld. **DE deploy 💤**, mert 3 új piros: `dc-review-server` (4s),
+  `dc-review-client` (3s), `docker-build` (16s). → NEM dep-drift. Gyanú (verifikálandó): az új `_migrations/` fájlok
+  FDP naming/struktúra-konvenció-sértése (dc-review) + prod-build path (docker-build). Dev-nek kiadva: `dc review` +
+  docker/prod-build lokálisan → valós hiba → fix → push.
+- **✅ token-service consent:** deployolt (v181), ÉLES (csak e2e-deep-timeout flake piros).
+- **Élő-állapot:** encryption+migráció még SEHOL nincs deployolva (MP red, adventor deploy 💤). token-service ✅.
