@@ -373,3 +373,12 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 - A consent form **nincs még a `_kuldendo-ugyvednek/` csomagban** + valószínűleg **nincs elküldve** (ígértük „next round").
 - **Kód-oldali consent** (checkbox + naplózás az MP/Adventor appokban) — **UNVERIFIED** (a doksi B. melléklete „fejlesztői feladat").
 - A pontos verzió-státusz (V1 vs V2 vs V3, mit kapott az ügyvéd) a `_process/V1-PREFINAL-MASTER-PLAN.md`-ben — kiolvasható, ha kell.
+
+---
+
+## 20. FÁZIS-13 (2026-07-26) — jogi freshness-audit (verify-only, hard evidence)
+**Kanonikus report:** `documentations/legal/_process/legal-freshness-audit-2026-07-26.md`.
+- **Kanonikus jelenlegi = V3 (07-20)**: konszolidált ÁSZF (AUP beleolvasztva; creator-payout/crowdfunding/18+ KISCOPE-olva) + adatkezelési (GDPR 9. cikk átkeretezve) + cookie + fizetési ÁSZF + consent form.
+- **ELAVULT (07-03, V1):** `_kuldendo-ugyvednek/` (7-doc modell, rossz kanonikus-pointer), `legal/README.md`, `_process/V1-PREFINAL-MASTER-PLAN.md`. → a user gyanúja IGAZOLT.
+- **Az ügyvéd MÁR megkapta a V3-at (4 doksi, 07-19).** NINCS elküldve: a **consent form** + a **Art.9-frissített adatkezelési** (07-20) → ez a valódi „next round".
+- **2 doc-vs-valóság rés:** (1) at-rest titkosítás ígérve, mérve titkosítatlan; (2) verziózott consent-napló a checkout-kódban hiányzik (csak boolean). → friss kód-verify kell.
