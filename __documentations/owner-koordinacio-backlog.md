@@ -488,3 +488,15 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
   **Never-idle megerősítve:** ne álljon be háttér-poll-ra (nem ébreszt) — szinkron build VAGY saját ScheduleWakeup;
   minden fázis után commit (ne vesszen el egy újabb leállásnál).
 - **Saját wakeup újra beállítva** (~15 perc).
+
+---
+
+## 30. FÁZIS-23 (2026-07-26) — HARD RULE: NO POLLING + a dev-terminate valós oka
+- **ÚJ HARD RULE (owner, dühösen):** TILOS a polling / active-monitoring / háttér-poll / háttér-task — minden
+  agentnek. Kanonikus: `documentations/rules/global/core-no-polling.md` + workspace `CLAUDE.md` HARD RULE.
+  A dev korábbi `b56ocy1df`/`b72qvf3ff`/`bmbqnnmno` háttér-poll-jai pont ezt sértették (beragadtak).
+- **A dev-et NEM a user állította le** → **CCAP cc-terminal-handling bug** (a user már dolgozik rajta). A
+  „Terminated by user" státusz FÉLREVEZETŐ. Recovery = `resume` + re-dispatch; a dev bármikor újraindulhat.
+- **ÚJ dev-munkamód (poll-mentes, fázis-szinkron):** a dev egy fázist SZINKRON végez → commit+push → MEGÁLL +
+  jelent → ÉN verifikálom (npm/git) + kiadom a következőt. Semmi poll, semmi self-schedule, gyakori commit.
+- **Saját continuity:** ScheduleWakeup (owner-jóváhagyott, egyszeri, látható) — ez marad; NEM poll.
