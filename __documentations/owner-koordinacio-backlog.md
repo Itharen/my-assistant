@@ -407,3 +407,13 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 - **KORREKCIÓ (owner): NEM regenerálunk / nem variálunk a már elküldött doksikon.** A `_kuldendo` csomag
   regenerálása NEM kell a küldéshez. Az ügyvédnek az EGYETLEN új tétel a **consent form** (azt hiányolta).
   A 4 elküldött V3 doksi változatlan marad.
+
+---
+
+## 23. FÁZIS-16 (2026-07-26) — owner-döntés (a) + dev-dispatch
+- **Titkosítás-ütközés → (a):** implementáljuk a nyugalmi (at-rest) prompt-titkosítást.
+- **DEV-nek kiadva:** (1) at-rest titkosítás — **spec-first** (megközelítés + kulcs-menedzsment + meglévő plaintext
+  migráció + perf; terv vissza review-ra), (2) verziózott **consent-elfogadás naplózás** a token-service
+  checkout-ban — implementálni (szerverre küldés + perzisztálás + HU §15 gomb-szöveg).
+- **⏳ NYITOTT (owner-jóváhagyás kell): a consent form + reminder KÜLDÉSE** az ügyvédnek — kifelé menő e-mail,
+  explicit OK-ra várok.
