@@ -604,3 +604,12 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 - **Phase 2 (app-oldal, MP+adventor) KIADVA:** nts-bump + `schemaMigration_dataParams` dbModels-be + az at-rest
   titkosítás regisztrált `DyNTS_MigrationEntry`-ként + `runPending` az `app.server.postProcess`-ben + a standalone
   `_scripts` átkötése. → utána a **go-live automatikus** a titkosított verzió következő deploy-jánál.
+
+---
+
+## 40. FÁZIS-33 (2026-07-26 23:40) — CI/CD-CHECK: 2 valós deploy-probléma (owner kérte)
+A commit+push = deploy (auto CI/CD); ezért a CI/CD-eredményeket kell nézni. Lelet (`fdp build-results`/`build-detail`):
+- ✅ **bedrock zöld:** fsm 1.16.26, nts 1.15.119 (SUCCESS, 0 failed step), fdp-templates 1.15.89, nts-fdp-templates 1.15.89, dc 1.15.204. ✅ **adventor 01.15.169 deployolt** (encryption ÉLES; `dc-review-client` non-fatal ❌).
+- ❌ **MP 01.15.746 FAILED** (commit `3c7c54a0`): `check-dev-leftovers` + `client-build` bukott → **deploy KIMARADT** → az MP encryption NEM éles. (server tsc + server-test zöld volt.) → **dev-fix kiadva.**
+- ⚠️ **token-service:** a consent Phase C (`a7bf116`, **v01.15.180 pusholva**) **NEM buildelt** (deploy még v177, 07-24) → **MISSED WEBHOOK** → a consent-log NEM éles. → **re-fire-oltam** (üres commit + push).
+- **TANULSÁG:** a „kész+pusholt" ≠ „deployolt" — MINDIG CI/CD-verify (`fdp build-detail`) a deploy-igényes munkánál.
