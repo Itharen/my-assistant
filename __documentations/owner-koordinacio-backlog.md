@@ -545,3 +545,13 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 - **🚩 GO-LIVE OWNER-GATE:** a LIVE migrációt + prod-deployt NEM futtatjuk, amíg (a) a `FDP_CORE_DBCONTENT_CRYPT_KEY`
   értéke nincs **provisionálva az FDP Keystore-ban** (MP+adventor CI-env), és (b) nincs **owner go-ahead** a
   migrációra (prod-adat művelet). A dev most csak a KÓD-ot + scriptet + teszteket szállítja.
+
+---
+
+## 35. FÁZIS-28 (2026-07-26 21:57) — encryption app-oldal: MP KÉSZ, adventor folyamatban + ⚠️ CCAP párhuzam-bug
+- **MP app-oldal ✅ KÉSZ:** commit `3c7c54a0` (feat(security): at-rest encryption of sensitive fields, master-prompter).
+- **Adventor app-oldal folyamatban** (uncommitted: package.json + generation/campaign data-model + új `_scripts/` migráció).
+- **⚠️ ÚJ LELET (owner-nek): a CCAP cc-terminal-bug most PÁRHUZAMOS FUTÁST okoz** — egy concurrent restart-instance
+  is dolgozott az adventoron egyszerre (21:55). Ez korrektség-kockázat (két instance ugyanazokat a fájlokat írja).
+  A dev észlelte és óvatosan kezeli (olvassa a concurrent verziót, nem írja felül). NEM avatkoztam bele (ne rontsak rá).
+- **GO-LIVE változatlanul owner-gate:** `FDP_CORE_DBCONTENT_CRYPT_KEY` provisionálás (Keystore) + migráció go-ahead.
