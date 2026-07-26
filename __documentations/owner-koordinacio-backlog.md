@@ -310,3 +310,29 @@ SSL-fix (devops SSL nem állít ki trusted certet). Kiadva `{"success":true}`.
 
 ### 16.5 Git branch main→master
 GitHub default már master (owner). my-assistant lokál `main`→`master` igazítva; documentations már master.
+
+---
+
+## 17. FÁZIS-10 (2026-07-26) — ügyvéd-levelezés beolvasva + korrekció
+
+### 17.1 ✅ Ügyvéd-státusz DOKUMENTÁLVA (fdp-assistant)
+- Beolvastam a valós levelezést (`ttb` fiók IMAP). **Kanonikus otthon:**
+  `LIVE-projects/fdp-assistant/__documentations/legal-lawyer-communication.md`.
+- **Ügyvéd:** Dr. Nagy Dániel Endre (ND Law, CIPP/E), `nagy.daniel@ndelaw.hu`, +36 70 334 51 62.
+- **KORREKCIÓ:** a korábbi „jogi zsákutca / 3× elutasította" NEM pontos. Az ügyvéd **engaged + kooperatív**,
+  és **elfogadja, hogy MI draftolunk** (ő módosít). „Koncepció-először" megközelítés.
+- **Hol állunk (07-26):** a labda nagyrészt nála (07-20-i ígért koncepció-visszajelzés enyhén csúszik) →
+  **finom reminder indokolt** (tervezet kész a doksiban, owner-jóváhagyásra, NEM elküldve).
+- **Tőlünk függő:** koncepció-összefoglaló, hiányzó consent form, GDPR 9. cikk best-practice, írásos megbízás
+  + az ő árajánlata.
+
+### 17.2 Art Tarot — külön CÉGES ügyvéd a TEÁOR-hoz
+- A könyv-áruláshoz **TEÁOR-szám** felvétele kell → **céges-ügyintéző ügyvéd** (a (C) szerep). Külön szál.
+
+### 17.3 Stripe — HOLD
+- Owner: **Stripe live NEM aktiválódik, amíg a jogi story nem tisztul.** A token-service-élesítés a jogira vár.
+
+### 17.4 Sub-session kimenetek
+- **FAM:** Problem 2 kiadva — heti auto full-scan, **default hétfő 07:00**.
+- **DEV:** Art Tarot SSL diagnosztizálva + javítva (domain hiányzott `ssl-config.json`-ból + conf a baked
+  `O=Localhost` placeholderre mutatott); böngésző-repo (`futdevpro/unblockable-browser-handler-tool`) létrehozva.
