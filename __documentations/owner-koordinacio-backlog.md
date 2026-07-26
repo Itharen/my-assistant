@@ -500,3 +500,14 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 - **ÚJ dev-munkamód (poll-mentes, fázis-szinkron):** a dev egy fázist SZINKRON végez → commit+push → MEGÁLL +
   jelent → ÉN verifikálom (npm/git) + kiadom a következőt. Semmi poll, semmi self-schedule, gyakori commit.
 - **Saját continuity:** ScheduleWakeup (owner-jóváhagyott, egyszeri, látható) — ez marad; NEM poll.
+
+---
+
+## 31. FÁZIS-24 (2026-07-26) — ✅ CONSENT-LOG KÉSZ (verifikált) + at-rest titkosítás Phase 1 kiadva
+- **Consent-log 3 fázis KÉSZ + git/npm-VERIFIKÁLT:** fdp-templates **1.15.89** (`FDP_ConsentRecord`),
+  nts-fdp-templates **1.15.89** (`FDPNTS_Consent_DataService` — bedrock, az újrahasznosítható consent-modul),
+  fdp-token-service **`a7bf116`** (checkbox→szerver + szerver-oldali `areAllDocumentsAccepted` enforce + bedrock
+  audit-log `consent_record` + `acceptedTerms/termsVersion/consentIp/consentAt`+`consentRecordId` + HU 45/2014
+  §15 gomb-szöveg). server tsc + **138 spec zöld**, kliens prod-build. → **a #1 compliance-gap LEZÁRVA.**
+- A dev **fázis-szinkron, poll-mentesen** dolgozott (az új munkamód működik).
+- **At-rest titkosítás Phase 1 (bedrock encrypt-flag + nts-dynamo transform + keyVersion + unit-teszt) KIADVA.**
