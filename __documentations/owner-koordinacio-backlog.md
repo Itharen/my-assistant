@@ -461,3 +461,15 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
   szöveg-halmaz titkosítva, nem csak prompt); Q3 (determinisztikus OK promptra). Implementáció a consent-napló UTÁN.
 - **Dev-státusz:** ~28 perce standby a publish-poll-on. A `dc` már ÉLŐ (v204). Megnudge-oltam: ha az
   fdp-templates (bedrock consent-service, Phase B) publish nincs kész, tolja meg; landolás után Phase C.
+
+---
+
+## 28. FÁZIS-21 (2026-07-26 wakeup) — dev unblock + kulcs-átnevezés
+- **P1 (dc font): ✅ DONE+VERIFIED** (dc 01.15.204, ő×31 ű×7 helyes). Gyökér-ok: a fontok sosem voltak
+  git-tracked-ek → most tracked + prepack-guard (fail-closed).
+- **P2 (consent-napló): unblock.** A dev diagnózisa: a Phase A push (fdp-templates 1.15.88) **elmaradt
+  webhook** miatt sosem triggerelt (ismert flotta-hiba, nem build-fail). Recovery: empty-commit re-push →
+  **fdp-templates 1.15.89 PUBLIKÁLT** (npm view igazolta). Phase B (nts consent-service) + Phase C
+  (token-service wiring) most halad.
+- **Kulcs-átnevezés (owner):** `FDP_PROMPT_CRYPT_KEY` → **`FDP_CORE_DBCONTENT_CRYPT_KEY`** (általános DB-tartalom
+  kulcs, nem prompt-specifikus). Plan-doksi + dev értesítve.
