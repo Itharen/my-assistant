@@ -417,3 +417,14 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
   checkout-ban — implementálni (szerverre küldés + perzisztálás + HU §15 gomb-szöveg).
 - **⏳ NYITOTT (owner-jóváhagyás kell): a consent form + reminder KÜLDÉSE** az ügyvédnek — kifelé menő e-mail,
   explicit OK-ra várok.
+
+---
+
+## 24. FÁZIS-17 (2026-07-26) — (B): dc PDF-font javítás előbb, majd küldés
+- **PDF-blokkoló:** a `dc convert --to pdf` beépített fontja Latin-1 → a magyar hosszú ő/ű (U+0151/U+0171) torz.
+  LibreOffice nincs telepítve. → owner-döntés: **(B) javítsuk a `dc` feature-t**, aztán PDF-fel megy.
+- **DEV-nek kiadva (bedrock `@futdevpro/cli-dynamo`):** teljes Unicode-TTF beágyazása a PDF-rendererbe + verify
+  a consent-form PDF-en (ő/ű helyes) + publish + globális `dc` frissítés.
+- **Az ügyvéd-levél KÉSZ és küldésre vár** (reminder-body + consent form; ttb→Dániel, meglévő szál) — csak a
+  **helyes PDF** hiányzik. Amint a `dc`-fix landol → regenerálom a PDF-et, ellenőrzöm az ő/ű-t, és **küldöm**.
+- **DEV-queue:** (1) at-rest titkosítás terv, (2) consent-napló impl, (3) bedrock-pontosítás, (4) dc PDF-font fix.
