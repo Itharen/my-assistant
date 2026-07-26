@@ -555,3 +555,16 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
   is dolgozott az adventoron egyszerre (21:55). Ez korrektség-kockázat (két instance ugyanazokat a fájlokat írja).
   A dev észlelte és óvatosan kezeli (olvassa a concurrent verziót, nem írja felül). NEM avatkoztam bele (ne rontsak rá).
 - **GO-LIVE változatlanul owner-gate:** `FDP_CORE_DBCONTENT_CRYPT_KEY` provisionálás (Keystore) + migráció go-ahead.
+
+---
+
+## 36. FÁZIS-29 (2026-07-26 22:15) — ✅ AT-REST TITKOSÍTÁS KÓD TELJESEN KÉSZ (DONE-PENDING-OWNER) → loop LEÁLL
+- **MP `3c7c54a0` + adventor `368227e`** — `encrypt:true` az érzékeny mezőkön (MP flow prompt/values/results +
+  teljes sourceFlow; adventor generation prompt/content + campaign story-state/memory/epilogue), fsm 1.16.26 /
+  nts 1.15.118 dep-bump, **idempotens migrációs script** (`_scripts/at-rest-encryption-migration.ts`, DRY-RUN
+  default, `--apply` live, DYENC1-gate a dupla-encrypt ellen). Committed+pushed, tesztek zöld. A dev megállt.
+- (Az adventor uncommitted `package.json` = a concurrent-instance hook-verzióbump-ja, nem encryption — a dev
+  szándékosan hagyta, hogy ne race-eljen a párhuzamos instance git-műveleteivel.)
+- **STÁTUSZ: DONE-PENDING-OWNER — a wakeup-loop LEÁLL** (nincs több ütemezés). Hátralévő = OWNER go-live:
+  (1) `FDP_CORE_DBCONTENT_CRYPT_KEY` provisionálása Keystore-ba (MP+adventor CI-env), (2) go-ahead a prod-
+  migrációra (`migration --apply`) + deploy.
