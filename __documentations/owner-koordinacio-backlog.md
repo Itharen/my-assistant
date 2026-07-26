@@ -394,3 +394,16 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 - **FAM Problem 2 ✅ KÉSZ** (v1.1.115) — heti auto re-scan + delete-sync scheduler.
 - **Hátra (#1 folyt.):** a `_kuldendo-ugyvednek/` **V3-ból regenerálása** (5 doksi + PDF-ek). **#2 (ügyvédnek
   küldés) = LEGVÉGÉN**, a tisztítás + a kód-verify eredménye után.
+
+---
+
+## 22. FÁZIS-15 (2026-07-26) — dev kód-verify KÉSZ + „ne variáljunk a küldött doksikon" korrekció
+**Report:** `documentations/legal/_process/code-compliance-verify-2026-07-26.md`.
+- **Mindkét rés MEGERŐSÍTVE a jelenlegi kódban:** (1) verziózott consent-napló SEHOL — a token-service pipák
+  csak kliens-oldaliak, a szerverre el sem mennek, nulla elfogadás-rekord (súlyosabb, mint hittük); (2) prompt
+  **plaintext** a Mongóban (MP `flow`/`flow_run`, adventor `generation`); csak in-transit TLS.
+- **Következmény:** az adatkezelési (MÁR elküldve) at-rest titkosítást ígér → doc-vs-valóság ütközés →
+  **owner-döntés:** titkosítás implementálása VAGY a doksi pontosítása + ügyvéd-tájékoztatás.
+- **KORREKCIÓ (owner): NEM regenerálunk / nem variálunk a már elküldött doksikon.** A `_kuldendo` csomag
+  regenerálása NEM kell a küldéshez. Az ügyvédnek az EGYETLEN új tétel a **consent form** (azt hiányolta).
+  A 4 elküldött V3 doksi változatlan marad.
