@@ -440,3 +440,15 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
   **Never-idle:** folyamatosan haladjon, taszkok közt ne álljon meg; várakozásnál használjon ScheduleWakeup-ot.
 - **Saját folyamatosság:** ScheduleWakeup ~20 perc — feloldáskor regenerálom a helyes PDF-et, ellenőrzöm az
   ő/ű-t, és **elküldöm az ügyvéd-emailt** (owner-jóváhagyás megvan), majd dokumentálom a küldést.
+
+---
+
+## 26. FÁZIS-19 (2026-07-26) — ✅ ÜGYVÉD-EMAIL ELKÜLDVE + dc-fix landolt
+- **`dc` PDF-font fix landolt** (v01.15.204, dev): gyökér-ok = a font-fix meg volt írva, de a verzió sosem
+  bumpolt → npm a régi font nélküli artifactot szolgálta. Fix + `verify-assets` fail-closed guard + 31ő/7ű
+  verify + 1486 spec zöld. (Egyezik a korábbi ismert lelettel: font-fix-unpublished.)
+- **✅ ELKÜLDVE** az ügyvédnek (`nagy.daniel@ndelaw.hu`, `ttb` fiók, meglévő szál): **reminder + consent form
+  PDF** (helyes ő/ű). messageId `<6df48259-…@futdevpro.hu>`, Sent-be mentve. A 4 korábbi V3 doksit nem bántottuk.
+  Dokumentálva: `fdp-assistant/__documentations/legal-lawyer-communication.md`.
+- **Dev tovább:** a consent-napló implementációján (bedrock consent-service + token-service `consentRecordId`),
+  az at-rest titkosítás TERVE review-ra vár (nálam).
