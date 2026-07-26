@@ -116,3 +116,49 @@ FAM-ból előkerült a keresett doksi-lánc és a mikromunka helye:
 ## 9. Side-jegyzet — Hermes agent
 Megvizsgálandó: **mit tud a Hermes agent** (képességek, illeszthető-e a fenti böngésző/assistant munkába).
 Nem sürgős; felírva, hogy ne vesszen el.
+
+---
+
+## 10. KORREKCIÓK + ÚJ UTASÍTÁSOK (2026-07-26, owner)
+
+### 10.1 KORREKCIÓ — a 3x3 NEM pénz-rendszer
+A §7(II)-ben a **3x3**-ra hivatkoztam a pénz-csatornáknál. **HIBA:** a 3x3 egy **tudományos tanulmány**
+(az owner személyes feladata), semmi köze a monetizációhoz. A „TERA/Upwork/Niche" pénz-csatorna valós, de
+a helye a **my-assistant pénz-fókusz elve** (`current/principles/mvp-focus.md`), **NEM a 3x3**. A
+3x3-hivatkozás a pénz-kontextusban törlendő.
+
+### 10.2 Dev-session — a nekem adott végrehajtó
+- **Név: „ALL Projects - MA3's Dev Assistant" (CCAP Session).** Ide adom ki a dev-feladatokat (spec,
+  kutatás, kód). **My Assistant 3 tervez + vezényel, NEM kódol.**
+- **Elérés (mérve):** a CCAP-Rev-ben van session message-send API (`/v2-session/:id/messages`). A közvetlen
+  dispatch-hoz kell: (1) fut-e a CCAP-szerver + URL, (2) auth, (3) a session-ID. **Ezek nélkül NEM érem el
+  közvetlenül** → owner-input kell (vagy az owner illeszti be a briefet a sessionbe).
+
+### 10.3 FELADAT (dispatch-ra kész) — blokkolhatatlan böngésző-kezelés SPEC
+> **Cél:** spec-írás/kutatás, amit a dev-session végez. My Assistant 3 vezényli.
+
+- **Elsődleges cél:** az összes „ne használj botot" blokkoló feloldása. **A CAPTCHA-t SOHA nem kerüljük ki.**
+- **CAPTCHA-politika:** human-in-the-loop — ez rendben van, elfogadott. **Okosítás:** ha az owner nincs a
+  gépnél → elküldjük neki a képet, ő **bejelöli a kattintási pontokat**, visszaküldi, és az alapján oldjuk
+  fel (akár a CAPTCHA-t is). De az elsődleges cél NEM a CAPTCHA, hanem a **többi** blokkoló.
+- **Architektúra (a spec induljon ki ebből):** kétrétegű — **(a) input = OS-szintű** (RobotJS/nut.js;
+  valódi Chrome; nulla automatizálási ujjlenyomat) **+ (b) olvasás = böngésző-extension content-script**
+  (DOM natívan, **NEM OCR, NEM CDP-a-lapon**).
+- **Meglévő alap (CCAP Revisioned):** már van böngésző-integráció (`server/.../integrations/_modules/browser/`
+  — Playwright + tesseract OCR + screenshot-desktop). A spec ezt vegye figyelembe (mit lehet újrahasználni).
+- **⚠️ Külön feladat-elem (CCAP Revisioned-ből, owner szerint már felírtuk):** **rövid, kevés karakteres
+  tartalmi összefoglaló** készítése weboldal-olvasáskor, hogy az agentnek NE a nyers HTML-ből kelljen olvasnia.
+  *(A pontos jegyzet helyét a CCAP-Rev-ben még nem sikerült beazonosítani — owner-pointer vagy külön keresés.)*
+- **Kimenet:** implementációs spec + „mit reprodukáljunk a My Assistantban" (külön namespace/adat, hasonló
+  képesség-csomag, hogy a kétféle munka ne keveredjen).
+
+### 10.4 KORREKCIÓ + finomítás — a mikromunka HELYE a Profit Prio-ban
+Korábban túl-szeparáltam. A mikromunka **IGENIS a Profit Prio része**, csak **más jelleggel**:
+- **Profit = most jöjjön be pénz.**
+- A mikromunka akkor „teljes", ha **az assistant minden feladatot el tud végezni**, és az owner csak
+  minimálisan nyúl bele — **beleértve az ügyfél-kommunikációt is** (ebben is segítsek). A teljes
+  mikromunka-**workflow + eszközök felépítése előmunka** → **NEM instant pénz.**
+- **Ezzel szemben a termék-projektek elméletileg kiadás-közeliek — csak az ügyvédre várnak.** Ha csak egy
+  **másik ügyvéd** kell, akkor **az ügyvéd-keresés a gyorsabb pénz-út**, és az lesz a prió.
+- **Következmény:** a leggyorsabb pénz valószínűleg NEM a (előmunkás) mikromunka, hanem a **launch-blokkoló
+  ügyvéd feloldása** (a termékek már majdnem kész). Ezt kell tisztán átlátni a Profit Prio-nál.
