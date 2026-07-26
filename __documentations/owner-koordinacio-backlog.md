@@ -349,3 +349,27 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 - **Amit tartozunk = consent form** (07-20-i ígéret). **Draft kész:**
   `fdp-assistant/__documentations/drafts/consent-form-marketing.md` (nyilatkozat + checkbox-szöveg + naplózás).
 - **Bundled reminder** tervezet kész (reminder + consent form egy üzenetben) — owner-jóváhagyásra, NEM elküldve.
+
+---
+
+## 19. FÁZIS-12 (2026-07-26) — KORREKCIÓK: OGS out, jogi doksik MÁR MEGVANNAK
+
+### 19.1 OGS-hiba visszavonva
+- Tévesen az `OGS-projects/documents`-be raktam a business doksikat. **OGS NEM scope** (külön történet, nem FDP).
+  **Visszaállítva** a `documentations/business/`-be (= az FDP docs-repo: `E:\...\CURSOR\documentations`); az
+  OGS-repóból eltávolítva.
+
+### 19.2 A jogi dokumentumok MÁR ELKÉSZÜLTEK (nem kellett újra) — kanonikus: `documentations/legal/`
+- **V3 pre-final** (`terms-n-conditions/final/pre-v3/`): ÁSZF/T&C, adatkezelési tájékoztató, cookie,
+  **hozzájáruló nyilatkozat (consent form)**; `buy-tokens/final/pre-v3/fizetési ÁSZF`. + pre-v1/v2 verziók.
+- **Küldhető csomag** (`_kuldendo-ugyvednek/`): 7 doksi (.md + .pdf) + átadási checklist — ÁSZF, adatkezelési,
+  cookie, creator-szabályzat, trust-safety-AUP, fizetési ÁSZF, token-kifizetési ÁSZF.
+- **Process-trackerek** (`_process/`): master-plan, ügyvéd/könyvelő Q&A, consent-briefing (07-20),
+  GDPR-minimalizálás (07-20), adatincidens-eljárás.
+- **A consent form kifejezetten a lektor/ügyvéd 07-20-i észrevételére készült** — checkbox-szöveg + naplózási
+  követelmények + `[ügyvéd]` jelölések. **A saját fdp-assistant draftomat (duplikátum) TÖRÖLTEM (SSOT-sértés volt).**
+
+### 19.3 Mi VAN még hátra (verifikálandó, nem találgatva)
+- A consent form **nincs még a `_kuldendo-ugyvednek/` csomagban** + valószínűleg **nincs elküldve** (ígértük „next round").
+- **Kód-oldali consent** (checkbox + naplózás az MP/Adventor appokban) — **UNVERIFIED** (a doksi B. melléklete „fejlesztői feladat").
+- A pontos verzió-státusz (V1 vs V2 vs V3, mit kapott az ügyvéd) a `_process/V1-PREFINAL-MASTER-PLAN.md`-ben — kiolvasható, ha kell.
