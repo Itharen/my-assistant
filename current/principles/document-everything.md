@@ -10,3 +10,7 @@
   Ha valami csak memóriában van → hiányos; át kell emelni doksiba.
 - A **reportok legyenek frissek + alaposan dokumentáltak + dátumozottak** (pl. profitability/launch-readiness).
   A „nem tűnik frissnek" önmagában ok az újramérésre.
+
+> **HARD RULE-lá emelve (owner, 2026-07-26): „mindenkire vonatkozik MINDIG, nincs kivétel."** Kanonikus:
+> `documentations/rules/global/core-document-everything.md` + a workspace `CLAUDE.md` HARD RULE szekció.
+> Ez már nem lábjegyzet — fleet-szintű kötelező szabály.

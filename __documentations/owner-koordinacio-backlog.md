@@ -286,3 +286,27 @@ re-verify + rendes dokumentált report (`documentations/business/`), mielőtt b�
 ### 15.3 FAM sub-session — idle (Problem 1 kész)
 - `stalled` (idle timeout) a scan-summary weight-cap fix után. Problem 2 (heti cron re-scan) + Problem 3
   (config-hangolás) még kiadható neki, ha most kell.
+
+---
+
+## 16. FÁZIS-9 (2026-07-26) — owner-döntések + irány
+
+### 16.1 HARD RULE: „mindent dokumentálni"
+Fleet HARD RULE-lá emelve (owner: mindenkire MINDIG, nincs kivétel). Kanonikus:
+`documentations/rules/global/core-document-everything.md` + workspace `CLAUDE.md` HARD RULE szekció.
+
+### 16.2 NIS = ZSÁKUTCA (owner-döntés)
+Gumroad bizonyítottan nem megy (marketing kell, nem automatizálható, commodity, nincs kereslet); saját
+platform bizonytalan + hiányzik fizetés/jogi → near-term nem életképes. Parkolva; report frissítve.
+
+### 16.3 IRÁNY: a JOGI/ÜGYVÉD az univerzális gate → #1 prioritás
+Owner: mindenhez kell ÁSZF + doksik/ügyvéd → ez kapuzza MP+Adventort (közös token-service) és minden
+platform-eladást. Következő fő szál: ügyvéd/ÁSZF. Ügyvéd-kontakt: az e-mailen KÍVÜL volt másik csatorna,
+az fdp-assistant eszközeivel elérhető → felderítendő.
+
+### 16.4 Sub-session dispatch
+DEV: (1) böngésző-spec push (repo `futdevpro/unblockable-browser-handler-tool` létrehozva), (2) Art Tarot
+SSL-fix (devops SSL nem állít ki trusted certet). Kiadva `{"success":true}`.
+
+### 16.5 Git branch main→master
+GitHub default már master (owner). my-assistant lokál `main`→`master` igazítva; documentations már master.
