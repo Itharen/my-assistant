@@ -521,3 +521,16 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
   elkülöníti a legacy plaintextet — az old `isValidEncryptedData` a plaintextre is illett). 125 crypto-spec zöld.
   Determinisztikus (Q3-jóváhagyott). **A dev fázis-szinkron megcsinálta + megállt + jelentett** — a munkamód működik.
 - **Phase 1b (nts-dynamo data.service transzform, app-réteg, findByIdAndUpdate-safe) KIADVA.**
+
+---
+
+## 33. FÁZIS-26 (2026-07-26 21:14) — at-rest titkosítás Phase 1b KÉSZ (nts), publish CI-ben
+- **Phase 1b (nts-dynamo) pusholva:** `566fc67` → target **1.15.118** (pipeline queued, jól triggerelt — nem
+  missed-webhook). **npm view még 1.15.117** → a publish fut. **NEM pollozok** (no-poll rule); a következő
+  sanctioned wakeup-nál verifikálom.
+- **Tartalom:** `DyNTS_FieldEncryption_Util` — rekurzív per-field walk (top-level + `subObjectParams` nested/Mixed);
+  `encryptDoc` (klónoz, nem mutál), `decryptDoc` (**csak `DYENC1:` envelope → legacy plaintext érintetlen = pre-
+  migráció-safe**), `hasEncryptedFields` (cached opt-in gate). Kulcs: `FDP_CORE_DBCONTENT_CRYPT_KEY` (+`_VERSION`).
+  App-rétegű (createData + modifyData a findByIdAndUpdate ELŐTT; decrypt a `stringifyDataId` egyetlen choke-pointban).
+  Teszt: util 10/0, db.service CREATE+UPDATE 2/0, **teljes nts suite 1588 spec zöld**, opt-in default-off = nulla regresszió.
+- **A dev helyesen MEGÁLLT** + rám vár a publish-verifikálásra → utána app-oldal (MP+adventor encrypt:true + migráció).
