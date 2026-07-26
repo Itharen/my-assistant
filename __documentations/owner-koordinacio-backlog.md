@@ -242,3 +242,23 @@ dokumentált report** a `documentations/business/`-ben. + **6 napos** → friss 
 pénz-út a felmérés szerint **Adventor befejezése (DEV)** — amit a dev-sessionnek lehet kiadni —, MP jogi ág =
 külön, valódi-ügyvéd sáv (ez a mostani ügyvéd-keresés relevanciája). **Teendő:** friss launch-readiness
 re-verify + rendes dokumentált report (`documentations/business/`), mielőtt bármit „launch-közelinek" veszünk.
+
+---
+
+## 14. FÁZIS-8 (2026-07-26) — „MINDENT dokumentálni" + friss profitability-reportok
+
+### 14.1 ALAPSZABÁLY rögzítve
+- `current/principles/document-everything.md` — **minden doksiba, nem csak memóriába**; memória = recall-index,
+  a SoT a dokumentum. Reportok frissek + dátumozottak.
+
+### 14.2 FAM sub-session — Problem 1 ✅ KÉSZ
+- A FAM-session végrehajtotta a zaj-fixet: scan-summary read-time weight-cap (`read.scanSummaryWeight`),
+  commit `02f105e` (`fdp-agent-memory` v1.1.113), before/after eval + 690 spec zöld. Problem 2 (heti cron
+  re-scan) + Problem 3 (config-hangolás) backlogon. Csatorna bizonyítottan él.
+
+### 14.3 Friss launch/profitability re-verify INDÍTVA (5 párhuzamos, live+kód)
+- Termékenként friss verifikáció (MP · Adventor · NIS · Dynamo Builder · Art Tarot): live reachability +
+  monetizációs loop + valós blokkolók + first-euro távolság + „mi változott 07-19 óta". A régi (07-19)
+  felmérés CSAK memóriában volt és elavulhat → ez a friss, dokumentált csere.
+- **Kimenet:** dátumozott, alaposan dokumentált report(ok) a `documentations/business/`-be (My Assistant 3 írja
+  a verifikációk alapján). Ez teljesíti a „MINDENT dokumentálni" + „friss report" direktívát.
