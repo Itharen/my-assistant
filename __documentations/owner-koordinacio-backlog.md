@@ -195,3 +195,50 @@ Korábban túl-szeparáltam. A mikromunka **IGENIS a Profit Prio része**, csak 
 - **A FAM + a projekt-doksik AZOK a memóriám** — nincs átvitt session-memória. A helyes reflex: **FAM-ból
   recall** (projekt-státusz, jogi követelmények, ügyvéd-kommunikáció), **ne kérdezgessem újra az ownert**, és
   **ne bash-find-oljak**. Ez a mostani hiba gyökere; ezt tartom.
+
+---
+
+## 12. FÁZIS-7 (2026-07-26) — ✅ DISPATCH ÉL: a helyes CCAP-küldés-recept (soha ne rediscover-öld)
+
+**A dev+FAM session = CCAP Client (Claude Code) session** — a `ccs_sessions` mongo-kollekcióban, NEM a
+legacy `ccap_sessions`-ben (amit a `ccap sessions send-message` CLI céloz). Ezért a `ccap sessions` CLI
+NEM jó rájuk. A helyes út a **cc-session HTTP API** a lokál szerveren.
+
+- **Lokál CCAP szerver:** `http://localhost:39050` (mindig fut; ez a workspace instance `df6d8572-…`).
+- **Küldés (prompt):** `POST http://localhost:39050/api/cc-session/<ccsId>/prompt?ccapId=<instanceId>`
+  body: `{"content":"..."}` (`curl.exe --data-binary @file` a legmegbízhatóbb).
+- **⚠️ BODY-MÉRETLIMIT:** nagy `content` NÉMÁN „content required" 400-at ad (a 33-bájtos ment, a 36KB nem).
+  → **Rövid promptot küldj**, a teljes briefet tedd workspace-fájlba és a promptban MUTASS rá (a session a
+  `E:\Programming\Own\CURSOR` workspace-ben fut, beolvassa).
+- **Státusz:** `GET http://localhost:39050/api/cc-session/<ccsId>?ccapId=<instanceId>` → `.session.status`.
+- **Egyéb cc-session endpointok:** `/resume` `/fork` `/terminate` `/stop-execution` `/inspect` `/events`.
+
+**VERIFIKÁLT azonosítók (label-egyezéssel, nem tipp):**
+| Szerep | label | ccsId (sessionId) | mongo _id | ccapId (instance) |
+|---|---|---|---|---|
+| **DEV** | ALL Projects - MA3's Dev Assistant | `ccs-4c0444cc-ms1qhv46` | `6a65f3f5fa12c5f4cd207828` | `df6d8572-e655-4d55-a032-603afc8c4b26` |
+| **FAM** | ALL Projects - FDP Agent Memory | `ccs-02def1d6-mqhxeisd` | `6a32764c4b82e9e447ab38d5` | `df6d8572-e655-4d55-a032-603afc8c4b26` |
+
+**KIADVA 2026-07-26 (mindkettő `{"success":true}` + a session `running`-ra váltott):**
+- **FAM ←** FAM retrieval-tisztítás → brief: `__documentations/dispatch-briefs/fam-retrieval-cleanup.md`
+- **DEV ←** böngésző-projekt → brief: `__documentations/dispatch-briefs/unblockable-browser-handler-tool.md`
+
+## 13. FÁZIS-7 — Launch-readiness: a „csak ügyvéd kell" framing KORRIGÁLVA
+
+Az owner joggal kérte a verifikációt. **Van alapos felmérés (2026-07-19, kód+live-verifikált, 3+1 subagent)
+— DE csak agent-memóriában** (`project_monetization_readiness_assessment_2026_07_19`), **NEM önálló
+dokumentált report** a `documentations/business/`-ben. + **6 napos** → friss re-verify kell.
+
+**A felmérés CÁFOLJA a „termékek launch-közeliek, csak ügyvéd kell" képet:**
+- **Master Prompter:** fizetési motor KÉSZ + CI-zöld (test-mode), DE a **jogi út ZSÁKUTCA** — az ügyvéd az
+  ÁSZF-drafteket (3×) **használhatatlannak** minősítette; + Stripe üzleti aktiválás hátravan. Nem „egy
+  válaszra vár", hanem **alapvetően más jogi megközelítés** kell (valódi ügyvéd, nem assistant-draft).
+- **Owner-PIVOT (2026-07-19): ADVENTOR** a near-term monetizációs fókusz — a blokkoló **DEV-munka**
+  (in-app buy-loop hiányzik, image-gen placeholder, post-login nav-zsákutca), **mi-kontroll**, nem ügyvéd.
+- **NIS:** Gumroad-on ÉLŐ, de **0 sales** (kereslet-probléma). **Dynamo Builder:** hónapokra. **Art Tarot:**
+  fizikai fulfillment + TLS-hiba.
+
+**KÖVETKEZTETÉS (korrigált):** NINCS termék, ami tisztán „egy ügyvédi válaszra" van a launch-tól. A leggyorsabb
+pénz-út a felmérés szerint **Adventor befejezése (DEV)** — amit a dev-sessionnek lehet kiadni —, MP jogi ág =
+külön, valódi-ügyvéd sáv (ez a mostani ügyvéd-keresés relevanciája). **Teendő:** friss launch-readiness
+re-verify + rendes dokumentált report (`documentations/business/`), mielőtt bármit „launch-közelinek" veszünk.
