@@ -634,3 +634,15 @@ A commit+push = deploy (auto CI/CD); ezért a CI/CD-eredményeket kell nézni. L
   registry + postProcess + ledger regisztrálva + standalone nyugdíjazva) — még nem pusholt, ezért a piros a régi
   (21:56). A MP-push majd a check-dev-leftovers/client-build fixet is viszi.
 - **Következő wakeup:** verify — token-service SUCCESS (v180) + MP zöld (dev push után) + Phase 2 (MP+adventor) landolt.
+
+---
+
+## 43. FÁZIS-36 (2026-07-27 01:00) — deploy-verify: token-service ÉLES, MP client-build maradék-piros
+- **✅ token-service consent DEPLOYOLT (v01.15.181):** `deploy` + `deploy-verify` ZÖLD → a **consent-log ÉLES.**
+  A pipeline-piros csak az `e2e-deep` 10-perces timeout (teszt-flake) + dc-review miatt — NEM deploy-hiba.
+- **🟡 MP (v747, dev `8a3a56a1`):** a `check-dev-leftovers` MOST ZÖLD (a dev dep-latest-fixe működött — lelet:
+  a bedrock-publish minden behind-latest app-dep-et megbuktat a leftover-gate-en; + a kliens fsm-nek matchelnie
+  kell a szerverrel az `encrypt:true` flag miatt). DE a **`client-build` MÉG MINDIG bukik — 0s** (azonnali fail =
+  pre-compile/config/invocation, nem TS-compile). → dev-nek kiadva: futtassa lokálisan a CI kliens-build parancsot,
+  olvassa a valós hibát, javítsa. A MP deploy addig 💤 (nem deployol).
+- **🔵 adventor Phase 2** (migráció-regisztráció) még PENDING — MP zöld után.
