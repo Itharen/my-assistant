@@ -77,3 +77,42 @@ Köszönöm, üdvözlettel,
 Az owner kérdése: hogyan lehet **blokk-mentes** böngésző-kezelést kialakítani (ne kapjon „ne használj botot"
 jelzéseket), akár **saját Chromium-alapú böngészővel**, hogy „mintha az owner kezelné". → My Assistant 3
 válasza a chat-ben; ha irányt választunk, ide kerül a döntés.
+
+---
+
+## 7. TISZTÁZVA (FAM-recall, 2026-07-26) — a pénz-szálak szétválasztva
+
+FAM-ból előkerült a keresett doksi-lánc és a mikromunka helye:
+
+**KÉT KÜLÖN pénz-nézet van, ne keverjük:**
+
+- **(I) Termék-portfólió monetizáció** — `documentations/business/portfolio-monetization-priorities.md`
+  (2026-07-14). **Forrás-lánc:** a projektpriorizálási **konzultáció** (`documentations/temporary-notes/
+  consultations/project-priority-consultation.md` + `-result.md`) volt a *source*, abból lett ez a
+  priorizálási doksi. **Üzleti-plafon sorrend:** 1) Dynamo Builder · 2) Master Prompter · 3) NIS Datasets ·
+  4) Adventor · 5) Art Tarot. **Art Tarot = a leggyorsabb első-bevételig** (kis plafon). Ez a **„melyik
+  TERMÉKből lesz pénz"** kérdés.
+
+- **(II) Személyes bevétel-csatornák** — a 3x3/my-assistant rendszerben (`3x3/drawer/03-personal-context/
+  life-goals.md` + `my-assistant/current/principles/mvp-focus.md`): **TERA / Upwork / Niche**. Ez a
+  **„miből lesz pénz MOST, amit az owner maga csinál"** kérdés. **A mikromunka (Upwork) IDE tartozik** —
+  NEM a termék-portfólióba. A mvp-focus szabály: a pénzkereső taskok mindig a lista TETEJÉN.
+
+> **Következtetés:** a „mikromunka" nem a portfólió-priorizálás része, hanem **külön, azonnali
+> bevétel-csatorna** (owner végzi → segítek → automatizáljuk). Mindkettő a céget táplálja, de két külön sáv.
+
+## 8. Böngésző-automatizálás — architektúra-irány (döntésre)
+
+- **MOST (járható, kevés munka):** az FDP Assistant meglévő böngésző-képességének **reprodukálása a
+  My Assistantban** — külön adat/namespace (ne keveredjen a kétféle munka), hasonló képesség-csomag.
+  ⚠️ Az FDP Assistant tartalma a SAJÁT `__agent/` mappájában van (nem claude-memben) → a reprodukcióhoz
+  onnan kell mintát venni. **DEV-feladat → CCAP-session** (nem My Assistant 3 kódolja).
+- **„Teljesen blokk-mentes" opció (későbbre, ha kell):** kétrétegű architektúra —
+  **(a) input = OS-szintű** (RobotJS/nut.js: valódi egér/billentyű a valódi Chrome-ba → NULLA
+  automatizálási ujjlenyomat) **+ (b) olvasás = böngésző-extension content-script** (a DOM-ot natívan
+  olvassa, mint bármely bővítmény → nem bot-jel; NEM csak OCR, és NEM CDP-a-lapon). Részletes indoklás:
+  My Assistant 3 chat-válasza, 2026-07-26.
+
+## 9. Side-jegyzet — Hermes agent
+Megvizsgálandó: **mit tud a Hermes agent** (képességek, illeszthető-e a fenti böngésző/assistant munkába).
+Nem sürgős; felírva, hogy ne vesszen el.
