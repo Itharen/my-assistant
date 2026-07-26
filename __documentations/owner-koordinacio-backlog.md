@@ -336,3 +336,16 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 - **FAM:** Problem 2 kiadva — heti auto full-scan, **default hétfő 07:00**.
 - **DEV:** Art Tarot SSL diagnosztizálva + javítva (domain hiányzott `ssl-config.json`-ból + conf a baked
   `O=Localhost` placeholderre mutatott); böngésző-repo (`futdevpro/unblockable-browser-handler-tool`) létrehozva.
+
+---
+
+## 18. FÁZIS-11 (2026-07-26) — documents-repo migráció + jogi finomítás
+- **Placement-korrekció:** a business/profitability doksik a **„documents" repóba** valók =
+  `OGS-projects/documents/` (a CLAUDE.md szerint OGS/**FDP** közös dokumentum-repo). Áthelyezve
+  → `OGS-projects/documents/Business/` (launch-readiness-report + portfolio/profit-roadmap/…); a
+  `documentations/business/` törölve. Ez mostantól a business-doksik kanonikus otthona.
+- **Koncepció-korrekció:** a koncepció-összefoglalót **MÁR elküldtük (07-19)** (platform, kredit/Stripe,
+  AI szöveg+kép, HU+EU, magánszemélyek+cégek). NEM kell újra.
+- **Amit tartozunk = consent form** (07-20-i ígéret). **Draft kész:**
+  `fdp-assistant/__documentations/drafts/consent-form-marketing.md` (nyilatkozat + checkbox-szöveg + naplózás).
+- **Bundled reminder** tervezet kész (reminder + consent form egy üzenetben) — owner-jóváhagyásra, NEM elküldve.
