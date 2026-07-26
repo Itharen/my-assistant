@@ -162,3 +162,36 @@ Korábban túl-szeparáltam. A mikromunka **IGENIS a Profit Prio része**, csak 
   **másik ügyvéd** kell, akkor **az ügyvéd-keresés a gyorsabb pénz-út**, és az lesz a prió.
 - **Következmény:** a leggyorsabb pénz valószínűleg NEM a (előmunkás) mikromunka, hanem a **launch-blokkoló
   ügyvéd feloldása** (a termékek már majdnem kész). Ezt kell tisztán átlátni a Profit Prio-nál.
+
+---
+
+## 11. FÁZIS-6 (2026-07-26) — ccap CLI, dev-session elérés, böngésző-projekt, FAM
+
+### 11.1 ✅ MEGVAN: hogyan érem el a dev-sessiont (ccap CLI)
+- Globális **`ccap` CLI** létezik (`C:\nodejs\ccap.ps1`) — a CCAP MINDIG fut, én is abban futok.
+- **Dispatch:** **`ccap sessions send-message <sessionId> --message-file <path>`** (POST `/api/session/:id/messages`).
+  Opció: `--wait-for-completion --timeout <sec>`.
+- Hasznos: `ccap sessions list` · `ccap sessions info <id>` · `ccap notify` · `ccap input` · `ccap rag-search`.
+- **⚠️ NYITOTT (owner-input kell):** a `ccap sessions list` 16 sessiont ad, de **egyik neve sem**
+  „ALL Projects - MA3's Dev Assistant"; a két legfrissebb **névtelen + üres** (`6a57434d…`, `6a5c1720…`).
+  **Nem tippelek** (rossz sessionbe küldeni hiba). Kell: **a dev-session pontos ID-ja** (vagy melyik a kettőből).
+  Utána **`ccap sessions config`**-fal beregisztrálom aliasként (pl. `ma3-dev`) → nem kell többé újrafelderíteni.
+
+### 11.2 Böngésző-projekt = ÚJ LIVE-projekt (nem chat-válasz, hanem dispatch)
+- **`unblockable-browser-handler-tool`** → `LIVE-projects/`, új git-repo **FutDevPro** alatt.
+- **Agent tool.** Technikai alak **„mint a FAM": CLI + párhuzamos MCP** (a CLI megbízhatóbb — önindít).
+- **KORREKCIÓ: NINCS OCR** ebben a projektben (owner-direktíva). Olvasás = extension content-script DOM,
+  nem OCR, nem CDP-a-lapon. Input = OS-szintű (RobotJS/nut.js).
+- **Dispatch-brief kész:** `__documentations/dispatch-briefs/unblockable-browser-handler-tool.md` — ezt
+  küldöm a dev-sessionnek, amint megvan az ID. (Előbb spec a projekt `__specifications`-ébe, csak utána kód.)
+- A §8 „későbbre" jelölése ELAVULT: ez MOST induló, dispatch-olandó feladat.
+
+### 11.3 FAM — heti auto full-scan (backlog-igény)
+- Az owner megjegyzése: a **FAM tartalma elavulhat** → **kell egy heti automatikus teljes újra-scan**, hogy
+  a tartalom naprakész legyen. Felírva FAM-igényként (FAM knowledge + itt). Külön dispatch-feladat lehet
+  (fdp-agent-memory projekt — cron/scheduled full re-scan).
+
+### 11.4 Emlékeztető magamnak (owner-frusztráció)
+- **A FAM + a projekt-doksik AZOK a memóriám** — nincs átvitt session-memória. A helyes reflex: **FAM-ból
+  recall** (projekt-státusz, jogi követelmények, ügyvéd-kommunikáció), **ne kérdezgessem újra az ownert**, és
+  **ne bash-find-oljak**. Ez a mostani hiba gyökere; ezt tartom.
