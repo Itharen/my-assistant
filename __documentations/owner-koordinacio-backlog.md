@@ -452,3 +452,12 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
   Dokumentálva: `fdp-assistant/__documentations/legal-lawyer-communication.md`.
 - **Dev tovább:** a consent-napló implementációján (bedrock consent-service + token-service `consentRecordId`),
   az at-rest titkosítás TERVE review-ra vár (nálam).
+
+---
+
+## 27. FÁZIS-20 (2026-07-26 wakeup) — at-rest titkosítás TERV review + dev-nudge
+- **Terv jóváhagyva (Option B, bedrock)** — `at-rest-prompt-encryption-plan-2026-07-26.md` → REVIEW-DÖNTÉS.
+  Q1 (új Keystore-kulcs `FDP_PROMPT_CRYPT_KEY`) — **owner-nek jelezve, vétózható**; Q2 (a teljes érzékeny
+  szöveg-halmaz titkosítva, nem csak prompt); Q3 (determinisztikus OK promptra). Implementáció a consent-napló UTÁN.
+- **Dev-státusz:** ~28 perce standby a publish-poll-on. A `dc` már ÉLŐ (v204). Megnudge-oltam: ha az
+  fdp-templates (bedrock consent-service, Phase B) publish nincs kész, tolja meg; landolás után Phase C.
