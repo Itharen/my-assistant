@@ -473,3 +473,18 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
   (token-service wiring) most halad.
 - **Kulcs-átnevezés (owner):** `FDP_PROMPT_CRYPT_KEY` → **`FDP_CORE_DBCONTENT_CRYPT_KEY`** (általános DB-tartalom
   kulcs, nem prompt-specifikus). Plan-doksi + dev értesítve.
+
+---
+
+## 29. FÁZIS-22 (2026-07-26 19:47) — dev leállt (user-terminate) → resume + reality-check
+- **Gyökér-ok:** a DEV session `terminated` volt (**„Terminated by user"**) — ezért állt, nem idle. + a saját
+  wakeup-om sem volt élő. **Mindkettőt feloldottam.**
+- **Repo-reality-check (a dev jelentése OPTIMISTA volt):** `nts-fdp-templates` **TISZTA** → a Phase B
+  (`FDPNTS_Consent_DataService`) **nincs is megírva**; `fdp-token-service` Phase C **commitolatlanul** a lemezen
+  (7 fájl); `fdp-templates` 1.15.89 publikált (Phase A OK). → **Ezentúl a haladást git/npm-ből verifikálom,
+  nem a dev önjelentéséből.**
+- **Resume + korrekt utasítás:** újracsatlakoztattam (`/resume` ✅, `running`), és kiadtam: (1) írja meg Phase B-t
+  → build/test → push → publish-verify; (2) token-service nts-bump + Phase C befejezés+commit → verify.
+  **Never-idle megerősítve:** ne álljon be háttér-poll-ra (nem ébreszt) — szinkron build VAGY saját ScheduleWakeup;
+  minden fázis után commit (ne vesszen el egy újabb leállásnál).
+- **Saját wakeup újra beállítva** (~15 perc).
