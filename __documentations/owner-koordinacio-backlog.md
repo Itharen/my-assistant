@@ -511,3 +511,13 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
   §15 gomb-szöveg). server tsc + **138 spec zöld**, kliens prod-build. → **a #1 compliance-gap LEZÁRVA.**
 - A dev **fázis-szinkron, poll-mentesen** dolgozott (az új munkamód működik).
 - **At-rest titkosítás Phase 1 (bedrock encrypt-flag + nts-dynamo transform + keyVersion + unit-teszt) KIADVA.**
+
+---
+
+## 32. FÁZIS-25 (2026-07-26) — at-rest titkosítás Phase 1a KÉSZ (fsm), Phase 1b kiadva
+- **Phase 1a (fsm-dynamo) KÉSZ + VERIFIKÁLT:** commit `725c0a9` → **fsm-dynamo 1.16.26 PUBLIKÁLT** (npm view).
+  `encrypt?: boolean` flag a `DyFM_DataProperty_Settings`-en + envelope-helperek (`encryptDbValue`/`decryptDbValue`/
+  `isEncryptedDbValue`/`getDbValueKeyVersion`) + **`DYENC1:<keyVersion>:<ciphertext>` envelope** (megbízhatóan
+  elkülöníti a legacy plaintextet — az old `isValidEncryptedData` a plaintextre is illett). 125 crypto-spec zöld.
+  Determinisztikus (Q3-jóváhagyott). **A dev fázis-szinkron megcsinálta + megállt + jelentett** — a munkamód működik.
+- **Phase 1b (nts-dynamo data.service transzform, app-réteg, findByIdAndUpdate-safe) KIADVA.**
