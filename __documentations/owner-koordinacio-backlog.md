@@ -568,3 +568,16 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 - **STÁTUSZ: DONE-PENDING-OWNER — a wakeup-loop LEÁLL** (nincs több ütemezés). Hátralévő = OWNER go-live:
   (1) `FDP_CORE_DBCONTENT_CRYPT_KEY` provisionálása Keystore-ba (MP+adventor CI-env), (2) go-ahead a prod-
   migrációra (`migration --apply`) + deploy.
+
+---
+
+## 37. FÁZIS-30 (2026-07-26) — migráció = deploy-integrált (owner-direktíva) + kánon feljegyezve
+- **Owner:** a `FDP_CORE_DBCONTENT_CRYPT_KEY` **be van állítva** a szervereken + Keystore-ban (owner-lépés 1 ✅).
+- **Owner-direktíva:** a titkosítás-migráció NE külön CLI `--apply` legyen, hanem **deploy-integrált** — az új
+  verzió ELSŐ indulásakor fusson automatikusan `app.server.postProcess`-ben (nts beépített helper). Kell egy
+  **migráció-nyilvántartó „server info" ledger-tábla** (app/rendszer-verzió + lefutott migrációk) hogy egyszer fusson.
+- **Kánon feljegyezve:** `documentations/guidelines/development/deploy-integrated-migrations.md` + memória
+  (`reference_deploy_integrated_migrations`). Meglévő ad-hoc minta: MP `app.server.postProcess`+`migration()`
+  dátum-gate (kikommentelve).
+- **DEV-nek kiadva (spec-first):** verifikáld mi van az nts-ben (ledger létezik-e) → tervezd meg a ledgert
+  (bedrock) + a titkosítás-migráció átírását deploy-integrált regisztrált migrációra. Előbb a terv jöjjön vissza.
