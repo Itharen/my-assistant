@@ -581,3 +581,14 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
   dátum-gate (kikommentelve).
 - **DEV-nek kiadva (spec-first):** verifikáld mi van az nts-ben (ledger létezik-e) → tervezd meg a ledgert
   (bedrock) + a titkosítás-migráció átírását deploy-integrált regisztrált migrációra. Előbb a terv jöjjön vissza.
+
+---
+
+## 38. FÁZIS-31 (2026-07-26 22:57) — migráció-ledger: irány jóváhagyva (token-svc → bedrock)
+- **Dev-felderítés (jó):** nts-nek van `postProcess?()` hookja, de **nincs beépített migration-runner/ledger**.
+  **A token-service-nek MÁR van app-lokál `schema-migration` ledger-e** (`schema-migration.data-model` +
+  `control-service`) → **ezt promótáljuk bedrock nts-be** (reusable az egész flottának).
+- **Irány JÓVÁHAGYVA (nem vártatom külön review-körre):** bedrock ledger + postProcess-runner (run-once,
+  app-verzió + lefutott migrációk id+idő) → utána az at-rest titkosítás-migráció regisztrálása ezen (a meglévő
+  `_scripts` DYENC1-gate/dupla-ágyazott-sourceFlow/dry-run logika beemelve). Fázis-szinkron, poll-mentes.
+- Nem-triviális design-döntést (ledger-séma, migráció-id konvenció) a dev előbb visszaküldi.
