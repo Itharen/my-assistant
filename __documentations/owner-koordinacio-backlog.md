@@ -613,3 +613,13 @@ A commit+push = deploy (auto CI/CD); ezért a CI/CD-eredményeket kell nézni. L
 - ❌ **MP 01.15.746 FAILED** (commit `3c7c54a0`): `check-dev-leftovers` + `client-build` bukott → **deploy KIMARADT** → az MP encryption NEM éles. (server tsc + server-test zöld volt.) → **dev-fix kiadva.**
 - ⚠️ **token-service:** a consent Phase C (`a7bf116`, **v01.15.180 pusholva**) **NEM buildelt** (deploy még v177, 07-24) → **MISSED WEBHOOK** → a consent-log NEM éles. → **re-fire-oltam** (üres commit + push).
 - **TANULSÁG:** a „kész+pusholt" ≠ „deployolt" — MINDIG CI/CD-verify (`fdp build-detail`) a deploy-igényes munkánál.
+
+---
+
+## 41. FÁZIS-34 (2026-07-27) — migráció-runner GAP-SAFE verifikálva (owner-kérdés)
+- **Owner-kérdés:** a runner `<=`/verzió-független-e, hogy prod-on verzió-gap-pel is fusson? **Válasz: IGEN.**
+- **Kód-verifikáció** (`dynamo-nts/.../migration-runner.service.ts` `selectPending`): `migrations.filter(m =>
+  !appliedIds.has(m.id))` — **ledger-tagság a migrationId alapján, NINCS `== verzió` gate / dátum-küszöb.** Az
+  `appliedVersion` csak audit. → prod verzió-gap-pel is lefut az első induláskor (a hiányzó verzió „old").
+- **Rögzítve a kánonba** + 2 kötelező következmény: az entry VÉGLEG regisztrálva marad; a `run()`-ban nincs
+  verzió-check (idempotencia = ledger + DYENC1). A devnek is elküldve emlékeztetőként (az MP-red-fix mellett).
