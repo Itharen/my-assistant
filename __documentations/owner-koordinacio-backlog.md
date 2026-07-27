@@ -683,3 +683,15 @@ A commit+push = deploy (auto CI/CD); ezért a CI/CD-eredményeket kell nézni. L
 - **EGYETLEN maradék tétel a teljes lezáráshoz:** MP `e2e-api` (v748, 43s) = FLAKE vs. ENCRYPTION-REGRESSZIÓ.
   Dev-nek kiadva: futtassa lokálisan / nézze a logot → egyértelmű verdikt. Ha flake → KÉSZ; ha regresszió → élő-defekt, fix.
 - **ÖSSZKÉP:** token-service ✅ ÉLES · MP encryption ✅ ÉLES (deploy zöld) · adventor Phase-2 ✅ ÉLES. Csak az MP e2e-api-verdikt nyitott.
+
+---
+
+## 47. FÁZIS-40 (2026-07-27 02:39) — MP e2e-api verdikt: dev ismételten stalled → független vizsgáló-subagent
+- **Állapot változatlan a deploy-oldalon:** mind a 3 termék ÉLES (token-service ✅ · MP encryption ✅ · adventor Phase-2 ✅).
+- **MP e2e-api (v748, 43s) verdikt még NINCS:** a dev újra `stalled` (CCAP terminal-bug, 3. eset) — resume-olva + feladat
+  újraküldve. `fdp errors` üres, `build-detail`-nek nincs step-log flag-je → nem tudom triviálisan kiolvasni a hibát.
+- **DÖNTÉS (no-guessing):** NEM zárom le "flake"-ként bizonyíték nélkül. Párhuzamos **független vizsgáló-subagent**
+  indítva: a MP e2e-api spec + a `encrypt:true` mezők + a read-path (data.service auto-decrypt vs. raw-mongoose bypass)
+  + git-log alapján ad verdiktet (REGRESSZIÓ vs FLAKE), file:line bizonyítékkal. Ez a devtől független út.
+- **Következő:** a subagent verdiktje (vagy a dev jelentése) alapján: ha FLAKE/MP-specifikus → LEZÁRÁS (minden ÉLES);
+  ha REGRESSZIÓ (raw-mongoose bypass → user ciphertext) → élő-defekt, fix + push.
