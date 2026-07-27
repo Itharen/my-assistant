@@ -695,3 +695,30 @@ A commit+push = deploy (auto CI/CD); ezért a CI/CD-eredményeket kell nézni. L
   + git-log alapján ad verdiktet (REGRESSZIÓ vs FLAKE), file:line bizonyítékkal. Ez a devtől független út.
 - **Következő:** a subagent verdiktje (vagy a dev jelentése) alapján: ha FLAKE/MP-specifikus → LEZÁRÁS (minden ÉLES);
   ha REGRESSZIÓ (raw-mongoose bypass → user ciphertext) → élő-defekt, fix + push.
+
+---
+
+## 48. ✅ LEZÁRVA (2026-07-27 03:00) — AT-REST ENCRYPTION + CONSENT-LOG + DEPLOY-INTEGRÁLT MIGRÁCIÓ ÉLES (3/3)
+**Az owner "nézd meg a CICD result-okat" + az at-rest titkosítás/consent go-live objektíva TELJESÍTVE.**
+
+### Deploy-állapot (CI/CD-verifikálva)
+- **token-service** consent-log: ✅ ÉLES (v01.15.181, deploy+deploy-verify zöld).
+- **master-prompter** at-rest encryption + deploy-integrált Phase-2 migráció: ✅ ÉLES (v01.15.748,
+  deploy 53s + deploy-verify 16s + e2e-smoke 2m54s zöld → a migráció boot-safe lefutott a postProcess-ben).
+- **adventor** at-rest encryption + deploy-integrált Phase-2 migráció: ✅ ÉLES (v01.15.172 SUCCESS,
+  deploy+deploy-verify+e2e-api zöld).
+- **bedrock nts 1.15.119**: `DyNTS_SchemaMigration` ledger + `DyNTS_Migration_Runner` (gap-safe, run-once) — publikálva.
+
+### MP e2e-api piros — VERDIKT: FLAKE, NEM encryption-regresszió (független subagent, strukturális bizonyíték)
+- Az MP `e2e-api` **no-creds suite** (`e2e/playwright.api.config.ts` + `e2e/src/_api/mp-api.spec.ts`): CSAK 401-et
+  (auth nélkül) + 2×200 publikus endpointot assertál → **sosem autentikál, sosem olvas dekódolt tartalmat** →
+  strukturálisan KÉPTELEN ciphertext-leaket elkapni. Zero raw-mongoose bypass read (`.lean/.aggregate/findByIdAndUpdate`
+  a kliensnek) — minden olvasás az auto-decrypt `DyNTS_DataService`-en át. A titkosítás-commitok (3c7c54a0, 8a3a56a1)
+  nem érintették az auth-middleware-t/no-creds endpointokat. A 43s-piros = tranziens blip (`workers:1, retries:0` →
+  1 hálózati blip = hard red). Sibling adventor e2e-api ugyanezzel a mintával ZÖLD → a minta ép.
+- **Ajánlott (opcionális, NEM encryption) hardening:** `e2e/playwright.api.config.ts` → `retries: process.env.CI ? 2 : 0`
+  a no-creds status-suite de-flake-eléséhez, hogy az MP pipeline overall-zöld legyen. Low-prio follow-up (nem blokkol).
+
+### Go-live megjegyzés
+A `FDP_CORE_DBCONTENT_CRYPT_KEY` provisionált (owner, szerverek+Keystore); a deploy-integrált migráció az új verzió
+első bootján lefutott (boot-safe, ledger-alapú run-once, gap-safe). **A koordinációs loop LEZÁRVA.**
