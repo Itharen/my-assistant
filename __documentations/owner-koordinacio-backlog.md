@@ -762,3 +762,36 @@ első bootján lefutott (boot-safe, ledger-alapú run-once, gap-safe). **A koord
 ### Nyitott owner-döntések
 (1) W1 ütemezés R1 vs R1+ · (2) W2 visszatérítési határidő értéke + fenntartjuk-e · (3) W4 kell-e MP-report R1-be ·
 (4) az ügyvédnek küldendő levélben említsük-e a korosztály-rendszert 1 mondattal (későbbi kiadás) — javaslat: IGEN.
+
+---
+
+## 50. OWNER-DILEMMA + DÖNTÉSEK (2026-07-27) — R1 jogi-scope gating + ÚJ jogi-kötelezettség SSOT
+**Owner-dilemma (rögzítve, kanonikusan dokumentálva):** eddig főként az MP funkcionalitását írtuk le az ügyvédnek,
+és úgy kezeltük, hogy az lefedi az Adventort is (tartalom-generátorok készítése/használata). Ha most **túl sok új
+feature-t** írunk le, amit jogi megfeleléssel kell fedni, az ügyvéd **több platformot** fog látni → **drágább ajánlat**.
+Kell az **arany középút**: az Adventor működőképes marad, de **nem hoz új jogi felületet**.
+→ **Megoldás-elv:** nem funkció-katalógus, hanem **képesség-szintű leírás + explicit NEGATÍV lista** (mit NEM csinálunk
+R1-ben). A negatív lista **szűkíti** az ügyvéd munkáját → a fix díj tartható.
+
+**OWNER-DÖNTÉSEK:**
+1. **18+ KI az R1-ből.**
+2. **A korosztály-választó (12+/16+ is) SEM kell R1-be** — a teljes korosztály-UI kikerül; az `ageRating` adat-mező marad (MVP2).
+3. **Korrekció (owner):** **NEM ugyanaz a weboldal** — MP saját domainen (`master-prompter.hu`), Adventor FDP-aldomainen
+   (`adventor.futdevpro.hu`) — verifikálva (ssl-config.json + MP environment.ts:39). ⚠️ **Ez cáfolja az ügyvéd
+   feltevését** („egyetlen közös weboldal" → közös cookie-tájékoztató) → **jelezni kell**: a cookie-tájékoztatónak
+   **két domaint** kell fednie; a közös fiók/kredit miatt az **egy ÁSZF** viszont indokolt marad.
+
+**VERIFIKÁLT LELET, ami a döntést kiváltotta:** az Adventor preset-létrehozó UI **mind a 3 besorolást felkínálta,
+köztük a 18+-t**, gating nélkül (`a-preset-create.component.ts:55` `Object.values(AgeRating)`).
+
+**ÚJ SSOT (owner-igény):** `documentations/legal/legal-obligations-ssot.md` — **17 jogi kötelezettség** táblája:
+kötelezettség · jogforrás · **mi hozta a flottába** · kikre vonatkozik · **megfelelés MA (verifikált)** · **release**.
+Kiemelt sorok: consent-log ✅R1 · at-rest titkosítás ✅R1 · notice-and-action 🔴/❔ · token-lejárat 🔴 · AI Act 50. 📐 ·
+18+ ⛔R1-kizárva · creator-payout ⛔ · DPA ⛔ · pénzügyi engedély 🟡feltételes.
+
+**Dokumentálás (kanonikus otthonok):** döntés+dilemma → `documentations/legal/_process/r1-legal-scope-gating-decision-2026-07-27.md` ·
+kötelezettség-nyilvántartás → `documentations/legal/legal-obligations-ssot.md` · Adventor rendszer-tény + döntés →
+`adventor/__documentations/age-rating-release-scope-2026-07-27.md` (+ CLAUDE.md spec-sor ⛔-jelölve).
+
+**Következő:** (a) dev-dispatch: korosztály-UI eltávolítása R1-re · (b) ügyvéd-levél véglegesítés (képesség-szintű
+leírás + negatív lista + két-domain korrekció) → owner-jóváhagyással megy ki.
