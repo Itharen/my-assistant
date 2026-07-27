@@ -671,3 +671,15 @@ A commit+push = deploy (auto CI/CD); ezért a CI/CD-eredményeket kell nézni. L
 - **🔄 adventor:** új fix-build FUT (`e5d438d2`, adventor@master) — a dev a dc-review+docker-build pirosat javította. Várom.
 - **✅ token-service consent:** ÉLES (v181).
 - **ÖSSZKÉP:** token-service ✅ ÉLES · **MP encryption ✅ ÉLES** · adventor Phase-2 = deploy-build fut (utolsó hiányzó).
+
+---
+
+## 46. FÁZIS-39 (2026-07-27 02:15) — ✅✅ ADVENTOR PHASE-2 DEPLOYOLT (ÉLES) — 3/3 encryption-lánc kész, 1 verdikt hátra
+- **✅✅ adventor v01.15.172 (02:04): SUCCESS** — `dc-review-server` ✅ + `docker-build` ✅ + **`deploy` (50s) ✅ +
+  `deploy-verify` (15s) ✅ + `e2e-api` (17s) ✅** → **adventor Phase-2 (encryption + deploy-integrált migráció) ÉLES.**
+  A dev javította a dc-review+docker-build pirosat. (`dc-review-client` 3s maradék-piros = non-fatal, overall SUCCESS.)
+- **KULCS-DIFFERENCIÁL:** adventor `e2e-api` ÁTMENT (17s) UGYANAZZAL az encryption-mintával → erős jel, hogy az
+  **MP e2e-api-piros NEM a titkosítás** (MP-specifikus vagy flake). Verdiktet a dev adja (verifikálva, nem találgatva).
+- **EGYETLEN maradék tétel a teljes lezáráshoz:** MP `e2e-api` (v748, 43s) = FLAKE vs. ENCRYPTION-REGRESSZIÓ.
+  Dev-nek kiadva: futtassa lokálisan / nézze a logot → egyértelmű verdikt. Ha flake → KÉSZ; ha regresszió → élő-defekt, fix.
+- **ÖSSZKÉP:** token-service ✅ ÉLES · MP encryption ✅ ÉLES (deploy zöld) · adventor Phase-2 ✅ ÉLES. Csak az MP e2e-api-verdikt nyitott.
