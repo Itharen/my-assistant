@@ -722,3 +722,43 @@ A commit+push = deploy (auto CI/CD); ezért a CI/CD-eredményeket kell nézni. L
 ### Go-live megjegyzés
 A `FDP_CORE_DBCONTENT_CRYPT_KEY` provisionált (owner, szerverek+Keystore); a deploy-integrált migráció az új verzió
 első bootján lefutott (boot-safe, ledger-alapú run-once, gap-safe). **A koordinációs loop LEZÁRVA.**
+
+---
+
+## 49. SSOT-DRIFT AUDIT (2026-07-27) — ügyvéd-leírás ürügyén feltárt 5 rés + dokumentálás kanonikus helyekre
+**Kiváltó:** az ügyvédnek szánt Adventor-leírást a KÓDBÓL írtam → 2 hibás állítás (owner-korrekció). Tanulság:
+**termék-leírás a KIADÁSI TERV + JOGI SCOPE ellen írandó; a kód csak alátámaszt.**
+
+### Verifikált leletek + hiányzó munka (W1–W5)
+- **W1 🔴 Token 5-év lejárat — ENFORCEMENT HIÁNYZIK (platform-szintű).** ÁSZF §3 ígéri; kódban a pure derivációs util
+  + `expiredAmount`/`reminderSentAt` mezők KÉSZ, de **nincs hívó**: hiányzik az expiry-job/cron + emlékeztető-email +
+  balance-deduct wiring. *(Owner-korrekció igazolva: a lejárat MINDEN rendszerre szól — közös token-service.)*
+  **Owner-döntés:** R1 vagy R1+ (valós egyenleg-mozgás). Doksi: `fdp-token-service/__documentations/token-expiry-enforcement-status-2026-07-27.md`.
+- **W2 🟡 „Fel nem használt token visszatéríthető" (ÁSZF §7)** — Stripe-refund→clawback KÉSZ, de a *kérelmezési út* +
+  a „közzétett határidő" konkrét értéke nincs rögzítve. **Az ügyvédnek jelezve** (érinti a token pénzügyi minősítését).
+- **W3 🔴 Notice-and-action csatorna (ÁSZF §14.2, DSA 16.) — UNVERIFIED.** A `support@futdevpro.hu` a kiszolgált
+  doksikban szerepel, de a **postafiók léte/figyelése + az átvétel-visszaigazolás + nyilvántartás folyamata nincs
+  igazolva** (0 kód-bizonyíték). Ez **ops/eljárás**-munka, nem feltétlenül kód. → verifikálni/felépíteni kell.
+- **W4 🟡 MP: nyilvános tartalom-megosztás bejelentés/moderáció NÉLKÜL.** Az MP publikál user-tartalmat
+  (`flow-public` + `flow-rating` + creator-díjazás doksik), de **nincs in-app report/moderáció** (teljes `server/src`
+  átfésülve). Az **Adventorban KÉSZ** (report + disable + LLM-analízis). → aszimmetria egy közös ÁSZF alatt.
+  Javaslat: MP-report-MVP az Adventor moderáció-workflow mintájára (pattern-first; 2 app → bedrock mérlegelendő).
+  Doksi: `master-prompter/__documentations/public-sharing-moderation-gap-2026-07-27.md`.
+- **W5 ✅→jelölve Korosztály-besorolás: kód-jelenlét ≠ kiadás-tartalom.** Az Adventor-kódban van `AgeRating` enum +
+  preset/campaign `ageRating`, DE a teljes rendszer **MVP2** (BL-20260703-022) és a **V3 ÁSZF §4.4/§5.1 KIFEJEZETTEN
+  KIZÁRJA a 18+ gatinget** → konzisztens; drift-jelölő doksi készült, hogy senki ne olvassa „aktuális feature"-ként.
+  Doksi: `adventor/__documentations/age-rating-release-scope-2026-07-27.md`.
+
+### Dokumentálás — kanonikus helyek (NEM keverve, SSOT-pointerekkel)
+| Információ-típus | Otthon |
+|---|---|
+| Jogi ígéret ↔ kód-valóság mátrix (kereszt-metszet, W1–W5 SoT) | `documentations/legal/_process/legal-claims-vs-implementation-2026-07-27.md` |
+| Token-lejárat rendszer-tény + rés | `fdp-token-service/__documentations/token-expiry-enforcement-status-2026-07-27.md` |
+| MP megosztás/moderáció rendszer-tény + rés | `master-prompter/__documentations/public-sharing-moderation-gap-2026-07-27.md` |
+| Adventor korosztály kód-vs-release drift | `adventor/__documentations/age-rating-release-scope-2026-07-27.md` |
+| Ügyvéd-levelezés | `fdp-assistant/__documentations/legal-lawyer-communication.md` |
+| Koordináció/dispatch (ez) | `my-assistant/__documentations/owner-koordinacio-backlog.md` |
+
+### Nyitott owner-döntések
+(1) W1 ütemezés R1 vs R1+ · (2) W2 visszatérítési határidő értéke + fenntartjuk-e · (3) W4 kell-e MP-report R1-be ·
+(4) az ügyvédnek küldendő levélben említsük-e a korosztály-rendszert 1 mondattal (későbbi kiadás) — javaslat: IGEN.
