@@ -795,3 +795,27 @@ kötelezettség-nyilvántartás → `documentations/legal/legal-obligations-ssot
 
 **Következő:** (a) dev-dispatch: korosztály-UI eltávolítása R1-re · (b) ügyvéd-levél véglegesítés (képesség-szintű
 leírás + negatív lista + két-domain korrekció) → owner-jóváhagyással megy ki.
+
+---
+
+## 51. (2026-07-27) — SSOT rendszer-oszlopokkal · SimplePay-drift · domain-egyesítés R2 · Adventor-leírás a levélbe
+**Owner-inputok feldolgozva:**
+1. **SSOT átépítve** (`documentations/legal/legal-obligations-ssot.md`): **(A) megfelelési mátrix** — 17 kötelezettség ×
+   **9 rendszer-oszlop** (FDP · AUTH · ToS · MP · ADV · ART · WB · SOC · DUM; a `ssl-config.json`-ból verifikált
+   PROD-élő vs. test/launch-cél besorolással), **(B) részlet-tábla** (jogforrás · mi hozta · bizonyíték · release).
+   **Lelet a mátrixból:** a PROD-élő, de nem launch-fókuszú rendszerek (FDP főoldal, ART, WB, SOC, DUM) jogi
+   megfelelése **NINCS felmérve (❔)** — az eddigi jogi munka az MP/ADV/ToS sávra ment. → külön felmérés kell.
+2. **⚠️ SimplePay-drift (owner-jelzés nyomán verifikálva):** a **V3 jogi doksik (adatkezelési tájékoztató + fizetési
+   ÁSZF) SimplePay-t említenek**, és kód is van rá (MP `simplepay.api-service.ts` + ToS `_routes/transaction/simple-pay/`),
+   miközben az owner szerint **kivezetjük/kivezettük** (Stripe a fizetési út). → **a doksikat ehhez kell igazítani,
+   MIELŐTT az ügyvéd véglegesíti** (különben nem használt szolgáltatót dokumentáltatunk). **Owner-verifikáció kell:**
+   élesben teljesen kivezetett-e? *(Az én korábbi SimplePay-említésem is innen jött — stale env-konfig sorból.)*
+3. **Domain-egyesítés — OWNER-DÖNTÉS: IGEN, de R2** (nem R1): `master-prompter.hu` → **átirányítás** →
+   `master-prompter.futdevpro.hu`, hogy minden szolgáltatás **egy regisztrálható domain** alá kerüljön (közös
+   cookie-scope → egy banner, egy tájékoztató, egy consent-nyilvántartás; egyszerűbb same-site auth).
+   Indok az owner szerint: „csak a feeling kedvéért vettük külön". Rögzítve az SSOT C/3 pontjában. **Backlog: R2.**
+   Technikai tételek a migrációhoz: DNS+SSL, gateway/base-href, fizetési redirect-URL-ek, OAuth redirect-URI-k,
+   e-mail-linkek, e2e. **A levélben az ügyvédtől is megkérdezzük**, megéri-e a doksik elkészülte ELŐTT megtenni.
+4. **Ügyvéd-levél bővítve:** 2 bekezdéses, közérthető **Adventor-leírás** (preset = generátor-beállítás → kampány =
+   párbeszédes munkamenet; kocka = tét/nyeremény nélküli történet-mechanika; nyilvános megosztás; képgenerálás) +
+   a „MP általános generátorok / Adventor ugyanaz egy konkrét felhasználásra" keretezés + a domain-kérdés.
