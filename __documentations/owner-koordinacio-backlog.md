@@ -819,3 +819,46 @@ leírás + negatív lista + két-domain korrekció) → owner-jóváhagyással m
 4. **Ügyvéd-levél bővítve:** 2 bekezdéses, közérthető **Adventor-leírás** (preset = generátor-beállítás → kampány =
    párbeszédes munkamenet; kocka = tét/nyeremény nélküli történet-mechanika; nyilvános megosztás; képgenerálás) +
    a „MP általános generátorok / Adventor ugyanaz egy konkrét felhasználásra" keretezés + a domain-kérdés.
+
+---
+
+## 52. (2026-07-28) — SZÁMLÁZÁS+REFUND hyperplan indul · ügyvéd ZÖLD ÚT · 3 levél kiment · owner-válaszok
+### Ügyvéd (ND Law) — a megbízás ELFOGADVA, majd ZÖLD ÚT a fejlesztésre
+- Elfogadó levél kiment (msgId `004df953…`), válasza (07-28 16:10, UID 147782): **„Köszönöm a megbízást… Hamarosan
+  megküldöm a dokumentumokat."** + a **domain-döntés rendben** + **„a fejlesztést el lehet indítani ebben az irányban."**
+- **Elállási válaszai:** arányossági képlet ✅ · **a 14 nap A VÁSÁRLÁSTÓL** indul · nyilatkozat-szövegeket ő írja ·
+  ⚠️ **ÚJ: kell elállási NYILATKOZATMINTA + ONLINE ELÁLLÁSI FUNKCIÓ a weboldalon** · a törvényi elállás **nem
+  korlátozható**, de fiók-felfüggesztési jog kerül az ÁSZF-be rosszhiszeműségre.
+
+### 3 levél kiment (2026-07-28) — csatorna-szétválasztással
+| Levél | Címzett | msgId |
+|---|---|---|
+| **KÖZÖS** (bemutatás + 3 közös téma: vevő-minőség · elállás↔helyesbítő számla · számlázási vállalás) | ügyvéd + könyvelő | `c12162f1…` |
+| **CSAK KÖNYVELŐ** (5-eset ÁFA-mátrix · 10 000 €-küszöb · VIES · lejáró kredit · EUR/MNB) | könyvelő | `0a747363…` |
+| **CSAK ÜGYVÉD** (árfeltüntetés: nettó főhelyen + bruttó kisebben — megengedett-e?) | ügyvéd | `4fb7c503…` |
+> Az **SPV/MPV** kérdés **KIVÉVE** — a könyvelő már 2026-06-19-én megválaszolta (**ÁFA a vásárláskor**), a ÁSZF §2 is
+> így rögzíti; a §7-ben maradt „MPV/felhasználáskor" fordulat **belső ellentmondás → tisztítandó** (jelezve az ügyvédnek).
+
+### OWNER-VÁLASZOK a dev hyperplan-kérdéseire (2026-07-28) — a devnek átadva
+| Q | Válasz |
+|---|---|
+| Q1 | env-név: **`FDP_SZAMLAZZ_TOKEN`** (owner-engedély ERRE a névre; Keystore-secret) |
+| Q10 | **NEM — tilos új env-var.** Az FTP-URL **beégetett const** (ENV szerint test/prod); az `FTP_URL_SIGNING_SECRET` **már létezik** |
+| Q6 | **Eladó-adatok: beégetett BEDROCK const** + **dokumentálni a `documentations` repóba** |
+| Q6/Q8 | **Vevő-adatok:** előtöltés a futdevpro „personal information" lapjáról → checkoutban módosítható → **a tranzakcióhoz mentendő**, **titkosítva** (a kész `encrypt:true` implementációt bekötve) |
+| Q4 | **user-nyelv szerint; HU / HU+EN** |
+| Q7 | **nincsenek meglévő vásárlások** → nincs retroaktív számlázás |
+| Q15 | **céges vevőnél az elállás DISABLED / elutasítva** |
+| Q14 | → **az ügyvédnek feltéve** (árfeltüntetés) |
+
+### ⚠️ Q14 — VERIFIKÁLT LELET (árfeltüntetés)
+A csomag ára **NETTÓ**: `token-purchase.data-service.ts:127` → `cost = price × (1 + HU_vat)`; a felület
+(`t-purchase.component.html:26,210`) **„{price}€ + VAT(27%)"**-ot ír ki → a 4,99 €-s csomagért ténylegesen **6,34 €**
+terhelődik. **Fogyasztónak a bruttó, fizetendő végösszeget is ki KELL írni** → a felületet így is, úgy is javítani kell
+(csomag-lista + fizetési folyamat). Az **owner szándéka**: nettó nagyban, alatta kisebben a számítás + bruttó —
+**megengedett-e, az ügyvédtől kérdezve** (msgId `4fb7c503…`).
+
+### 🔴 HYPERPLAN-SZERKEZET — NEM felel meg a kánonnak
+A dev **egyetlen fájlt** írt (`fdp-token-service/__documentations/invoicing-refund-hyperplan-2026-07-28.md`, 233 sor),
+a kánon viszont **3-rétegű**: `plans/HYPERPLAN*.md` (+státusz/`COMPLETION-LEDGER.md`) → `plans/master-plans/*` →
+`plans/sub-plans/*` (minta: master-prompter, 12 master-plan + 36 sub-plan). → **átstrukturálás kiadva.**
