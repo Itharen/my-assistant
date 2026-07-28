@@ -36,3 +36,43 @@ használatból (workspace `E:\Programming\Own\CURSOR`, `mcp__fdp-agent-memory__r
 
 ## Rögzítés
 Tükör-jegyzet: `LIVE-projects/my-assistant/__documentations/owner-koordinacio-backlog.md` §11.3.
+
+---
+
+## VÉGREHAJTVA — ALL Projects / FDP Agent Memory (2026-07-26)
+
+**Státusz:** ✅ Problem 1 KÉSZ (fix-forward + eval + tesztek + push masterre zölden). Problem 2/3 → lentebb.
+**Commit:** `02f105e` (`fdp-agent-memory` master, v1.1.113) — *"retrieval: scan-summary read-time weight cap"*.
+
+### Problem 1 (ZAJ) — ✅ MEGOLDVA
+- **PONTOS ok (mérve, élő FAM):** `finalScore = score × weight × …`. A `project-identity` (weight:3) + `fs-summary`
+  (weight:2) chunkok — közös marker: `source.type:'scan-summary'` — statikus weight-boostja `finalScore ~1.3-2.2`-re
+  emelte őket, így OFF-topic query-ken is a top-5 volt MIND scan-summary (a „ügyvéd email"-nél `lexicalScore:0.00`-val).
+- **Fix (patterns-first, az `importSourceFactor` mintájára):** read-idejű `scanSummaryFactor` a scan-summary effektív
+  weight-jét `min(weight, scanSummaryWeight)`-re sapkázza (`factor = cap/weight`). Új config: `read.scanSummaryWeight`
+  (default **1.0** = tiszta relevancia-rangsor, nincs statikus boost). READ-time; a nyers cosine + a `weight` DTO-mező
+  változatlan; a confidence/totalRelevant a nyers cosine-on marad (a summary továbbra is megtalálható, csak nem dominál).
+- **Before/after (ugyanaz a 2 query):** a top-6-ból a scan-summary **eltűnt (→ 0)**; a top-hitek most valódi tartalom-
+  doksik (cosine 0.63-0.81, lexical 0.33-0.86). **Identity-query NEM romlott:** „projekt függőségei" / „milyen projekt ez"
+  query-ken a `project-identity` **#1** maradt (a MAGAS cosine-ja miatt, nem a weight miatt). 5 új unit + 690 spec zöld.
+
+### Problem 2 (ELAVULTSÁG — heti re-scan + delete-sync) — ✅ MEGOLDVA (külön dispatch, 2026-07-26)
+- **Commit:** `0fec6ea` (+ `fcf6564`, `91bf907`) master, v1.1.115. Új `FAM_ScanScheduler_ControlService` (in-process).
+- **Ütemezés:** LOKÁLIS idő, default **hétfő 07:00** (konfigurálható: `scan.weeklyRescanDayOfWeek`/`Hour`). Fix 10-perces
+  tick figyeli a slotot; DUE → rögzíti a `scan.weeklyRescanLastRunAt`-ot (idempotencia + restart-storm védelem) → indítja
+  a TELJES re-scant a MEGLÉVŐ `FAM_ScanJob.start`-on át (a reconcile/orphan-delete a scan része — nem duplikáltam).
+- **Catch-up:** ha a szerver a slot-időben down volt → a következő induláskor bepótol.
+- **Cél:** `scan.weeklyRescanRoot` (ha megadva) VAGY a legutóbbi durable scan-job cél-specjei (zero-config); egyik sincs
+  → SKIP + warn (nincs találgatás). **Guaranteed-full coverage-hez ajánlott a `scan.weeklyRescanRoot` = workspace-root beállítása.**
+- **Mért + javított E2E-lelet:** az install() eredetileg a boot VÉGÉN volt → nagy korpusznál (426k vektor, 220s hidratálás)
+  a boot post-hidratációs karbantartás-lánca lelassul/megakad → a scheduler SOSEM települt. **Fix:** install a boot ELEJÉN
+  (a timer garantáltan felkerül) + a tick hidratálás-kapuval (nem scannel hidratálás közben) + prompt post-hidratációs
+  catch-up tick. Élő-igazolt: install-log **+5s**-nél (hidratálás előtt). 9 unit + 699 spec zöld.
+
+### Problem 3 (TÚLCSORDULÁS — precízebb ranking) — 🟢 RÉSZBEN, Problem 1 következményeként
+- A scan-summary-cap egy egész zaj-osztályt kivett a top-N-ből → tisztább jel/zaj. A `totalRelevant` több száz volta a
+  nagy korpusz sajátja; a rangsor eleje most relevancia+lexika-vezérelt. További szigorítás = **config-hangolás**
+  (`read.relevanceFloor` emelése per-tár/scope), nem kód — igény esetén külön mérés-alapú lépés.
+
+> Blokkoló nincs. My Assistant 3 vezényel — jelezz, ha a Problem 2 (cron-scheduler) vagy a Problem 3 config-hangolása
+> most kell.

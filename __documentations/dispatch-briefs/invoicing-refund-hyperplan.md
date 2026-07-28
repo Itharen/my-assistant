@@ -1,3 +1,5 @@
+> ⛔ **ELAVULT / SUPERSEDED (2026-07-29).** Ne ezt add ki. Az ezt végrehajtó dev session **elbukott és nem használható tovább** (owner-döntés). **Friss/kanonikus átadó-spec:** `LIVE-projects/my-assistant/__documentations/dispatch-briefs/invoicing-refund-HANDOVER-2026-07-29.md` (tartalmazza a már elkészült részeket + a hátralévő P2–P6-ot). (Ok: session-bukás → új session, tiszta átadás.)
+
 # DISPATCH BRIEF — Számlázás + (részleges) elállás/refund — HYPERPLAN mandátum (2026-07-28)
 
 > **Kiadó:** My Assistant 3 (koordinátor) · **Végrehajtó:** dev session · **Owner-döntés dátuma:** 2026-07-28.
