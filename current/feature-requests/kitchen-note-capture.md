@@ -36,3 +36,8 @@
 
 🟡 Ötlet-fázis. Design-kérdések felvéve `open-questions.md` (Q-kitchen-*).
 STT-input már megvan a rendszerben → a voice-irány a legkisebb új-építés.
+
+**2026-07-19:** konkrét task felvéve — 🔌 **konyhai node beüzemelése** (household
+stock quick-update fókusszal, `org:task:6a64a7cc7a40e93d2f5f8e7c`). Ez a "dedikált
+konyhai eszköz" irány első lépése; kapcsolódik a `jarvis-vision.md` Arduino
+node-device POC-hoz (konyha = első célpont).

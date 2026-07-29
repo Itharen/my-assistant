@@ -924,3 +924,52 @@ doksira mutatva (nem mikromenedzsment).
 - **Könyvelőnek** írandó: **két pénznem** a számlázásban (HUF-os fogyasztói + EUR-os egyéb) + árfolyam-alkalmazás a
   NAV-riportban → **P2-blokkoló lehet.**
 - A **HUF-payout bankszámla** eltérhet a `fdp-seller-invoice-data.md`-ben rögzítettől → tisztázandó.
+
+---
+
+## 55. ✅ (2026-07-29) — SÜTI-LELTÁR KÉSZ (Dev 3, 10 kör) · scope-szűkített változat az ügyvédnek
+
+**Kiváltó ok:** az ügyvéd „nem talált működő sütiket" → tőlünk kért süti-leltárt (J tétel).
+**Végrehajtó:** `ALL Projects - MA3 Dev 3` (`ccs-fbc3577e-ms6cy0bt`) · brief:
+`dispatch-briefs/cookie-inventory-2026-07-29.md`.
+
+### Eredmény
+- **Belső, TELJES változat (SSOT):** `documentations/legal/_process/cookie-inventory-2026-07-29.md` (243 sor, commit `4ab6aea`).
+- **ÜGYVÉDNEK küldött, scope-szűkített változat:** `…/cookie-inventory-2026-07-29-UGYVEDNEK.md`
+  — **owner-döntés:** *„csak a scope projektekről (ne keverd bele most az art-tarot-t, azt csak javítani kell majd, backlog)"*.
+  Benne: `futdevpro.hu` · `master-prompter.hu` · `adventor.futdevpro.hu` · `token.futdevpro.hu`.
+  **Kivéve:** `art-tarot.hu` · `dum.futdevpro.hu` · `warbots.hu` · `social.futdevpro.hu`.
+- **Módszertan:** 10 kör, körönként változtatott nézőpont; a 8–9–10. kör **nem hozott új elemet**
+  (a követelmény 2 egymást követő tiszta kör volt → túlteljesítve). Playwright + `curl` + kód-átfésülés,
+  alkalmazás-kód **nem** módosítva.
+
+### Miért nem talált az ügyvéd sütit (verifikált magyarázat)
+(1) a nyitóoldalak **0 `Set-Cookie`**-t adnak · (2) a saját sütink csak **bejelentkezés után**, és **`HttpOnly`**-ak
+(`document.cookie`-ban nem látszanak) · (3) a fizetési sütik csak a fizetési felület megnyitásakor ·
+(4) a tárolás zöme **localStorage/sessionStorage/IndexedDB** — jogilag ePrivacy 5(3) alatt ugyanaz, ezért benne van.
+
+### Mennyiség (scope)
+3 saját HTTP-süti (`fdp_refresh_token`, `__stripe_mid`, `__stripe_sid`) · 2 harmadik-fél süti
+(`m` @ m.stripe.com, `__cf_bm` @ hcaptcha.com) · 8 tárolási tétel · **statisztikai és marketing süti: NINCS**
+(0 analitika a teljes flottán).
+⚠️ **Meglepetés:** a **Stripe hCaptcha-t is betölt** — a saját kódunkban a „captcha" szó nem is szerepel.
+
+### 🔧 FEJLESZTÉSI LELETEK (nem az ügyvédnek szólnak; a scope-osak az ő doksijában „megjegyzés"-ként igen)
+| Lelet | Hol | Mi | Scope? |
+|---|---|---|---|
+| 1-A | `token.futdevpro.hu` | **Nincs hozzájárulási sáv**, közben Stripe+hCaptcha sütik keletkeznek | ✅ scope |
+| 3-A | `adventor.futdevpro.hu` | Nincs hozzájárulási sáv | ✅ scope |
+| 2-A | `master-prompter.hu` | A hozzájárulási döntés **elvész** a bejelentkezési oldalra navigálva (2× reprodukálva) | ✅ scope |
+| 1-B / U-3 | `token.futdevpro.hu` | Hiányzó `fdp_refresh_token` a többihez képest — ok **nem verifikált** | ✅ scope |
+| — | `futdevpro.hu` | `/cookie-policy` még „draft — pending legal review" | ✅ scope (az ügyvéd doksija váltja fel) |
+| — | `art-tarot.hu`, `dum.futdevpro.hu` | Nincs hozzájárulási sáv; az `art-tarot.language` **hozzájárulás előtt** települ | 🅱️ **BACKLOG** (owner: „csak javítani kell majd") |
+
+### Kérdések az ügyvédhez (a kiküldött doksi 10. szakasza)
+1. A Stripe/hCaptcha csalásmegelőzési sütik „feltétlenül szükséges"-nek minősülnek-e?
+2. A fizetési felületen elég-e a **tájékoztatás**, vagy **hozzájárulási sáv** is kell?
+3. A **Google Fonts** IP-továbbítását külön kezeli-e a tájékoztatóban?
+
+### Következő
+- Levél az ügyvédnek a scope-szűkített leltárral (owner jóváhagyta a küldést).
+- A scope-os leletek (1-A, 2-A, 3-A, 1-B) **fejlesztési feladatként** kiadandók — **NEM** a Dev 2-nek
+  (az a számlázás-hyperplanon dolgozik).

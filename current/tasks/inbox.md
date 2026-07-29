@@ -32,6 +32,13 @@
 | 🥤 **Turmixgép vétele + egészségesebb étkezés** | `org:task:6a3e76e059295790375ab10b` | 2026-05-29 | ✅ organizerben |
 | 🖥️ **GPU-átrendezés** (kisebb kártya a fő gépbe, tehermentesítés) | `org:task:6a3e76e159295790375ab111` | 2026-05-29 | ✅ organizerben (dev/hw) |
 | 🔄 **Mirror-mode auto-sync** (lokál ↔ organizer) | `org:task:6a3e776c59295790375ab11f` | 2026-05-29 | ✅ organizerben (dev) · a manuális recording-discipline automatizálása |
+| 📚 **OGS tanterv** | `org:task:6a4e936fac124fca1303a32c` | 2026-07-08 | ✅ organizerben |
+| 🖼️ **Goldaholic (OGS) — képregény kezelés** | `org:task:6a4e9370ac124fca1303a332` | 2026-07-08 | ✅ organizerben |
+| 💬 **Goldaholic (OGS) — párbeszéd-generálás** (dialógus-fa formában) | `org:task:6a4e9370ac124fca1303a338` | 2026-07-08 | ✅ organizerben |
+| 💬 **CCAP élő kommunikáció — Discord + node-ok** (minél előbb, P=105) | `org:task:6a5556ae45ca6bb6d4be605d` | 2026-07-13 | ✅ organizerben |
+| 🧪 **Teszt + kísérletezés: `dc dataflow`** (dev-domain) | `org:task:6a64a7ca7a40e93d2f5f8e70` | 2026-07-19 | ✅ organizerben |
+| 🛒 **Bevásárló lista + household stock frissítése** | `org:task:6a64a7cb7a40e93d2f5f8e76` | 2026-07-19 | ✅ organizerben |
+| 🔌 **Konyhai node beüzemelése** (household stock quick-update) | `org:task:6a64a7cc7a40e93d2f5f8e7c` | 2026-07-19 | ✅ organizerben · ld. `feature-requests/kitchen-note-capture.md` |
 
 ### ⏰ Társasági adó — jövőbeli befizetések (due date-tel, "mindig elmarad")
 

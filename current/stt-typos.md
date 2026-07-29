@@ -52,6 +52,7 @@
 | "felakosítjuk" | felokosítjuk | általános | 2026-05-12 |
 | "fejlesztős" | fejlesztve | általános | 2026-05-12 |
 | "lófaszcse" | "lófaszt sem" / "lófasz se" | általános | 2026-05-12 |
+| "kétszemes" (feles pohár) | **két-centes** (2cl) | shopping (IKEA) | 2026-07-19 user korrekció ✅ |
 
 ---
 

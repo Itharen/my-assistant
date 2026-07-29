@@ -135,3 +135,41 @@ a my-assistant itt csak `fo`-fogyasztó.
 - **Tracking-javaslat:** ez egy **user task** → ha kéred, felveszem az organizer
   tasks-ba (`fo tasks.create`) — de a tasks modul `organizer-partial`, így
   **írás előtt jóváhagyás** kell. Szólj és berakom.
+
+---
+
+## 2026-07-13 — Dynamo Builder = legfőbb fejlesztési/nyereségi potenciál
+
+> 🔗 Org-tükör: `org:note:6a5556a345ca6bb6d4be6057`.
+
+### User szövege (verbatim)
+
+> Írjuk fel azt, hogy a legfőbb fejlesztési, nyerességi potenciálunk még mindig
+> a Dynamo Builder. És a Dynamo Builder-nek az a potenciája, hogy ugyan ma
+> mindenki szoftvergyáros, de ugye van nekünk egy elég komoly kis frameworkünk,
+> amit tovább is tudunk fejleszteni, és el tudunk készíteni olyan
+> eszközkészleteket, hogy konzisztensen, stabilan, kódhozzáférhető és natív
+> szerű rendszereket tudunk generálni, scriptek segítségével, AI nélkül is.
+
+### Strukturált jegyzet
+
+**Tézis:** a **Dynamo Builder** (a `@futdevpro/cli-dynamo` / Dynamo framework-
+ökoszisztéma) a **legfőbb fejlesztési + nyereségi potenciál** — ez a pozíció
+**változatlan** ("még mindig").
+
+| Piaci kontextus | Dynamo Builder differenciátor |
+|---|---|
+| Ma "mindenki szoftvergyáros" (AI-code-gen mindenhol) | **Komoly, meglévő framework** — nem AI-prompt-ra épülő, hanem **script-alapú generátor** |
+| AI-generált kód gyakran instabil / inkonzisztens | **Konzisztens + stabil** kimenet — determinisztikus scriptek |
+| Sok AI-tool "fekete doboz" | **Kódhozzáférhető** — a generált kód olvasható/szerkeszthető, natív-szerű rendszer |
+| AI-függő versenytársak | **AI nélkül is működik** — a script-alapú generálás önmagában érték |
+
+**Stratégiai implikáció:** a Dynamo Builder továbbfejlesztése (eszközkészletek
+bővítése) **közvetlen MVP-tétel** — nem csak belső tooling a többi projekthez,
+hanem **önálló, eladható termék-potenciál**.
+
+### Kapcsolódás
+- Projekt-térkép (fent): Master Prompter / Service sorok — a Dynamo Builder
+  a mögöttes **közös framework-réteg** mindkettőhöz
+- `current/principles/mvp-focus.md` 2026-05-29 "Sales-es szerzése" — a Dynamo
+  Builder a **portfólió** egyik legerősebb eladható eleme

@@ -51,6 +51,7 @@ szeparálás). Ütem: esetenkénti.
 
 ### 🪝 Egyéb
 - [ ] **Kampók** *(2026-05-29)*
+- [ ] **Két-centes feles poharak** (2cl, NEM 4cl) *(2026-07-13, javítva 2026-07-19 — STT: "kétszemes" → "két-centes")*
 
 ### 🛌 Ágynemű-batch (2026-05-29)
 - [ ] **Ágynemű** (újra)
