@@ -13,21 +13,17 @@
 **fogyasztói elállás arányos elszámolását** — felhasználói és admin felülettel, minden teszttel, kimerítő
 hibakezeléssel. **Owner: R1 MUST-HAVE.**
 
-## 2. MI VAN MÁR KÉSZ (verifikálva 2026-07-29) — ezt NE építsd újra
-| Réteg | Állapot | Bizonyíték |
-|---|---|---|
-| **Bedrock POJO/enum + eladó-SSOT** | ✅ **KÉSZ + PUBLIKÁLVA** — `@futdevpro/fdp-templates@1.15.91` (CI ✅) | `803be1b` (FDP_INV POJO+enums) · `e100a1a` (`src/_constants/fdp-seller-invoice-data.const.ts`) |
-| **Bedrock szamlazz.hu provider + VAT-resolver + invoicing service-base** | ✅ **KÉSZ + PUBLIKÁLVA** — `@futdevpro/nts-fdp-templates@1.15.93` (CI ⚠️ warning) | `7fa3ca6` |
-| **Bedrock szerver-oldali FTP-kliens** (MP-duplikátum konszolidálása) | ✅ commitolva | `7dbd65c` (nts-fdp-templates) |
-| **P1 — tárolás a token-service-ben** | ✅ **DEPLOYOLT** (token-service v01.15.196: `deploy` ✅ + `deploy-verify` ✅) | `2b0defe`: additív `TokenPurchase` mezők + **buyer-PII titkosítás** + FTP signed-URL (`ftp-url-signer.util.ts`, `invoice-pdf-storage.control-service.ts`) |
-| **3-rétegű terv-struktúra** | ✅ létrejött | `159f0e7`: `__documentations/plans/HYPERPLAN-INVOICING-REFUND.md` + **7 master-plan** (`INV-P0..P6`) + **14 sub-plan** + LEDGER |
+## 2. ⚠️ A REPÓ ÁLLAPOTA — AZ ELŐZŐ SESSION MUNKÁJA VISSZAGÖRGETVE
+**Owner (2026-07-29): „rollback-eltettem vele mindent."** → az előző session által létrehozott kód/terv-artefaktumok
+**NEM tekinthetők meglévőnek.** A korábbi verzióban itt szerepelt „mi van kész" lista (bedrock P0 publikálva, P1
+deployolva, 3-rétegű terv) **ÉRVÉNYTELEN** — visszagörgetve.
 
-**⚠️ Takarítanivaló (a bukott session hagyta):** a token-service-ben **uncommitted** módosítás van 2 sub-planon
-(`INV-SP-ftp-pdf-storage.md`, `INV-SP-invoice-pojo-enums.md`) + egy **untracked** `e2e/deep-timing.log`.
-→ Nézd át, commitold vagy dobd el; a log-fájl ne kerüljön be.
-
-**⚠️ CI-állapot (token-service v01.15.196): FAILED** — de a **deploy ZÖLD**; a pirosak: `dc-review-server` (5s),
-`dc-review-client` (4s), `e2e-deep` (10m timeout — ismert flake). **Ezeket rendbe kell tenni.**
+**KÖTELEZŐ ELSŐ LÉPÉS:** a tényleges állapot **saját verifikációja** (`core-no-guessing`, measure-twice):
+- `git log` + `git status` az érintett repókban (`fdp-token-service`, `fdp-templates`, `fdp-templates-nts`),
+- npm-en publikált bedrock-verziók, ha bármi kikerült,
+- CI/CD állapot (`fdp build-detail --project token-service`),
+- takarítanivaló (uncommitted maradékok, log-fájlok).
+**Ne építs semmit „már kész"-nek feltételezett alapra.**
 
 ## 3. MI VAN HÁTRA (a te feladatod)
 | Fázis | Tartalom |
@@ -70,8 +66,14 @@ hibakezeléssel. **Owner: R1 MUST-HAVE.**
 4. **Éves futó számláló** a határon átnyúló EU-s **B2C** bevételre + **riasztás 70% és 90%**-nál (admin + e-mail).
    *(OSS-regisztráció és ország-kulcs tábla feltöltése NEM R1 — csak a riasztás után.)*
 5. **Számla-nyelv:** a **user nyelve** szerint; HU / HU+EN.
-6. **Devizanem: minden EUR.** A számla pénzneme is EUR; a HUF-ÁFA NAV-riporthoz **MNB-középárfolyam**
-   *(minta: `fdp-assistant/cli/src/_collections/mnb-fx.util.ts`)*.
+6. **Devizanem — FRISSÍTVE (owner 2026-07-29):** **HU-fogyasztónak HUF-ban terhelünk** (Stripe multi-currency; a
+   kiírt bruttó HUF = a levont összeg), **nem-HU vevőnél EUR**. ⚠️ **Élő árfolyam kell:** EUR→HUF (fogyasztói ár) ÉS
+   **EUR→USD (belső token-számítás)** — ma a `token-conversion.util.ts`-ben az **`eurToUsd = 1.2` BE VAN ÉGETVE**, ami
+   **némán erodálja a ráhagyást** (a providerek USD-ben számláznak). **A ráhagyás (profitRate 1.2 + operatingCostRate
+   0.25 = 1.45×) VÁLTOZATLANUL marad.** Forrás: **MNB** — egy hívásból mindkét irány (EUR/USD = rate(EUR)/rate(USD));
+   minta: `fdp-assistant/cli/src/_collections/mnb-fx.util.ts`. Kötelező: cache + **utolsó ismert árfolyam fallback**
+   (soha ne blokkolja a vásárlást/generálást) + **a használt árfolyam ÉS dátuma mentendő** (audit).
+   ⚠️ **Stripe multi-currency → másik bankszámla** kell a Stripe-beállításban (owner-teendő).
 7. **Nincs retroaktív számlázás** — nincsenek meglévő vásárlások.
 
 ### 4.3 Elállás — arányos elszámolás (ÜGYVÉD ÁLTAL JÓVÁHAGYVA)
@@ -91,17 +93,31 @@ hibakezeléssel. **Owner: R1 MUST-HAVE.**
   (a jog online gyakorlására). A pontos tartalmi/működési követelményeket az ügyvéd adja meg.
 - **A törvényi elállási jog NEM korlátozható** (visszaélés esetén az ÁSZF fiók-felfüggesztést fog engedni — az ő dolga).
 
-### 4.4 Checkout-nyilatkozatok (3 feltétel)
+### 4.4 Checkout-nyilatkozatok (3 feltétel) + VEVŐ-MINŐSÉG NYILATKOZAT
+⚠️ **A vevő-minőséget a CÉLRÓL kell nyilatkoztatni, nem a jogi formáról** (ügyvéd 2026-07-29): „magánszemélyként"
+vs. „vállalkozás / egyéni vállalkozó / más szervezet nevében, **szakmai vagy üzleti célból**" — mert **fogyasztó
+kizárólag természetes személy** lehet, DE az **egyéni vállalkozó fogyasztónak minősülhet**, ha a szakmai
+tevékenységén KÍVÜLI célból vásárol. A választás **egyben a nyilatkozat** → ez dönti el az elállási jogot.
+⚠️ **ÚJ:** a számla kiállításáról **e-mail értesítés** kell (a számlával vagy közvetlen letöltő-linkkel).
+
 (1) hozzájárulás az azonnali teljesítéshez · (2) tudomásulvétel, hogy az elállási jog **a felhasznált kredit
 ARÁNYÁBAN** szűnik meg · (3) **e-mailes visszaigazolás** (tartós adathordozó).
 **A pontos szöveget az ügyvéd adja** → **verziózottan, cserélhetően** építsd (a meglévő `LEGAL_TERMS_VERSION` +
 consent-log mintájára). Céges vevőnél a jogvesztés-nyilatkozat **nem alkalmazandó**.
 
-### 4.5 ⚠️ Árfeltüntetés (nyitott — ügyvédi válaszra vár)
-**Mai állapot:** a csomag ára **NETTÓ**; `token-purchase.data-service.ts:127` → `cost = price × (1 + HU_vat)`; a
-felület `t-purchase.component.html:26,210` **„{price}€ + VAT(27%)"**-ot ír ki → a 4,99 €-s csomagért **6,34 €**
-terhelődik. **A bruttó, fizetendő végösszeget a csomag-listán ÉS a fizetési folyamatban IS ki kell írni** — ez
-mindenképp fejlesztés. A pontos megjelenítést (nettó főhelyen + bruttó kisebben?) **az ügyvéd válasza dönti el**.
+### 4.5 Árfeltüntetés — ÜGYVÉDI ÁLLÁSFOGLALÁS MEGÉRKEZETT (2026-07-29)
+**Fogyasztónál a BRUTTÓ az elsődleges ár — már a csomagválasztón is.** Az ügyvéd a „nettó nagyban + bruttó kicsiben"
+tervet **elutasította**. Kötelező sorrend:
+```
+6,34 €                          <- elsődleges (ténylegesen fizetendő)
+4,99 € nettó ár + 27% áfa       <- másodlagos, kisebb
+```
+A fizetési folyamat végén ismét egyértelműen a **teljes fizetendő összeg**.
+**B2B:** a nettó lehet az elsődleges — **de CSAK azután**, hogy a vásárló vállalkozásként **azonosította magát**; a
+közös csomagválasztón marad a bruttó.
+🔴 **HUF:** magyar fogyasztónál a **kizárólag EUR-os feltüntetés nem megfelelő** → a **bruttó árat forintban** kell
+elsődlegesen kiírni (az EUR kiegészítő). *(Mai kód: `t-purchase.component.html:26,210` „{price}€ + VAT(27%)";
+`token-purchase.data-service.ts:127` `cost = price × (1 + HU_vat)`.)*
 
 ### 4.6 Kimerítő hibakezelés (KIEMELT owner-követelmény)
 **Alaptézis: a számlázás bukása SOHA nem boríthatja a fizetést/jóváírást.**

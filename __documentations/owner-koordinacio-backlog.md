@@ -862,3 +862,65 @@ terhelődik. **Fogyasztónak a bruttó, fizetendő végösszeget is ki KELL írn
 A dev **egyetlen fájlt** írt (`fdp-token-service/__documentations/invoicing-refund-hyperplan-2026-07-28.md`, 233 sor),
 a kánon viszont **3-rétegű**: `plans/HYPERPLAN*.md` (+státusz/`COMPLETION-LEDGER.md`) → `plans/master-plans/*` →
 `plans/sub-plans/*` (minta: master-prompter, 12 master-plan + 36 sub-plan). → **átstrukturálás kiadva.**
+
+---
+
+## 53. (2026-07-29) — DEV-SESSION VÁLTÁS + ORKESZTRÁLÁSI SZABÁLYOK (owner-direktíva)
+**Session-váltás:** a régi dev session (`ccs-4c0444cc-ms1qhv46`, „MA3's Dev Assistant") **elbukott**, a munkáját az
+owner **visszagörgette** → **NYUGDÍJAZVA, tilos újra használni.**
+**Az AKTUÁLIS dev session:** **`ALL Projects - MA3 Dev 2`** · sessionId **`ccs-9bb0eb45-ms58nxrk`** ·
+ccapId `df6d8572-e655-4d55-a032-603afc8c4b26` · workspace `E:\Programming\Own\CURSOR`.
+*(A számlázás-hyperplant most az owner vezényli benne közvetlenül.)*
+
+**A bukásból levont 6 szabály — kanonikus doksi:**
+`documentations/guidelines/agent-workflow/dev-session-orchestration.md`
+1. **Soha ne mikromenedzseld** az agentet — csak a kulcspontokat add meg.
+2. **Előbb felderítés, aztán terv**, csak utána kód.
+3. **Nagy feladat előtt info-frissítés** (1 prompttal, az agentre bízva): szabályaink · alapos kutatás az érintett
+   területekről · szükség esetén flotta-architektúrális tudás.
+4. **Terv-architektúra: HYPERPLAN → MASTERPLAN → SUBPLAN** (a Hyperplan státusz-kezelésre is); a subplanek a **teljes
+   részletes implementációt** tartalmazzák; készítés közben **az érintett rendszert vizsgálni** (integrációk,
+   pattern-követés); **minden kérdést és architekturális döntést a tervezés során tisztázni.**
+5. **Review-loop:** a kész tervet alaposan reviewzni, a kört ismételni, **amíg új issue-t tár fel**.
+6. **Indítás EGYETLEN prompttal**, autonóm végrehajtásra, ScheduleWakeup-pal.
+
+---
+
+## 54. (2026-07-29) — ÜGYVÉDI VÁLASZOK → 4 új követelmény · B-út (HUF) · ÉLŐ ÁRFOLYAM-lelet · átadva az ÚJ devnek
+### Ügyvédi válaszok (2 levél)
+- **Közös levélre (UID 147783):** adózás/számvitel **nem az ő szakterülete** → Andrea álláspontjára támaszkodik.
+  **Fogyasztó = kizárólag természetes személy** (cégméret irreleváns); ⚠️ **egyéni vállalkozó fogyasztó lehet**, ha a
+  szakmai tevékenységén KÍVÜLI célból vásárol → **a CÉLRÓL kell nyilatkoztatni, nem a jogi formáról.** Az elállás
+  ÁFA-vonzatát **nem kell** az ÁSZF-be írni. **Számla-e-mail értesítés** (számla vagy közvetlen link) ajánlott.
+- **Árfeltüntetésre (UID 147784):** ⚠️ **ELUTASÍTOTTA** a „nettó nagyban + bruttó kicsiben" owner-tervet — fogyasztónál
+  **a BRUTTÓ az elsődleges ár** már a csomagválasztón. B2B-nál lehet nettó, **de csak az azonosítás után**.
+  🔴 **ÚJ:** magyar fogyasztónál a **kizárólag EUR-os ár nem megfelelő** → **HUF-ban is** ki kell írni.
+
+### Owner-döntések
+- **B-út:** **HU-fogyasztónak HUF-ban terhelünk** (Stripe multi-currency) — a kiírt bruttó HUF = a levont összeg.
+  *(A C-út — fix HUF-árlista — elvetve: „nem fogjuk tudni kézzel árfolyam-up-to-date tartani.")*
+- **Az USD-árfolyam is be kell kerüljön a belső token-számításba** (a providerek USD-ben számláznak).
+- **A ráhagyás marad:** profitRate 1.2 + operatingCostRate 0.25 = **effektív 1.45×**, változatlanul.
+- **Stripe multi-currency → másik bankszámlaszám** kell a Stripe-beállításban (owner-teendő).
+
+### 🔴 VERIFIKÁLT LELET — beégetett árfolyam
+`token-conversion.util.ts`: **`FDPTokenRate_eurToUsd = 1.2` BE VAN ÉGETVE** (a kód saját kommentje: *„a későbbiekben
+erre automatizmus kell majd"*). A providerek USD-ben számláznak → ha a valós EUR/USD elmozdul, **a ráhagyás némán
+erodálódik**, és **sehol nem látszik**. → élő árfolyam kell (EUR→USD belső, EUR→HUF fogyasztói).
+**Forrás: MNB** — egy hívásból mindkettő (HUF/EUR és HUF/USD → EUR/USD = rate(EUR)/rate(USD)); minta:
+`fdp-assistant/cli/src/_collections/mnb-fx.util.ts`. Kötelező: cache + **utolsó ismert árfolyam fallback** (soha ne
+blokkolja a vásárlást/generálást) + **a használt árfolyam ÉS dátuma mentendő** (auditálhatóság).
+
+### Dokumentálva
+`fdp-token-service/__documentations/invoicing-gap-and-plan-2026-07-28.md` → **3b/3** (F1–F4 ügyvédi követelmények) +
+**3b/4** (D1–D5: B-út, élő FX, ráhagyás, MNB-forrás, Stripe-bankszámla) ·
+`fdp-assistant/__documentations/legal-lawyer-communication.md` (mindkét levél).
+
+### Átadva
+**Az ÚJ dev sessionnek** (`ALL Projects - MA3 Dev 2`, `ccs-9bb0eb45-ms58nxrk`) — 9 kulcspont, a részletek a kanonikus
+doksira mutatva (nem mikromenedzsment).
+
+### Nyitott
+- **Könyvelőnek** írandó: **két pénznem** a számlázásban (HUF-os fogyasztói + EUR-os egyéb) + árfolyam-alkalmazás a
+  NAV-riportban → **P2-blokkoló lehet.**
+- A **HUF-payout bankszámla** eltérhet a `fdp-seller-invoice-data.md`-ben rögzítettől → tisztázandó.
