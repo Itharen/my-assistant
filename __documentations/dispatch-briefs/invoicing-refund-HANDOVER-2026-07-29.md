@@ -46,7 +46,13 @@ deployolva, 3-rétegű terv) **ÉRVÉNYTELEN** — visszagörgetve.
 | 2 | **HU cég** (adószámmal) | **27% belföldi** — ⚠️ *a fordított adózás NEM belföldre szól* | a vevő **adószáma** a számlán |
 | 3 | EU (nem HU) cég **érvényes közösségi adószámmal** | **fordított adózás (0%)** | EU-adószám + kötelező szöveg |
 | 4 | EU (nem HU) magánszemély | **27% HU** a 10 000 €/év küszöb alatt | — |
-| 5 | EU-n kívüli (magánszemély vagy cég) | **ÁFA hatályán kívül** | + import-ÁFA megjegyzés |
+| 5a | EU-n kívüli **magánszemély** | 🔴 **27% belföldi** — *javítva 2026-07-30* | — |
+| 5b | EU-n kívüli **cég** | **ÁFA hatályán kívül** | + import-ÁFA megjegyzés |
+
+> 🔴 **JAVÍTVA 2026-07-30:** a korábbi 5. sor („EU-n kívüli **magánszemély vagy cég** → hatályon kívül")
+> **HIBÁS VOLT** — a könyvelő **K3** (2026-06-16) és **FU-K1** (2026-06-19, *svájci magánszemély → 27%*:
+> *„Ez így helyes"*) a két esetet **szétválasztja**. A dev `SP-07` 10. esete végig helyes volt.
+> *(Egy célzott re-konfirmáció a könyvelőnél felírva — l. `ALL Projects/legal/_process/billing-gates-triage-2026-07-30.md` D/1.)*
 
 - **Ha a vevő nem ad meg adatot → 27%** (könyvelői iránymutatás).
 - **Az ÁFA ADATKÉNT** tárolódjon a számlán (kulcs + mód + jogi szöveg-kulcs) — **soha ne beégetett 27%**.

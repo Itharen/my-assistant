@@ -973,3 +973,48 @@ doksira mutatva (nem mikromenedzsment).
 - Levél az ügyvédnek a scope-szűkített leltárral (owner jóváhagyta a küldést).
 - A scope-os leletek (1-A, 2-A, 3-A, 1-B) **fejlesztési feladatként** kiadandók — **NEM** a Dev 2-nek
   (az a számlázás-hyperplanon dolgozik).
+
+---
+
+## 56. (2026-07-30) — DEV-KAPUK TRIÁZSA + 🔴 BRUTTÓ-FIX ÁRAZÁSI VÁLTÁS · kiadva a Dev 2-nek
+
+**Owner-utasítás:** *„a dev agent-nél van pár könyvelői/ügyvédi kérdés… egyelőre ne válaszolj neki, csak gyűjtsd
+össze a válaszokat és, hogy mit kell tényleg továbbítani"* → majd: *„ok, add át a dev-nek"*.
+
+### Triázs (kanonikus: `ALL Projects/legal/_process/billing-gates-triage-2026-07-30.md`)
+A Dev 2 **17 nyitott tartalom-kaput** regisztrált. Eredmény:
+- **4 kapura MÁR VOLT válasz** (G14 · G2 · G3/G4 · G6) — nem kell továbbítani.
+- **6 tétel MÁR KIMENT** 2026-07-28-án (A/B/C/E/F/G/I) — a **könyvelő azóta nem válaszolt** (utolsó tényleges
+  levélváltás **2026-06-19**) → a következő levél **sürgetés is** legyen.
+- **6 tételt TÉNYLEG el kell küldeni a könyvelőnek** (G17 · G20 · G14b · G6-pontosítás · G5 · G14-re-konfirmáció).
+- **ÜGYVÉDNEK nincs új kérdés** (G3/G4 = a megbízás szállítandói).
+
+### 🔴 Owner-döntések → kiadva
+`fdp-token-service/__agent/USER_INPUT.md` → **TASK-001** (commit `088ec23`, **lokális** — a dev pushja viszi ki,
+hogy ne triggereljünk külön CI-t) + rövid dispatch a `MA3 Dev 2`-nek (`ccs-9bb0eb45-ms58nxrk`), `success:true`.
+
+| | |
+|---|---|
+| **D10–D13 (G8b)** | ✅ jóváhagyva → **a P0 indulhat** |
+| **G2** | 🔴 **NETTÓ-FIX → BRUTTÓ-FIX**: a kiírt `4.99/…` a **bruttó**. **Mért hatás:** `cheap` **32 000 → 25 000 token** |
+| **G19** | FX-puffer nem kell; **ráhagyás 1.45× → 1.5×** *(javaslat: `operatingCostRate 0.25 → 0.30`)* |
+| **G17/G18/G15/G16** | mechanizmus épülhet · külön HUF+EUR bankszámla (owner-TODO) · sandbox-kutatás · go-live a P2 zárásakor |
+| **G14b** | **210 EUR lakossági, 0 céges** |
+| **G20** | nincs donation, és nem jár érte szolgáltatás → szkópon kívül |
+
+### 🔁 A review-loop számlálója NULLÁZÓDIK
+Az árazási változás miatt újra kell két egymást követő, nulla-findinges kör.
+
+### 🔴 Leletek
+1. **SSOT-drift javítva:** a HANDOVER §4.1 5. sora („EU-n kívüli **magánszemély vagy cég** → hatályon kívül")
+   **hibás volt** — a könyvelő K3/FU-K1 a két esetet **szétválasztja** (magánszemély **27%**). A **dev kódterve
+   végig helyes volt**. Javítva a HANDOVER-ben; a token-service doksijának javítását a devre bíztuk.
+2. **A Stripe-díj modellezése hibás:** 3% a **nettóra** számolódik, a Stripe a **terhelt bruttóra** → alulbecslés.
+3. **A „nincsenek meglévő vásárlások" feltevés megdőlt** — 210 EUR korábbi lakossági forgalom van.
+4. 📌 **A `documentations` repó új helye: `E:\Programming\Own\CURSOR\ALL Projects\`** (ugyanaz a git remote) →
+   a `documentations/...` útvonal-hivatkozásaink flotta-szinten elavultak.
+
+### Nyitott
+- **Könyvelői levél** (6 pont + sürgetés) — owner-jóváhagyásra vár.
+- **Owner-TODO:** Stripe HUF+EUR payout-számlák · szamlazz.hu sandbox/éles fiók (G15) · go-live dátum (G16).
+- Az **`1.5×` bontása** (`profitRate` vagy `operatingCostRate`) — a dev visszakérdezhet.
