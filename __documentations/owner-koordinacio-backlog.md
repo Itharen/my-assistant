@@ -1014,7 +1014,16 @@ Az árazási változás miatt újra kell két egymást követő, nulla-findinges
 4. 📌 **A `documentations` repó új helye: `E:\Programming\Own\CURSOR\ALL Projects\`** (ugyanaz a git remote) →
    a `documentations/...` útvonal-hivatkozásaink flotta-szinten elavultak.
 
+### ⏸️ KOMMUNIKÁCIÓS SZABÁLY — batch-and-hold (owner, 2026-07-30)
+> *„nincs sürgetés. és még ne küldjük el az új kérdéseket. majd ha kaptunk választ akkor ami addig
+> összegyűlt, elküldjük."*
+
+**NINCS sürgetés** a 07-28-i, válasz nélkül maradt könyvelői levelekre; az **új kérdéseket VISSZATARTJUK**
+(K-B1…K-B6). **Trigger: a következő bejövő könyvelői levél** → akkor **egyben** megy ki minden felgyűlt kérdés.
+⚠️ **G17 emiatt élesítési blokkoló marad** (a kód épül, a kapcsoló zárva) — a devnek így lett kiadva.
+*(Az ügyvédi csatornát ez nem érinti.)*
+
 ### Nyitott
-- **Könyvelői levél** (6 pont + sürgetés) — owner-jóváhagyásra vár.
+- **Könyvelői levél** (K-B1…K-B6) — ⏸️ **visszatartva**, a következő könyvelői válaszig gyűjtjük.
 - **Owner-TODO:** Stripe HUF+EUR payout-számlák · szamlazz.hu sandbox/éles fiók (G15) · go-live dátum (G16).
 - Az **`1.5×` bontása** (`profitRate` vagy `operatingCostRate`) — a dev visszakérdezhet.
