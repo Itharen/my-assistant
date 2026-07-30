@@ -17,3 +17,19 @@
   <!-- FR #3f Phase 4.A (cycle 59): status-bar footer (server + client version). -->
   <s-status-bar></s-status-bar>
 </div>
+
+<!-- FR-059-B0 — a NÉMA-ÉRTESÍTÉS bug javítása.
+     Az `A_Error_ControlService` doc-blokkja kimondja a szándékot: "Display a
+     debug-level descriptive toast via `DyNX_Message_ControlService`" — és az
+     `A_Error_Interceptor` + a globális `A_ErrorHandler_ControlService` is erre épül.
+     A `<dynamo-notifications-area>` viszont SEHOL nem volt kirenderelve (még
+     importálva sem az `app.module`-ban), tehát MINDEN hibaüzenet a semmibe ment.
+
+     Az area SZÁNDÉKOSAN az `.app-shell` div-en KÍVÜL, a template VÉGÉN van.
+     ⚠️ Ez az app még `ngx-dynamo@18.15.9`-en áll, amiben az area-nak MÉG NINCS
+     overlay-pozicionálása (az `:host{position:fixed}` a 18.17.45-tel jön) — addig
+     tehát flow-elemként viselkedik. A template végén ez ártalmatlan (üresen semmit
+     nem foglal, értesítéskor a dokumentum aljára kerül), a lényeg viszont MOST
+     megvan: a hibaüzenetek végre LÁTHATÓK. A valódi toast-viselkedés a dep-bumppal
+     jön (18.15.9 → ≥18.17.45), ami külön, saját verifikációt igénylő lépés. -->
+<dynamo-notifications-area></dynamo-notifications-area>

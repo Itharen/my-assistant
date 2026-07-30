@@ -3,7 +3,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
 
-import { DyNX_FULLDependencies_Module, DyNX_Fab_Shell_Component } from '@futdevpro/ngx-dynamo';
+import {
+  DyNX_FULLDependencies_Module,
+  DyNX_Fab_Shell_Component,
+  DyNX_NotificationsArea_Component,
+} from '@futdevpro/ngx-dynamo';
 import { provideFdpnxFeedbackFabPlugin } from '@futdevpro/ngx-fdp-templates';
 
 import { AppComponent } from './app.component';
@@ -29,6 +33,9 @@ import { S_VersionReloadBanner_Component } from './_components/s-version-reload-
     S_StatusBar_Component,
     // FR #3f Phase 4.B (cycle 60): version-reload banner standalone component.
     S_VersionReloadBanner_Component,
+    // FR-059-B0: a toast-ok megjelenitesehez — eddig SEHOL nem volt kirenderelve,
+    // ezert minden hibauzenet a semmibe ment.
+    DyNX_NotificationsArea_Component,
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
