@@ -22,7 +22,7 @@ Ezek a jegyzetek arra valók, hogy:
 
 | Fájl | Mit fed le |
 |---|---|
-| [`workspace-projects.md`](workspace-projects.md) | **Teljes workspace inventory** — FDP/NPM/OGS projektek + központi documentations/ + per-project doc-belépők (absolut path-okkal) |
+| [`workspace-projects.md`](workspace-projects.md) | **Teljes workspace inventory** — FDP/NPM/OGS projektek + központi fdp-documentations/ + per-project doc-belépők (absolut path-okkal) |
 
 ### my-assistant projekt-belső
 

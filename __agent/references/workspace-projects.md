@@ -295,7 +295,7 @@ FDP project scaffold templates (backend / frontend / full-stack mintaprojektek).
 
 ```
                    ┌─────────────────────────────────────────────┐
-                   │         documentations/ (central)           │
+                   │         fdp-documentations/ (central)           │
                    │  guidelines, specs, priorities, plans       │
                    └─────────────────────────────────────────────┘
                                     △ referenced by all
@@ -351,7 +351,7 @@ relációk:
 | **organizer-cli** | A `fo` CLI-t használjuk (telepítve, lásd [`organizer-cli-setup.md`](organizer-cli-setup.md)) |
 | **fdp-auth-service** | Az `fo` CLI ide auth-ol be (organizer test env API key) |
 | **fdp-devops** | Az organizer test env itt fut (Docker Compose stack) |
-| **`documentations/live-projects-priorities.md`** | Az **organizer** prio státuszának forrása ott van — ha ott LOW lesz, my-assistant migráció kockázatos |
+| **`fdp-documentations/live-projects-priorities.md`** | Az **organizer** prio státuszának forrása ott van — ha ott LOW lesz, my-assistant migráció kockázatos |
 
 ---
 
@@ -371,7 +371,7 @@ relációk:
 3. Forrás: `E:\Programming\Own\CURSOR\NPM-packages\dynamo-nts\src\`
 
 ### Cross-project query (pl. "mely projektek használnak fdp-auth-service-t?")
-A `documentations/live-projects-priorities.md` ad egy klasszifikációt, de a
+A `fdp-documentations/live-projects-priorities.md` ad egy klasszifikációt, de a
 **konkrét depenedncia-mátrix nincs központilag karbantartva** — `package.json`-okból
 kell összeolvasni. Egy potenciális follow-up: dependency-mátrix script.
 

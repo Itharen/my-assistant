@@ -42,7 +42,7 @@
 - **Admin:** számla-lista + keresés + újraküldés/újrageneráltatás + a sikertelen számlázások kezelése.
 
 ### (d) REFUND + RÉSZLEGES REFUND (elállás)
-- **Kanonikus terv (OLVASD EL):** `documentations/legal/_process/withdrawal-prorata-design-2026-07-28.md`.
+- **Kanonikus terv (OLVASD EL):** `fdp-documentations/legal/_process/withdrawal-prorata-design-2026-07-28.md`.
 - **Lényeg:** az ügyvéd (2026-07-28) **elutasította** a „csomag megkezdése = teljes jogvesztés" szabályt →
   **ARÁNYOS ELSZÁMOLÁS** kell: `visszatérítés = maradék(P)/megvásárolt(P) × fizetett ár(P)`, ahol a `maradék(P)` a
   **FIFO** szerinti, még el nem költött rész az **élő egyenlegből** (`tokenBalance + lockedTokens`).
@@ -75,4 +75,4 @@ elállási jog **a felhasznált kredit ARÁNYÁBAN** szűnik meg, (3) **e-mailes
    **megállsz és jelentesz**. Nincs polling, nincs háttér-task.
 3. Minden fázis után frissítsd a projekt `__documentations/`-ját (document-everything hard rule).
 4. **Kapcsolódó kanonikus doksik:** `fdp-token-service/__documentations/invoicing-gap-and-plan-2026-07-28.md` ·
-   `documentations/legal/legal-obligations-ssot.md` (16. sor) · a fenti withdrawal-terv.
+   `fdp-documentations/legal/legal-obligations-ssot.md` (16. sor) · a fenti withdrawal-terv.

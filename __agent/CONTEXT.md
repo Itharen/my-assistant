@@ -42,7 +42,7 @@ A scope az organizer projekt domain-jeit tükrözi.
 ## Külső rendszerek (referencia)
 
 - **Workspace-szintű inventory** — [`references/workspace-projects.md`](references/workspace-projects.md):
-  teljes FDP / NPM / OGS projekt-térkép, központi `documentations/` belépőpontok,
+  teljes FDP / NPM / OGS projekt-térkép, központi `fdp-documentations/` belépőpontok,
   per-project doc-belépők absolut path-okkal. Ezzel kezdj ha bármi cross-project kérdés merül fel.
 - **Organizer projekt** — `LIVE-projects/organizer/` — végső cél, jelenleg fejlesztés alatt
   - [`references/organizer.md`](references/organizer.md) — teljes inventory (port-ok, MCP, tesztek, CLI)

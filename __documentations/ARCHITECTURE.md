@@ -75,4 +75,4 @@ A my-assistant pattern-megfelelőségi audit (cli/server/client vs FDP partner-e
 
 ## Workspace context
 
-A workspace-szintű inventory (FDP / NPM / OGS projektek + központi `documentations/` belépők + per-project doc-belépők): [`../__agent/references/workspace-projects.md`](../__agent/references/workspace-projects.md).
+A workspace-szintű inventory (FDP / NPM / OGS projektek + központi `fdp-documentations/` belépők + per-project doc-belépők): [`../__agent/references/workspace-projects.md`](../__agent/references/workspace-projects.md).

@@ -59,7 +59,7 @@ Készíts **teljes, verifikált süti-leltárt** (+ a sütikkel egy tekintet al�
   és ezt a tényt a riportban **kimondod** (hány kör futott, mit nézett mindegyik).
 
 ## 4. KIMENET
-`documentations/legal/_process/cookie-inventory-2026-07-29.md` — **egy tábla**, a fenti mezőkkel, domainenként
+`fdp-documentations/legal/_process/cookie-inventory-2026-07-29.md` — **egy tábla**, a fenti mezőkkel, domainenként
 csoportosítva; a végén:
 - **Módszertan** (hány kör, milyen nézőpontok, mit mértél és hogyan),
 - **Bizonytalanságok** (`unverified` tételek külön listán),

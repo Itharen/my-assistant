@@ -7,7 +7,7 @@
 > **Projekt-agent:** ide gyűjtsd a bedrock-ba szükséges fejlesztési igényeket — a projektből NEM módosíthatod a `NPM-packages/*` repókat. **CSAK pending elemek.** Ami elkészült (🟢/⚪) → **vágd át** a [`BEDROCK-FRS-RESOLVED.md`](./BEDROCK-FRS-RESOLVED.md)-be.
 > **Bedrock-agent:** olvasd, és töltsd ki a "Bedrock response" blokkot (státusz + pointer: commit/verzió/meglévő API).
 >
-> Teljes protokoll: `documentations/guidelines/development/bedrock-feature-requests.md`
+> Teljes protokoll: `fdp-documentations/guidelines/development/bedrock-feature-requests.md`
 
 ## Index
 

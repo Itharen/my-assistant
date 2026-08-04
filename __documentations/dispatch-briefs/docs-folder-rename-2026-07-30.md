@@ -4,7 +4,7 @@
 > **Miért ez a session:** a `MA3 Dev 2` a számlázás-hyperplanon dolgozik — **nem zavarjuk**.
 
 ## 0. A HÁTTÉR (kötelező olvasmány)
-`ALL Projects/research/docs-repo-folder-rename-2026-07-30.md` — a felderítés: **ki/mikor/miért** nevezte át,
+`fdp-documentations/research/docs-repo-folder-rename-2026-07-30.md` — a felderítés: **ki/mikor/miért** nevezte át,
 és **mit tört el**. Röviden: az **Obsidian**ban a vault neve = a mappa neve, ezért a dokumentációs mappák
 rövid vault-nevet kaptak (`ALL Projects`, `OGS`, `CCAP`, `Organizer`, `TERA`, `3x3`). A központi doksi-repó
 átnevezése **785 hivatkozást** tett elavulttá **374 fájlban**.
@@ -22,7 +22,7 @@ rövid vault-nevet kaptak (`ALL Projects`, `OGS`, `CCAP`, `Organizer`, `TERA`, `
 1. **A GITHUB-REPÓ NEVE NEM VÁLTOZIK.** A remote marad `git@github.com:futdevpro/documentations.git`,
    illetve `Oldlight-Games-Studio/documents.git`. **Csak a LOKÁLIS MAPPA neve** változik.
    → **TILOS** átírni a `github.com/...` URL-eket, a `.git` végződésű hivatkozásokat és a remote-konfigot.
-2. **A `__documentations/` (projekt-szintű) MAPPÁKAT NEM ÉRINTJÜK.** Csak a **csupasz** `documentations/`
+2. **A `__documentations/` (projekt-szintű) MAPPÁKAT NEM ÉRINTJÜK.** Csak a **csupasz** `fdp-documentations/`
    útvonal-hivatkozások cserélendők. *(Használható minta: `\bdocumentations/` — a `_` szó-karakter, ezért a
    `__documentations/` nem illeszkedik rá. **De ellenőrizd**, ne vakon bízz benne.)*
 3. **AZ OBSIDIAN MOST FUT, és az `OGS` vault NYITVA van** (mérve: `%APPDATA%\obsidian\obsidian.json`).
@@ -40,14 +40,14 @@ A két mappa átnevezése az 1. pont szerint. Előtte győződj meg róla, hogy 
 - **Mért kiindulás (2026-07-30):** `\bdocumentations/` → **785 találat / 374 fájl** (`*.md`, `node_modules` nélkül).
 - ⚠️ **A mérés CSAK markdownra futott.** **Nézd át a nem-markdown fájlokat is** (`*.ts`, `*.json`, `*.ps1`,
   `*.bat`, `*.yml`, `.fdpfamignore`, `.cursor/rules/*`) — ott is lehetnek beégetett útvonalak.
-- ⚠️ **Az `ALL Projects/...` és `OGS-projects/OGS/...` alakú hivatkozásokat is javítsd** — ezekből a mai napon
+- ⚠️ **Az `fdp-documentations/...` és `OGS-projects/ogs-documents/...` alakú hivatkozásokat is javítsd** — ezekből a mai napon
   keletkezett néhány (a `billing-gates-triage-2026-07-30.md`, a `fdp-token-service/__agent/USER_INPUT.md`
   TASK-001, a `my-assistant` backlog §55–56, és a felderítési rekord).
 - **Prioritás — ezek a legsúlyosabbak, mert MINDEN session-be betöltődnek:**
   a workspace-gyökér **`CLAUDE.md` (14 találat)** és **`AGENTS.md` (8)**.
 - A **legterheltebb fájlok** (mért): `my-assistant/…/owner-koordinacio-backlog.md` (25) ·
   `master-prompter/…/MP-0-legal-compliance.md` (16) · `MP-6-marketing-launch.md` (11) ·
-  `ALL Projects/USER-INPUT.md` (11) · `organizer/…/USER-INPUT.md` (10) · `__agent/WORKFLOW.md` (9) ·
+  `fdp-documentations/USER-INPUT.md` (11) · `organizer/…/USER-INPUT.md` (10) · `__agent/WORKFLOW.md` (9) ·
   `fdp-token-service/…/HYPERPLAN-BILLING.md` (9).
 - ⚠️ **A történeti mondatokat ne írd át értelmetlenre.** A felderítési rekord szándékosan beszél a régi
   nevekről (`ALL Projects`, `OGS`) — ott a **múltbeli tény** marad, csak egy záró megjegyzés kell, hogy

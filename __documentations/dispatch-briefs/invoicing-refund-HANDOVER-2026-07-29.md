@@ -52,7 +52,7 @@ deployolva, 3-rétegű terv) **ÉRVÉNYTELEN** — visszagörgetve.
 > 🔴 **JAVÍTVA 2026-07-30:** a korábbi 5. sor („EU-n kívüli **magánszemély vagy cég** → hatályon kívül")
 > **HIBÁS VOLT** — a könyvelő **K3** (2026-06-16) és **FU-K1** (2026-06-19, *svájci magánszemély → 27%*:
 > *„Ez így helyes"*) a két esetet **szétválasztja**. A dev `SP-07` 10. esete végig helyes volt.
-> *(Egy célzott re-konfirmáció a könyvelőnél felírva — l. `ALL Projects/legal/_process/billing-gates-triage-2026-07-30.md` D/1.)*
+> *(Egy célzott re-konfirmáció a könyvelőnél felírva — l. `fdp-documentations/legal/_process/billing-gates-triage-2026-07-30.md` D/1.)*
 
 - **Ha a vevő nem ad meg adatot → 27%** (könyvelői iránymutatás).
 - **Az ÁFA ADATKÉNT** tárolódjon a számlán (kulcs + mód + jogi szöveg-kulcs) — **soha ne beégetett 27%**.
@@ -147,7 +147,7 @@ FTP-feltöltés bukás · PDF-letöltés bukás · valuta/kerekítés élek · *
   az **`FTP_URL_SIGNING_SECRET` MÁR LÉTEZIK** — ne vegyél fel újat.
 - **Eladó-adatok:** **bedrock SSOT const** (`fdp-templates/src/_constants/fdp-seller-invoice-data.const.ts` — **kész**),
   mindenhol onnan olvasva, sehol nem duplikálva. Dokumentáció:
-  `documentations/guidelines/development/fdp-seller-invoice-data.md`.
+  `fdp-documentations/guidelines/development/fdp-seller-invoice-data.md`.
 - **Patterns-first · SSOT · fix-forward (no workaround/rollback) · rich-error · dokumentálj mindent · e2e-hard-rule
   (automata feature-E2E, nem smoke) · no-polling · mindig master, commit+push.**
 - **Munkamód:** fázis-szinkron — egy fázis → unit+e2e teszt → `dc review` → commit+push → **CI/CD zöld** → **megállsz
@@ -160,9 +160,9 @@ FTP-feltöltés bukás · PDF-letöltés bukás · valuta/kerekítés élek · *
 |---|---|
 | **A terv (3-rétegű)** | `LIVE-projects/fdp-token-service/__documentations/plans/HYPERPLAN-INVOICING-REFUND.md` + `plans/master-plans/INV-P0..P6` + `plans/sub-plans/` |
 | Számlázási rés + döntések + ÁFA-mátrix | `LIVE-projects/fdp-token-service/__documentations/invoicing-gap-and-plan-2026-07-28.md` |
-| **Elállás/arányos elszámolás terve** | `documentations/legal/_process/withdrawal-prorata-design-2026-07-28.md` |
-| Eladó-adatok SSOT | `documentations/guidelines/development/fdp-seller-invoice-data.md` |
-| Jogi kötelezettségek (flotta) | `documentations/legal/legal-obligations-ssot.md` |
+| **Elállás/arányos elszámolás terve** | `fdp-documentations/legal/_process/withdrawal-prorata-design-2026-07-28.md` |
+| Eladó-adatok SSOT | `fdp-documentations/guidelines/development/fdp-seller-invoice-data.md` |
+| Jogi kötelezettségek (flotta) | `fdp-documentations/legal/legal-obligations-ssot.md` |
 | Ügyvéd-levelezés (döntések, zöld út) | `LIVE-projects/fdp-assistant/__documentations/legal-lawyer-communication.md` |
 | Könyvelői input | `LIVE-projects/fdp-assistant/__documentations/accountant-communication.md` |
 | Működő szamlazz.hu minta (élesben számlázott) | `LIVE-projects/fdp-assistant/cli/src/_auto/issue-invoice.ts` |

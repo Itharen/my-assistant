@@ -21,7 +21,7 @@ Az owner szerint **három** ügyvéd/szerep kell (nem feltétlenül három szem�
 | **(B)** | Szerződés-jog (**fix** kapcsolat) | keret-/együttműködési/vállalkozási szerződések írása + review | ⬜ keresendő |
 | **(C)** | **Cégügyintézés** | **cégcím-átírás**, **TEÁOR-szám** felírás, egyéb céges ügyintézés | ⬜ keresendő |
 
-- **(A) jelenlegi ügyvéd:** a `documentations/legal/_kuldendo-ugyvednek/` csomag (ÁSZF, adatkezelés, cookie,
+- **(A) jelenlegi ügyvéd:** a `fdp-documentations/legal/_kuldendo-ugyvednek/` csomag (ÁSZF, adatkezelés, cookie,
   creator-szabályzat, trust-safety-AUP) kiment, review-ra vár → **ez kapuzza a prod-élesítést.**
   **Következő:** friendly reminder (tervezet lent, owner-jóváhagyásra) **+ párhuzamosan alternatív ügyvéd.**
 
@@ -63,9 +63,9 @@ Köszönöm, üdvözlettel,
 
 - **Az owner korábban készített egy doksit** arról, **mi kecsegtet a legnagyobb profit-potenciállal /
   miből lehet leggyorsabban pénz.** Ezt kell megtalálni.
-- **VALÓSZÍNŰ találat (owner-megerősítésre):** `documentations/business/portfolio-monetization-priorities.md`
+- **VALÓSZÍNŰ találat (owner-megerősítésre):** `fdp-documentations/business/portfolio-monetization-priorities.md`
   (2026-07-14, „owner-jegyzet, projektpriorizálás, monetizációs prioritások"). Kapcsolódó:
-  `documentations/business/profit-roadmap.md`, `.../temporary-notes/consultations/project-priority-consultation-result.md`.
+  `fdp-documentations/business/profit-roadmap.md`, `.../temporary-notes/consultations/project-priority-consultation-result.md`.
 - ⚠️ **A „mikro-munkák" (Upwork/hasonló) NEM ehhez tartozik** — az egy KÜLÖN, későbbi bevétel-ötlet,
   és **arról nincs doksi** (egyszer belekezdtünk máshol, feljegyzés nélkül).
 
@@ -86,8 +86,8 @@ FAM-ból előkerült a keresett doksi-lánc és a mikromunka helye:
 
 **KÉT KÜLÖN pénz-nézet van, ne keverjük:**
 
-- **(I) Termék-portfólió monetizáció** — `documentations/business/portfolio-monetization-priorities.md`
-  (2026-07-14). **Forrás-lánc:** a projektpriorizálási **konzultáció** (`documentations/temporary-notes/
+- **(I) Termék-portfólió monetizáció** — `fdp-documentations/business/portfolio-monetization-priorities.md`
+  (2026-07-14). **Forrás-lánc:** a projektpriorizálási **konzultáció** (`fdp-documentations/temporary-notes/
   consultations/project-priority-consultation.md` + `-result.md`) volt a *source*, abból lett ez a
   priorizálási doksi. **Üzleti-plafon sorrend:** 1) Dynamo Builder · 2) Master Prompter · 3) NIS Datasets ·
   4) Adventor · 5) Art Tarot. **Art Tarot = a leggyorsabb első-bevételig** (kis plafon). Ez a **„melyik
@@ -227,7 +227,7 @@ NEM jó rájuk. A helyes út a **cc-session HTTP API** a lokál szerveren.
 
 Az owner joggal kérte a verifikációt. **Van alapos felmérés (2026-07-19, kód+live-verifikált, 3+1 subagent)
 — DE csak agent-memóriában** (`project_monetization_readiness_assessment_2026_07_19`), **NEM önálló
-dokumentált report** a `documentations/business/`-ben. + **6 napos** → friss re-verify kell.
+dokumentált report** a `fdp-documentations/business/`-ben. + **6 napos** → friss re-verify kell.
 
 **A felmérés CÁFOLJA a „termékek launch-közeliek, csak ügyvéd kell" képet:**
 - **Master Prompter:** fizetési motor KÉSZ + CI-zöld (test-mode), DE a **jogi út ZSÁKUTCA** — az ügyvéd az
@@ -241,7 +241,7 @@ dokumentált report** a `documentations/business/`-ben. + **6 napos** → friss 
 **KÖVETKEZTETÉS (korrigált):** NINCS termék, ami tisztán „egy ügyvédi válaszra" van a launch-tól. A leggyorsabb
 pénz-út a felmérés szerint **Adventor befejezése (DEV)** — amit a dev-sessionnek lehet kiadni —, MP jogi ág =
 külön, valódi-ügyvéd sáv (ez a mostani ügyvéd-keresés relevanciája). **Teendő:** friss launch-readiness
-re-verify + rendes dokumentált report (`documentations/business/`), mielőtt bármit „launch-közelinek" veszünk.
+re-verify + rendes dokumentált report (`fdp-documentations/business/`), mielőtt bármit „launch-közelinek" veszünk.
 
 ---
 
@@ -260,7 +260,7 @@ re-verify + rendes dokumentált report (`documentations/business/`), mielőtt b�
 - Termékenként friss verifikáció (MP · Adventor · NIS · Dynamo Builder · Art Tarot): live reachability +
   monetizációs loop + valós blokkolók + first-euro távolság + „mi változott 07-19 óta". A régi (07-19)
   felmérés CSAK memóriában volt és elavulhat → ez a friss, dokumentált csere.
-- **Kimenet:** dátumozott, alaposan dokumentált report(ok) a `documentations/business/`-be (My Assistant 3 írja
+- **Kimenet:** dátumozott, alaposan dokumentált report(ok) a `fdp-documentations/business/`-be (My Assistant 3 írja
   a verifikációk alapján). Ez teljesíti a „MINDENT dokumentálni" + „friss report" direktívát.
 
 ---
@@ -268,7 +268,7 @@ re-verify + rendes dokumentált report (`documentations/business/`), mielőtt b�
 ## 15. FÁZIS-8 EREDMÉNY (2026-07-26) — friss reportok KÉSZ + sub-session kimenetek
 
 ### 15.1 ✅ Friss, dokumentált launch/profitability-report KIÍRVA + pusholva
-- **Hely:** `documentations/business/launch-readiness-2026-07-26/` — README (fastest-money index) + 5 termék-report
+- **Hely:** `fdp-documentations/business/launch-readiness-2026-07-26/` — README (fastest-money index) + 5 termék-report
   (master-prompter · adventor · nis-datasets · dynamo-builder · art-tarot). Live-HTTP + kód-verifikált (file:line),
   NEM memória. Commit `f5df067`.
 - **KULCS-FELISMERÉS:** MP + Adventor UGYANAZON gaten (közös `fdp-token-service` élesítése: Stripe live + ügyvéd-ÁSZF)
@@ -293,7 +293,7 @@ re-verify + rendes dokumentált report (`documentations/business/`), mielőtt b�
 
 ### 16.1 HARD RULE: „mindent dokumentálni"
 Fleet HARD RULE-lá emelve (owner: mindenkire MINDIG, nincs kivétel). Kanonikus:
-`documentations/rules/global/core-document-everything.md` + workspace `CLAUDE.md` HARD RULE szekció.
+`fdp-documentations/rules/global/core-document-everything.md` + workspace `CLAUDE.md` HARD RULE szekció.
 
 ### 16.2 NIS = ZSÁKUTCA (owner-döntés)
 Gumroad bizonyítottan nem megy (marketing kell, nem automatizálható, commodity, nincs kereslet); saját
@@ -343,7 +343,7 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 - **Placement-korrekció:** a business/profitability doksik a **„documents" repóba** valók =
   `OGS-projects/documents/` (a CLAUDE.md szerint OGS/**FDP** közös dokumentum-repo). Áthelyezve
   → `OGS-projects/documents/Business/` (launch-readiness-report + portfolio/profit-roadmap/…); a
-  `documentations/business/` törölve. Ez mostantól a business-doksik kanonikus otthona.
+  `fdp-documentations/business/` törölve. Ez mostantól a business-doksik kanonikus otthona.
 - **Koncepció-korrekció:** a koncepció-összefoglalót **MÁR elküldtük (07-19)** (platform, kredit/Stripe,
   AI szöveg+kép, HU+EU, magánszemélyek+cégek). NEM kell újra.
 - **Amit tartozunk = consent form** (07-20-i ígéret). **Draft kész:**
@@ -356,10 +356,10 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 
 ### 19.1 OGS-hiba visszavonva
 - Tévesen az `OGS-projects/documents`-be raktam a business doksikat. **OGS NEM scope** (külön történet, nem FDP).
-  **Visszaállítva** a `documentations/business/`-be (= az FDP docs-repo: `E:\...\CURSOR\documentations`); az
+  **Visszaállítva** a `fdp-documentations/business/`-be (= az FDP docs-repo: `E:\...\CURSOR\documentations`); az
   OGS-repóból eltávolítva.
 
-### 19.2 A jogi dokumentumok MÁR ELKÉSZÜLTEK (nem kellett újra) — kanonikus: `documentations/legal/`
+### 19.2 A jogi dokumentumok MÁR ELKÉSZÜLTEK (nem kellett újra) — kanonikus: `fdp-documentations/legal/`
 - **V3 pre-final** (`terms-n-conditions/final/pre-v3/`): ÁSZF/T&C, adatkezelési tájékoztató, cookie,
   **hozzájáruló nyilatkozat (consent form)**; `buy-tokens/final/pre-v3/fizetési ÁSZF`. + pre-v1/v2 verziók.
 - **Küldhető csomag** (`_kuldendo-ugyvednek/`): 7 doksi (.md + .pdf) + átadási checklist — ÁSZF, adatkezelési,
@@ -377,7 +377,7 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 ---
 
 ## 20. FÁZIS-13 (2026-07-26) — jogi freshness-audit (verify-only, hard evidence)
-**Kanonikus report:** `documentations/legal/_process/legal-freshness-audit-2026-07-26.md`.
+**Kanonikus report:** `fdp-documentations/legal/_process/legal-freshness-audit-2026-07-26.md`.
 - **Kanonikus jelenlegi = V3 (07-20)**: konszolidált ÁSZF (AUP beleolvasztva; creator-payout/crowdfunding/18+ KISCOPE-olva) + adatkezelési (GDPR 9. cikk átkeretezve) + cookie + fizetési ÁSZF + consent form.
 - **ELAVULT (07-03, V1):** `_kuldendo-ugyvednek/` (7-doc modell, rossz kanonikus-pointer), `legal/README.md`, `_process/V1-PREFINAL-MASTER-PLAN.md`. → a user gyanúja IGAZOLT.
 - **Az ügyvéd MÁR megkapta a V3-at (4 doksi, 07-19).** NINCS elküldve: a **consent form** + a **Art.9-frissített adatkezelési** (07-20) → ez a valódi „next round".
@@ -398,7 +398,7 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 ---
 
 ## 22. FÁZIS-15 (2026-07-26) — dev kód-verify KÉSZ + „ne variáljunk a küldött doksikon" korrekció
-**Report:** `documentations/legal/_process/code-compliance-verify-2026-07-26.md`.
+**Report:** `fdp-documentations/legal/_process/code-compliance-verify-2026-07-26.md`.
 - **Mindkét rés MEGERŐSÍTVE a jelenlegi kódban:** (1) verziózott consent-napló SEHOL — a token-service pipák
   csak kliens-oldaliak, a szerverre el sem mennek, nulla elfogadás-rekord (súlyosabb, mint hittük); (2) prompt
   **plaintext** a Mongóban (MP `flow`/`flow_run`, adventor `generation`); csak in-transit TLS.
@@ -493,7 +493,7 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 
 ## 30. FÁZIS-23 (2026-07-26) — HARD RULE: NO POLLING + a dev-terminate valós oka
 - **ÚJ HARD RULE (owner, dühösen):** TILOS a polling / active-monitoring / háttér-poll / háttér-task — minden
-  agentnek. Kanonikus: `documentations/rules/global/core-no-polling.md` + workspace `CLAUDE.md` HARD RULE.
+  agentnek. Kanonikus: `fdp-documentations/rules/global/core-no-polling.md` + workspace `CLAUDE.md` HARD RULE.
   A dev korábbi `b56ocy1df`/`b72qvf3ff`/`bmbqnnmno` háttér-poll-jai pont ezt sértették (beragadtak).
 - **A dev-et NEM a user állította le** → **CCAP cc-terminal-handling bug** (a user már dolgozik rajta). A
   „Terminated by user" státusz FÉLREVEZETŐ. Recovery = `resume` + re-dispatch; a dev bármikor újraindulhat.
@@ -576,7 +576,7 @@ GitHub default már master (owner). my-assistant lokál `main`→`master` igazí
 - **Owner-direktíva:** a titkosítás-migráció NE külön CLI `--apply` legyen, hanem **deploy-integrált** — az új
   verzió ELSŐ indulásakor fusson automatikusan `app.server.postProcess`-ben (nts beépített helper). Kell egy
   **migráció-nyilvántartó „server info" ledger-tábla** (app/rendszer-verzió + lefutott migrációk) hogy egyszer fusson.
-- **Kánon feljegyezve:** `documentations/guidelines/development/deploy-integrated-migrations.md` + memória
+- **Kánon feljegyezve:** `fdp-documentations/guidelines/development/deploy-integrated-migrations.md` + memória
   (`reference_deploy_integrated_migrations`). Meglévő ad-hoc minta: MP `app.server.postProcess`+`migration()`
   dátum-gate (kikommentelve).
 - **DEV-nek kiadva (spec-first):** verifikáld mi van az nts-ben (ledger létezik-e) → tervezd meg a ledgert
@@ -752,7 +752,7 @@ első bootján lefutott (boot-safe, ledger-alapú run-once, gap-safe). **A koord
 ### Dokumentálás — kanonikus helyek (NEM keverve, SSOT-pointerekkel)
 | Információ-típus | Otthon |
 |---|---|
-| Jogi ígéret ↔ kód-valóság mátrix (kereszt-metszet, W1–W5 SoT) | `documentations/legal/_process/legal-claims-vs-implementation-2026-07-27.md` |
+| Jogi ígéret ↔ kód-valóság mátrix (kereszt-metszet, W1–W5 SoT) | `fdp-documentations/legal/_process/legal-claims-vs-implementation-2026-07-27.md` |
 | Token-lejárat rendszer-tény + rés | `fdp-token-service/__documentations/token-expiry-enforcement-status-2026-07-27.md` |
 | MP megosztás/moderáció rendszer-tény + rés | `master-prompter/__documentations/public-sharing-moderation-gap-2026-07-27.md` |
 | Adventor korosztály kód-vs-release drift | `adventor/__documentations/age-rating-release-scope-2026-07-27.md` |
@@ -784,13 +784,13 @@ R1-ben). A negatív lista **szűkíti** az ügyvéd munkáját → a fix díj ta
 **VERIFIKÁLT LELET, ami a döntést kiváltotta:** az Adventor preset-létrehozó UI **mind a 3 besorolást felkínálta,
 köztük a 18+-t**, gating nélkül (`a-preset-create.component.ts:55` `Object.values(AgeRating)`).
 
-**ÚJ SSOT (owner-igény):** `documentations/legal/legal-obligations-ssot.md` — **17 jogi kötelezettség** táblája:
+**ÚJ SSOT (owner-igény):** `fdp-documentations/legal/legal-obligations-ssot.md` — **17 jogi kötelezettség** táblája:
 kötelezettség · jogforrás · **mi hozta a flottába** · kikre vonatkozik · **megfelelés MA (verifikált)** · **release**.
 Kiemelt sorok: consent-log ✅R1 · at-rest titkosítás ✅R1 · notice-and-action 🔴/❔ · token-lejárat 🔴 · AI Act 50. 📐 ·
 18+ ⛔R1-kizárva · creator-payout ⛔ · DPA ⛔ · pénzügyi engedély 🟡feltételes.
 
-**Dokumentálás (kanonikus otthonok):** döntés+dilemma → `documentations/legal/_process/r1-legal-scope-gating-decision-2026-07-27.md` ·
-kötelezettség-nyilvántartás → `documentations/legal/legal-obligations-ssot.md` · Adventor rendszer-tény + döntés →
+**Dokumentálás (kanonikus otthonok):** döntés+dilemma → `fdp-documentations/legal/_process/r1-legal-scope-gating-decision-2026-07-27.md` ·
+kötelezettség-nyilvántartás → `fdp-documentations/legal/legal-obligations-ssot.md` · Adventor rendszer-tény + döntés →
 `adventor/__documentations/age-rating-release-scope-2026-07-27.md` (+ CLAUDE.md spec-sor ⛔-jelölve).
 
 **Következő:** (a) dev-dispatch: korosztály-UI eltávolítása R1-re · (b) ügyvéd-levél véglegesítés (képesség-szintű
@@ -800,7 +800,7 @@ leírás + negatív lista + két-domain korrekció) → owner-jóváhagyással m
 
 ## 51. (2026-07-27) — SSOT rendszer-oszlopokkal · SimplePay-drift · domain-egyesítés R2 · Adventor-leírás a levélbe
 **Owner-inputok feldolgozva:**
-1. **SSOT átépítve** (`documentations/legal/legal-obligations-ssot.md`): **(A) megfelelési mátrix** — 17 kötelezettség ×
+1. **SSOT átépítve** (`fdp-documentations/legal/legal-obligations-ssot.md`): **(A) megfelelési mátrix** — 17 kötelezettség ×
    **9 rendszer-oszlop** (FDP · AUTH · ToS · MP · ADV · ART · WB · SOC · DUM; a `ssl-config.json`-ból verifikált
    PROD-élő vs. test/launch-cél besorolással), **(B) részlet-tábla** (jogforrás · mi hozta · bizonyíték · release).
    **Lelet a mátrixból:** a PROD-élő, de nem launch-fókuszú rendszerek (FDP főoldal, ART, WB, SOC, DUM) jogi
@@ -873,7 +873,7 @@ ccapId `df6d8572-e655-4d55-a032-603afc8c4b26` · workspace `E:\Programming\Own\C
 *(A számlázás-hyperplant most az owner vezényli benne közvetlenül.)*
 
 **A bukásból levont 6 szabály — kanonikus doksi:**
-`documentations/guidelines/agent-workflow/dev-session-orchestration.md`
+`fdp-documentations/guidelines/agent-workflow/dev-session-orchestration.md`
 1. **Soha ne mikromenedzseld** az agentet — csak a kulcspontokat add meg.
 2. **Előbb felderítés, aztán terv**, csak utána kód.
 3. **Nagy feladat előtt info-frissítés** (1 prompttal, az agentre bízva): szabályaink · alapos kutatás az érintett
@@ -934,7 +934,7 @@ doksira mutatva (nem mikromenedzsment).
 `dispatch-briefs/cookie-inventory-2026-07-29.md`.
 
 ### Eredmény
-- **Belső, TELJES változat (SSOT):** `documentations/legal/_process/cookie-inventory-2026-07-29.md` (243 sor, commit `4ab6aea`).
+- **Belső, TELJES változat (SSOT):** `fdp-documentations/legal/_process/cookie-inventory-2026-07-29.md` (243 sor, commit `4ab6aea`).
 - **ÜGYVÉDNEK küldött, scope-szűkített változat:** `…/cookie-inventory-2026-07-29-UGYVEDNEK.md`
   — **owner-döntés:** *„csak a scope projektekről (ne keverd bele most az art-tarot-t, azt csak javítani kell majd, backlog)"*.
   Benne: `futdevpro.hu` · `master-prompter.hu` · `adventor.futdevpro.hu` · `token.futdevpro.hu`.
@@ -981,7 +981,7 @@ doksira mutatva (nem mikromenedzsment).
 **Owner-utasítás:** *„a dev agent-nél van pár könyvelői/ügyvédi kérdés… egyelőre ne válaszolj neki, csak gyűjtsd
 össze a válaszokat és, hogy mit kell tényleg továbbítani"* → majd: *„ok, add át a dev-nek"*.
 
-### Triázs (kanonikus: `ALL Projects/legal/_process/billing-gates-triage-2026-07-30.md`)
+### Triázs (kanonikus: `fdp-documentations/legal/_process/billing-gates-triage-2026-07-30.md`)
 A Dev 2 **17 nyitott tartalom-kaput** regisztrált. Eredmény:
 - **4 kapura MÁR VOLT válasz** (G14 · G2 · G3/G4 · G6) — nem kell továbbítani.
 - **6 tétel MÁR KIMENT** 2026-07-28-án (A/B/C/E/F/G/I) — a **könyvelő azóta nem válaszolt** (utolsó tényleges
@@ -1011,8 +1011,8 @@ Az árazási változás miatt újra kell két egymást követő, nulla-findinges
    végig helyes volt**. Javítva a HANDOVER-ben; a token-service doksijának javítását a devre bíztuk.
 2. **A Stripe-díj modellezése hibás:** 3% a **nettóra** számolódik, a Stripe a **terhelt bruttóra** → alulbecslés.
 3. **A „nincsenek meglévő vásárlások" feltevés megdőlt** — 210 EUR korábbi lakossági forgalom van.
-4. 📌 **A `documentations` repó új helye: `E:\Programming\Own\CURSOR\ALL Projects\`** (ugyanaz a git remote) →
-   a `documentations/...` útvonal-hivatkozásaink flotta-szinten elavultak.
+4. 📌 **A `documentations` repó új helye: `E:\Programming\Own\CURSOR\fdp-documentations\`** (ugyanaz a git remote) →
+   a `fdp-documentations/...` útvonal-hivatkozásaink flotta-szinten elavultak.
 
 ### ⏸️ KOMMUNIKÁCIÓS SZABÁLY — batch-and-hold (owner, 2026-07-30)
 > *„nincs sürgetés. és még ne küldjük el az új kérdéseket. majd ha kaptunk választ akkor ami addig
