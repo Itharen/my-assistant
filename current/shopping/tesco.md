@@ -41,6 +41,9 @@ Szabályok: `current/principles/recurring-tasks.md` (2-3 hetente megrendelés) +
 - [ ] Aftershave
 - [ ] **Hajkefe × 2** *(2026-05-29)*
 
+### Papír / irodaszer 📄
+- [ ] **A4-es papír** *(2026-08-04)*
+
 > **Megjegyzés (2026-05-12):** cigi **NEM** Tesco-ból (dohánybolt) — eltávolítva.
 > **Megjegyzés (2026-05-22):** tömény szesz (vodka/rum/Kapitány) **NEM** Tesco-ból → `kinai.md`.
 

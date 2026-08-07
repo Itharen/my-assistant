@@ -125,6 +125,37 @@
 
 ---
 
+## 2026-08-04 — kiterjesztés (Opinion / social platform: ízlés-profil + ajánló-feed)
+
+> 🔗 Org-tükör: `org:note:6a74d0d973f7157d43d6e9cc`.
+
+### User szövege (verbatim)
+
+> A social media platformunkhoz föl kéne venni azt, hogy be lehessen állítani a
+> kedvenc filmeket, zenéket, be lehessen rétingelni, csillagozni egytől tízig a
+> filmeket, sorozatokat, zenéket. és az egyik automatikus feedünk az legyen az,
+> hogy az új filmek, új sorozatok, sorozatmegjelenések, zene szám megjelenések
+> ajánlásokat adnak az alapján, amiket szeretsz.
+
+### Strukturált jegyzet
+
+**2 új képesség a saját social platformhoz (Opinion):**
+
+| # | Feature | Részletek |
+|---|---|---|
+| 1 | **Ízlés-profil** | Kedvenc **filmek** + **zenék** beállítása profilban |
+| 2 | **1–10 csillagos rating** | Filmek / **sorozatok** / zenék értékelése (NEM 1–5 — a user explicit 1-től 10-ig mondta) |
+| 3 | **Automatikus ajánló-feed** | Az egyik **beépített feed** = **új megjelenések** (új film / új sorozat / **sorozat-epizód megjelenés** / **új zeneszám**) ajánlva az ízlés-profil + ratingek alapján |
+
+**Architektúra-jelöltek:**
+- **Ajánló-motor:** a meglévő **vektor-kereséses** infrastruktúra (#4 dedup) újrahasznosítható — ízlés-embedding vs. új-megjelenés-embedding
+- **Release-feed forrás:** külső katalógus-API-k (film/sorozat/zene megjelenés-adatok) — forrás-választás TBD, `no-paid-solutions.md` szerint FOSS/ingyenes preferált
+- **Feed-típus:** ez az **első nem-voting feed** az Opinionban → a platform "multi-feed" architektúrát igényel
+
+**Kapcsolódás:** #4 (Opinion voting) + #1 (Opinion mint social-media) — ez a harmadik láb: a **content-discovery / ízlés-alapú feed**, ami a "9gag-szerű, de építő" pozicionálást konkrétan is kitölti.
+
+---
+
 ## 2026-05-16 #2 — kiterjesztés (node-based iframe rendszer + szabályok + RAG microservice)
 
 ### User szövege

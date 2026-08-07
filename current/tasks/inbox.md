@@ -14,7 +14,7 @@
 | Task | Org-ref | Felvéve | Status |
 |---|---|---|---|
 | **Mutti-nak odaadni a fagyasztott zöldségeket** | `org:task:6a1af22c1aaf1ebfb627df10` | 2026-05-29 | ✅ organizerben |
-| 🚗 **Jogosítvány megszerzése** — **TOP PRIO (P=120, legmagasabb)** | `org:task:6a49435b1a4a07c9fb0d36ef` | 2026-07-04 | ✅ organizerben |
+| 🚗 **Jogosítvány meghosszabbítása** — lejár 2026-09, **TOP PRIO (P=120)** | `org:task:6a49435b1a4a07c9fb0d36ef` | 2026-07-04 (pontosítva 2026-08-04) | ✅ organizerben |
 | 🔴 **Üzemorvosnak utánanézni** (magas prió, **P=118**, jogosítvánnyal hasonló szint) | `org:task:6a1c5b69daaf57307ecb6f58` | 2026-05-29 (prio ↑ 2026-07-04) | ✅ organizerben |
 | **MediaMarkt számla** | `org:task:6a1c5b6adaaf57307ecb6f5e` | 2026-05-29 | ✅ organizerben |
 | 🌐 **Frontend performance eszköz** (dev-domain) | `org:task:69a05561c1f77dfa09287eae` | 2026-05-29 | 🔀 **ÖSSZEVONVA** a meglévő Core-Web-Vitals taskba; a mai duplikátum (`…6f64`) archiválva |
@@ -39,6 +39,21 @@
 | 🧪 **Teszt + kísérletezés: `dc dataflow`** (dev-domain) | `org:task:6a64a7ca7a40e93d2f5f8e70` | 2026-07-19 | ✅ organizerben |
 | 🛒 **Bevásárló lista + household stock frissítése** | `org:task:6a64a7cb7a40e93d2f5f8e76` | 2026-07-19 | ✅ organizerben |
 | 🔌 **Konyhai node beüzemelése** (household stock quick-update) | `org:task:6a64a7cc7a40e93d2f5f8e7c` | 2026-07-19 | ✅ organizerben · ld. `feature-requests/kitchen-note-capture.md` |
+
+### 🎯 Fő-feladat sorozat (2026-08-04) — jogosítvány → LinkedIn → organizer → mikromunka
+
+| Task | Org-ref | Prio | Status |
+|---|---|---|---|
+| 🚗 **Jogosítvány meghosszabbítása** — van jogsi, **2026-09-ben lejár** | `org:task:6a49435b1a4a07c9fb0d36ef` | 120 | ✅ organizerben (pontosítva 2026-08-04) · menete: `org:note:6a721b3fce096533ed9289d4` |
+| 💼 **LinkedIn — válaszok megírása** | `org:task:6a72198dce096533ed928987` | 112 | ✅ organizerben |
+| 🗂️ **Organizer aktív használat kiépítése** | `org:task:6a72198ece096533ed92898e` | 110 | ✅ organizerben |
+| 💰 **Mikromunkák beindítása** | `org:task:6a72198fce096533ed928995` | 108 | ✅ organizerben |
+
+### 2026-08-06 batch
+
+| Task | Org-ref | Felvéve | Status |
+|---|---|---|---|
+| 🎟️ **Subscription-token: rövid TTL + breakage-alapú árazás** (dev-domain) | `org:task:6a74d0d773f7157d43d6e9bf` | 2026-08-06 | ✅ organizerben · jegyzet: `org:note:6a74d0d873f7157d43d6e9c6` |
 
 ### ⏰ Társasági adó — jövőbeli befizetések (due date-tel, "mindig elmarad")
 

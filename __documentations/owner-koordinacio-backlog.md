@@ -1027,3 +1027,43 @@ Az árazási változás miatt újra kell két egymást követő, nulla-findinges
 - **Könyvelői levél** (K-B1…K-B6) — ⏸️ **visszatartva**, a következő könyvelői válaszig gyűjtjük.
 - **Owner-TODO:** Stripe HUF+EUR payout-számlák · szamlazz.hu sandbox/éles fiók (G15) · go-live dátum (G16).
 - Az **`1.5×` bontása** (`profitRate` vagy `operatingCostRate`) — a dev visszakérdezhet.
+
+---
+
+## 57. 🔴 (2026-08-07) — NÉGY FIZETÉSI ENDPOINT AUTH NÉLKÜL + 3 további pénz-úti lelet · mind megválaszolva
+
+**Kiváltó:** a `MA3 Dev 2` **23 órán át állt** négy nyitott kérdéssel — köztük egy **kritikus biztonsági**
+lelettel. A koordinátor mind a négyet megválaszolta (2026-08-07 03:4x), a session **fut** (`promptCount 202`).
+
+### 🔴🔴🔴 A legsúlyosabb — négy fizetési végpont hitelesítés nélkül (AO-20260805-004)
+| Végpont | Hol |
+|---|---|
+| `POST /payments/top-up` · `POST /payments/google` · `POST /payments/initiate` | `stripe.controller.ts` |
+| `POST /transaction/new` *(donation)* | `donate.controller.ts` |
+
+Mind a négy **EGYETLEN** őre a `authenticate_tokenPerm_spendTestTokenOnTestEnv`, amelynek bedrock-kódja
+`if (environment !== test) { return; }` ⇒ **prod-on NO-OP**. A `userId` a **`req.body`-ból** jön, `issuer ↔ userId`
+ellenőrzés **nincs**. ⭐ A **bedrock saját doc-commentje mondja ki**, hogy ez *„NEM helyettesíti a standard
+auth-ot… különben PRODon auth nélkül marad az endpoint"*.
+
+**Miért nem kihasználható MA:** a `token.conf` **prod-blokkja ki van kommentezve** (`expose:`, nem `ports:`).
+⚠️ **De ez szerencse, nem tervezés** — a compose komment **expliciten tervezi** a cutover-lépést, és a
+kikommentezett blokk **`location /`**-en proxyzna ⇒ **latens, előre élesített launch-blokkoló**.
+⚠️ **A verifikáció is vak volt rá:** az e2e `authProtected` 401-es assertje **csak teszt-envben** teljesült.
+
+**Döntés:** **(a) — azonnal**, `authenticate_tokenSelf` mind a négyre, külön commitban.
+
+### A másik három
+| # | Lelet | Döntés |
+|---|---|---|
+| **AO-…-003** | A **szerver-oldali donation-út ÉL**, SimplePay-alapú, **számlázás nélkül** *(a 337 soros service-ben 0 `invoice` hivatkozás)* — a kliens-felületet már töröltük | **Kivezetés** — ⚠️ **de előbb mérni**, van-e élő `Donate` rekord: ha van, **az adat marad** (bizonylat-megőrzés), csak a route megy |
+| **AO-…-005** | A **refund-clawback** az **egyetlen** balance-primitív a `finding #3` idempotencia-őr nélkül; a kód kommentje egy **nem létező** unique-constraintre hivatkozik mint 3. védelmi rétegre | **Őr + hiányzó teszt IGEN.** ⚠️ A unique index **csak duplikátum-mérés után** — meglévő dupén a build elbukna. A hamis kód-komment javítandó |
+| **AO-…-001** | DoD-sweep: **5 gyökér-ok tart nyitva 17 DoD-pontot** | **Mind az 5 IGEN.** A verzió-tábláknál a dev javaslata elfogadva: a történeti cél **marad**, mellé *„túlteljesült"* jelölés |
+
+### Kiadott sorrend
+1. auth-javítás → 2. clawback-őr → 3. donation-kivezetés → 4. i18n → 5. fx-admin → 6. verzió-jelölés →
+7. **refund-bizonylat** *(a legnagyobb; az ügyvédnek vállalt kötelezettség)*
+
+### Orkesztrálási tanulság
+Az **eszkaláció helyes volt** (pénz-út + biztonság = owner-kapu). ⚠️ **A 23 órás állás nem** — a `B/C/D`
+tételek **érdemben nem igényeltek** owner-döntést. Ismét kiadva: *kérdezz ÉS haladj tovább azzal, ami nem függ tőle.*
