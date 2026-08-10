@@ -1,6 +1,6 @@
 {
   "name": "@my-assistant/server",
-  "version": "0.1.283",
+  "version": "0.1.284",
   "private": true,
   "description": "my-assistant server — DyNTS + FDP framework, MongoDB-backed.",
   "type": "module",
@@ -26,11 +26,11 @@
     "validate:naming": "dynamo-validate-naming"
   },
   "dependencies": {
-    "@futdevpro/fdp-templates": "1.15.24",
-    "@futdevpro/fsm-dynamo": "1.15.9",
+    "@futdevpro/fdp-templates": "1.15.106",
+    "@futdevpro/fsm-dynamo": "1.16.35",
     "@futdevpro/ngx-dynamo-models": "1.15.8",
-    "@futdevpro/nts-dynamo": "1.15.74",
-    "@futdevpro/nts-fdp-templates": "1.15.28",
+    "@futdevpro/nts-dynamo": "1.15.133",
+    "@futdevpro/nts-fdp-templates": "1.15.114",
     "crypto-js": "~4.2.0",
     "express": "4.21.2",
     "mongoose": "~8.10.1",

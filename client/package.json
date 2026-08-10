@@ -1,6 +1,6 @@
 {
   "name": "@my-assistant/client",
-  "version": "0.1.283",
+  "version": "0.1.284",
   "private": true,
   "description": "my-assistant Angular client — Dynamo NGX + FDP NGX templates + Material + Tailwind.",
   "DyBu_settings": {
@@ -34,11 +34,11 @@
     "@angular/platform-browser": "~18.2.13",
     "@angular/platform-browser-dynamic": "~18.2.13",
     "@angular/router": "~18.2.13",
-    "@futdevpro/fdp-templates": "1.15.24",
-    "@futdevpro/fsm-dynamo": "1.15.9",
-    "@futdevpro/ngx-dynamo": "18.15.9",
+    "@futdevpro/fdp-templates": "1.15.106",
+    "@futdevpro/fsm-dynamo": "1.16.35",
+    "@futdevpro/ngx-dynamo": "18.17.65",
     "@futdevpro/ngx-dynamo-models": "1.15.8",
-    "@futdevpro/ngx-fdp-templates": "18.15.15",
+    "@futdevpro/ngx-fdp-templates": "18.15.74",
     "@kolkov/angular-editor": "3.0.0-beta.0",
     "@types/crypto-js": "~4.2.2",
     "crypto-js": "~4.2.0",

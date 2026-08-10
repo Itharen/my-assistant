@@ -20,22 +20,14 @@ import {
 import { DyNTS_AppExtended, DyNTS_SocketServerService } from '@futdevpro/nts-dynamo/socket';
 import { DyNTS_Logs_Service, DyNTS_getLogsRoutingModule } from '@futdevpro/nts-dynamo/logs';
 
-import {
-  FDP_errors_dataParams,
-  FDP_feedback_dataParams,
-  FDP_feedbackVote_dataParams
-} from '@futdevpro/fdp-templates';
-
 import { version } from '../package.json';
+
+import { myAssistant_dbModels } from './_collections/db-models.collection';
 
 import { Auth_ControlService } from './_services/core-services/auth.control-service';
 import { Errors_DataService } from './_routes/errors/errors.data-service';
 import { Errors_Controller } from './_routes/errors/errors.controller';
 import { Feedback_Controller } from './_routes/feedback/feedback.controller';
-
-import { wave_dataParams } from './_models/data-models/wave.data-model';
-import { insight_dataParams } from './_models/data-models/insight.data-model';
-import { capture_dataParams } from './_models/data-models/capture.data-model';
 
 import { Wave_Controller } from './_routes/wave/wave.controller';
 import { WaveJsonl_Controller } from './_routes/wave/wave-jsonl.controller';
@@ -88,15 +80,9 @@ export class App extends DyNTS_AppExtended {
     return {
       authService: this.authService,
       errorHandler: this.getGlobalErrorHandler(),
-      dbModels: [
-        wave_dataParams,
-        insight_dataParams,
-        capture_dataParams,
-        FDP_errors_dataParams,
-        // Global feedback system (M5a-pattern rollout)
-        FDP_feedback_dataParams,
-        FDP_feedbackVote_dataParams,
-      ],
+      // A lista SSOT-ja a `_collections/db-models.collection.ts` — igy a guard-spec UGYANAZT a
+      // listat meri, amit az app regisztral (nem tud szetdriftelni).
+      dbModels: myAssistant_dbModels,
     };
   }
 

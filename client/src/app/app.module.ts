@@ -44,8 +44,22 @@ import { S_VersionReloadBanner_Component } from './_components/s-version-reload-
     { provide: ErrorHandler, useClass: A_ErrorHandler_ControlService },
     // Register the feedback FAB plugin into DyNX_Fab_Overlay_ControlService at boot (M4).
     // Hits the my-assistant server's /api/feedback/* endpoints (per-system storage).
+    //
+    // ⚠️ AZ `apiBaseUrl` SZANDEKOSAN NINCS MEGADVA — a bedrock defaultja `/api`
+    // (ngx-fdp-templates 18.15.72+). NE ird vissza `''`-re!
+    //
+    // A korabbi `apiBaseUrl: ''` NEM mukodott (BFR-ADVENTOR-012 hibaosztaly): a `DyNX_ApiService`
+    // sima konkatenacioval epit (`url = baseUrl + endpoint`), tehat a hivas a `/feedback/...` utra
+    // ment volna — amit a single-image szerver SPA-catch-all-ja szolgal ki (a kizaras csak `/api`
+    // es `/auth-api`). Eredmeny: HTTP 200 + text/html -> JSON-parse-hiba -> a panel orokre ures, a
+    // bekuldes mindig elhasal, es a user SEMMILYEN 4xx-et nem lat (nema bukas). Merve az adventoron,
+    // a master-prompteren es a helocian is, test ES prod hoszton egyarant.
+    //
+    // A mezo ELHAGYASA (nem `/api`-ra allitasa) a legrobusztusabb: igy a bedrock default ervenyesul,
+    // es egy kesobbi flotta-szintu valtoztatas automatikusan ide is atjon. A projektnek nincs
+    // `environments/` mappaja (merve), tehat az adventor-fele `environment.api.baseUrl` minta itt
+    // NEM alkalmazhato.
     provideFdpnxFeedbackFabPlugin({
-      apiBaseUrl: '',
       defaultProjectId: 'my-assistant',
     }),
   ],

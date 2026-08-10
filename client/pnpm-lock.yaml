@@ -39,20 +39,20 @@ importers:
         specifier: ~18.2.13
         version: 18.2.14(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(@angular/platform-browser@18.2.14(@angular/animations@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1)))(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1)))(rxjs@7.8.1)
       '@futdevpro/fdp-templates':
-        specifier: 1.15.24
-        version: 1.15.24(@futdevpro/fsm-dynamo@1.15.9(rxjs@7.8.1)(supports-color@8.1.1))
+        specifier: 1.15.106
+        version: 1.15.106(@futdevpro/fsm-dynamo@1.16.35(rxjs@7.8.1)(supports-color@8.1.1))
       '@futdevpro/fsm-dynamo':
-        specifier: 1.15.9
-        version: 1.15.9(rxjs@7.8.1)(supports-color@8.1.1)
+        specifier: 1.16.35
+        version: 1.16.35(rxjs@7.8.1)(supports-color@8.1.1)
       '@futdevpro/ngx-dynamo':
-        specifier: 18.15.9
-        version: 18.15.9(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))
+        specifier: 18.17.65
+        version: 18.17.65(cbab2a295e5d3284689d68faa6ed16bb)
       '@futdevpro/ngx-dynamo-models':
         specifier: 1.15.8
-        version: 1.15.8(@futdevpro/fsm-dynamo@1.15.9(rxjs@7.8.1)(supports-color@8.1.1))(rxjs@7.8.1)(supports-color@8.1.1)
+        version: 1.15.8(@futdevpro/fsm-dynamo@1.16.35(rxjs@7.8.1)(supports-color@8.1.1))(rxjs@7.8.1)(supports-color@8.1.1)
       '@futdevpro/ngx-fdp-templates':
-        specifier: 18.15.15
-        version: 18.15.15(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))
+        specifier: 18.15.74
+        version: 18.15.74(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(@futdevpro/fsm-dynamo@1.16.35(rxjs@7.8.1)(supports-color@8.1.1))(@futdevpro/ngx-dynamo@18.17.65(cbab2a295e5d3284689d68faa6ed16bb))
       '@kolkov/angular-editor':
         specifier: 3.0.0-beta.0
         version: 3.0.0-beta.0(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))
@@ -1261,18 +1261,18 @@ packages:
       eslint-plugin-prettier: 5.1.3
       prettier: 3.3.0
 
-  '@futdevpro/fdp-templates@1.15.24':
-    resolution: {integrity: sha512-yGsgLI/R+Q1+7hKkhsiScuVzfmD9bElOXI+8SW6JDnQwPmsfQGy4FsWMvGbCZSBWoZYd+gpKAHIxy00ROmeX1A==}
+  '@futdevpro/fdp-templates@1.15.106':
+    resolution: {integrity: sha512-qNb/ylVxtRy2DFft/tL/mawHngA18zZSKN4FhpkjKJBR57/DSb4s1F57Q5Qz8UDEMGO/2ZOYXTP57b0Eeze83w==}
     peerDependencies:
-      '@futdevpro/fsm-dynamo': 1.15.8
+      '@futdevpro/fsm-dynamo': 1.16.28
 
   '@futdevpro/fsm-dynamo@1.15.8':
     resolution: {integrity: sha512-nfrB+QIzo6BCHyTi0YwEu4h+q/1Tyv0t9EPCe0jeTLk6W3ABP6PueX027E/SS5C/rpuoXnyLpui+Iun3HYX3Mw==}
     peerDependencies:
       rxjs: 7.8.1
 
-  '@futdevpro/fsm-dynamo@1.15.9':
-    resolution: {integrity: sha512-6yNbUUmUu5G+WY60lhGHVAdF21yLLRsE6IIlhE38K0R7rHgV0pylV7tGLBRcbS7n6W/n4DW2fqiHe6ERPkbwoA==}
+  '@futdevpro/fsm-dynamo@1.16.35':
+    resolution: {integrity: sha512-xJimW2kL3DCLHnwN+nVUywY9Zd9tcQTLRuqopBKxnQX1iDh0Uek4iKSjYaGVn1BlVCrmdW8fQhi1bylaE5+VGg==}
     peerDependencies:
       rxjs: 7.8.1
 
@@ -1283,17 +1283,33 @@ packages:
       '@futdevpro/fsm-dynamo': 1.15.8
       rxjs: 7.8.1
 
-  '@futdevpro/ngx-dynamo@18.15.9':
-    resolution: {integrity: sha512-thgd+n3rArR5kc5xJ9so3hZQNsaxvS7au+lmkfqcSJTtznVvOlqJ7nlBwTjzOsWuFqM7mmAd2FgBldoc1rrGpA==}
+  '@futdevpro/ngx-dynamo@18.17.65':
+    resolution: {integrity: sha512-1lO/klewfmxMWC/lYUZTSvoBYX0Pf5rzbGwx3Etk38Gg8smD3/e/ljqvGlII1iwLjWjqAD1yFsfQbS8Ebjkssg==}
     peerDependencies:
       '@angular/common': 18.2.13
       '@angular/core': 18.2.13
+      '@futdevpro/fdp-templates': '>=01.15.77'
+      '@futdevpro/fsm-dynamo': '>=01.16.31'
+      '@kolkov/angular-editor': '>=3.0.0'
+      marked: '>=15.0.0'
+      ngx-image-compress: ~15.1.6
+      ngx-image-cropper: ~7.2.1
+      ngx-mask: ^17.0.0
+    peerDependenciesMeta:
+      '@kolkov/angular-editor':
+        optional: true
+      ngx-image-compress:
+        optional: true
+      ngx-image-cropper:
+        optional: true
 
-  '@futdevpro/ngx-fdp-templates@18.15.15':
-    resolution: {integrity: sha512-qFgOq9ifitK4KPG8K6PJH1ROjxTTaUrB8i995gbqwk9Q+vDfWGXi+Z38ET33XYjrm3UreT8nXKnJmla0bQ3LqQ==}
+  '@futdevpro/ngx-fdp-templates@18.15.74':
+    resolution: {integrity: sha512-pexTmgRlVmhdlOJiM+yFuIMDVr7c5wVSlTD/cDTRv00iX4j5CFlnBG4SSrw91+ZW+Bgwdc74mFUUQhcXb/ZpIQ==}
     peerDependencies:
       '@angular/common': 18.2.13
       '@angular/core': 18.2.13
+      '@futdevpro/fsm-dynamo': '>=1.15.22'
+      '@futdevpro/ngx-dynamo': '>=18.17.6'
 
   '@humanwhocodes/config-array@0.12.3':
     resolution: {integrity: sha512-jsNnTBlMWuTpDkeE3on7+dWJi0D6fdDfeANj/w7MpS8ztROCoLvIO2nG0CcFj+E4k8j4QrSTh4Oryi3i2G669g==}
@@ -2494,6 +2510,7 @@ packages:
 
   crypto-js@4.2.0:
     resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+    deprecated: Active development of CryptoJS has been discontinued. This library is no longer maintained.
 
   css-loader@7.1.2:
     resolution: {integrity: sha512-6WvYYn7l/XEGN8Xu2vWFt9nVzrCn39vKyTEFf/ExEyoksJjjSZV/0/35XPlMbpnr6VGhZIUg5yJrL8tGfes/FA==}
@@ -3750,6 +3767,11 @@ packages:
   make-fetch-happen@13.0.1:
     resolution: {integrity: sha512-cKTUFc/rbKUd/9meOvgrpJ2WrNzymt6jfRDdwg5UCnVzv9dTpEj9JS5m3wtziXVCjluIXyL8pcaukYqezIzZQA==}
     engines: {node: ^16.14.0 || >=18.0.0}
+
+  marked@18.0.9:
+    resolution: {integrity: sha512-/Sa4qiiHZxf0/FQdBBowr9q4r10krCwMvpK48FUBdXdUXScDxiQGR9zCPrFgRVR5LU3iySOiIjy09ZQvADir1w==}
+    engines: {node: '>= 20'}
+    hasBin: true
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -6667,9 +6689,9 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@futdevpro/fdp-templates@1.15.24(@futdevpro/fsm-dynamo@1.15.9(rxjs@7.8.1)(supports-color@8.1.1))':
+  '@futdevpro/fdp-templates@1.15.106(@futdevpro/fsm-dynamo@1.16.35(rxjs@7.8.1)(supports-color@8.1.1))':
     dependencies:
-      '@futdevpro/fsm-dynamo': 1.15.9(rxjs@7.8.1)(supports-color@8.1.1)
+      '@futdevpro/fsm-dynamo': 1.16.35(rxjs@7.8.1)(supports-color@8.1.1)
       '@types/node': 24.1.0
       ts-node: 10.9.2(@types/node@24.1.0)(typescript@5.5.4)
       tslib: 2.6.3
@@ -6695,9 +6717,10 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@futdevpro/fsm-dynamo@1.15.9(rxjs@7.8.1)(supports-color@8.1.1)':
+  '@futdevpro/fsm-dynamo@1.16.35(rxjs@7.8.1)(supports-color@8.1.1)':
     dependencies:
       '@types/node': 24.1.0
+      crypto-js: 4.2.0
       rxjs: 7.8.1
       socket.io: 4.8.3(supports-color@8.1.1)
       socket.io-client: 4.8.3(supports-color@8.1.1)
@@ -6712,9 +6735,9 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@futdevpro/ngx-dynamo-models@1.15.8(@futdevpro/fsm-dynamo@1.15.9(rxjs@7.8.1)(supports-color@8.1.1))(rxjs@7.8.1)(supports-color@8.1.1)':
+  '@futdevpro/ngx-dynamo-models@1.15.8(@futdevpro/fsm-dynamo@1.16.35(rxjs@7.8.1)(supports-color@8.1.1))(rxjs@7.8.1)(supports-color@8.1.1)':
     dependencies:
-      '@futdevpro/fsm-dynamo': 1.15.9(rxjs@7.8.1)(supports-color@8.1.1)
+      '@futdevpro/fsm-dynamo': 1.16.35(rxjs@7.8.1)(supports-color@8.1.1)
       '@types/node': 24.1.0
       rxjs: 7.8.1
       socket.io-client: 4.8.3(supports-color@8.1.1)
@@ -6728,16 +6751,26 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@futdevpro/ngx-dynamo@18.15.9(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))':
+  '@futdevpro/ngx-dynamo@18.17.65(cbab2a295e5d3284689d68faa6ed16bb)':
     dependencies:
       '@angular/common': 18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1)
       '@angular/core': 18.2.14(rxjs@7.8.1)(zone.js@0.15.1)
+      '@futdevpro/fdp-templates': 1.15.106(@futdevpro/fsm-dynamo@1.16.35(rxjs@7.8.1)(supports-color@8.1.1))
+      '@futdevpro/fsm-dynamo': 1.16.35(rxjs@7.8.1)(supports-color@8.1.1)
+      marked: 18.0.9
+      ngx-mask: 17.0.9(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(@angular/forms@18.2.14(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(@angular/platform-browser@18.2.14(@angular/animations@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1)))(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1)))(rxjs@7.8.1))
       tslib: 2.3.1
+    optionalDependencies:
+      '@kolkov/angular-editor': 3.0.0-beta.0(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))
+      ngx-image-compress: 15.1.6(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))
+      ngx-image-cropper: 7.2.1(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))
 
-  '@futdevpro/ngx-fdp-templates@18.15.15(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))':
+  '@futdevpro/ngx-fdp-templates@18.15.74(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(@futdevpro/fsm-dynamo@1.16.35(rxjs@7.8.1)(supports-color@8.1.1))(@futdevpro/ngx-dynamo@18.17.65(cbab2a295e5d3284689d68faa6ed16bb))':
     dependencies:
       '@angular/common': 18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1)
       '@angular/core': 18.2.14(rxjs@7.8.1)(zone.js@0.15.1)
+      '@futdevpro/fsm-dynamo': 1.16.35(rxjs@7.8.1)(supports-color@8.1.1)
+      '@futdevpro/ngx-dynamo': 18.17.65(cbab2a295e5d3284689d68faa6ed16bb)
       tslib: 2.3.1
 
   '@humanwhocodes/config-array@0.12.3(supports-color@8.1.1)':
@@ -9551,6 +9584,8 @@ snapshots:
       ssri: 10.0.6
     transitivePeerDependencies:
       - supports-color
+
+  marked@18.0.9: {}
 
   math-intrinsics@1.1.0: {}
 
