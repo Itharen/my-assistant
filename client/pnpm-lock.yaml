@@ -47,9 +47,6 @@ importers:
       '@futdevpro/ngx-dynamo':
         specifier: 18.17.65
         version: 18.17.65(cbab2a295e5d3284689d68faa6ed16bb)
-      '@futdevpro/ngx-dynamo-models':
-        specifier: 1.15.8
-        version: 1.15.8(@futdevpro/fsm-dynamo@1.16.35(rxjs@7.8.1)(supports-color@8.1.1))(rxjs@7.8.1)(supports-color@8.1.1)
       '@futdevpro/ngx-fdp-templates':
         specifier: 18.15.74
         version: 18.15.74(@angular/common@18.2.14(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(rxjs@7.8.1))(@angular/core@18.2.14(rxjs@7.8.1)(zone.js@0.15.1))(@futdevpro/fsm-dynamo@1.16.35(rxjs@7.8.1)(supports-color@8.1.1))(@futdevpro/ngx-dynamo@18.17.65(cbab2a295e5d3284689d68faa6ed16bb))
@@ -1274,13 +1271,6 @@ packages:
   '@futdevpro/fsm-dynamo@1.16.35':
     resolution: {integrity: sha512-xJimW2kL3DCLHnwN+nVUywY9Zd9tcQTLRuqopBKxnQX1iDh0Uek4iKSjYaGVn1BlVCrmdW8fQhi1bylaE5+VGg==}
     peerDependencies:
-      rxjs: 7.8.1
-
-  '@futdevpro/ngx-dynamo-models@1.15.8':
-    resolution: {integrity: sha512-Vts5LXlZUqZnyBq3cMttWOUH49xQ4eSERqEvEhW9nZqvFaEL3NZ9oFj8Yzm5yzIU2pTxiZ21XcXlfDaMsr9+Vg==}
-    deprecated: Moved to @futdevpro/fsm-dynamo/ngx-models (DyFM_ prefix). This package is deprecated; migrate your imports.
-    peerDependencies:
-      '@futdevpro/fsm-dynamo': 1.15.8
       rxjs: 7.8.1
 
   '@futdevpro/ngx-dynamo@18.17.65':
@@ -6728,22 +6718,6 @@ snapshots:
       tslib: 2.6.3
       typescript: 5.5.4
       uuid: 11.1.0
-    transitivePeerDependencies:
-      - '@swc/core'
-      - '@swc/wasm'
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-
-  '@futdevpro/ngx-dynamo-models@1.15.8(@futdevpro/fsm-dynamo@1.16.35(rxjs@7.8.1)(supports-color@8.1.1))(rxjs@7.8.1)(supports-color@8.1.1)':
-    dependencies:
-      '@futdevpro/fsm-dynamo': 1.16.35(rxjs@7.8.1)(supports-color@8.1.1)
-      '@types/node': 24.1.0
-      rxjs: 7.8.1
-      socket.io-client: 4.8.3(supports-color@8.1.1)
-      ts-node: 10.9.2(@types/node@24.1.0)(typescript@5.5.4)
-      tslib: 2.6.3
-      typescript: 5.5.4
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
