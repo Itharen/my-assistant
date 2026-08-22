@@ -1,12 +1,12 @@
-# CLAUDE.md — my-assistant
+# AGENTS.md — my-assistant
 
 Projekt-szintű AI utasítások. A globális workspace utasítások
-(`E:/Programming/Own/CURSOR/CLAUDE.md`) érvényben maradnak; ez a fájl **kiegészíti**
+(`E:/Programming/Own/CURSOR/AGENTS.md`) érvényben maradnak; ez a fájl **kiegészíti**
 őket a my-assistant projektre vonatkozó specifikumokkal.
 
 ---
 
-> **Ikerfájl:** `AGENTS.md` (Codex) — a törzs az első `##` szekciótól AZONOS. Rule: `core-agent-file-sync`.
+> **Ikerfájl:** `CLAUDE.md` (Claude Code) — a törzs az első `##` szekciótól AZONOS. Rule: `core-agent-file-sync`.
 
 ## ⛓️ FDP FLEET AGENT CORE — kötelező, generált szabály-blokk
 
