@@ -1,2 +1,10 @@
+packages:
+  - screen-waker
+
 allowBuilds:
+  nice-napi: false  # opcionalis Piscina-utemezo; az ng-buildhez NEM kell
+  msgpackr-extract: true  # lmdb-gyorsito
+  lmdb: true  # Angular build-cache
+  '@parcel/watcher': true  # Angular 20 Sass-toolchain nativ watcher
   esbuild: true
+  ffmpeg-static: true

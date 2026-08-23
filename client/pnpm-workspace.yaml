@@ -1,4 +1,6 @@
 allowBuilds:
+  nice-napi: false  # opcionalis Piscina-utemezo; az ng-buildhez NEM kell
+  '@parcel/watcher': true  # Angular 20 Sass-toolchain nativ watcher
   esbuild: false
   lmdb: false
   msgpackr-extract: false

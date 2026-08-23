@@ -10,3 +10,12 @@ minimumReleaseAgeExclude:
   # bedrock-bump-ot blokkol a runner install-ben (`pnpm i` exit 1 -> install step
   # fail), es karbantartas-igenyes. A wildcard minden @futdevpro/* verziot kizar.
   - '@futdevpro/*'
+
+allowBuilds:
+  # pnpm v11 (Angular-20 Phase 0.3a: a runner node:22 -> globalis pnpm 11.22.0):
+  # explicit true/false dontes nelkul az install MEGBUKIK (ERR_PNPM_IGNORED_BUILDS).
+  '@parcel/watcher': true  # Angular 20 Sass-toolchain nativ watcher
+  esbuild: true  # platform-binaris postinstall
+  lmdb: true  # Angular build-cache
+  msgpackr-extract: true  # lmdb-gyorsito
+  nice-napi: false  # opcionalis Piscina-utemezo; az ng-buildhez NEM kell
