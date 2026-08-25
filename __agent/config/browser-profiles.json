@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0.0",
+  "profiles": {
+    "tesco-hu": {
+      "namespace": "my-assistant-tesco-dedicated-v3",
+      "mode": "dedicated",
+      "persistent": true,
+      "sharedAcrossAgents": true,
+      "allowNamespaceRotation": false,
+      "credentialsStorage": "browser-profile-only",
+      "targetUrl": "https://bevasarlas.tesco.hu/shop/hu-HU/"
+    }
+  }
+}

@@ -140,7 +140,9 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
 - Tool repo: `E:/Programming/Own/CURSOR/LIVE-projects/unblockable-browser-handler-tool`.
 - Minden agent baseline-ja ugyanaz a CLI; MCP csak azonos-contractú natív csatorna.
 - Health: `node <tool>/server/build/src/index.js doctor --pretty`; discovery: `... capabilities --pretty`.
-- Default namespace ebben a projektben: `my-assistant`; más agent külön namespace-et használjon.
+- Profilkötések SSOT-ja: `__agent/config/browser-profiles.json`.
+- Tesco canonical namespace: `my-assistant-tesco-dedicated-v3`. Ezt minden agent közösen, változatlanul használja;
+  nem agentnév és nem verzió, új suffix/profil létrehozása tilos.
 - Ajánlott browser: dedikált persistent profil, egyszeri kézi login. Existing Chrome mód lehetséges, de az extensiont
   abban a profilban explicit telepíteni/párosítani kell. Jelszó/cookie/token soha nem env.
 - Tesco/live mutation előtt olvasd: `__agent/references/browser-workflows.md` és `__agent/SOURCE_OF_TRUTH.md`.

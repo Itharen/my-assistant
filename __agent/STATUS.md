@@ -3,10 +3,10 @@
 ```yaml
 state: flow-active
 active_flow: browser-workflow-hyperplan
-active_phase: tesco-cart-hardening-complete-plugin-refresh-pending
-last_event: 2026-08-25T02:16:35+02:00
-last_event_type: tesco-runbook-and-regression-gates-green
-next_action: "A Tesco workflow kanonikus, agentfüggetlen runbookja, parser/cart-planner/cart-audit hardeningja, agent/plugin bekötése és két teljes zöld verify passza elkészült. A kosár továbbra is 34 sor/81 db; checkout nem indult. A personal-plugin forrás valid és cachebusterelt, de a Store Codex CLI reinstallja WindowsApps ACL miatt Access denied; új task/plugin refresh során a 0.1.0+codex.20260825001128 verzió betöltését ellenőrizni kell. Hyperplan nyitott: SP-05.3 delivery reconciliation + végső ledger."
+active_phase: tesco-login-persistence-hardened-plugin-refresh-pending
+last_event: 2026-08-25T13:46:57+02:00
+last_event_type: tesco-stable-profile-binding-verified
+next_action: "A Tesco-login a persistent Chrome-profilban marad; minden agent kanonikus kötése my-assistant-tesco-dedicated-v3, namespace-rotáció és credential/env tárolás tilos. Két egymást követő teljes UBH verify kör zöld: 41/41 unit + 13/13 E2E mindkettőben. A personal plugin forrás 0.1.0+codex.20260825114643 verzióra frissült és valid, de a Store Codex CLI reinstall WindowsApps ACL miatt Access denied. Hyperplan nyitott: SP-05.3 delivery reconciliation + végső ledger."
 
 active_plans:
   - "__agent/plans/browser-workflow-hyperplan/hyperplan.plan.md"  # HP-BRW-001 — execution in progress

@@ -172,7 +172,7 @@ rövidíthető és sosem szűrhető: ha egy szabály szövegére szükség van, 
 fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-global/` = FDP-repóban ·
 `project-internal/` = projekt-workspace-ben · `project-type/` = projekt-típus szerint.
 
-**`global/` — 37 szabaly**
+**`global/` — 40 szabaly**
 
 | ruleId | Cim | Fajl |
 |---|---|---|
@@ -184,6 +184,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `core-critical-requests` | Critically examine user requests | `fdp-documentations/rules/global/core-critical-requests.md` |
 | `core-dark-scifi-design` | Dark, sci-fi design by default | `fdp-documentations/rules/global/core-dark-scifi-design.md` |
 | `core-document-everything` | core-document-everything (global, hard rule) | `fdp-documentations/rules/global/core-document-everything.md` |
+| `core-dynamo-docs-english` | Dynamo code documentation is written in ENGLISH | `fdp-documentations/rules/global/core-dynamo-docs-english.md` |
 | `core-e2e-automata` | E2E = full automated feature coverage | `fdp-documentations/rules/global/core-e2e-automata.md` |
 | `core-e2e-user-journey` | User-journey E2E is a MUST-HAVE layer of E2E | `fdp-documentations/rules/global/core-e2e-user-journey.md` |
 | `core-error-debuggable` | Errors carry debug-level detail | `fdp-documentations/rules/global/core-error-debuggable.md` |
@@ -198,6 +199,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `core-no-monitor` | Never call the Monitor tool | `fdp-documentations/rules/global/core-no-monitor.md` |
 | `core-nonblocking-cicd` | Never block on CI/CD — pipeline the cycles | `fdp-documentations/rules/global/core-nonblocking-cicd.md` |
 | `core-no-polling` | core-no-polling (global, hard rule) | `fdp-documentations/rules/global/core-no-polling.md` |
+| `core-no-work-copies` | A projektek duplikálása TILOS — munkamásolat sehova nem kerülhet | `fdp-documentations/rules/global/core-no-work-copies.md` |
 | `core-observability` | Observability | `fdp-documentations/rules/global/core-observability.md` |
 | `core-patterns-first` | Patterns first | `fdp-documentations/rules/global/core-patterns-first.md` |
 | `core-planning-layers` | 3-layer planning structure | `fdp-documentations/rules/global/core-planning-layers.md` |
@@ -211,6 +213,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `core-stale-doc-marking` | core-stale-doc-marking (global, hard rule) | `fdp-documentations/rules/global/core-stale-doc-marking.md` |
 | `core-stt-input` | Handle user input critically (STT-aware) | `fdp-documentations/rules/global/core-stt-input.md` |
 | `core-typescript-only` | TypeScript only | `fdp-documentations/rules/global/core-typescript-only.md` |
+| `core-wakeup-state-file` | core-wakeup-state-file (global, hard rule) | `fdp-documentations/rules/global/core-wakeup-state-file.md` |
 | `core-workflow` | Usual workflow | `fdp-documentations/rules/global/core-workflow.md` |
 | `fam-use-preferentially` | Use FAM preferentially | `fdp-documentations/rules/global/fam-use-preferentially.md` |
 
@@ -529,6 +532,8 @@ manuális action-log sort (a hook által írt mellé):
   `E:/Programming/Own/CURSOR/LIVE-projects/unblockable-browser-handler-tool/__documentations/TESCO-CART-RUNBOOK.md`.
   Kötelező a canonical DOM product ID, bizonytalansági user-gate, per-effect readback, vak retry tilalma,
   pagination-completion és a végső exact ID-halmaz + összdarabszám audit. Checkout külön jóváhagyási határ.
+  A profilkötés SSOT-ja `__agent/config/browser-profiles.json`; Tesco esetén minden agent pontosan a
+  `my-assistant-tesco-dedicated-v3` namespace-et használja. Namespace-rotáció és credential/env tárolás tilos.
 
 ## Időkezelés (KRITIKUS)
 
