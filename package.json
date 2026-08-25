@@ -1,6 +1,6 @@
 {
   "name": "my-assistant",
-  "version": "0.1.287",
+  "version": "0.1.288",
   "description": "my-assistant — personal life-management ecosystem (cli + server + client). FDP-shaped, self-built, FOSS-only.",
   "private": true,
   "DyBu_settings": {
@@ -42,6 +42,7 @@
     "start-screen-waker": "cd screen-waker && pnpm start",
     "update-fo": "powershell -NoProfile -ExecutionPolicy Bypass -File ./cli/scripts/update-fo.ps1",
     "activity-monitor": "powershell -NoProfile -ExecutionPolicy Bypass -File ./server/activity-monitor/logger.ps1",
+    "stocks:mirror": "cd cli && tsx src/main.ts stocks mirror --pretty",
     "prepare": "husky"
   },
   "engines": {

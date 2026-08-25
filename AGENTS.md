@@ -124,14 +124,55 @@ Doktrína: `fdp-documentations/guidelines/development/e2e-three-layer-architectu
 írás-recept: `.../e2e-writing-rules.md` **§2b** · kanonikus rule:
 `fdp-documentations/rules/global/core-e2e-user-journey.md`.
 
-### ④ A TELJES kanonikus szabály-készlet (pointer-index — egy tétel sem hagyható el)
+### ④ 🚫 AZ FDP PACKAGE-EK SOHA NEM LEHETNEK PUBLIKUSAK (`fdp-never-public-packages`)
+
+Az **FDP-családú** csomagokat **SOHA, SEMMILYEN KÖRÜLMÉNYEK KÖZÖTT** nem szabad publikus
+láthatósággal kiadni npm-re (vagy bármely publikus registry-re). Nincs „zöld a build" kivétel, nincs
+„blokkolt a CI" kivétel, és nincs „lejárt a token" kivétel.
+
+> **Owner-direktíva, 2026-08-24:** *„az FDP Templates, Package-ek soha nem lehetnek publikusak!!"* —
+> azután, hogy a `@futdevpro/nts-fdp-templates` **publikusan** volt kint az npm-en egy **élő OpenAI
+> API-kulccsal**, **332 publikált verzióban, ~25 hónapon át**.
+
+**SOHA NEM PUBLIKUS (FDP-család):** `@futdevpro/fdp-templates` · `nts-fdp-templates` ·
+`ngx-fdp-templates` · `fdp-e2e-helpers` · `fdp-cli` · `master-control-mcp` · `fsm-dynamo-deployment`
+
+**PUBLIKUSRA SZÁNT (Dynamo-család):** `fsm-dynamo` · `nts-dynamo` · `ngx-dynamo` ·
+`ngx-dynamo-models` · `dynamo-builder-models` · `cli-dynamo` · `dynamo-eslint` · `dynamo-e2e` —
+**de a „publikusra szánt" NEM azt jelenti, hogy most kiadható.** Csak **lefuttatott és
+dokumentált OSS-readiness audit UTÁN**, és a váltás **owner-döntés**, soha nem agent-döntés.
+
+**A publikálás engedélyezett — a LÁTHATÓSÁG MEGVÁLTOZTATÁSA NEM.** Az `fdp-publish-authorized` az
+`npm publish` műveletre vonatkozik, és **semmilyen** felhatalmazást nem ad az `--access public` /
+`publishConfig.access` / npmjs.com láthatóság-beállításra. Ez a művelet **gyakorlatilag
+visszafordíthatatlan**: a publikusan kiszolgált tarball nem hívható vissza (npm-proxyk, CI-cache-ek,
+supply-chain-scannerek, kód-index-elők). A priváttá tétel **elrejti, de nem szünteti meg** a
+szivárgást.
+
+**Agentnek TILOS önállóan:** `npm publish --access public` · `publishConfig: {"access":"public"}` ·
+láthatóság-váltás az npmjs.com-on · bukott publish „javítása" a láthatóság lazításával ·
+`.npmignore`/`files` lazítása úgy, hogy belső mappa (`.cursor/`, `__documentations/`,
+`_specifications/`, `.dynamo/`, `.husky/`, `.github/`) a tarballba kerüljön.
+
+⚠️ **Csapda:** az npm a privát scoped publishre lejárt/jogosulatlan tokennel ezt válaszolja:
+`402 Payment Required — You must sign up for private packages`. Ez **ÚGY NÉZ KI**, mintha publikus
+hozzáférést kérne. **NEM AZ.** A token vagy a plan-jogosultság romlott el → **a tokent javítsd,
+eszkalálj az ownernek — SOHA nem a láthatóságot.**
+
+**Blokkolt publishnál: MEGÁLLÁS + JELENTÉS, nem megkerülés.** A blokkolt publish *látható* probléma;
+a némán publikussá tett csomag *láthatatlan* incidens — ez maradt észrevétlen 25 hónapig.
+
+Kanonikus: `fdp-documentations/rules/fdp-global/fdp-never-public-packages.md` · incidens:
+`fdp-documentations/security/2026-08-24-npm-visibility-incident-and-oss-readiness-audit.md`.
+
+### ⑤ A TELJES kanonikus szabály-készlet (pointer-index — egy tétel sem hagyható el)
 
 A lenti index a `fdp-documentations/rules/` **teljes** tartalma. A ⓪ szabály értelmében ez az index sosem
 rövidíthető és sosem szűrhető: ha egy szabály szövegére szükség van, a FAM `rules` tárából vagy a megadott
 fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-global/` = FDP-repóban ·
 `project-internal/` = projekt-workspace-ben · `project-type/` = projekt-típus szerint.
 
-**`global/` — 36 szabaly**
+**`global/` — 37 szabaly**
 
 | ruleId | Cim | Fajl |
 |---|---|---|
@@ -165,6 +206,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `core-rich-error-handling` | Rich error handling everywhere | `fdp-documentations/rules/global/core-rich-error-handling.md` |
 | `core-rule-integrity` | Rules must never be lost — no reducing, condensing or shortening | `fdp-documentations/rules/global/core-rule-integrity.md` |
 | `core-rule-validation` | Rule-validation protocol | `fdp-documentations/rules/global/core-rule-validation.md` |
+| `core-secret-rotation-owner-only` | Credential rotation and revocation: ONLY with the owner, hand-in-hand | `fdp-documentations/rules/global/core-secret-rotation-owner-only.md` |
 | `core-ssot-unified` | Single Source of Truth + Unified | `fdp-documentations/rules/global/core-ssot-unified.md` |
 | `core-stale-doc-marking` | core-stale-doc-marking (global, hard rule) | `fdp-documentations/rules/global/core-stale-doc-marking.md` |
 | `core-stt-input` | Handle user input critically (STT-aware) | `fdp-documentations/rules/global/core-stt-input.md` |
@@ -172,7 +214,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `core-workflow` | Usual workflow | `fdp-documentations/rules/global/core-workflow.md` |
 | `fam-use-preferentially` | Use FAM preferentially | `fdp-documentations/rules/global/fam-use-preferentially.md` |
 
-**`fdp-global/` — 9 szabaly**
+**`fdp-global/` — 10 szabaly**
 
 | ruleId | Cim | Fajl |
 |---|---|---|
@@ -181,6 +223,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `fdp-issuer-is-account-id` | `issuer` is ALWAYS the accountId — NEVER the userId | `fdp-documentations/rules/fdp-global/fdp-issuer-is-account-id.md` |
 | `fdp-keystore-secrets` | Secrets and env via FDP Keystore | `fdp-documentations/rules/fdp-global/fdp-keystore-secrets.md` |
 | `fdp-naming-imports` | FDP naming + import conventions | `fdp-documentations/rules/fdp-global/fdp-naming-imports.md` |
+| `fdp-never-public-packages` | FDP packages must NEVER be public — visibility is an OWNER-ONLY decision | `fdp-documentations/rules/fdp-global/fdp-never-public-packages.md` |
 | `fdp-publish-authorized` | Bedrock/shared publish is authorized | `fdp-documentations/rules/fdp-global/fdp-publish-authorized.md` |
 | `fdp-push-on-green` | Push on green (verified) | `fdp-documentations/rules/fdp-global/fdp-push-on-green.md` |
 | `fdp-trace-codes` | Keep REQ/BUG codes traceable | `fdp-documentations/rules/fdp-global/fdp-trace-codes.md` |
@@ -471,6 +514,21 @@ manuális action-log sort (a hook által írt mellé):
   ne kérdezz vissza apróságokon, hanem értsd meg a szándékot kontextusból. Csak
   akkor kérdezz vissza, ha a jelentés valóban kétértelmű és a választás
   következménye nem visszafordítható.
+- **Computer Use csak üzenetenként megújított explicit engedéllyel.** A user explicit szabálya:
+  > "Ami azt illeti, nem örülök, hogy a Computer Use Skill-t használod előzetes megbeszélés nélkül, és mivel én is használom éppen a számítógépet, reflexből lelövöm mindig." (2026-08-23)
+  >
+  > "(Computer use skill-t csak és kizárólag akkor használhatsz, hogyha előtte megkérdezted, hogy használhatod-e. És minden egyes alkalommal meg kell kérdezd előtte, hogy használhatod-e. ( minden két user üzenet között, ha az utolsó user üzenetben nem lett kifejezette jóváhagyva már.))" (2026-08-23)
+
+  Böngészős feladat folytatására adott kérés önmagában nem engedély az aktív
+  Windows-asztal átvételére. Computer Use előtt külön kérj engedélyt, és várd
+  meg a választ. Az engedély a következő user-üzenetnél lejár: ha az új
+  legutóbbi üzenet nem hagyta kifejezetten jóvá a használatot, ismét kérdezni
+  kell. A használat előzetes bejelentése nem engedélykérés.
+
+- **Tesco-kosár kizárólag a kanonikus UBH runbook szerint.** Minden agent Tesco-mutáció előtt teljesen olvassa el:
+  `E:/Programming/Own/CURSOR/LIVE-projects/unblockable-browser-handler-tool/__documentations/TESCO-CART-RUNBOOK.md`.
+  Kötelező a canonical DOM product ID, bizonytalansági user-gate, per-effect readback, vak retry tilalma,
+  pagination-completion és a végső exact ID-halmaz + összdarabszám audit. Checkout külön jóváhagyási határ.
 
 ## Időkezelés (KRITIKUS)
 
@@ -509,6 +567,7 @@ megfogalmazása lesz a referencia.
 | `current/principles/nzt-system.md` | NZT használati szabályok: max 2 on-nap, off ≥ on. User-eszköz a mélypontok / üresség-érzés kiszedésére |
 | `current/principles/methodology-authority.md` | **A my-assistant a kanonikus minta**, az organizer ehhez alkalmazkodik (nem fordítva) |
 | `current/principles/shopping-lists.md` | Bolt-típus szerint szeparált bevásárló-listák (tesco / clothing / ikea / ...) |
+| `current/principles/product-selection-ambiguity.md` | **Univerzális hard rule:** bizonytalan vagy többváltozatos terméknél nincs találgatás/kosármódosítás; user-egyeztetés + a választás tartós feljegyzése kötelező |
 | `current/principles/fit-system.md` | Fit zóna: séta + Gellért-hegy edzés szabályok, heti horgonyok (szombat/péntek tilalmak) |
 | `current/principles/health-system.md` | Health zóna: napi 3× arc-mosás workflow + anti-deferral stratégia |
 | `current/principles/no-paid-solutions.md` | **Univerzális hard rule**: SOHA ne ajánlj fizetős megoldást — ha létezik, lefejlesztjük magunknak |

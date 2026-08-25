@@ -1,14 +1,15 @@
 # STATUS
 
 ```yaml
-state: idle
-active_flow: null
-active_phase: null
-last_event: 2026-05-12T17:30:00+02:00
-last_event_type: workflow-rebuild-on-ccap-pattern
-next_action: "Workflow átépítve a CCAP/Livirrium/Helocia minta szerint. WORKFLOW_DEV + WORKFLOW_ASSIST kanonikus belépők + 14 dev-phase + 6 assist-phase + 8 dev-event + 6 assist-event + STATUS_DEV/ASSIST YAML + log/cycles+log/ticks. User maga állítja be a 2 trigger szöveget a CCAP session-eire."
+state: flow-active
+active_flow: browser-workflow-hyperplan
+active_phase: tesco-cart-hardening-complete-plugin-refresh-pending
+last_event: 2026-08-25T02:16:35+02:00
+last_event_type: tesco-runbook-and-regression-gates-green
+next_action: "A Tesco workflow kanonikus, agentfüggetlen runbookja, parser/cart-planner/cart-audit hardeningja, agent/plugin bekötése és két teljes zöld verify passza elkészült. A kosár továbbra is 34 sor/81 db; checkout nem indult. A personal-plugin forrás valid és cachebusterelt, de a Store Codex CLI reinstallja WindowsApps ACL miatt Access denied; új task/plugin refresh során a 0.1.0+codex.20260825001128 verzió betöltését ellenőrizni kell. Hyperplan nyitott: SP-05.3 delivery reconciliation + végső ledger."
 
 active_plans:
+  - "__agent/plans/browser-workflow-hyperplan/hyperplan.plan.md"  # HP-BRW-001 — execution in progress
   - "__agent/plans/assistant-agent-cron.plan.md"  # ex-"A-mode" — Phase 1 MVP shipped
   - "__agent/plans/assistant-agent-automation-scripts.plan.md"  # ex-"B-mode" — v1 plan, NEM épült
   - "__agent/plans/development-agent.plan.md"  # 🆕 v1 vázlat, Phase 1 user-OK-ra vár

@@ -1,5 +1,8 @@
 # FR: Tesco rendelés automatizáció
 
+> Kosár-összeállítási üzleti szabályok kanonikus forrása:
+> `current/principles/tesco-cart-rules.md`.
+
 > **Forrás: a user szövege. SZÓ SZERINT őrizzük.** Új kiegészítés alá fűzve,
 > dátum-bélyeggel. Ez egy organizer Feature Request alapanyag.
 
@@ -54,3 +57,52 @@ A `current/shopping/list.md` ↔ Tesco-kosár közötti kétirányú szinkron, +
 - Mi legyen a "out-of-stock" tételek prio-ja a következő rendelésben? (Default:
   ugyanaz mint az eredeti, plus `attempt: N+1` mező)
 - Lokál cron, organizer server, vagy headless böngésző valahol fut a sync?
+
+---
+
+## 2026-08-23 — használt Tesco-felület
+
+> (FYI ezt használom, szóval neked is ezt kéne: [https://bevasarlas.tesco.hu/shop/hu-HU/search?query=alpro&inputType=free+text](https://bevasarlas.tesco.hu/shop/hu-HU/search?query=alpro&inputType=free+text))
+
+### Verifikált felületi baseline (assistant-jegyzet, 2026-08-23 09:40 CEST)
+
+- Target: `https://bevasarlas.tesco.hu/shop/hu-HU/` (`shop/hu-HU`, nem a régi `groceries/hu-HU`).
+- Az `alpro` keresés 102 találatot jelzett; az első adag 48-as, majd `Mutass további 6 terméket` link jelent meg
+  `page=2&count=48` paraméterekkel.
+- A terméklinkek stabilnak tűnő numerikus product ID-t tartalmaznak (`/products/<id>`); ezt implementációkor
+  újra kell verifikálni, nem szabad név-alapú azonosságként feltételezni.
+- A kosár a felméréskor üres volt; nagy kosár pagination/virtualizáció ezért továbbra is `unverified`.
+
+---
+
+## 2026-08-23 — termékazonosítási bizonytalanság
+
+> Dokumentációhoz és szabályokhoz felírhatnánk, hogy ha bármi nem tiszta vagy nem biztos, vagy mondjuk több különféle is található az adott termékből, akkor nagyon fontos, hogy egyeztessünk a uservel, hogy pontosan melyik termékeket is szeretné, és ezeket feljegyezzük.
+
+### Acceptance criteria (assistant-jegyzet)
+
+- Több érdemi termékjelölt vagy bizonytalan match esetén a Tesco-flow `ambiguous` / `unresolved` állapotban
+  megáll; kosármódosítás nem történhet.
+- Az agent a megkülönböztető adatokat tartalmazó jelöltlistával kér user-választást.
+- A megerősített választás stabil Tesco product ID-val és emberileg olvasható attribútumokkal rögzül.
+- A korábbi választás csak változatlan stabil ID + attribútum-egyezésnél használható automatikusan; eltérés,
+  megszűnés vagy helyettesítés új egyeztetést kér.
+- Kanonikus általános szabály: `current/principles/product-selection-ambiguity.md`.
+
+---
+
+## 2026-08-24 — részletes terméklenyomat + változásfigyelés
+
+> Ezeket mindenképpen rögzítsed is, hogy legközelebb is meglegyen. ( Infókat, részleteket is rögzíthetnél, hogyha véletlenül eltűnik a kód, amit most a Tesco használ, akkor könnyen újra be tudjuk azonosítani az adatai alapján. ( Sőt lehet, hogy majd a későbbiekben akarunk olyat is, hogy figyelni, hogy egy bizonyos terméknek valamilyen adatai megváltoznak, akkor kapjak róla értesítést.))
+
+### Acceptance criteria (assistant-jegyzet)
+
+- A termékrekord a product ID mellett teljes nevet, márkát, változatot,
+  kiszerelést és megkülönböztető attribútumokat is tárol.
+- ID-változás vagy eltűnés esetén attribútumalapú újraazonosítás indul;
+  bizonytalan egyezésnél kötelező user-egyeztetés.
+- A későbbi monitor verziózott terméklenyomatokat hasonlít össze legalább az
+  alábbi mezőkön: név, kiszerelés, összetevők, tápérték / fontos műszaki
+  jellemzők, ár, akció, elérhetőség és product ID.
+- Érdemi változásnál értesítés készül előtte/utána értékkel és közvetlen
+  terméklinkkel; átmeneti elérhetetlenség nem írja felül a preferenciát.

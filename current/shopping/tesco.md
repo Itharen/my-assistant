@@ -3,7 +3,8 @@
 Tesco-rendelés (online vagy bolti) tételei: élelmiszer, alapanyag, drogéria.
 Szabályok: `current/principles/recurring-tasks.md` (2-3 hetente megrendelés) +
 `current/principles/stock-system.md` (reorder-küszöb tölti) +
-`current/principles/shopping-lists.md` (lista-szervezés).
+`current/principles/shopping-lists.md` (lista-szervezés) +
+`current/principles/tesco-cart-rules.md` (kosárkorlátok).
 
 > A stock-tábla (`current/stock/items.md`) tételei automatikusan ide kerülnek,
 > ha `currentQty <= reorderThreshold`. Plusz manuális tételek (egyszeri,
@@ -13,51 +14,105 @@ Szabályok: `current/principles/recurring-tasks.md` (2-3 hetente megrendelés) +
 
 ---
 
-## Aktuális batch — 2026-05-07-i input alapján
+## Aktuális stock-alapú batch — 2026-08-24
 
-### Italok 🥤
-- [ ] **Energiaital** ⏰ (2026-05-09: elfogyott)
-- [ ] Víz — sok
-- [ ] Sprite
-- [ ] Tej
+> Mennyiség = a 2026-08-23/24-i raktár-snapshotban rögzített hiány a
+> tételspecifikus célig. Élő Tesco-elérhetőség és a kosár tényleges állapota
+> még nincs újraellenőrizve. Vízből/üdítőből típusonként legfeljebb 12 db.
 
-### Étel — kész 🍱
-- [ ] Kész kaja
+### Kosárkész, egyértelmű tételek ✅
 
-### Étel — alapanyag 🥕
-- [ ] Gyömbér
-- [ ] Fokhagyma
-- [ ] Tökmagolaj
-- [ ] Tejföl × 2 (kis adagos, hogy 3-as targetet visszaérjük)
-- [ ] Kenyér + (?)
-- [ ] Mozzarella
+#### Italok 🥤
 
-### Snack / nasi 🥨
-- [ ] **Cherry Coke** *(2026-05-29: a korábbi „serikók" STT-elírás = Cherry Coke)*
-- [ ] ❓ Rákcsa (valószínűleg rágcsa / rágcsálnivaló)
-- [ ] Nasi (általános)
+- [ ] [HELL ZERO White Peach 250 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/121302824) × **5** — kanonikus kosár-ID `121302824`; korábbi URL-alias `2004121302824`
+- [ ] [Coca-Cola Cherry Zero 1,75 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121254765) × **4**
+- [ ] [Coca-Cola Zero 1,75 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121218435) × **2**
+- [ ] [Sprite Zero 1,75 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121217983) × **3**
+- [ ] [Kinley Tonic Zero 1,5 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121217228) × **1**
+- [ ] [Kinley Ginger Ale Zero 1,5 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121217205) × **4**
+- [ ] [Fanta Zero citrom-bodza 1,75 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121217885) × **1**
+- [ ] [Fanta Narancs Zero 1,75 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121218354) × **1**
+- [ ] [XIXO Ice Tea Zero őszibarack 1,5 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121225512) × **2**
+- [ ] [Alpro vaníliás szójaital 1 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/209847121) × **10**
+- [ ] [Dreher Gold világos sör 5%, 6 × 0,5 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121227873) × **1 hatos csomag**
 
-### Drogéria / higiénia 🧴
-- [ ] Aftershave
-- [ ] **Hajkefe × 2** *(2026-05-29)*
+#### Élelmiszer 🍞
 
-### Papír / irodaszer 📄
-- [ ] **A4-es papír** *(2026-08-04)*
+- [ ] [Président sós vaj 200 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/220220272) × **1**
+- [ ] [Alpro karamellás desszert 125 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/220299326) × **3**
+- [ ] [Alpro étcsokoládés desszert 125 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/210736575) × **1**
+- [ ] [Karaván Toast cheddar burger szeletek 100 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/105004912) × **2**
+- [ ] [Abonett sajtos-snidlinges szendvics 26 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/220318949) × **9**
+- [ ] [Tchibo Espresso Sicilia szemes kávé 1 kg](https://bevasarlas.tesco.hu/shop/hu-HU/products/210408830) × **2**
+- [ ] [Valdor Zizu panírozott csirkemellfilé 500 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/210832246) × **1**
+- [ ] [Grill Master tortilla, 4 lap / 250 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/100429153) × **3**
+- [ ] [Tesco coleslaw saláta mix 180 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/105007591) × **2**
+- [ ] [Hellmann's fokhagymás szósz 260 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/220021386) × **1**
+- [ ] [Tesco Edam szeletelt sajt 300 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/220343486) × **2**
 
-> **Megjegyzés (2026-05-12):** cigi **NEM** Tesco-ból (dohánybolt) — eltávolítva.
-> **Megjegyzés (2026-05-22):** tömény szesz (vodka/rum/Kapitány) **NEM** Tesco-ból → `kinai.md`.
+#### Fagyasztott 🍕
+
+- [ ] [Buitoni Piccolinis háromsajtos mini pizza 9 × 30 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/120560507) × **3**
+- [ ] [Bella sajtos mini burek 480 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/105004749) × **1**
+- [ ] [Fornetti sajtos pogácsa 700 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/220297280) × **1**
+- [ ] [Carte d'Or Tiramisu jégkrém 825 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/105010828) × **1**
+
+#### Háztartás és drogéria 🧴
+
+- [ ] [Protect csótány- és hangyairtó 400 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/209762301) × **1**
+- [ ] [Springforce papírtörlő, 4 tekercs](https://bevasarlas.tesco.hu/shop/hu-HU/products/111270024) × **1**
+- [ ] [Garnier Fructis Pure Fresh sampon 400 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/209515020) × **2**
+- [ ] [Jar Lemon mosogatószer 450 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/220022202) × **2**
+- [ ] [Mr Muscle Power Gel lefolyótisztító 1 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/203157097) × **2**
+
+#### Pezsgőtabletta 💊
+
+- [ ] [Pro Formula C-vitamin + cink](https://bevasarlas.tesco.hu/shop/hu-HU/products/107282289) × **2**
+- [ ] [Pro Formula kalcium + D/K-vitamin](https://bevasarlas.tesco.hu/shop/hu-HU/products/107282210) × **2**
+- [ ] [Pro Formula multivitamin](https://bevasarlas.tesco.hu/shop/hu-HU/products/107280346) × **2**
+
+### Kiválasztva, jelenleg nem elérhető ⏸️
+
+- [ ] [Viennetta vanília jégkrémtorta 650 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/203199189) × **1**, ha újra elérhető
+- [ ] [Tesco Mini Mix vaníliaízű jégkrém 8 × 50 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/100588549) × **1**, ha újra elérhető
+
+### Egy közös döntési kör kell ⚠️
+
+#### Víz — a zsugor palackszámát rögzíteni kell
+
+- [ ] [Primavera szénsavmentes víz 2 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121233911) — hiány **2 zsugor**, kosárban legfeljebb **12 palack**
+- [ ] [Szentkirályi extra dús víz 1,5 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121229698) — hiány **1 zsugor**, kosárban legfeljebb **12 palack**
+- [ ] [Mizse szénsavmentes víz 1,5 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121233675) — hiány **5 zsugor**, kosárban legfeljebb **12 palack**; a maradék igény továbbviendő
+
+#### Termék vagy próbamennyiség
+
+- [ ] Felvágott **40 dkg** — először Delco paprikás sonka; ha nincs: [PICK pultos sertéspárizsi](https://bevasarlas.tesco.hu/shop/hu-HU/products/205959255)
+- [ ] Negro új próba × **1**: [feketeribizli C-vitaminnal 63 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/111274660)
+
+#### Étkezési csomag — pontosan egy aktiválható
+
+- [ ] Szendvicscsomag — most nem aktív
+- [ ] Hotdogcsomag — termékei még nincsenek beazonosítva
+- [x] **Wrapcsomag aktiválva és pontosítva** — 2026-08-24: Valdor ×1 + Grill Master tortilla ×3 + Tesco coleslaw ×2 + Hellmann's fokhagymás ×1 + Tesco Edam ×2. A tételek fent, a kosárkész listában szerepelnek.
+
+### Most kihagyandó — már van belőle ⛔
+
+- [x] [Kikkoman csökkentett sótartalmú szójaszósz 150 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/120256747)
+- [x] [Nádudvari rántott camembert 350 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/120537295)
+
+### Régi nyitott manuális tételek — friss státusz kell 🕰️
+
+- [ ] Hilltop Chardonnay × 1 — organizer shopping item: `org:shoppingItem:6a886f57777f60bd4da715f1`
+- [ ] Coccolino Blue Splash × 2, minél nagyobb kiszerelés
+- [ ] Hajkefe × 2
+- [ ] A4-es papír
+- [ ] Kész kaja; fokhagyma; tökmagolaj; tejföl × 2; mozzarella; aftershave
 
 ---
 
 ## Megjegyzések
 
-- A bevásárlás-recurring szabály: **2-3 hetente** rendelés. Most kezdjük gyűjteni
-  → a következő rendelés ~2026-05-14 és 2026-05-28 között lesz.
-- Manuálisan hozzáadható tétel: ha valamit a stock-rendszer nem fed le, ide
-  beírható közvetlenül.
-- A 💊 patikai tételek **nem** itt vannak — külön task: `🏥 Patika` (organizer).
-- **Szabály (2026-05-29):** 🍕 **csipsz helyett** inkább **mini pizza + fagyasztott pékáru**. Org-tükör: `org:note:6a21306c4b53d12a1922ecd3`.
-
-- [ ] **Sprite** (elfogyott 2026-05-16) — italok
-
-- [ ] **Coccolino öblítő — Blue Splash** × **2 db** (egy elfogyott, egy maradt = stock-dúsítás 2-re), **minél nagyobb kiszerelés** (2026-05-17)
+- Tesco-rendelés: **2–3 hetente**, de bármelyik napra leadható.
+- 🍕 Csipsz helyett inkább mini pizza + fagyasztott pékáru.
+- Cigi és tömény szesz nem Tesco-tétel.
+- Patikai tételek külön taskban élnek.
