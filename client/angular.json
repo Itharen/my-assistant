@@ -48,8 +48,7 @@
               "@futdevpro/fsm-dynamo/socket",
               "@futdevpro/fsm-dynamo/test",
               "@futdevpro/fsm-dynamo/usage",
-              "@futdevpro/fsm-dynamo/location",
-              "@futdevpro/ngx-dynamo-models"
+              "@futdevpro/fsm-dynamo/location"
             ]
           },
           "configurations": {

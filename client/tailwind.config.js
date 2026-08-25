@@ -3,7 +3,6 @@ module.exports = {
   content: [
     './src/**/*.{html,ts}',
     './node_modules/@futdevpro/ngx-dynamo/**/*.{html,ts,js,mjs}',
-    './node_modules/@futdevpro/ngx-dynamo-models/**/*.{html,ts,js,mjs}',
     './node_modules/@futdevpro/ngx-fdp-templates/**/*.{html,ts,js,mjs}',
   ],
   darkMode: 'class',
