@@ -172,7 +172,7 @@ rövidíthető és sosem szűrhető: ha egy szabály szövegére szükség van, 
 fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-global/` = FDP-repóban ·
 `project-internal/` = projekt-workspace-ben · `project-type/` = projekt-típus szerint.
 
-**`global/` — 42 szabaly**
+**`global/` — 41 szabaly**
 
 | ruleId | Cim | Fajl |
 |---|---|---|
@@ -185,7 +185,6 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `core-dark-scifi-design` | Dark, sci-fi design by default | `fdp-documentations/rules/global/core-dark-scifi-design.md` |
 | `core-decision-writeback` | Every decision must be written back into EVERY affected document | `fdp-documentations/rules/global/core-decision-writeback.md` |
 | `core-document-everything` | core-document-everything (global, hard rule) | `fdp-documentations/rules/global/core-document-everything.md` |
-| `core-dynamo-docs-english` | Dynamo code documentation is written in ENGLISH | `fdp-documentations/rules/global/core-dynamo-docs-english.md` |
 | `core-e2e-automata` | E2E = full automated feature coverage | `fdp-documentations/rules/global/core-e2e-automata.md` |
 | `core-e2e-user-journey` | User-journey E2E is a MUST-HAVE layer of E2E | `fdp-documentations/rules/global/core-e2e-user-journey.md` |
 | `core-error-debuggable` | Errors carry debug-level detail | `fdp-documentations/rules/global/core-error-debuggable.md` |
@@ -219,10 +218,11 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `core-workflow` | Usual workflow | `fdp-documentations/rules/global/core-workflow.md` |
 | `fam-use-preferentially` | Use FAM preferentially | `fdp-documentations/rules/global/fam-use-preferentially.md` |
 
-**`fdp-global/` — 10 szabaly**
+**`fdp-global/` — 11 szabaly**
 
 | ruleId | Cim | Fajl |
 |---|---|---|
+| `core-dynamo-docs-english` | Dynamo code documentation is written in ENGLISH | `fdp-documentations/rules/fdp-global/core-dynamo-docs-english.md` |
 | `fdp-bedrock-first` | Bedrock-first | `fdp-documentations/rules/fdp-global/fdp-bedrock-first.md` |
 | `fdp-cli-only` | FDP CLI only + ecosystem awareness | `fdp-documentations/rules/fdp-global/fdp-cli-only.md` |
 | `fdp-issuer-is-account-id` | `issuer` is ALWAYS the accountId — NEVER the userId | `fdp-documentations/rules/fdp-global/fdp-issuer-is-account-id.md` |
