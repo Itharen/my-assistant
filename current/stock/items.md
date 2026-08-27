@@ -28,8 +28,8 @@ Strukturált stock-tábla. Szabályok: `current/principles/stock-system.md`.
 | Alpro vaníliás szójaital | `209847121` | Alpro vaníliaízű szójaital hozzáadott kalciummal és vitaminokkal 1 l | vanília; szója; 1 l; kalcium + vitaminok | 2026-08-23 | A 10 db a 2026-08-23-i rendelési mennyiség volt, nem állandó preferencia. |
 | Ceres vajas toast kenyér | `2004008932200` | Ceres vajas toast kenyér 500 g | Ceres; vajas toast; szeletelt; 500 g | 2026-08-23 | A stock-bejegyzés pontos neve és kiszerelése egyetlen Tesco-termékkel egyezett. |
 | HELL White Peach energiaital | `121302824` | HELL ZERO fehér őszibarackízű energiaital 250 ml | Zero / cukormentes; fehér őszibarack; 250 ml | 2026-08-25 | User által megerősítve; élő kosárban visszaellenőrizve. Korábbi termékoldal-URL alias: `2004121302824`; a DOM/kosár kanonikus ID-ja `121302824`. |
-| Primavera víz | `121233911` | Primavera szénsavmentes természetes ásványvíz 2 l | szénsavmentes; 2 l | 2026-08-23 | User által megerősítve. |
-| Mizse víz | `121233675` | Mizse szénsavmentes természetes ásványvíz 1,5 l | szénsavmentes; 1,5 l | 2026-08-23 | A változatot a user megerősítette; élő Tesco-katalógusban visszaellenőrizve. A stock egysége zsugor, a Tesco-termék palack, ezért a kosármennyiség tisztázandó. |
+| Primavera víz | `121233911` | Primavera szénsavmentes természetes ásványvíz 2 l | szénsavmentes; 2 l | 2026-08-27 | User által megerősítve. Stock-egység: 1 zsugor = 6 palack. |
+| Mizse víz | `121233675` | Mizse szénsavmentes természetes ásványvíz 1,5 l | szénsavmentes; 1,5 l | 2026-08-27 | A változatot a user megerősítette; élő Tesco-katalógusban visszaellenőrizve. Stock-egység: 1 zsugor = 6 palack. |
 | Tchibo Espresso Sicilia Style szemes kávé | `210408830` | Tchibo Espresso Sicilia szemes, pörkölt kávé 1 kg | szemes; Sicilia; 1 kg | 2026-08-23 | Egyértelmű márka-, változat- és kiszerelés-egyezés. |
 | Abonett szendvics | `220318949` | Abonett gluténmentes sajtos-snidlinges szendvics 26 g | sajtos-snidlinges; szendvics; 26 g | 2026-08-23 | Egyetlen snidlinges Abonett szendvics a Tesco-katalógusban. |
 | Alpro karamellás puding | `220299326` | ALPRO krémes karamellás desszert 125 g | karamellás; desszert; 125 g | 2026-08-23 | Egyetlen Alpro karamellás desszert-egyezés. |
@@ -55,7 +55,7 @@ Strukturált stock-tábla. Szabályok: `current/principles/stock-system.md`.
 | Felvágott — fallback | `205959255` | PICK sertés párizsi, pultos | PICK; sertés párizsi; pultos; súlyra rendelhető | 2026-08-24 | Csak fallback: minden rendelésnél előbb a user által „Delco paprikás sonka” néven megadott elsődleges terméket kell keresni; ez az esetek kb. 90%-ában nem kapható. |
 | Papírtörlő / kéztörlő | `111270024` | Springforce 2 rétegű papírtörlő 4 tekercs | Springforce; 2 rétegű; 4 tekercs | 2026-08-24 | User link alapján megerősítette. |
 | Sampon | `209515020` | Garnier Fructis Pure Fresh sampon gyorsan zsírosodó hajra 400 ml | Garnier Fructis; Pure Fresh; gyorsan zsírosodó hajra; 400 ml | 2026-08-24 | User link alapján megerősítette. |
-| Szóda | `121229698` | Szentkirályi extra dús természetes ásványvíz 1,5 l | Szentkirályi; extra dús; szénsavas; 1,5 l | 2026-08-24 | User az 1,5 literes változatot megerősítette; a zsugor→palack kosármennyiség továbbra sem találgatható. |
+| Szóda | `121229698` | Szentkirályi extra dús természetes ásványvíz 1,5 l | Szentkirályi; extra dús; szénsavas; 1,5 l | 2026-08-27 | User az 1,5 literes változatot megerősítette. Stock-egység: 1 zsugor = 6 palack. |
 | Fagyasztott mini pizza | `120560507` | Buitoni Piccolinis háromsajtos mini pizza 9 × 30 g | Buitoni; Piccolinis; háromsajtos; 9 darab; 30 g/db | 2026-08-24 | User megerősítette. |
 | Fagyasztott sajtos mini burek | `105004749` | Bella gyorsfagyasztott sajtos mini burek 480 g | Bella; gyorsfagyasztott; sajttal töltött mini burek; 480 g | 2026-08-24 | User megerősítette; külön termék a Fornetti sajtos pogácsától; a mostani rendelésbe 1 db kell. |
 | Fagyasztott sajtos pogácsa | `220297280` | Fornetti sajtos pogácsa 700 g | Fornetti; előkelesztett; gyorsfagyasztott; sajtos pogácsa; 700 g; nem gluténmentes | 2026-08-24 | User megerősítette; külön termék a Bella mini burektől; a mostani rendelésbe 1 db kell. |
@@ -90,9 +90,9 @@ Strukturált stock-tábla. Szabályok: `current/principles/stock-system.md`.
 | Name | currentQty | targetQty | hiány a targethez | unit / size | shoppingSource | product / notes |
 |---|---:|---:|---:|---|---|---|
 | HELL White Peach energiaital | **1** | **6** | **5** | db; 250 ml | Tesco | **Zero**, White Peach; kanonikus Tesco kosár-ID `121302824`; URL-alias `2004121302824` |
-| Primavera víz | **3** | **5** | **2** | zsugor; 2 l-es palackok | Tesco | szénsavmentes; azonosítva: Tesco `121233911`; 2026-08-23: készletből -1 zsugor |
-| Szóda | **4** | **5** | **1** | zsugor; 1,5 l-es palackok | Tesco | Szentkirályi extra dús; azonosítva: Tesco `121229698`; zsugor→palack darabszám tisztázandó |
-| Mizse víz | **0** | **5** | **5** | zsugor; 1,5 l-es palackok | Tesco | elfogyott; szénsavmentes; azonosítva: Tesco `121233675`; a zsugor→palack kosármennyiség tisztázandó |
+| Primavera víz | **3** | **5** | **2** | zsugor; 1 zsugor = 6 × 2 l-es palack | Tesco | szénsavmentes; azonosítva: Tesco `121233911`; 2026-08-23: készletből -1 zsugor; 2026-08-27-i rendelésből tévesen kimaradt, ezért a hiány változatlan: 12 palack |
+| Szóda | **4** | **5** | **1** | zsugor; 1 zsugor = 6 × 1,5 l-es palack | Tesco | Szentkirályi extra dús; azonosítva: Tesco `121229698`; 2026-08-27-i rendelésből tévesen kimaradt, ezért a hiány változatlan: 6 palack |
+| Mizse víz | **0** | **5** | **5** | zsugor; 1 zsugor = 6 × 1,5 l-es palack | Tesco | elfogyott; szénsavmentes; azonosítva: Tesco `121233675`; 2026-08-27-i rendelésből tévesen kimaradt; teljes hiány 30 palack, rendelésenként max. 12, maradék továbbviendő |
 | Sör | **18** | **24** | **6** | db | Tesco | egy 6-os csomag vásárolandó |
 | Cherry Coke | **0** | **4** | **4** | 1,75 l-es palack? | Tesco | korábbi „Serikók” feloldása; Zero-státusz TBD |
 | Kóla | **1** | **3** | **2** | 1,75 l-es palack? | Tesco | pontos típus és Zero-státusz TBD |
@@ -262,7 +262,7 @@ A részletes átmeneti szabály: `current/principles/meal-shopping-modes.md`.
 | Name | currentQty | targetQty | reorderThreshold | reorderQty | unit | notes |
 |---|---|---|---|---|---|---|
 | Gyömbér | TBD | 3 (default) | 2 (default) | 2 (default) | db / g | |
-| Fokhagyma | TBD | 3 (default) | 2 (default) | 2 (default) | fej | |
+| Fokhagyma | **5** | **4** | 2 (default) | 2 (default) | fej | 2026-08-25: aktuális készlet pontosítva; target fölött 1-gyel, jelenleg nem vásárolandó. |
 | Tökmagolaj | TBD | 3 (default) | 2 (default) | 2 (default) | üveg | |
 | **Tejföl** | **0** | **3** | **1** | **2** | poharas (kicsi) | 2026-08-24: elfogyott, hiány a targethez **3**. ⭐ user-spec rotálási szabály (NEM default): target=3, küszöb=**1** (default 2 helyett), reorder=2. ("Na jó, nem sokat, de mondjuk hármat. Mondjuk kettőt rotálni, tehát amikor majd csak egy venni még egyet, vagy kettőt.") |
 | Kenyér | TBD | 3 (default) | 2 (default) | 2 (default) | db | "Kenyeret kenyérhez ezt, meg azt" — a kenyér biztos, a végét nem értettem (STT) |
@@ -299,6 +299,8 @@ A részletes átmeneti szabály: `current/principles/meal-shopping-modes.md`.
 | ❓ Serikók | TBD | 3 (default) | 2 (default) | 2 (default) | ? | **STT-bizonytalan**: nem tudom mire gondolt — felvéve, később pontosítani |
 | **Rákcsa** | **0** (utolsó kinyitva 2026-05-09) | 3 (default) | 2 (default) | 2 (default) | ? | Péntekenként fogy (a srácoknak). Ma elfogyott → bevásárló-listára. **preferredStore: Kínai bolt.** Korábbi STT-bizonytalanság feloldva: ez a "rákcsa" — a user így használja. |
 | Nasi (általános) | TBD | 3 (default) | 2 (default) | 2 (default) | ? | általános fogalom, alkategória-jelölt |
+| Kinder Bueno Mini | **0** | **2** | TBD | TBD | csomag | 2026-08-26: elfogyott; hiány a targethez **2**; beszerzési hely és pontos kiszerelés TBD. |
+| Kinder Pingui | **0** | **1** | TBD | TBD | csomag | 2026-08-26: elfogyott; hiány a targethez **1**; beszerzési hely és pontos kiszerelés TBD. |
 
 ---
 

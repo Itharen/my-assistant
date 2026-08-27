@@ -526,7 +526,10 @@ manuális action-log sort (a hook által írt mellé):
   Windows-asztal átvételére. Computer Use előtt külön kérj engedélyt, és várd
   meg a választ. Az engedély a következő user-üzenetnél lejár: ha az új
   legutóbbi üzenet nem hagyta kifejezetten jóvá a használatot, ismét kérdezni
-  kell. A használat előzetes bejelentése nem engedélykérés.
+  kell. A használat előzetes bejelentése nem engedélykérés. Mivel a tiltás az
+  alapértelmezés, a Computer Use **nem-használatát ne jelentgesd**; csak akkor
+  hozd szóba, ha a következő konkrét lépéshez ténylegesen használni szeretnéd,
+  és ekkor kérj rá explicit engedélyt.
 
 - **Tesco-kosár kizárólag a kanonikus UBH runbook szerint.** Minden agent Tesco-mutáció előtt teljesen olvassa el:
   `E:/Programming/Own/CURSOR/LIVE-projects/unblockable-browser-handler-tool/__documentations/TESCO-CART-RUNBOOK.md`.

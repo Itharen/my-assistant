@@ -258,3 +258,35 @@ Amikor a user bedob egy gondolatot / kérést / megjegyzést / szabályt:
 **Indok:** a user inputot dobál be, én legyek a perzisztens memória.
 A "mi a következő lépés" az ő döntése — ne én terjesszem elő minden
 inputnál. Ha kell instrukció, megkérdezi.
+
+---
+
+## 2026-08-23 — Computer Use csak előzetes egyeztetéssel
+
+> Ami azt illeti, nem örülök, hogy a Computer Use Skill-t használod előzetes megbeszélés nélkül, és mivel én is használom éppen a számítógépet, reflexből lelövöm mindig.
+
+**Következmény (assistant):** Computer Use nem indítható pusztán abból, hogy a
+user egy böngészős feladat folytatását kéri. Előbb röviden egyeztetni kell, hogy
+a user éppen át tudja-e adni a gép vezérlését; csak az adott időablakra adott
+explicit engedély után indulhat Windows UI-vezérlés.
+
+## 2026-08-23 — Computer Use engedély minden user-üzenet után
+
+> (Computer use skill-t csak és kizárólag akkor használhatsz, hogyha előtte megkérdezted, hogy használhatod-e. És minden egyes alkalommal meg kell kérdezd előtte, hogy használhatod-e. ( minden két user üzenet között, ha az utolsó user üzenetben nem lett kifejezette jóváhagyva már.))
+>
+> Már megint nem egyeztettél velem kifejezetten a Computer Use-ról. Ezt nem teheted meg, nem érted meg? Bazd meg, hogy nem állhatsz neki Computer Use-olni, anélkül, hogy kifejezetten engedélyt kérjél rá, a kurva életbe már!
+
+**Következmény (assistant):** A Computer Use engedélye legfeljebb a következő
+user-üzenetig érvényes. Ha a legutóbbi user-üzenet nem hagyta kifejezetten jóvá
+a Computer Use használatát, használat előtt kötelező külön engedélyt kérni és
+megvárni a választ. A használat előzetes bejelentése nem engedélykérés.
+
+## 2026-08-27 — a Computer Use hiányát nem kell jelentgetni
+
+> Ne mondogasd már folyamatosan, hogy nem használsz Computer Use-t. Az majd akkor érdekes, ha szeretnél használni a következő lépésben.... Egyéb iránt alapértelmezett, hogy soha nem használhatsz Computer Use-t, csak hogyha előzetesen egyeztettél, és akkor is csak addig, amíg a következő lépés fut egy engedély után. ( két user üzenet között.)
+
+**Következmény (assistant):** a tiltás az alapértelmezés, ezért a Computer Use
+nem-használatát nem kell státuszként vagy megnyugtatásként megemlíteni. Csak
+akkor kerül szóba, ha a következő lépéshez ténylegesen használni szeretném;
+ekkor előre leírom a konkrét műveletet, explicit engedélyt kérek, és az engedély
+csak az adott két user-üzenet közötti lépésre érvényes.

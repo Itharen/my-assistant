@@ -106,3 +106,64 @@ A `current/shopping/list.md` ↔ Tesco-kosár közötti kétirányú szinkron, +
   jellemzők, ár, akció, elérhetőség és product ID.
 - Érdemi változásnál értesítés készül előtte/utána értékkel és közvetlen
   terméklinkkel; átmeneti elérhetetlenség nem írja felül a preferenciát.
+
+---
+
+## 2026-08-26 — rendelési segédlet elkészült, első támogatott rendelés leadva
+
+> Jelentem, nagyon régóta húzódik, de megcsináltuk a Tesco rendelés segédletet
+> és leadtam a rendelést. Emelhetőleg holnap fog megjönni, majd amikor megjött,
+> akkor egy újabb képességet fogunk neked készíteni, amivel vissza tud
+> ellenőrizni, hogy mennyi mindent vettünk, hogy azokat hozzáadhassd a
+> raktárkészlethez
+
+### Következő állapotátmenet — assistant-jegyzet
+
+- A rendelés leadása ✅ kész 2026-08-26.
+- Várható kézbesítés: 2026-08-27; a tényleges érkezés user-jelzéshez kötött.
+- Következő workflow: rendelés/számla ↔ kézbesített termékek egyeztetése,
+  mennyiségek visszaellenőrzése, majd stock-növelés.
+- Hiányzó, helyettesített vagy mennyiségben eltérő tétel nem vehető készletre
+  automatikusan ellenőrzés nélkül.
+- Követő task: `org:task:6a8e9e88deaa21f637fc8c31`.
+
+---
+
+## 2026-08-27 — véglegesítő email automatikus feldolgozása
+
+> Nem lenne rossz valamilyen automatizmus ezeknek a Tesco visszaigazolásoknak, rendeléseknek az automatikus feldolgozására. De az is lehet, hogy nincsen rá különösebben szükség, bár lehet, hogy valamilyen egyszerűsítő eszközt mégis csinálhatunk. Mit gondolsz erről?
+
+### Javasolt legkisebb hasznos megoldás
+
+A meglévő `ma email` kliensre és a browser-workflow Hyperplan SP-05.3
+reconciliation modelljére épüljön egy agentfüggetlen TypeScript CLI-parancs;
+ne legyen új háttérszolgáltatás és ne pollolja a postafiókot.
+
+Tervezett belépési pont:
+
+```text
+ma tesco reconcile --latest-email --dry-run --pretty
+```
+
+Feladata:
+
+1. a menedzselt mailbox legutóbbi, exact sender+subject alapján azonosított
+   Tesco végleges összesítőjének egyszeri lekérése;
+2. order ID, termékazonosító/név, rendelt és végleges mennyiség,
+   helyettesítés, elérhetetlenség és végösszeg strukturált kinyerése;
+3. a tervezett kosár és a végleges rendelés determinisztikus diffje;
+4. `delivered`, `substituted`, `unavailable`, `quantity-changed` vagy
+   `unresolved` outcome minden sorhoz;
+5. alapértelmezetten csak JSON/pretty riport; stock- vagy Organizer-write csak
+   külön jóváhagyási és readback gate után.
+
+### Határok
+
+- Nincs folyamatos mailbox-polling. Első körben user/agent indítja a parancsot
+  a kézbesítés után; később csak valódi push-event indíthatja automatikusan.
+- A parser nem tárolhat címet, telefonszámot vagy kártyametaadatot; csak a
+  reconciliationhöz szükséges rendelési sorokat és redacted azonosítót.
+- Feldolgozott message/order kulcs idempotensen rögzítendő, hogy ismételt futás
+  ne duplázza a készletet.
+- Ismeretlen email-template vagy nem egyértelmű terméksor fail-close
+  `unresolved` állapotot ad, nem találgat.

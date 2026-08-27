@@ -15,6 +15,34 @@
 - Zsugorban vezetett készletet palackra csak rögzített zsugorméret alapján szabad átváltani; találgatni tilos.
 - A limitet kosár-összeállításkor és a végső kosáregyeztetéskor is ellenőrizni kell.
 
+## 2026-08-27 — a zsugor egysége
+
+> Ja, hogy nem tisztáztuk, hogy mit jelent a zsugor. A zsugor az 6 palackot jelent.... (Zsugorfóliázott csomag.)
+
+**Operatív következmény:**
+
+- Tesco-víz esetén **1 zsugor = 6 palack**.
+- A készlethiányt először palackra kell váltani, utána kell alkalmazni a
+  típusonkénti **12 palack/rendelés** korlátot.
+- A kosárba nem férő palackmennyiség nyitott készlethiányként továbbviendő.
+- Nyitott mértékegység-konverzió mellett a kosár nem véglegesíthető: a
+  bizonytalanságot még a kosárírás előtt, egy közös egyeztetési körben kell
+  lezárni.
+
+**2026-08-27-i visszaszámítás:** Primavera 2 zsugor = **12 palack**;
+Szentkirályi extra dús 1 zsugor = **6 palack**; Mizse 5 zsugor = **30 palack**,
+amelyből rendelésenként **12 palack** tehető kosárba, **18 palack / 3 zsugor**
+pedig továbbviendő.
+
+## 2026-08-27 — egyszerre legfeljebb két zsugor víz
+
+> Arról se feledkezzünk meg, hogy egyszerre maximum két zsugor vizet lehet rendelni a Tesco-tól.
+
+**Operatív következmény:** a korábbi típusonkénti 12 palackos limittel együtt
+értelmezve egy adott víztípusból rendelésenként legfeljebb **2 zsugor = 12
+palack** tehető kosárba. A teljes hiány fennmaradó része a következő rendelésre
+nyitva marad.
+
 ## Kapcsolódó tartós szabályok
 
 - Termékbizonytalanság, közvetlen link és italból Zero:

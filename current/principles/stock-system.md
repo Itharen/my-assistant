@@ -6,6 +6,54 @@
 
 ---
 
+## 2026-08-23 — organizer + local backup/mirror
+
+> Ezeket local is fel kell jegyezzük mindig. Legyen backup/mirror
+
+**Következmény (assistant-jegyzet):** az organizer marad a célrendszer, de a
+`current/stock/items.md` minden készletinput naprakész helyi backup/mirror
+példányát is tartalmazza. A tükör nem írhatja felül némán az organizer-adatot;
+eltérés esetén az ütközést jelezni és feloldani kell.
+
+## 2026-08-24 — Tesco víz- és üdítőlimit
+
+> Van itt egy-két szabály még majd, amit be kell tartsunk a kosár összeállításokhoz, mint például, hogy a vizekből és üdítőkből típusonként maximum 12-t rendelhetünk egyszerre.
+
+**Kanonikus kosárszabály:** `current/principles/tesco-cart-rules.md`.
+
+## 2026-08-27 — zsugor mértékegység
+
+> Ja, hogy nem tisztáztuk, hogy mit jelent a zsugor. A zsugor az 6 palackot jelent.... (Zsugorfóliázott csomag.)
+
+**Következmény (assistant-jegyzet):** víznél a készlet-egységként használt
+`zsugor` 6 palackot jelent. A stockhiány számítása zsugorban maradhat, de a
+Tesco kosármennyiség mindig `hiányzó zsugor × 6`, majd erre alkalmazandó a
+típusonkénti 12 palackos rendelési maximum. A korlát miatt ki nem szolgált
+maradékot a következő rendelésre tovább kell vinni.
+
+## 2026-08-27 — csomagolási mértékegység-szótár
+
+> Ezt a zsugor kifejezés átiratot amúgy alaposan jegyezd fel, mert előfordulhat, hogy másra is használom. Illetve hasonló kifejezés a tálcasör, ami egy 24-es csomagtálcát jelent. De általában 6-os csomagokkal szoktuk vásárolni a sört.
+
+**Kanonikus feloldás:**
+
+- `zsugor` = zsugorfóliázott **6 palackos** csomag; nem csak víznél fordulhat elő;
+- `tálcasör` = **24 darabos** sörtálca;
+- a sör szokásos vásárlási egysége ettől függetlenül a **6 darabos csomag**;
+- ha egy konkrét termék csomagolása ettől eltér, a termékoldalon mért
+  kiszerelés az irányadó, és az eltérést rögzíteni kell.
+
+## 2026-08-23 — időnként vásárolt készletek igénye
+
+> Ja, és azt hiszem nem ártana valami olyasmit is majd megálmodni, hogy olyan
+> dolgok, amiket csak időnként veszünk, de nem mindig, mint például hotdognak
+> való, sajtos kifli, pirított hagyma, frankfurti virsli.
+
+**Nyitott feature-igény:** legyen az állandó stocktól elkülönülő, időszakosan
+aktiválható készlet-/bevásárlási kategória.
+
+---
+
 ## 2026-05-07 — default raktárkezelési pattern
 
 > Na, szeretném, hogy írjuk fel default raktárkezelési patternnek, hogy a

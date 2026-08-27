@@ -76,13 +76,13 @@ Szabályok: `current/principles/recurring-tasks.md` (2-3 hetente megrendelés) +
 - [ ] [Viennetta vanília jégkrémtorta 650 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/203199189) × **1**, ha újra elérhető
 - [ ] [Tesco Mini Mix vaníliaízű jégkrém 8 × 50 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/100588549) × **1**, ha újra elérhető
 
+### A 2026-08-27-i rendelésből tévesen kimaradt — következő rendelésbe ✅
+
+- [ ] [Primavera szénsavmentes víz 2 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121233911) × **2 zsugor / 12 palack** — a rendelési maximum; teljesen pótolható
+- [ ] [Szentkirályi extra dús víz 1,5 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121229698) × **1 zsugor / 6 palack** — teljesen pótolható
+- [ ] [Mizse szénsavmentes víz 1,5 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121233675) × **2 zsugor / 12 palack** — teljes hiány 5 zsugor; a rendelési maximum után **3 zsugor / 18 palack** marad nyitva
+
 ### Egy közös döntési kör kell ⚠️
-
-#### Víz — a zsugor palackszámát rögzíteni kell
-
-- [ ] [Primavera szénsavmentes víz 2 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121233911) — hiány **2 zsugor**, kosárban legfeljebb **12 palack**
-- [ ] [Szentkirályi extra dús víz 1,5 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121229698) — hiány **1 zsugor**, kosárban legfeljebb **12 palack**
-- [ ] [Mizse szénsavmentes víz 1,5 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121233675) — hiány **5 zsugor**, kosárban legfeljebb **12 palack**; a maradék igény továbbviendő
 
 #### Termék vagy próbamennyiség
 

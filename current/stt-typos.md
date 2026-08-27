@@ -53,6 +53,10 @@
 | "fejlesztős" | fejlesztve | általános | 2026-05-12 |
 | "lófaszcse" | "lófaszt sem" / "lófasz se" | általános | 2026-05-12 |
 | "kétszemes" (feles pohár) | **két-centes** (2cl) | shopping (IKEA) | 2026-07-19 user korrekció ✅ |
+| CsZám | **célszám** | készlet | 2026-08-23 user korrekció ✅ |
+| zsugor | **6 palackos zsugorfóliázott csomag**; más italokra is használható | készlet / csomagolási mértékegység | 2026-08-27 user-definíció ✅ |
+| tálcasör | **24 darabos sörtálca** | készlet / csomagolási mértékegység | 2026-08-27 user-definíció ✅ |
+| „egy csomag sör” alapértelmezése | **6 darabos sörös csomag**, nem tálcasör | készlet / vásárlási preferencia | 2026-08-27 user-definíció ✅ |
 
 ---
 
