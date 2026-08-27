@@ -172,7 +172,7 @@ rövidíthető és sosem szűrhető: ha egy szabály szövegére szükség van, 
 fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-global/` = FDP-repóban ·
 `project-internal/` = projekt-workspace-ben · `project-type/` = projekt-típus szerint.
 
-**`global/` — 40 szabaly**
+**`global/` — 42 szabaly**
 
 | ruleId | Cim | Fajl |
 |---|---|---|
@@ -183,6 +183,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `core-confident-fix-or-diagnostics` | Confident fix, else ship diagnostics | `fdp-documentations/rules/global/core-confident-fix-or-diagnostics.md` |
 | `core-critical-requests` | Critically examine user requests | `fdp-documentations/rules/global/core-critical-requests.md` |
 | `core-dark-scifi-design` | Dark, sci-fi design by default | `fdp-documentations/rules/global/core-dark-scifi-design.md` |
+| `core-decision-writeback` | Every decision must be written back into EVERY affected document | `fdp-documentations/rules/global/core-decision-writeback.md` |
 | `core-document-everything` | core-document-everything (global, hard rule) | `fdp-documentations/rules/global/core-document-everything.md` |
 | `core-dynamo-docs-english` | Dynamo code documentation is written in ENGLISH | `fdp-documentations/rules/global/core-dynamo-docs-english.md` |
 | `core-e2e-automata` | E2E = full automated feature coverage | `fdp-documentations/rules/global/core-e2e-automata.md` |
@@ -201,6 +202,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `core-no-polling` | core-no-polling (global, hard rule) | `fdp-documentations/rules/global/core-no-polling.md` |
 | `core-no-work-copies` | A projektek duplikálása TILOS — munkamásolat sehova nem kerülhet | `fdp-documentations/rules/global/core-no-work-copies.md` |
 | `core-observability` | Observability | `fdp-documentations/rules/global/core-observability.md` |
+| `core-owner-decision-self-contained` | Owner decisions must be presented FULLY EXPLAINED — no unresolved references or codes | `fdp-documentations/rules/global/core-owner-decision-self-contained.md` |
 | `core-patterns-first` | Patterns first | `fdp-documentations/rules/global/core-patterns-first.md` |
 | `core-planning-layers` | 3-layer planning structure | `fdp-documentations/rules/global/core-planning-layers.md` |
 | `core-record-learnings` | Record successes and failures | `fdp-documentations/rules/global/core-record-learnings.md` |
