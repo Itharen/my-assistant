@@ -167,11 +167,10 @@ function computeXTicks(tStart: number, tEnd: number, rangeHours: number): D_Wave
 }
 
 @Component({
-  standalone: true,
-  selector: 'd-waves',
-  templateUrl: './d-waves.component.html',
-  styleUrl: './d-waves.component.scss',
-  imports: [ CommonModule, D_WavesForm_Component ],
+    selector: 'd-waves',
+    templateUrl: './d-waves.component.html',
+    styleUrl: './d-waves.component.scss',
+    imports: [CommonModule, D_WavesForm_Component]
 })
 /** Waves panel — 3 vonalas SVG diagram astral/mental/matter time-series-szel, precomputált polyline-okkal. */
 export class D_Waves_Component implements OnDestroy {

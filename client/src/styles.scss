@@ -7,7 +7,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@include mat.core();
+@include mat.elevation-classes();
+@include mat.app-background();
 
 // Minimal Material M3 dark palette — themes only the core typography/elevation;
 // component-level dark styling is driven by the `--ma-*` CSS variables below

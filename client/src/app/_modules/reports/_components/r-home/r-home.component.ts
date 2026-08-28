@@ -18,11 +18,10 @@ import {
 } from '../../../../_models/server-envelope.interface';
 
 @Component({
-  standalone: true,
-  selector: 'r-home',
-  templateUrl: './r-home.component.html',
-  styleUrl: './r-home.component.scss',
-  imports: [ CommonModule, RouterModule ],
+    selector: 'r-home',
+    templateUrl: './r-home.component.html',
+    styleUrl: './r-home.component.scss',
+    imports: [CommonModule, RouterModule]
 })
 /** Reports home container — 3 szekció (FR-board, cycle history, recent ships) read-only fetch + render. */
 export class R_Home_Component implements OnInit {

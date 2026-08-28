@@ -8,11 +8,10 @@ import { I_Integrations_ApiService } from '../../_services/i-integrations.api-se
 import type { GoogleStatusResponse, GoogleQueryResult } from '@server-models';
 
 @Component({
-  standalone: true,
-  selector: 'i-google',
-  templateUrl: './i-google.component.html',
-  styleUrl: './i-google.component.scss',
-  imports: [CommonModule, FormsModule],
+    selector: 'i-google',
+    templateUrl: './i-google.component.html',
+    styleUrl: './i-google.component.scss',
+    imports: [CommonModule, FormsModule]
 })
 /** Google Assistant config panel — status + Re-auth + test text query. */
 export class I_Google_Component implements OnInit {

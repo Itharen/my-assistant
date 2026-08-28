@@ -3,9 +3,10 @@ import { Component, inject } from '@angular/core';
 import { A_Socket_ControlService } from './_services/control-services/a-socket.control-service';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss',
+    standalone: false
 })
 /**
  * Root app component — title + boot-injects A_Socket_ControlService (FR #3f Phase 3.A).

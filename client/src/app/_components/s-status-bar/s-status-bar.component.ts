@@ -13,11 +13,10 @@ import {
 } from '../../_services/data-services/a-version.data-service';
 
 @Component({
-  standalone: true,
-  selector: 's-status-bar',
-  templateUrl: './s-status-bar.component.html',
-  styleUrl: './s-status-bar.component.scss',
-  imports: [ CommonModule ],
+    selector: 's-status-bar',
+    templateUrl: './s-status-bar.component.html',
+    styleUrl: './s-status-bar.component.scss',
+    imports: [CommonModule]
 })
 /** Footer status-bar — server vX · client vY · last-update HH:mm. */
 export class S_StatusBar_Component implements OnInit, OnDestroy {

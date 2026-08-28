@@ -34,11 +34,10 @@ function iconFor(item: A_FoTaskItem): string {
 }
 
 @Component({
-  standalone: true,
-  selector: 'd-tasks',
-  templateUrl: './d-tasks.component.html',
-  styleUrl: './d-tasks.component.scss',
-  imports: [ CommonModule ],
+    selector: 'd-tasks',
+    templateUrl: './d-tasks.component.html',
+    styleUrl: './d-tasks.component.scss',
+    imports: [CommonModule]
 })
 /** Tasks panel — organizer-tasks read-only listája, open vs done csoportokra szétválasztva. */
 export class D_Tasks_Component {

@@ -29,11 +29,10 @@ const TYPE_OPTIONS: string[] = [ 'task', 'feedback', 'approval', 'rejection', 'f
 const DOMAIN_OPTIONS: string[] = [ 'meta', 'dev', 'tasks', 'calendar', 'wallet', 'health', 'shopping', 'diary' ];
 
 @Component({
-  standalone: true,
-  selector: 'r-user-io',
-  templateUrl: './r-user-io.component.html',
-  styleUrl: './r-user-io.component.scss',
-  imports: [ CommonModule, FormsModule, RouterModule ],
+    selector: 'r-user-io',
+    templateUrl: './r-user-io.component.html',
+    styleUrl: './r-user-io.component.scss',
+    imports: [CommonModule, FormsModule, RouterModule]
 })
 /** User I/O panel — USER_INPUT inbox + open-Q outbox. Read-only Phase 3 MVP. */
 export class R_UserIO_Component implements OnInit, OnDestroy {

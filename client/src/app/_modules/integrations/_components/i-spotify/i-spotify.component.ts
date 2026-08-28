@@ -7,11 +7,10 @@ import { I_Integrations_ApiService } from '../../_services/i-integrations.api-se
 import type { SpotifyStatusResponse } from '@server-models';
 
 @Component({
-  standalone: true,
-  selector: 'i-spotify',
-  templateUrl: './i-spotify.component.html',
-  styleUrl: './i-spotify.component.scss',
-  imports: [CommonModule],
+    selector: 'i-spotify',
+    templateUrl: './i-spotify.component.html',
+    styleUrl: './i-spotify.component.scss',
+    imports: [CommonModule]
 })
 /** Spotify config panel — read-only status + Re-auth indítás új ablakban. */
 export class I_Spotify_Component implements OnInit {

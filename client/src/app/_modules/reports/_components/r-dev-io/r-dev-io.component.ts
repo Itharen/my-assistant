@@ -29,11 +29,10 @@ type BusTab = 'all' | 'to-chat' | 'from-chat';
 type AgbNewStatus = 'OPEN' | 'ANSWERED' | 'ACTED' | 'DROPPED';
 
 @Component({
-  standalone: true,
-  selector: 'r-dev-io',
-  templateUrl: './r-dev-io.component.html',
-  styleUrl: './r-dev-io.component.scss',
-  imports: [ CommonModule, FormsModule, RouterModule ],
+    selector: 'r-dev-io',
+    templateUrl: './r-dev-io.component.html',
+    styleUrl: './r-dev-io.component.scss',
+    imports: [CommonModule, FormsModule, RouterModule]
 })
 /** Dev Agent I/O panel — 3 szekció read-only, párhuzamos fetch. */
 export class R_DevIO_Component implements OnInit, OnDestroy {

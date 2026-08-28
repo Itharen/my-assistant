@@ -18,11 +18,10 @@ import { D_Dashboard_ControlService } from '../../_services/d-dashboard.control-
 type D_CaptureMode_Type = 'text' | 'energy';
 
 @Component({
-  standalone: true,
-  selector: 'd-capture',
-  templateUrl: './d-capture.component.html',
-  styleUrl: './d-capture.component.scss',
-  imports: [ CommonModule, FormsModule ],
+    selector: 'd-capture',
+    templateUrl: './d-capture.component.html',
+    styleUrl: './d-capture.component.scss',
+    imports: [CommonModule, FormsModule]
 })
 /** Capture panel — text / energy mód, 3 csúszka az energy-hez, kontroll-service-en át submit. */
 export class D_Capture_Component {

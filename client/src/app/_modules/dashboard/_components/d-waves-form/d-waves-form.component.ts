@@ -52,11 +52,10 @@ const MOOD_MAX: number = 120;
 const NOTE_MAX: number = 2000;
 
 @Component({
-  standalone: true,
-  selector: 'd-waves-form',
-  templateUrl: './d-waves-form.component.html',
-  styleUrl: './d-waves-form.component.scss',
-  imports: [ CommonModule, FormsModule ],
+    selector: 'd-waves-form',
+    templateUrl: './d-waves-form.component.html',
+    styleUrl: './d-waves-form.component.scss',
+    imports: [CommonModule, FormsModule]
 })
 /** Új hullám-snapshot form a d-waves panel-ben — 3 level + vector + mood + note + submit. */
 export class D_WavesForm_Component {

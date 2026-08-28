@@ -12,11 +12,10 @@ interface S_View_Interface {
 }
 
 @Component({
-  standalone: true,
-  selector: 's-home',
-  templateUrl: './s-home.component.html',
-  styleUrl: './s-home.component.scss',
-  imports: [ CommonModule ],
+    selector: 's-home',
+    templateUrl: './s-home.component.html',
+    styleUrl: './s-home.component.scss',
+    imports: [CommonModule]
 })
 /** Status modul home component — `/status` endpoint snapshot megjelenítése. */
 export class S_Home_Component implements OnInit {

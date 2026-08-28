@@ -19,11 +19,10 @@ const PROD_COUNTDOWN_SEC: number = 5;
 const DEV_SILENT_RELOAD_DELAY_MS: number = 1000;
 
 @Component({
-  standalone: true,
-  selector: 's-version-reload-banner',
-  templateUrl: './s-version-reload-banner.component.html',
-  styleUrl: './s-version-reload-banner.component.scss',
-  imports: [ CommonModule ],
+    selector: 's-version-reload-banner',
+    templateUrl: './s-version-reload-banner.component.html',
+    styleUrl: './s-version-reload-banner.component.scss',
+    imports: [CommonModule]
 })
 /** Banner-komponens: server-verzió-bump után countdown + reload UX. Dev-mode silent. */
 export class S_VersionReloadBanner_Component implements OnInit, OnDestroy {

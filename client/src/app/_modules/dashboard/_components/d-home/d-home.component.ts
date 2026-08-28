@@ -17,17 +17,16 @@ import { D_Insights_Component } from '../d-insights/d-insights.component';
 import { D_Capture_Component } from '../d-capture/d-capture.component';
 
 @Component({
-  standalone: true,
-  selector: 'd-home',
-  templateUrl: './d-home.component.html',
-  styleUrl: './d-home.component.scss',
-  imports: [
-    CommonModule,
-    D_Tasks_Component,
-    D_Waves_Component,
-    D_Insights_Component,
-    D_Capture_Component,
-  ],
+    selector: 'd-home',
+    templateUrl: './d-home.component.html',
+    styleUrl: './d-home.component.scss',
+    imports: [
+        CommonModule,
+        D_Tasks_Component,
+        D_Waves_Component,
+        D_Insights_Component,
+        D_Capture_Component,
+    ]
 })
 /** Dashboard container — 2×2 grid root, polling lifecycle + state$ stream átadása a sub-panel-eknek. */
 export class D_Home_Component implements OnInit, OnDestroy {

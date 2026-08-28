@@ -28,11 +28,10 @@ const SEVERITY_ICON: Record<A_InsightSeverity, string> = {
 };
 
 @Component({
-  standalone: true,
-  selector: 'd-insights',
-  templateUrl: './d-insights.component.html',
-  styleUrl: './d-insights.component.scss',
-  imports: [ CommonModule ],
+    selector: 'd-insights',
+    templateUrl: './d-insights.component.html',
+    styleUrl: './d-insights.component.scss',
+    imports: [CommonModule]
 })
 /** Insights panel — agent-emit-elt megfigyelések listája egy-tap dismiss-szel. */
 export class D_Insights_Component {
