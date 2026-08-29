@@ -172,7 +172,7 @@ rövidíthető és sosem szűrhető: ha egy szabály szövegére szükség van, 
 fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-global/` = FDP-repóban ·
 `project-internal/` = projekt-workspace-ben · `project-type/` = projekt-típus szerint.
 
-**`global/` — 41 szabaly**
+**`global/` — 42 szabaly**
 
 | ruleId | Cim | Fajl |
 |---|---|---|
@@ -209,6 +209,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `core-rich-error-handling` | Rich error handling everywhere | `fdp-documentations/rules/global/core-rich-error-handling.md` |
 | `core-rule-integrity` | Rules must never be lost — no reducing, condensing or shortening | `fdp-documentations/rules/global/core-rule-integrity.md` |
 | `core-rule-validation` | Rule-validation protocol | `fdp-documentations/rules/global/core-rule-validation.md` |
+| `core-second-failure-step-back` | At the SECOND consecutive failure: step back and review WHAT and HOW you are doing | `fdp-documentations/rules/global/core-second-failure-step-back.md` |
 | `core-secret-rotation-owner-only` | Credential rotation and revocation: ONLY with the owner, hand-in-hand | `fdp-documentations/rules/global/core-secret-rotation-owner-only.md` |
 | `core-ssot-unified` | Single Source of Truth + Unified | `fdp-documentations/rules/global/core-ssot-unified.md` |
 | `core-stale-doc-marking` | core-stale-doc-marking (global, hard rule) | `fdp-documentations/rules/global/core-stale-doc-marking.md` |
