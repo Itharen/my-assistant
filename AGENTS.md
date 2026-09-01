@@ -57,9 +57,10 @@ lokál szerver a `:39265`-ön). **MINDIG használni kell, PREFERÁLTAN és AKTÍ
 - **TIMEOUT-REFLEX — PRÓBÁLD MEG MEGTUDNI, NE ISMÉTELD:** egy FAM-timeout SOHA nem bizonyítja, hogy a FAM nem él —
   de azt SEM, hogy csak tovább kellett volna várni. **Az ELSŐ timeoutnál PROBE, nem újrapróbálkozás.** A probe
   egyetlen REST-hívás: `GET http://127.0.0.1:39265/api/health` → a `ready` és a `hydration.pendingTables` dönt.
-  **`ready: false`** (van még `pendingTables`) → a vektor-pool hidratál; hideg boot ~338k vektort tölt ~9 GB-ba,
-  ez **~2 perc**. Az ismétlés ilyenkor NEM segíthet (ugyanaz a kliens-plafon vágja el mindet): várd meg a
-  készenlétet, vagy dolgozz addig máson. **`ready: true`** → ez NEM várakozási probléma; ne ismételd, keresd az okot
+  **`ready: false`** (van még `pendingTables`) → a vektor-pool hidratál; hideg boot ~542k vektort tölt ~12 GB-ba,
+  ez **5–8 perc** (meleg OS-cache-sel 30–150 s; újramérve 2026-09-02 — a korábbi „~338k / ~2 perc" az 5. perc
+  környékén hamis „a FAM halott" következtetésekhez vezetett). Az ismétlés ilyenkor NEM segíthet (ugyanaz a
+  kliens-plafon vágja el mindet): várd meg a készenlétet, vagy dolgozz addig máson. **`ready: true`** → ez NEM várakozási probléma; ne ismételd, keresd az okot
   (halott/rosszul konfigurált MCP-link, a szerver várakozása alá állított kliens-tool-timeout, hibás kérés).
   Timeout után néma átváltás másik tudásforrásra TILOS, és „FAM-unavailable" a probe lefuttatása nélkül NEM
   jelenthető. Ugyanígy TILOS a FAM egészségét a bukott ablak UTÁN mért health-tel igazolni — az már más állapotot mér.
@@ -371,6 +372,16 @@ valamit a session-ök között, vedd alapként.
 ---
 
 ## Hogyan dolgozz
+
+### Interfood: folyamatos dokumentáció kötelező
+
+Az Interfood képességnél a chat-only tudás érvénytelen. Minden új kérés, döntés, parancs, flag, működési
+tapasztalat, hiba, kalibráció és preferencia-kezelési szabály ugyanabban a change-setben bekerül az összes érintett
+kanonikus dokumentumba. A kötelező writeback-mátrix és a lezárási kapu:
+`current/principles/interfood-continuous-documentation.md`. Különösen: CLI-változás →
+`__documentations/dev/INTERFOOD_CLI.md` + `SKILLS.md`; workflow/safety/readback →
+`__agent/flows/on-demand/interfood-ordering/`; megerősített preferencia → `ma interfood preference`; megfigyelt
+történeti minta → csak jelölt, explicit preferenciává kizárólag owner-megerősítéssel válhat.
 
 **Inputok kezelése:**
 - A user chat-en keresztül adja az inputokat. Routold a megfelelő helyre:
