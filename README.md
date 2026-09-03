@@ -74,10 +74,13 @@ my-assistant/
 ├── server/                # CODE — `@my-assistant/server`; Express + SQLite, tick-engine + action-log
 │   └── activity-monitor/  # PowerShell logger (Windows, ingests samples into this server)
 ├── client/                # CODE — `@my-assistant/client`; Angular 18 UI
+├── screen-waker/          # CODE — kamera motion → Windows display wake utility
 └── pipeline.config.json   # workspace-level LDP (`dc ldp`) — coordinates cli + server + client builds
 ```
 
 **Tri-tier architektúra részletek:** [`__agent/references/architecture.md`](__agent/references/architecture.md)
+
+**Screen Waker:** [`screen-waker/README.md`](screen-waker/README.md) — a tri-tier rendszertől független lokális utility.
 
 ## Migrációs terv
 

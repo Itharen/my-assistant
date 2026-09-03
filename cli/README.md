@@ -5,6 +5,9 @@ CLI for the my-assistant ecosystem. **Self-built, FOSS-only.** Two-level command
 ```
 ma cast {discover|notify|volume|preset|list-interfaces}
 ma spotify {auth|status}
+ma email {list-mailboxes|list|read|fetch-attachments|send}
+ma stocks mirror
+ma interfood {weeks|menu|menu-range|auth|orders|foods|preference|plan|nutrition|cart|order}
 ```
 
 Output: stable JSON envelope (matches the `fo` CLI minta) with `requestId`, `elapsedMs`, `ok|error`. Every invocation is mirrored to `__agent/log/actions/YYYY-MM-DD.jsonl`.
@@ -90,6 +93,77 @@ pnpm run build-n-test
 ---
 
 ## Quick reference
+
+### Interfood weekly menus
+
+```bash
+ma interfood weeks --pretty
+ma interfood menu --pretty
+ma interfood menu --year 2026 --week 37 --pretty
+ma interfood menu-range --weeks 3 --pretty
+ma interfood orders sync --from-year 2022 --summary --pretty
+ma interfood foods identify --weeks 3 --commit --summary --pretty
+ma interfood plan week --summary --pretty
+```
+
+The public reader uses Interfood's first-party API and needs no login. It normalizes stable occurrence/food IDs,
+categories, price, ingredients and portion/per-100g nutrition. Account/order commands use the persistent dedicated
+UBH session, return PII-minimized summaries by default and preserve login without exposing credentials. See
+`__documentations/dev/INTERFOOD_CLI.md` for the complete agent and mutation-safety contract.
+
+### Organizer stock mirror
+
+```bash
+# workspace-ből, globális telepítés nélkül:
+pnpm stocks:mirror
+# telepített/linkelt ma CLI esetén:
+ma stocks mirror --pretty
+```
+
+A parancs lapozva kiolvassa az összes Organizer stockot és stock-itemet, majd atomikusan cseréli a
+`current/stock/organizer-mirror.json` gépi snapshotot. A kézzel gondozott `current/stock/items.md`-hez nem nyúl.
+`--dry-run` minden oldalt kiolvas és validál, de nem ír fájlt. Opcionális: `--output`, `--limit`, `--timeout`.
+
+### Email
+
+Az e-mail adapter Gmailhez OAuth 2.0 + Gmail API-t, más providerekhez
+provider-semleges IMAP/SMTP-t használ. A repo csak kódot és placeholder
+konfigurációt tartalmaz; a `.env` és az OAuth tokenek gitignoredak.
+
+```bash
+ma email auth --account default --pretty
+ma email status --account default --pretty
+ma email list-mailboxes --account default --pretty
+ma email list --mailbox INBOX --unseen --limit 20 --pretty
+ma email read --mailbox INBOX --uid 123 --max-message-mb 25 --pretty
+ma email fetch-attachments --mailbox INBOX --since 2026-08-01 --filename-pattern "\.pdf$"
+ma email send --to person@example.com --subject "Subject" --body-file "C:\absolute\body.txt" --dry-run
+```
+
+#### Gmail OAuth első beállítás
+
+1. Google Cloud Console-ban külön projekt létrehozása.
+2. A **Gmail API** engedélyezése.
+3. Google Auth Platform: app audience = External; saját Gmail-cím teszt-userként.
+4. OAuth client: **Desktop app**.
+5. A client ID/secret és a Gmail-cím beírása a projekt-root `.env`-be az
+   `.env.example` szerint.
+6. `ma email auth` — rendszerböngészőben consent, lokális loopback callback.
+
+A kért scope-ok: `gmail.readonly` + `gmail.send`. A jelszó nem kerül a
+My Assistanthez. Külső/Testing appnál a Google a Gmail-scope-os refresh tokent
+7 napra korlátozza; tartós működéshez az app publishing statusát **In production**
+állapotba kell tenni. A Gmail API automatikusan menti az elküldött levelet.
+
+További accountok kódmódosítás nélkül használhatók. Például az
+`--account secondary` a
+`MY_ASSISTANT_EMAIL_ACCOUNT_SECONDARY_{ADDRESS|PASSWORD|SENDER_NAME}`
+kulcsokat olvassa. Hiányzó vagy hibás account-konfiguráció nem esik vissza
+egy másik postafiókra.
+
+Adatvédelmi invariáns: az action-log e-mail parancsokból csak a flag-neveket
+őrzi meg; címzettet, subjectet, body-t, mailboxot, accountot és fájlútvonalat
+nem perzisztál.
 
 ### Cast
 

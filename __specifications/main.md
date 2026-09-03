@@ -70,6 +70,12 @@ A workspace-szintű inventory + cross-project relációk: [`__agent/references/w
 | Tick-engine (A-mode dispatcher) | [`features/tick-engine.md`](features/tick-engine.md) |
 | Activity monitoring (window/idle ingest) | [`features/activity-monitoring.md`](features/activity-monitoring.md) |
 
+## 4.1 Önálló lokális utility
+
+| Utility | Spec | Implementáció |
+|---|---|---|
+| Screen Waker (kamera motion → Windows display wake) | [`screen-waker/README.md`](screen-waker/README.md) | [`../screen-waker/`](../screen-waker/) |
+
 ---
 
 ## 5. Tartalmi forrás

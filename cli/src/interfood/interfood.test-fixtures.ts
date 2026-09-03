@@ -1,0 +1,45 @@
+export function menuFixture(id: number, date: string, name: string): unknown {
+  return {
+    data: {
+      '1': {
+        id: 1,
+        name: 'Főételek',
+        categories: [{
+          id: 11,
+          code: 'A1',
+          name: 'A menü',
+          big_portion_category_id: null,
+          items: [{
+            id,
+            menu_category_id: 11,
+            price: 1990,
+            date,
+            disabled: false,
+            cancel_deadline: `${date} 16:00:00`,
+            description: 'összetevők',
+            comment: '650 kcal',
+            food_name_one: name,
+            weight_food_one: 420,
+            energy_portion_food_one: 650,
+            fat_portion_food_one: 20,
+            saturated_fat_portion_food_one: 5,
+            carb_portion_food_one: 70,
+            sugar_portion_food_one: 6,
+            protein_portion_food_one: 42,
+            salt_portion_food_one: 3,
+            energy_hundred_food_one: 154.76,
+            fat_hundred_food_one: 4.76,
+            saturated_fat_hundred_food_one: 1.19,
+            carb_hundred_food_one: 16.67,
+            sugar_hundred_food_one: 1.43,
+            protein_hundred_food_one: 10,
+            salt_hundred_food_one: 0.71,
+            food_name_two: '',
+            food_name_three: '',
+            food: { id: 901, name, display_name: null, food_rating_cache: '4.75' },
+          }],
+        }],
+      },
+    },
+  };
+}

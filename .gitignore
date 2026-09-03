@@ -5,6 +5,7 @@ Thumbs.db
 *.log
 .env
 .env.local
+cli/config/email-oauth/
 
 # editor / IDE
 .vscode/
@@ -29,6 +30,10 @@ server/activity-monitor/data/
 # Compiled TS output in src (TS-only projekt; a .js/.map build-artifact)
 **/src/**/*.js
 **/src/**/*.js.map
+
+# Screen Waker local build/test artifacts
+screen-waker/build/
+screen-waker/coverage/
 
 # Windows crash dumps
 *.stackdump

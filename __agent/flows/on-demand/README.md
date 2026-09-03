@@ -12,6 +12,7 @@ User-trigger flow-k. Akkor futnak, ha a user explicit elindítja.
 | `expense-tracking` | Vegyes kiadások berögzítésekor | Wallet domain feltöltése |
 | `weekly-planning` | (átfedés recurring-gal, lehet on-demand is) | Heti terv |
 | `quarterly-review` | Negyedévente | Hosszú távú célok újraértékelése |
+| `linkedin-inbox-review` | LinkedIn inbox áttekintésekor | Sync, unanswered triage, ajánlás és helyi válasz-draft batch |
 
 ## Flow indítás
 

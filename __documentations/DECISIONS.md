@@ -285,6 +285,114 @@ Ez egy külön FDP-PR, a my-assistant scope-on kívül.
 
 ---
 
+## DEC-MA-016 — A teljes Organizer stock külön, gépi read-model mirrorba kerül
+
+**Dátum:** 2026-08-23
+**Forrás:** `current/feature-requests/organizer-stock-mirror.md`
+**Decision:** A `ma stocks mirror` minden `stocks.list` és `stock-items.list` oldalt kiolvas, majd a teljes nyers
+Organizer-tartalmat atomikusan a `current/stock/organizer-mirror.json` fájlba írja. A generált fájl nem írhatja felül
+a kézzel gondozott `current/stock/items.md` recovery/working mirrort.
+
+**Indok:**
+- Az Organizer marad a célrendszer és egyetlen távoli owner; a lokális JSON csak újragenerálható read-model.
+- A külön gépi fájl megőrzi az összes mezőt és könnyen fogyasztható minden agentből.
+- Az atomikus csere megakadályozza, hogy hálózati, parse- vagy pagination-hiba fél snapshotot hagyjon hátra.
+- Az elkülönítés megvédi a jelenlegi user-inputot attól, hogy az üres vagy részleges Organizer-állapot letörölje.
+
+**Reverzibilitás:** Triviális — a snapshot törölhető és újragenerálható; az Organizer-adatot a parancs nem módosítja.
+
+---
+
+## DEC-MA-017 — Interfood API-first read layer, authenticated browser boundary
+
+**Dátum:** 2026-09-01
+**Forrás:** `current/feature-requests/interfood-scraper.md`, HP-IF-001
+**Decision:** Az aktuális és jövőbeli heti menük, kategóriák és tápértékek elsődleges forrása az Interfood
+first-party publikus API-ja, amelyet az agent-semleges `ma interfood` CLI normalizál. A user-specifikus
+rendeléselőzmény és későbbi rendelésírás külön, dedikált persistent UBH Interfood-sessionből működik. A teljes heti
+menü újragenerálható cache; a tartós preference/food registry csak érdekes, kiválasztott, új vagy megváltozott
+ételeket kurál.
+
+**Indok:**
+- A publikus API élőben igazoltan stabil azonosítókat, árakat, kategóriát, összetevőket és részletes tápértéket ad;
+  a DOM-scraping itt szükségtelen és törékenyebb lenne.
+- A publikus és account-specifikus trust boundary szétválasztása csökkenti a login/session kitettséget.
+- A dedikált profil megőrzi a login állapotát anélkül, hogy személyes böngészőablakot vagy tabokat fókuszálna.
+- A kurált registry elkerüli több száz irreleváns heti sor szükségtelen tartós feldolgozását.
+
+**Reverzibilitás:** A CLI adapter cserélhető, mert a normalizált modell a consumer contract. Az authenticated
+adapter külön komponens, ezért a publikus olvasó változtatása nélkül lecserélhető.
+
+---
+
+## DEC-MA-018 — Interfood cart composition and submitted-order change are separate state machines
+
+**Dátum:** 2026-09-01
+**Forrás:** owner requirement, `current/feature-requests/interfood-scraper.md`, HP-IF-001
+**Decision:** Az Interfood capability kötelezően támogatja mind az új rendelési kosár tényleges összeállítását,
+mind a már leadott, még módosítható rendelés változtatását. A kosár szerkeszthető draft; a user által kért,
+egyértelmű tételeket újabb execution-confirmation nélkül fel kell venni. A már leadott rendelés változtatása külön
+state machine: eredeti order read → immutable diff és pénzügyi/refund preview → preview-hashhez kötött explicit
+approval → apply → authoritative order-details readback.
+
+**Indok:**
+- Az Interfood frontend külön first-party cart add/subtract/remove/clear és submitted-order change endpointokat
+  használ; a két művelet kockázata és visszafordíthatósága eltér.
+- A draft-kosár összeállításának túlzott confirmation-gate-je akadályozná a user explicit végrehajtási kérését.
+- A leadott rendelés módosítása árkülönbözetet, automatikus vagy függő refundot okozhat, ezért a pontos hatást a
+  mutation előtt látni és jóváhagyni kell.
+- Timeout vagy részleges válasz után a readback+diff akadályozza meg a duplikált add/subtract műveleteket.
+
+**Live calibration:** 2026-09-01-én a read-only 2→1 submitted-order preview igazolta, hogy a részleges provider
+payload csak a módosított `{id: cartItemId, amount: desiredQuantity}` sorokat fogadja; változatlan sorokkal 422-t
+ad. A válasz `refund_value` + `parts` mezőiből külön instant és pending refund számítható. Apply nem futott.
+
+**Reverzibilitás:** A command surface és state-machine adapter cserélhető; a cart/order trust-boundary és receipt
+contract megmarad. Élő mutáció csak owner-approved canary után tekinthető kalibráltnak.
+
+---
+
+## DEC-MA-019 — Interfood history preserves food, occurrence, order-line and quantity separately
+
+**Dátum:** 2026-09-01
+**Forrás:** owner requirement, `current/feature-requests/interfood-scraper.md`, live 2026-W37 menu measurement
+**Decision:** A rendeléselőzmény minden oldalát beolvassuk, és külön identitásként kezeljük a reusable `foodId`-t,
+a dátum+adag-specifikus `menuItemId`-t, az `orderId`-t, az `orderLineId`-t és a `quantity`-t. Deduplikálás nem
+történhet ételnév vagy `foodId` alapján. A napi coverage darabszám-alapú evidence-ből készül.
+
+**Indok:**
+- Élő W37 menüben ugyanaz a Gombapaprikás ugyanazon a napon két külön occurrence: `A` teljes és `AK` kis adag,
+  külön ID-val és árral.
+- Ugyanaz az étel több napon is megjelenhet, ezért a dátum az occurrence része.
+- Egy menütételből egy napra két darab is rendelhető; boolean „rendelve” állapot elveszítené a második adagot.
+- A pontos history, módosítási diff, ár/refund preview és változatossági számítás ugyanarra a veszteségmentes modellre
+  támaszkodik.
+
+**Reverzibilitás:** A normalizáló schema verziózható, de az identitásszintek összevonása adatvesztő lenne, ezért
+visszafelé csak újraszinkronizált raw order-historyból állítható helyre.
+
+---
+
+## DEC-MA-020 — Interfood secretless agent bridge and split persistence
+
+**Dátum:** 2026-09-01
+**Forrás:** HP-IF-001, owner „vidd végig a hyper plan-t”
+**Decision:** Az Interfood bearer token és browser device ID kizárólag a tartós UBH-profil content scriptjében
+olvasható. A CLI csak egy hardcoded operation allowlisten keresztül kap redaktált account payloadot. A provider
+account az Interfoodnál marad; a teljes order snapshot és receipt user-local cache, az explicit preferenciák
+verziókezelt lokális SoT-ja `current/interfood/preferences.json`.
+
+**Indok:**
+- Minden agent ugyanazt a CLI-szerződést használhatja anélkül, hogy credentialt kapna.
+- A dedikált profil megtartja a bejelentkezést, de nem érinti vagy fókuszálja a user normál böngészőablakait.
+- A preferenciák tartós döntések és auditálhatók; a nagy account payload cserélhető cache, nem repository-adat.
+- Cart és submitted-order módosítás külön tier/state machine, így a pénzügyi hatás exact-hash approvalhoz köthető.
+
+**Reverzibilitás:** Az UBH adapter más hitelesített transportra cserélhető a `ma interfood` szerződés megtartásával;
+a verziózott local state migrációt igényel, de az upstream accountot nem módosítja.
+
+---
+
 ## Convention új DEC-hez
 
 ```markdown

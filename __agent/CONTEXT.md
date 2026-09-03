@@ -32,6 +32,7 @@ A scope az organizer projekt domain-jeit tükrözi.
 | **stock** | Otthoni készletnyilvántartás | organizer (`fo stocks.*`, `stock-items.*`) |
 | **wallet** | Pénzügyi tételek, bevétel/kiadás history | organizer (`fo wallet.*`) |
 | **wishlist** | Kívánságlisták, future buy-ok | organizer (`fo wishlists.*`, `wishitems.*`) |
+| **email** | Mailbox olvasás, keresés, attachment-kezelés, küldés | external IMAP/SMTP; a repo e-mail adatot nem tárol |
 
 ## Felhasználó
 

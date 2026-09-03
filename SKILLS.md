@@ -159,3 +159,117 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
 - Teljes `stocks.list` + stockonként teljes `stock-items.list`, minden `nextCursor` követésével.
 - Output: `current/stock/organizer-mirror.json`; a kézi `current/stock/items.md`-t soha nem írja felül.
 - Biztonságos próba: `ma stocks mirror --dry-run --pretty`.
+
+### LinkedIn personal inbox
+
+- Kanonikus agent-semleges CLI: `ma linkedin`; MCP, browser extension és Computer Use nem szükséges és nincs fallback.
+- Hivatalos, read-only LinkedIn Member Data Portability API: snapshot bootstrap + incremental changelog sync.
+- Runbook: `__documentations/dev/LINKEDIN_INBOX_CLI.md`; terv: `__agent/plans/linkedin-integration-hyperplan/`.
+- Titok kizárólag FDP Keystore-ban; a lokális config csak project/branch/environment/key hivatkozást tárol.
+- Alap állapotgyökér: `%USERPROFILE%/.config/my-assistant/linkedin/`; nem repo és nem Source of Truth.
+- Első diagnosztika: `ma linkedin auth status --pretty`, majd `ma linkedin doctor --pretty`.
+- Teljes bootstrap: `ma linkedin inbox bootstrap --pretty`; biztonságos próba: `--dry-run`.
+- Normál frissítés: `ma linkedin inbox sync --pretty`; a changelog 28 napos, ezért rendszeres sync kötelező.
+- Lapozás: listázáskor `nextOffset` minden oldalát követni kell `null`-ig.
+- `unread` a live kalibrációig csak candidate; `needs-reply` determinisztikusan a legutolsó üzenet irányából jön.
+- `thread show` és `reply show` explicit content-revealing művelet; listák nem adnak vissza message/draft body-t.
+- Nincs send parancs: a reply draft lokális, LinkedIn-küldést soha nem szabad állítani official write receipt nélkül.
+- Törlés: draft/cache csak explicit `--confirm`; a config cache purge mellett megmarad.
+- Globális telepítés ezen a gépen: a tartós `PNPM_HOME=E:\pnpm\bin` hibásan `bin\bin`-t képez, ezért a javított
+  értéket csak a telepítő processzre add: `$env:PNPM_HOME='E:\pnpm'; pnpm add --global '<repo>\cli'`.
+
+### Interfood menu intelligence
+
+- Kanonikus agent-semleges CLI: `ma interfood`; a publikus heti menühöz nem kell MCP, browser vagy login.
+- Runbook: `__documentations/dev/INTERFOOD_CLI.md`; terv: `__agent/plans/interfood-integration-hyperplan/`.
+- Rendelhető hetek: `ma interfood weeks --pretty`.
+- Egy hét: `ma interfood menu --pretty`, vagy explicit `--year <YYYY> --week <1..53>`.
+- Aktuális + következő két hét: `ma interfood menu-range --weeks 3 --pretty`.
+- `complete=false` és `warning` esetén kevesebb hét érhető el; ezt soha ne kezeld üres menüként.
+- A `menuItemId` heti/dátumspecifikus rendelési azonosító; `foodId` az ételazonosítás egyik jele.
+- A `foodId` alapján order-line-t tilos összevonni. Külön identitás a dátum/adag-specifikus `menuItemId`, az
+  `orderId`, az `orderLineId` és a `quantity`; ugyanaz az étel lehet kis+teljes adag, több napon és egy nap 2×.
+- A CLI adag- és 100 g-os tápértéket is ad; hiányzó mező `null`, nem nulla.
+- A teljes nyers menü cache-jellegű. A usernek csak az érdekes, megváltozott vagy azonosítatlan jelölteket mutasd,
+  egyetlen összegyűjtött egyeztetési körben.
+- Authenticated order history a `my-assistant-interfood-dedicated-v1` persistent UBH profilból jön:
+  `ma interfood auth status|start`, majd `orders sync|list|coverage|patterns`. Rutin agent-futtatásnál használd a
+  `--summary` kapcsolót; account/cart/order output alapból PII-minimal summary, `--full` csak helyi diagnosztika;
+  jelszó/cookie/session nem env.
+- Történeti jelöltek: `ma interfood orders patterns --minimum-units 2 --limit 30 --pretty`; a
+  `--double-orders-only` csak azokat mutatja, amelyekből legalább egy napon összesen kettő vagy több adag volt.
+  Ez megfigyelt bizonyíték, nem explicit preferencia; csak owner-megerősítés után használd a `preference set`-et.
+- Opcionális leves/desszert feltárás: `ma interfood orders patterns --add-ons-only --minimum-units 1 --limit 30
+  --pretty`. A `plan week` napi `addOns` kimenete külön kezeli őket: nem számítanak bele a napi 2 főételbe. Exact
+  identity legalább 5 korábbi rendelési napon csak `favoriteCandidates` megerősítési jelölt; recommendation kizárólag
+  explicit owner-confirmed exact-food `favorite` lehet, és csak az jogosíthat későbbi kosárjavaslatra.
+- Explicit preferencia: `preference set|compare|portion|list`; az SSOT `current/interfood/preferences.json`.
+  Általános névminta: `preference set --scope food-name-pattern`; adagválasztás:
+  `preference portion --pattern <névrészlet> --prefer small|full [--except-pattern <névrészlet>]`.
+  A planner csak tényleges `small|full` occurrence-re alkalmazza; `unspecified` adagot nem talál ki.
+  `preference set` mellett ismételhető `--except-pattern`: a teljes normalizált ételszövegben talált kivétel
+  kikapcsolja az adott szabályt (például hal dislike, kivéve halrud; marha/sertés dislike, kivéve darált).
+- Teljes kívánt kosárhoz először `cart diff --items-file ...`, majd jóváhagyott összeállításnál
+  `cart reconcile --items-file ...`; a fájlban nem szereplő meglévő sorokat a reconcile eltávolítja.
+- Azonosítás és terv: `foods identify|list`, `plan week`, `nutrition compare`.
+- Ha az owner külön hét/időtartomány nélkül kér Interfood-ajánlást, először `weeks`, majd minden nem disabled,
+  current/future hétre `orders coverage` + `plan week`; az összes lefedetlen napot egy batch-ben mutasd. A teljesen
+  lefedett napokat ne rendeld újra, csak jelezd a kihagyásukat.
+- A napi alapértelmezett igény 2 adag: `plan week --meals-per-day 2`, illetve
+  `orders coverage --expected-per-day 2`. A recommendation sorok `quantity` összege számít, nem a sorszám.
+  Normálisan két külön food identity kell; small+full ugyanabból nem két étel. Explicit `favorite` exact sorból
+  `quantity=2` csak akkor lehet, ha az exact ételt már rendelték legalább egyszer; ismeretlen/kísérleti étel soha
+  nem 2×. Két külön identitynél is előbb eltérő elsődleges ételcsaládot válassz.
+- A leves és desszert opcionális `+ tétel`: a napi két főétel mellett, nem helyette. A planner a kategória alapján
+  kizárja őket a főétel-allokációból és külön `soup` / `dessert` slotban kezeli őket.
+- Levest és desszertet csak explicit owner-confirmed exact-food kedvencként ajánlj. Ismeretlen vagy pusztán
+  változatossági add-on alternatívát ne adj; a history csak közös megerősítési jelöltet képezhet. Gyümölcsleves hard
+  reject (`food-type:meal:gyumolcsleves`). Fél főételt ismeretlen süteménnyel csomagoló menü se kerüljön automatikus
+  főétel-ajánlásba vagy alternatívába.
+- A változatosság a főételre vonatkozik: a compact plan napi `alternatives` és `healthOrientedAlternatives` mezőit
+  külön mutasd be. Utóbbi csak teljes energy/protein/salt adaton alapuló relatív heurisztika. Mindkettő identity-
+  deduplikált, és egyik alternatíva sem automatikus plusz kosártétel.
+- Egy táblázatsor/nap: a két főétel egymás alatt egy cellában, a kedvenc leves/desszert alattuk külön `+` soron.
+  Alternatívák ugyanennek a táblának másik oszlopában. ID-k csak a belső gépi adatban; a usernek nem kellenek.
+- Fix jelölések: ⭐ kedvenc, 🥗 egészségesebbnek szánt/tekintett választás, ⚠️ figyelmeztetés a konkrét okkal.
+  Korrekció után mindig a TELJES többhetes ajánlás jön újra a chatben, nem csak módosult sorok vagy fájllink.
+- A compact candidate `dietaryWarnings` mezőjét mindig kiemelten jelenítsd meg. Kizárólag tej/tejszín allergiajel
+  minden biztonságos étel mögé sorol és health lane-ből kizár; ha jobb jelölt híján mégis bekerül, a warning maradjon
+  látható. Tejföl, joghurt, túró, vaj és sajt explicit rendben van (owner-pontosítás 2026-09-02); a korábbi tágabb
+  értelmezés felülírva. Későbbi explicit owner-pontosítás: sajtoknál, így camembertnél nincs tejjelzés; más érintett
+  ételeknél marad a tej/tejszín figyelmeztetés. Ez személyes megjelenítési kivétel, nem biztonsági igazolás. History nem írja
+  felül; figyelmeztetés hiánya nem allergénmentességi igazolás. Kedvenc kihagyását magyarázd el név szerint.
+- A kedvenc konkrét változatát és exact előzményeit nézd: a gyakran rendelt rántott camembertet nem helyettesíti
+  automatikusan egy egyszer rendelt camembertes rizottó. Kedvenc–korlátozás ütközést kiemelt döntési pontként
+  mutass, ne rejtsd az alternatívák közé. A kedvencek hiányolása nem allergiaszabály-feloldás.
+- Tortilla/burrito/wrap pozitív névminta. Gomba `fallback`: ha van más elfogadható étel, azt válaszd.
+- A kipróbált tépett csirkés BBQ tortilla exact dislike. Krumpli preferált; tészta fallback; brassói/vadas és
+  gyümölcsös hús dislike. Rizs/rizottó kisadag-próba, tényleges occurrence és a korábbi teljesadagos kivételek szerint.
+  A `rizs` portion pattern a `rizzsel` alakot is felismeri. A negatív döntést pozitív családminta vagy variety nem
+  írhatja felül. A szilvalekváros derelye nem főétel-alternatíva: a ritka desszert-kedvenc szabály szerint kezelendő.
+- Teljes összetevő-listát ellenőrizz: a névben nem jelzett alma vagy a szárnyas vagdaltban lévő csirkecomb is
+  döntési szempont. Az ilyen review-csere nem új explicit user-preferencia. Ha a fiókszinkron nem megy, nyilvános
+  menüből készülhet ajánlás, de a cache pontos dátumát és a friss fiókállapot hiányát jelezni kell.
+- A planner alapértelmezett ismétlési ablakai 7/14/28 nap; szükség esetén
+  `plan week --repetition-windows 7,14,28` formában három szigorúan növekvő napértékkel állíthatók.
+- A `fallback` stance erős hátrasorolás, de nem kizárás: csak jobb elfogadható jelölt hiányában kerül elő.
+- A szombati Interfood-menü pénteken érkezik. A `plan week` a pénteki és szombati occurrence-öket egyetlen pénteki
+  poolban rangsorolja, a kimenet `sourceDates` mezője jelzi a forrásnapokat; a kiválasztott sor eredeti dátuma/ID-je
+  a candidate `menuDate`/`menuItemId` mezőjében változatlan marad a kosárhoz.
+- A hosszú távú, teljes history pozitív `historicalAffinity` evidenciát ad (napok + mennyiség + dupla napok,
+  maximum 35 pont); a közeli ismétlés ettől független negatív jel, az explicit user-döntés mindig erősebb.
+- A pairwise preferencia csak akkor pontoz, ha az adott napon mindkét alternatíva elérhető. A változatosság külön
+  bünteti az ismételt fehérjét, elkészítést, köretet, szószt és kategóriát. Hiányos tápértékből nem készül nulla.
+- Explicit user-preferenciát alacsonyabb authority-jű order/inferred jel nem írhat felül. `food-type` kategóriára
+  vagy determinisztikus facetre (például `protein:gomba`) célozhat; `ingredient-pattern` hard rejectet is adhat.
+- A planner beolvassa a fingerprint registry-t; a new/missing/changed identitás pontozott bizonytalanság és egyetlen
+  batchelt user-review része, nem automatikusan ismert étel.
+- Kosárírás: `cart show|add|set|subtract|remove|clear`; minden mutáció után authoritative cart readback.
+- Leadott rendelés: `order show|check|change-preview|change-apply`; csak immutable preview + exact-hash explicit approval +
+  final `order-details` readback után. Csak csökkentés/törlés támogatott, részleges previewban kizárólag a változó
+  cart-item sor küldhető. Apply előtt kötelező az order/safety/refund preview újbóli ellenőrzése; drift esetén stop.
+- Kötelező command-scope: cart `show|add|set|subtract|remove|clear|diff|reconcile`, illetve submitted-order
+  `show|check|change-preview|change-apply`. A cart user-kért, egyértelmű sorai ténylegesen alkalmazandók;
+  a leadott order change pénzügyi preview-hashhez kötött külön approvalt igényel.
+- Folyamatos dokumentáció: minden új Interfood-kérés, működési tapasztalat és döntés ugyanabban a change-setben
+  kerüljön az összes érintett helyre; kötelező mátrix: `current/principles/interfood-continuous-documentation.md`.

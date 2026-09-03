@@ -1,0 +1,521 @@
+{
+  "schemaVersion": "1.0.0",
+  "updatedAt": "2026-09-02T14:11:53.099Z",
+  "entries": [
+    {
+      "id": "cd994056-1721-4d3d-b501-c7d92c352f57",
+      "scope": "food-name-pattern",
+      "key": "bolognai",
+      "stance": "hard-reject",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "reason": "Owner confirmed: the Interfood bolognai is overly sweet, usually bad and often discarded.",
+      "createdAt": "2026-09-01T06:52:18.147Z",
+      "lastConfirmedAt": "2026-09-01T06:52:18.147Z",
+      "excludedPatterns": []
+    },
+    {
+      "id": "58044495-3620-484f-aa95-c0bafe52a44c",
+      "scope": "food-name-pattern",
+      "key": "kuszkusz",
+      "stance": "prefer",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "reason": "Owner actively looks for couscous dishes; keep other disliked components as independent constraints.",
+      "createdAt": "2026-09-01T06:52:18.737Z",
+      "lastConfirmedAt": "2026-09-01T06:52:18.737Z",
+      "excludedPatterns": []
+    },
+    {
+      "id": "a1005c0f-c059-43b2-9e70-573dea282780",
+      "scope": "food-name-pattern",
+      "key": "csirkecomb",
+      "stance": "dislike",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "reason": "Owner does not really like chicken thigh; prefer breast or fillet.",
+      "createdAt": "2026-09-01T07:03:43.140Z",
+      "lastConfirmedAt": "2026-09-01T07:03:43.140Z",
+      "excludedPatterns": []
+    },
+    {
+      "id": "45f29fd3-9e10-4da7-a83c-b7a9956c281c",
+      "scope": "food-name-pattern",
+      "key": "csirkeszárny",
+      "stance": "dislike",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "reason": "Owner does not really like chicken wing; prefer breast or fillet.",
+      "createdAt": "2026-09-01T07:03:44.052Z",
+      "lastConfirmedAt": "2026-09-01T07:03:44.052Z",
+      "excludedPatterns": []
+    },
+    {
+      "id": "a15427fa-6ac8-4e8e-9ed9-2d8fe71c92f0",
+      "scope": "food-name-pattern",
+      "key": "csirkemell",
+      "stance": "prefer",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "reason": "Owner prefers chicken breast or chicken fillet over thigh and wing.",
+      "createdAt": "2026-09-01T07:03:44.932Z",
+      "lastConfirmedAt": "2026-09-01T07:03:44.932Z",
+      "excludedPatterns": []
+    },
+    {
+      "id": "74f71af8-be32-4190-9e5e-6b86ba9dc768",
+      "scope": "food-name-pattern",
+      "key": "jércemell",
+      "stance": "prefer",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "reason": "Chicken breast/fillet preference also covers jércemell wording.",
+      "createdAt": "2026-09-01T07:03:45.850Z",
+      "lastConfirmedAt": "2026-09-01T07:03:45.850Z",
+      "excludedPatterns": []
+    },
+    {
+      "id": "acf23ea7-3eb2-4b5a-8594-f86eca815eb7",
+      "scope": "food-type",
+      "key": "protein:hal",
+      "stance": "dislike",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [
+        "halrud"
+      ],
+      "reason": "Owner generally only likes fish sticks among fish dishes; halrud is the explicit exception.",
+      "createdAt": "2026-09-01T07:03:46.652Z",
+      "lastConfirmedAt": "2026-09-01T07:06:56.075Z"
+    },
+    {
+      "id": "8289fa69-f035-4271-b057-b31a85f315fa",
+      "scope": "food-type",
+      "key": "protein:marha",
+      "stance": "dislike",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [
+        "darált"
+      ],
+      "reason": "Beef is harder for the owner to digest; minced form is explicitly acceptable.",
+      "createdAt": "2026-09-01T07:03:48.357Z",
+      "lastConfirmedAt": "2026-09-01T07:06:57.034Z"
+    },
+    {
+      "id": "b30ce3e8-f71a-4199-a344-517fafea1112",
+      "scope": "food-type",
+      "key": "protein:sertes",
+      "stance": "dislike",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [
+        "darált"
+      ],
+      "reason": "Pork is harder for the owner to digest; minced form is explicitly acceptable.",
+      "createdAt": "2026-09-01T07:03:49.253Z",
+      "lastConfirmedAt": "2026-09-01T07:06:57.964Z"
+    },
+    {
+      "id": "2002f4df-f75c-4f05-94c5-d45d2a1af540",
+      "scope": "ingredient-pattern",
+      "key": "darált",
+      "stance": "neutral",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Minced meat is an exception to beef/pork demotion, not a standalone positive preference.",
+      "createdAt": "2026-09-01T07:03:50.111Z",
+      "lastConfirmedAt": "2026-09-01T07:06:58.862Z"
+    },
+    {
+      "id": "619e00a6-c649-4009-a84f-232253f9617f",
+      "scope": "food-name-pattern",
+      "key": "halrud",
+      "stance": "fallback",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner correction: fish sticks are generally only a fallback when no better candidate is available.",
+      "createdAt": "2026-09-01T07:03:47.450Z",
+      "lastConfirmedAt": "2026-09-01T16:33:32.968Z"
+    },
+    {
+      "id": "dbe62f9c-9ed6-4ffc-a5a8-0922339d04b9",
+      "scope": "food-name-pattern",
+      "key": "rakott burgonya",
+      "stance": "favorite",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner explicitly confirmed that rakott burgonya dishes are strongly liked.",
+      "createdAt": "2026-09-01T16:33:33.084Z",
+      "lastConfirmedAt": "2026-09-01T16:33:33.084Z"
+    },
+    {
+      "id": "bf71fd50-b562-4e91-8689-5873af7e61b3",
+      "scope": "food-name-pattern",
+      "key": "thai csirke",
+      "stance": "dislike",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner's latest Thai chicken/rice-noodle meal was discouraging; demote this family while looking for better candidates.",
+      "createdAt": "2026-09-01T16:33:33.910Z",
+      "lastConfirmedAt": "2026-09-01T16:33:33.910Z"
+    },
+    {
+      "id": "93e3fbba-ee2f-40f5-b4de-bf6b94ed337f",
+      "scope": "ingredient-pattern",
+      "key": "tofu",
+      "stance": "neutral",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner explicitly confirmed tofu is acceptable and is not a negative factor.",
+      "createdAt": "2026-09-01T16:33:34.024Z",
+      "lastConfirmedAt": "2026-09-01T16:33:34.024Z"
+    },
+    {
+      "id": "079aed27-5d41-4b2a-b148-b67fdfdf9928",
+      "scope": "ingredient-pattern",
+      "key": "mogyoró",
+      "stance": "neutral",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner explicitly confirmed peanut is acceptable and is not a negative factor.",
+      "createdAt": "2026-09-01T16:33:34.145Z",
+      "lastConfirmedAt": "2026-09-01T16:33:34.145Z"
+    },
+    {
+      "id": "6cf33e91-fe21-47fa-971c-acaff0379441",
+      "scope": "food-name-pattern",
+      "key": "camembert",
+      "stance": "favorite",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner confirmed camembert as a very strong candidate that may be ordered twice for the same day.",
+      "createdAt": "2026-09-01T16:45:59.943Z",
+      "lastConfirmedAt": "2026-09-01T16:45:59.943Z"
+    },
+    {
+      "id": "bf8bdd35-64d2-461f-b5c1-a6e64b6947fb",
+      "scope": "food-type",
+      "key": "meal:gyumolcsleves",
+      "stance": "hard-reject",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner confirmed on 2026-09-02: fruit soups are disliked and must not be recommended.",
+      "createdAt": "2026-09-02T02:01:58.371Z",
+      "lastConfirmedAt": "2026-09-02T02:01:58.371Z"
+    },
+    {
+      "id": "862c5a3a-c184-40dc-8962-0a70362a6041",
+      "scope": "food-name-pattern",
+      "key": "tortilla",
+      "stance": "prefer",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner confirmed on 2026-09-02: tortilla dishes are liked.",
+      "createdAt": "2026-09-02T02:38:32.242Z",
+      "lastConfirmedAt": "2026-09-02T02:38:32.242Z"
+    },
+    {
+      "id": "7d9fd11e-5e7b-46bd-8eef-41488a0b2cfd",
+      "scope": "food-name-pattern",
+      "key": "burrito",
+      "stance": "prefer",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner confirmed on 2026-09-02: burrito-style dishes are liked.",
+      "createdAt": "2026-09-02T02:38:32.373Z",
+      "lastConfirmedAt": "2026-09-02T02:38:32.373Z"
+    },
+    {
+      "id": "1a562187-a6ba-41de-9337-410e7efb4ba3",
+      "scope": "food-name-pattern",
+      "key": "wrap",
+      "stance": "prefer",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner confirmed on 2026-09-02: wrap dishes belong to the liked tortilla/burrito family.",
+      "createdAt": "2026-09-02T02:38:32.505Z",
+      "lastConfirmedAt": "2026-09-02T02:38:32.505Z"
+    },
+    {
+      "id": "4207c339-bd27-4f1f-a4cf-804a5fc6361a",
+      "scope": "food-type",
+      "key": "protein:gomba",
+      "stance": "fallback",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner confirmed on 2026-09-02: choose a non-mushroom alternative when one is available.",
+      "createdAt": "2026-09-02T02:38:32.643Z",
+      "lastConfirmedAt": "2026-09-02T02:38:32.643Z"
+    },
+    {
+      "id": "d0d1c5fe-55a3-443c-8509-2dc71b6e8454",
+      "scope": "exact-food",
+      "key": "food:2170",
+      "stance": "dislike",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner tried the pulled-chicken barbecue tortilla and did not like it; the general tortilla preference must not override this correction.",
+      "createdAt": "2026-09-02T13:00:24.296Z",
+      "lastConfirmedAt": "2026-09-02T13:00:24.296Z"
+    },
+    {
+      "id": "28715882-b783-4da3-94fd-2f7e1467e327",
+      "scope": "food-name-pattern",
+      "key": "brassói",
+      "stance": "dislike",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner does not favor brassoi meals, including the vegan version.",
+      "createdAt": "2026-09-02T13:00:24.743Z",
+      "lastConfirmedAt": "2026-09-02T13:00:24.743Z"
+    },
+    {
+      "id": "872964af-7063-4de6-82b0-e8ceee21c66d",
+      "scope": "food-name-pattern",
+      "key": "vadas",
+      "stance": "dislike",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner does not favor vadas-style dishes; this does not mean every wild-game dish.",
+      "createdAt": "2026-09-02T13:00:25.154Z",
+      "lastConfirmedAt": "2026-09-02T13:00:25.154Z"
+    },
+    {
+      "id": "eb07d950-787f-4644-a057-7e278ca1766b",
+      "scope": "food-type",
+      "key": "meal:pasta",
+      "stance": "fallback",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner wants fewer pasta meals; prefer another suitable main. Tortilla, burrito and wrap remain a separate preference.",
+      "createdAt": "2026-09-02T13:00:25.627Z",
+      "lastConfirmedAt": "2026-09-02T13:00:25.627Z"
+    },
+    {
+      "id": "d7d29d2b-635a-4ad8-aab9-0e50fd1735b3",
+      "scope": "food-name-pattern",
+      "key": "burgonya",
+      "stance": "prefer",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner likes potato dishes; allergy and explicit dislikes still override this.",
+      "createdAt": "2026-09-02T13:00:26.117Z",
+      "lastConfirmedAt": "2026-09-02T13:00:26.117Z"
+    },
+    {
+      "id": "2fc99c2a-2241-4583-9a7e-d180c2f8894e",
+      "scope": "food-name-pattern",
+      "key": "krumpli",
+      "stance": "prefer",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner likes potato dishes; krumpli is the alternative name.",
+      "createdAt": "2026-09-02T13:00:26.545Z",
+      "lastConfirmedAt": "2026-09-02T13:00:26.545Z"
+    },
+    {
+      "id": "2ab55d34-38e7-4efd-93d6-0b34299d312a",
+      "scope": "food-type",
+      "key": "meal:fruit-meat",
+      "stance": "dislike",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner dislikes fruit-and-meat combinations, explicitly including peach chicken; do not apply to fruit sauce with cheese.",
+      "createdAt": "2026-09-02T13:00:26.977Z",
+      "lastConfirmedAt": "2026-09-02T13:00:26.977Z"
+    },
+    {
+      "id": "61ff274e-f2a0-41b1-9db1-1f50d3dd09ca",
+      "scope": "food-type",
+      "key": "allergen:milk-cream",
+      "stance": "avoid",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner clarified: ONLY milk and cream are to be avoided and warned. Sour cream, yoghurt, curd, butter and cheese are explicitly tolerated; do not broaden the allergy rule.",
+      "createdAt": "2026-09-02T02:38:32.772Z",
+      "lastConfirmedAt": "2026-09-02T13:03:11.429Z"
+    },
+    {
+      "id": "5a0f1b50-8f06-4624-b609-aeafddd360e7",
+      "scope": "ingredient-pattern",
+      "key": "tejföl",
+      "stance": "neutral",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner explicitly confirmed this ingredient is tolerated; only milk and cream are weak points.",
+      "createdAt": "2026-09-02T13:03:11.944Z",
+      "lastConfirmedAt": "2026-09-02T13:03:11.944Z"
+    },
+    {
+      "id": "fdec0863-93e1-4158-a5e1-5eb09266a2f7",
+      "scope": "ingredient-pattern",
+      "key": "joghurt",
+      "stance": "neutral",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner explicitly confirmed this ingredient is tolerated; only milk and cream are weak points.",
+      "createdAt": "2026-09-02T13:03:12.443Z",
+      "lastConfirmedAt": "2026-09-02T13:03:12.443Z"
+    },
+    {
+      "id": "9b6acd83-c3ad-42cb-a82a-f4141b361161",
+      "scope": "ingredient-pattern",
+      "key": "túró",
+      "stance": "neutral",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner explicitly confirmed this ingredient is tolerated; only milk and cream are weak points.",
+      "createdAt": "2026-09-02T13:03:12.944Z",
+      "lastConfirmedAt": "2026-09-02T13:03:12.944Z"
+    },
+    {
+      "id": "14803f97-cad6-42a6-82b4-942bdfe8bfc8",
+      "scope": "ingredient-pattern",
+      "key": "vaj",
+      "stance": "neutral",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner explicitly confirmed this ingredient is tolerated; only milk and cream are weak points.",
+      "createdAt": "2026-09-02T13:03:13.487Z",
+      "lastConfirmedAt": "2026-09-02T13:03:13.487Z"
+    },
+    {
+      "id": "0afdfbe9-b028-41a9-8dd0-674e66925909",
+      "scope": "ingredient-pattern",
+      "key": "sajt",
+      "stance": "neutral",
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "excludedPatterns": [],
+      "reason": "Owner explicitly tolerates cheeses and on 2026-09-02 requested no milk warning for cheeses, including camembert. Preserve separate milk/cream review for other dishes; this is a personal presentation/preference rule, not an allergen-free claim.",
+      "createdAt": "2026-09-02T14:11:53.099Z",
+      "lastConfirmedAt": "2026-09-02T14:11:53.099Z"
+    }
+  ],
+  "comparisons": [],
+  "portionRules": [
+    {
+      "id": "1bb0c681-1268-4256-8f64-15ede5e99db0",
+      "foodNamePattern": "lasagne",
+      "preferredPortionClass": "small",
+      "excludedFoodNamePatterns": [
+        "burgonyapüré"
+      ],
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "reason": "Owner confirmed: choose the small lasagne occurrence. Other clearly high-volume meals should default to small after classification; mashed-potato dishes are exempt.",
+      "createdAt": "2026-09-01T06:52:19.376Z",
+      "lastConfirmedAt": "2026-09-01T06:55:46.248Z"
+    },
+    {
+      "id": "bd3f9b9e-4844-4f7d-a516-42fc0fc7b400",
+      "foodNamePattern": "rakott burgonya",
+      "preferredPortionClass": "small",
+      "excludedFoodNamePatterns": [],
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "reason": "Rakott burgonya is a high-volume meal, so the owner's general eat-less rule selects the small occurrence when available.",
+      "createdAt": "2026-09-01T16:33:33.203Z",
+      "lastConfirmedAt": "2026-09-01T16:33:33.203Z"
+    },
+    {
+      "id": "fd501d5d-dc7a-4d0a-a263-abbdefa5fbbb",
+      "foodNamePattern": "camembert",
+      "preferredPortionClass": "full",
+      "excludedFoodNamePatterns": [],
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "reason": "Owner explicitly corrected that camembert must not use the small portion.",
+      "createdAt": "2026-09-01T16:33:33.326Z",
+      "lastConfirmedAt": "2026-09-01T16:33:33.326Z"
+    },
+    {
+      "id": "fd7b675b-9571-4e56-880c-31dcee6fd669",
+      "foodNamePattern": "csirkemell paprikás",
+      "preferredPortionClass": "full",
+      "excludedFoodNamePatterns": [],
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "reason": "Owner confirmed that chicken-breast-paprikash-like meals may use full portions because even the full serving is not large.",
+      "createdAt": "2026-09-01T16:33:33.677Z",
+      "lastConfirmedAt": "2026-09-01T16:33:33.677Z"
+    },
+    {
+      "id": "64b4051d-0d78-408e-b2f6-bceaaffacdd9",
+      "foodNamePattern": "csirkepaprikás",
+      "preferredPortionClass": "full",
+      "excludedFoodNamePatterns": [],
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "reason": "Owner confirmed that chicken-paprikash-like meals may use full portions because even the full serving is not large.",
+      "createdAt": "2026-09-01T16:33:33.801Z",
+      "lastConfirmedAt": "2026-09-01T16:33:33.801Z"
+    },
+    {
+      "id": "06acb122-4be3-4043-8fa3-c5286430675d",
+      "foodNamePattern": "burgonyapüré",
+      "preferredPortionClass": "full",
+      "excludedFoodNamePatterns": [],
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "reason": "Owner's portion-reduction rule explicitly does not apply to mashed-potato meals; when a small/full pair exists, keep the full occurrence.",
+      "createdAt": "2026-09-01T16:36:49.313Z",
+      "lastConfirmedAt": "2026-09-01T16:36:49.313Z"
+    },
+    {
+      "id": "42f25d02-d940-49c5-a8e4-328e0e58ca12",
+      "foodNamePattern": "rizs",
+      "preferredPortionClass": "small",
+      "excludedFoodNamePatterns": [
+        "camembert",
+        "burgonyapüré",
+        "csirkemell paprikás",
+        "csirkepaprikás"
+      ],
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "reason": "Owner wants to trial small rice meals because full portions often feel too much; preserve earlier full-portion exceptions.",
+      "createdAt": "2026-09-02T13:00:27.431Z",
+      "lastConfirmedAt": "2026-09-02T13:00:27.431Z"
+    },
+    {
+      "id": "02348d9b-8960-481f-988c-4fe6840768a0",
+      "foodNamePattern": "rizottó",
+      "preferredPortionClass": "small",
+      "excludedFoodNamePatterns": [
+        "camembert",
+        "burgonyapüré"
+      ],
+      "source": "explicit-user",
+      "confidence": "confirmed",
+      "reason": "Trial smaller rice-based risotto when an actual small occurrence exists; camembert remains a full-portion exception.",
+      "createdAt": "2026-09-02T13:00:27.863Z",
+      "lastConfirmedAt": "2026-09-02T13:00:27.863Z"
+    }
+  ]
+}

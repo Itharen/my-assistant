@@ -101,7 +101,7 @@ Ez explicit cél — soha ne legyen a rendszer "nem indul el" mert a server alsz
 | Battery monitor | telefon/tablet/óra töltöttség, 40% warn | 🅿️ FR |
 | Food tracking | étkezés idő/típus/mennyiség, kézi log nélkül | 🅿️ FR |
 | Sleep monitor data access | Nest Hub / Wear OS / Google Fit alvás-state lekérés | 🅿️ FR research |
-| Interfood scraper | rendelés-state Playwright-tal | 🅿️ FR |
+| Interfood intelligence | publikus menü + persistent UBH account/order/cart + local preference/ranking | 🟡 live read/preview kalibrált; reverzibilis cart canary approvalra vár |
 
 **Notification** — user-felé szóló kimenet:
 
@@ -118,6 +118,9 @@ Ez explicit cél — soha ne legyen a rendszer "nem indul el" mert a server alsz
 ```
 ma cast {discover|notify|volume|preset|list-interfaces}
 ma spotify {auth|status}
+ma interfood {weeks|menu|menu-range|auth|orders|foods|preference|plan|nutrition|cart|order}
+ma linkedin {auth|doctor|inbox|thread|reply|cache}
+ma stocks mirror
 ```
 
 JSON envelope output (matches `fo` CLI). Minden hívás action-loggol.
@@ -237,7 +240,7 @@ A `current/feature-requests/` mappa élő. A high-prio nyitottak:
 | `sleep-monitor-data-access.md` | L2 | 🟡 research |
 | `device-battery-monitoring.md` | L2 | 🟡 közepes |
 | `device-volume-scheduling.md` | L2 | 🟡 közepes |
-| `interfood-scraper.md` | L2 | 🟡 közepes (food-tracking input) |
+| `interfood-scraper.md` | L2 | 🟢 aktív — public menu reader él, order/preference réteg készül |
 | `email-integration.md` | L2 | 🅿️ placeholder |
 | `social-media-integration.md` | L2 | 🅿️ placeholder |
 | `cross-project-notes-ingestion.md` | meta | 🅿️ out-of-scope, ~2 hét |
@@ -271,7 +274,7 @@ A `current/feature-requests/` mappa élő. A high-prio nyitottak:
 - [x] L1 Files (kiépítve, action-log infra él)
 - [x] L2 Monitoring partial: activity-monitor él
 - [x] L2 Notification: `ma cast notify` Phase 1.5+2
-- [x] L3 CLI: `ma cast`, `ma spotify`
+- [x] L3 CLI: `ma cast`, `ma spotify`, `ma interfood`, `ma linkedin`, `ma stocks mirror`
 - [x] L3 Dashboard: client/ skeleton + status view
 - [x] L4 Server: `server/` Phase 1 (8 endpoint, 8 tábla, file-fallback)
 - [x] L5 A-mode: dispatcher + entry-point + 3 handler MVP
@@ -290,7 +293,7 @@ A `current/feature-requests/` mappa élő. A high-prio nyitottak:
 - [ ] L5 B-mode scripted (recurring miss-detect, log rotálás, diary-template)
 - [ ] L2 sleep-monitor research → API integráció
 - [ ] L2 battery / volume-schedule
-- [ ] L2 interfood-scraper
+- [~] L2 interfood intelligence — public menu reader kész; orders/preferences/planner nyitott
 
 ### Phase 4 — hosszabb táv
 
@@ -310,6 +313,8 @@ A `current/feature-requests/` mappa élő. A high-prio nyitottak:
 5. **Build-it-ourselves** — FOSS only, no paid solutions (lásd `principles/`).
 6. **FDP-konzisztens kód** — naming, imports, structure (CLAUDE.md globális).
 7. **Backwards-compatible refactor** — file-state és server párhuzamos, nincs big-bang csere.
+8. **Organizer stock read-model** — `ma stocks mirror` cursor-alapon kiolvassa a teljes Organizer stockot a
+   `current/stock/organizer-mirror.json` gépi snapshotba; a kézi `items.md`-t nem írja felül.
 
 ---
 

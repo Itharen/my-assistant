@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "createdAt": "2026-08-27",
+  "basis": "delivered-order-reconciliation",
+  "cartIsEditableDraft": true,
+  "confirmed": [
+    { "productId": "121302824", "name": "HELL ZERO White Peach 250 ml", "quantity": 1 },
+    { "productId": "121254765", "name": "Coca-Cola Cherry Zero 1,75 l", "quantity": 2 },
+    { "productId": "121217983", "name": "Sprite Zero 1,75 l", "quantity": 1 },
+    { "productId": "121217205", "name": "Kinley Ginger Ale Zero 1,5 l", "quantity": 1 },
+    { "productId": "2004008932200", "name": "Ceres vajas toast kenyér 500 g", "quantity": 2 },
+    { "productId": "210408830", "name": "Tchibo Espresso Sicilia szemes kávé 1 kg", "quantity": 2 },
+    { "productId": "210552687", "name": "Nádudvari E-mentes snidlinges vajkrém 180 g", "quantity": 1 },
+    { "productId": "220021386", "name": "Hellmann's fokhagymás szósz 260 g", "quantity": 1 },
+    { "productId": "120560507", "name": "Buitoni Piccolinis háromsajtos mini pizza 9 × 30 g", "quantity": 1 },
+    { "productId": "220297280", "name": "Fornetti sajtos pogácsa 700 g", "quantity": 1 },
+    { "productId": "105010828", "name": "Carte d'Or Tiramisu jégkrém 825 ml", "quantity": 1 },
+    { "productId": "209515020", "name": "Garnier Fructis Pure Fresh sampon 400 ml", "quantity": 2 },
+    { "productId": "107282289", "name": "Pro Formula C-vitamin + cink", "quantity": 2 },
+    { "productId": "107282210", "name": "Pro Formula kalcium + D/K-vitamin", "quantity": 2 },
+    { "productId": "107280346", "name": "Pro Formula multivitamin", "quantity": 2 },
+    { "productId": "121233911", "name": "Primavera szénsavmentes víz 2 l", "quantity": 12, "stockUnit": "2 zsugor" },
+    { "productId": "121229698", "name": "Szentkirályi extra dús víz 1,5 l", "quantity": 6, "stockUnit": "1 zsugor" },
+    { "productId": "121233675", "name": "Mizse szénsavmentes víz 1,5 l", "quantity": 12, "stockUnit": "2 zsugor", "carryOverQuantity": 18 }
+  ],
+  "conditionalAvailability": [
+    { "productId": "203199189", "name": "Viennetta vanília jégkrémtorta 650 ml", "quantity": 1 },
+    { "productId": "100588549", "name": "Tesco Mini Mix vaníliaízű jégkrém 8 × 50 ml", "quantity": 1 }
+  ],
+  "needsUserDecision": [
+    {
+      "name": "Felvágott",
+      "quantity": "40 dkg",
+      "rule": "Delco paprikás sonka first; if unavailable, propose PICK pultos sertéspárizsi 205959255"
+    },
+    {
+      "name": "Negro próba",
+      "quantity": 1,
+      "candidateProductId": "111274660"
+    }
+  ]
+}

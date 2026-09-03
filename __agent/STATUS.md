@@ -1,14 +1,30 @@
 # STATUS
 
+## Feladatállapot — owner-frissítés, 2026-09-02
+
+- Tesco átvétel és készletre vétel: kész; augusztus 27-i dokumentáció alapján az Organizer-task szeptember 2-án lezárva.
+- LinkedIn teljes üzenetkezelés: blokkolt, mert olvasás/fogadás működik, személyes üzenetküldés nem.
+  Hivatalos partnerhozzáférési kutatás és még el nem küldött angol megkeresés elkészült 2026-09-02-án:
+  `__documentations/developments/2026-09-02-linkedin-messaging-access-research.md`. Compliance felvétel zárt;
+  más program/jogosultság tisztázása Developer Supporttal javasolt, nem igazolt hozzáférés.
+- Munka: folyamatban, a user most többnyire ezzel foglalkozott; a kedd/csütörtök sorozat változatlan, nincs egyedi példány készre jelentve.
+- Interfood setup: folyamatban; a fejlesztési terv és a lent rögzített jóváhagyási kapuk változatlanok.
+- Új zenei előadói történetszál: Suno-generált zenék fontos témákról; artist-rebrand lezárása után helyenkénti tisztítás, normalizálás és újrafeltöltés. A rebrand készültsége megerősítendő.
+- Organizer-refek és részletek: `current/tasks/inbox.md`. Zenei task: `org:task:6a982b8de7e7e729f544b6b7`.
+
+## Fejlesztési flow snapshot
+
 ```yaml
-state: flow-active
-active_flow: browser-workflow-hyperplan
-active_phase: tesco-login-persistence-hardened-plugin-refresh-pending
-last_event: 2026-08-25T13:46:57+02:00
-last_event_type: tesco-stable-profile-binding-verified
-next_action: "A Tesco-login a persistent Chrome-profilban marad; minden agent kanonikus kötése my-assistant-tesco-dedicated-v3, namespace-rotáció és credential/env tárolás tilos. Két egymást követő teljes UBH verify kör zöld: 41/41 unit + 13/13 E2E mindkettőben. A personal plugin forrás 0.1.0+codex.20260825114643 verzióra frissült és valid, de a Store Codex CLI reinstall WindowsApps ACL miatt Access denied. Hyperplan nyitott: SP-05.3 delivery reconciliation + végső ledger."
+state: awaiting-approval
+active_flow: interfood-integration-hyperplan
+active_phase: live-calibration
+last_event: 2026-09-01T09:06:58+02:00
+last_event_type: interfood-protein-rules-history-affinity-and-two-week-review-green
+next_action: "2026-09-02 10:00-kor a heartbeat friss menü/history/coverage alapján elindítja a következő rendelés összeállítását és batcheli a bizonytalan tételeket. A capability release gate továbbra is owner-jóváhagyásra vár: W37 2026-09-07, Gombapaprikás orsó tésztával (menuItemId 35853, 1650 Ft) pontosan 1 db add → authoritative readback → remove → authoritative empty-cart readback. Checkout/payment nincs."
 
 active_plans:
+  - "__agent/plans/interfood-integration-hyperplan/hyperplan.plan.md"  # HP-IF-001 — implementation complete, live calibration pending
+  - "__agent/plans/linkedin-integration-hyperplan/hyperplan.plan.md"  # HP-LI-001 — planning + execution in progress
   - "__agent/plans/browser-workflow-hyperplan/hyperplan.plan.md"  # HP-BRW-001 — execution in progress
   - "__agent/plans/assistant-agent-cron.plan.md"  # ex-"A-mode" — Phase 1 MVP shipped
   - "__agent/plans/assistant-agent-automation-scripts.plan.md"  # ex-"B-mode" — v1 plan, NEM épült

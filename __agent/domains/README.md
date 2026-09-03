@@ -22,3 +22,4 @@ egyszerűen migrálhatók legyenek.
 | [stock](stock.md) | Otthoni készlet | `data/stock.md` |
 | [wallet](wallet.md) | Pénzügy, bevétel/kiadás | `data/wallet.md` |
 | [wishlist](wishlist.md) | Kívánságlisták | `data/wishlist.md` |
+| [email](email.md) | Külső mailbox olvasás és e-mail kezelés | Külső IMAP/SMTP provider; repo-storage nincs |

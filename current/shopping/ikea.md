@@ -48,6 +48,7 @@ szeparálás). Ütem: esetenkénti.
 ### 🛏️ Párna
 - [ ] **Nagy párna × 2** — **teljesen töltött / fullos** (teli párna, nem lapos) *(spec 2026-05-29)*
 - [ ] **Nagy párna húzat × 4–6** — cél: a 2 párnához tartalék-huzattal (4 = 2×, 6 = 3×)
+- [ ] **Ágytakaró × legalább 2** — **függönyként használni** — ✅ **organizerben** (`org:shoppingItem:6a886f67777f60bd4da715f7`, 2 db; szinkron: 2026-08-21)
 
 ### 🪝 Egyéb
 - [ ] **Kampók** *(2026-05-29)*

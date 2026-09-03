@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0.0",
+  "source": "organizer",
+  "generatedAt": "2026-08-23T23:35:26.675Z",
+  "stocks": [
+    {
+      "stock": {
+        "ref": "org:stock:6a886f01777f60bd4da715bf",
+        "title": "Háztartási készlet",
+        "path": "Stocks / Háztartási készlet",
+        "updatedAt": "2026-08-21T15:30:09.451Z",
+        "etag": "0",
+        "parentRef": "",
+        "type": "stock",
+        "name": "Háztartási készlet",
+        "isDefault": true,
+        "archived": false,
+        "deleted": false
+      },
+      "items": []
+    }
+  ],
+  "counts": {
+    "stocks": 1,
+    "stockItems": 0,
+    "pages": 2
+  }
+}

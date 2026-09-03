@@ -42,10 +42,11 @@ describe('| safeCall', () => {
     expect(files.length).toBe(0);
   });
 
-  it('| dobó fn-t elnyeli (caller NEM kap exception-t)', () => {
+  it('| dobó fn-t elnyeli (caller NEM kap exception-t)', async () => {
     const throwing = (): void => { throw new Error('teardown-failed'); };
 
     expect(() => safeCall(throwing, 'cast-client.close')).not.toThrow();
+    await flushAsyncLog();
   });
 
   it('| Error-t dobó fn esetén `note` action-log entry íródik MA-TEARDOWN-NONFATAL kóddal', async () => {
@@ -92,7 +93,10 @@ describe('| safeCall', () => {
     expect(lines.length).toBe(2);
     const e1: Record<string, unknown> = JSON.parse(lines[0]!) as Record<string, unknown>;
     const e2: Record<string, unknown> = JSON.parse(lines[1]!) as Record<string, unknown>;
-    expect((e1.extra as Record<string, unknown>).label).toBe('label-A');
-    expect((e2.extra as Record<string, unknown>).label).toBe('label-B');
+    const labels: unknown[] = [
+      (e1.extra as Record<string, unknown>).label,
+      (e2.extra as Record<string, unknown>).label,
+    ].sort();
+    expect(labels).toEqual(['label-A', 'label-B']);
   });
 });

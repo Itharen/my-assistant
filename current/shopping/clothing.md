@@ -25,9 +25,9 @@ amikor szükség van rá, nem fix ütem) + stock-jellegű tételek a
   - Prio: **magasabb a többinél** (a user explicit emelte ki)
 
 ### 👕 Stock-jellegű alapdarabok (méret-probléma is)
-- [ ] **Zokni** — több pár (a jelenlegiek "szorosak" + "kevés"; két probléma egyszerre)
+- [ ] **Zokni** — több pár (a jelenlegiek "szorosak" + "kevés"; két probléma egyszerre) — ✅ **organizerben** (`org:shoppingItem:6a886f67777f60bd4da715fd`, 1 csomag; szinkron: 2026-08-21)
   - Cél stock-szinten: TBD (bevezetés a `stock/items.md`-be)
-- [ ] **Alsógatya** — több (a jelenlegiek "lecsúsznak" → rossz méret)
+- [ ] **Alsógatya** — több (a jelenlegiek "lecsúsznak" → rossz méret) — ✅ **organizerben** (`org:shoppingItem:6a886f67777f60bd4da71603`, 1 csomag; szinkron: 2026-08-21)
   - Cél stock-szinten: TBD
 
 ### 🧥 Egyéb ruházat (nem stock, replacement / bővítés)

@@ -1,0 +1,15 @@
+{
+  "cameraIndex": 0,
+  "captureIntervalMs": 250,
+  "processingWidth": 320,
+  "processingHeight": 180,
+  "motionThreshold": 25,
+  "minimumChangedArea": 0.08,
+  "requiredMotionFrames": 2,
+  "wakeCooldownMs": 30000,
+  "cameraReconnectMs": 5000,
+  "blurRadius": 2,
+  "ambientCompensation": true,
+  "roi": null,
+  "debug": false
+}

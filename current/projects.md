@@ -36,6 +36,7 @@ projekt-hovatartozást.
 | 6 | **Master Prompter** | Pénzkereső (közvetett életcél) | aktív (hosszú távú) | **1.5** (initial guess) | user emlitette 2026-05-08; külön projekt, részletek TBD |
 | 7 | **Service projekt** | Pénzkereső (közvetett életcél) | aktív (hosszú távú) | **1.5** (initial guess) | user emlitette 2026-05-08; részletek TBD ("service" pontos jelentés tisztázandó) |
 | 8 | **FDP Global Token Purchase System** | Pénzkereső (közvetett életcél) | aktív de "nagyon régóta folyamatban, sehol nem tart" | **1.6** (initial guess) | minden FDP rendszerben használható közös fizetési rendszer; "elég jó monetizációs lehetőség" |
+| 9 | **Zenei előadói projekt** | Suno-generált zenék, a user számára fontos témákról | aktív történetszál, felvéve 2026-09-02 | nincs külön szorzó megadva | artist-rebrand lezárása után tisztítás, normalizálás, újrafeltöltés; `org:task:6a982b8de7e7e729f544b6b7`, részletek: `current/tasks/inbox.md` |
 | — | _Personal admin_ | Hózárás, jogsi, fürdés, séta, stb. | aktív | **1.0** (default) | nem projekt, hanem kategória |
 
 > A szorzók **defaultok**, a user módosíthatja. A skála: 1.0 = default,

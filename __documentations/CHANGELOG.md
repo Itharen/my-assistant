@@ -4,6 +4,46 @@
 
 ---
 
+## Interfood agent-independent ordering toolkit — 2026-09-01
+
+- Added agent-neutral `ma interfood weeks|menu|menu-range` commands against Interfood's first-party public API.
+- Normalizes weekly occurrence/food IDs, category context, prices, ingredients and component-level portion/per-100g nutrition.
+- Live smoke verified current plus two following enabled weeks (2026-W36..W38, 482 rows each).
+- Added schema/dedup tests, a state-carrying current-week → available-weeks → menu-normalization journey and an explicit partial-availability variant.
+- Added HP-IF-001 and the operational CLI runbook; authenticated order history, preferences and mutations remain gated later phases.
+- Promoted cart composition and already-submitted order modification to mandatory capability scope, with separate
+  reversible-draft and financial-preview/approval/readback state machines.
+- Added explicit `small | full | mixed | unspecified` portion classification while preserving raw menu categories;
+  regression coverage proves same-food/same-date full and small occurrences remain separate.
+- Defined full paginated order-history identity and coverage rules: order/menu/line/date/portion/quantity are never
+  collapsed by food ID or name, and a same-day quantity of two remains two ordered units.
+- Added the persistent dedicated UBH account bridge with an exact Interfood endpoint allowlist; browser token and
+  `_capuid` stay inside the extension and secret-like response fields are redacted.
+- Added full 2022→current+1 order-history pagination/cache, coverage, food fingerprint registry, explicit preference
+  graph with cycle detection, explainable variety/health ranking and nutrition comparison.
+- Added convergent cart quantity writes with authoritative readback and submitted-order immutable preview → exact
+  hash approval → apply → final order-details receipt.
+- Added complete desired-cart `diff`/bounded `reconcile`, order cancellability + overlap fail-closed checks,
+  hash-bound item/financial diffs and persisted final-readback mismatch diagnostics.
+- Added the `interfood-ordering` operational flow, Source-of-Truth split, journey catalogue and regression tests.
+- Live authenticated sync calibrated 71 unique orders, 664 unique lines and 723 active units without duplicate
+  fingerprints; current-week quantity-two lines remain distinct and are not double-counted from shared cart data.
+- Live submitted-order reduction preview calibrated changed-row-only provider payloads and normalized total,
+  instant and pending refund effects. Apply now revalidates order/safety/financial state before approval issuance.
+- Only the explicitly owner-approved reversible write canary remains an environment release gate; no live apply ran.
+
+## Organizer stock mirror CLI — 2026-08-23
+
+- Added workspace-ready `pnpm stocks:mirror` and the optional linked-CLI form `ma stocks mirror` for complete cursor-aware Organizer stock and stock-item mirroring.
+- Added atomic snapshot replacement at `current/stock/organizer-mirror.json`, dry-run support and structured errors.
+- Added per-feature variants plus a state-carrying refresh journey; every invocation emits action-log events.
+- The generated mirror is isolated from the manually maintained `current/stock/items.md` recovery/working mirror.
+
+## Gmail forwarding policy — 2026-08-12
+
+- Added `EMAIL-FORWARDING-SETUP.md` as the source of truth for the main-mailbox access boundary, forwarding verification state, `NO_SAFE_FORWARD` audit label, exclusion queries, and staged rollout.
+- Global forwarding remains disabled; no source-mailbox access was granted to the assistant.
+
 ## 0.1.0 — 2026-05-08 — Initial tri-tier skeleton
 
 **Sub-projekt verziók (mind 0.1.0):**
@@ -161,6 +201,30 @@
 **Cycle stats:** 40 cycle (69-108) ~24h-n belül; ~2500 LOC delta; 22 ship-commit + 18 close-commit. Bump-version 0.1.112 → 0.1.171 (59 patch-bumps).
 
 **Decisions:** lásd [`DECISIONS.md`](DECISIONS.md) (új DEC-MA-* sorok pending — broadcastDomainEvent topic-route, loopback auth-bypass + MA_LOCAL_DEV env-flag, push-driven silent refresh).
+
+---
+
+## Unreleased — 2026-08-12 — Data-free email tools transfer
+
+**Highlights:**
+
+- ✉️ `ma email` command group: `list-mailboxes`, `list`, `read`, `fetch-attachments`, `send`
+- 🔐 Gmailhez `auth` + `status`, Desktop OAuth 2.0 PKCE/loopback és Gmail API
+- 🪶 Legkisebb Gmail scope-ok: `gmail.readonly` + `gmail.send`; nincs app-password
+- 🔐 Dinamikus, env-alapú account isolation; ismeretlen account soha nem esik vissza másik postafiókra
+- 🧼 FDP Assistant mailbox-adat, credential, account-registry, címzett, sablon és month-closing automatizmus nélkül
+- 🛡️ Read-only IMAP műveletek, message/attachment size limit, attachment filename sanitize, no-overwrite mentés
+- 🕵️ Tracked action-log redakció: e-mail parancsból csak flag-nevek perzisztálódnak
+- 🧪 Offline CLI feature-E2E: dry-run composition + missing-recipient error + action-log leak guard
+- 🔧 `cli/pnpm-workspace.yaml` build-allowlist placeholder drift javítva a dokumentált boolean értékekre
+- 🧪 `safeCall` spec race javítva: async log flush + sorrendfüggetlen két-label assertion
+
+**Tests:** `cli/pnpm test` — 125 spec, 0 failure. Live-provider probe nincs futtatva, mert a My Assistant
+valós mailbox-konfigurációját és adatait ez a migráció szándékosan nem olvasta be.
+`cli/pnpm run test:coverage` — zöld; e-mail modul: 74.82% statement/line, 79.9% branch, 73.8% function.
+
+Részletes implementációs riport:
+[`developments/2026-08-12-email-tools-transfer.md`](developments/2026-08-12-email-tools-transfer.md).
 
 ---
 

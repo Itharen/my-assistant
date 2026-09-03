@@ -43,6 +43,46 @@ pedig továbbviendő.
 palack** tehető kosárba. A teljes hiány fennmaradó része a következő rendelésre
 nyitva marad.
 
+## 2026-08-27 — az agent kosara szerkeszthető tervezet; a készletet a tényleges kézbesítés frissíti
+
+> Fontos, hogy miután elkészítünk egy bevásárló kosarat, én azt szerint, hogy éppen mennyi pénzem van, és mennyi helyem, és mennyi éppen milyen kedvem van, attól függően mindig módosítom a bevásárló kosarat, mielőtt leadnám a rendelést. Tehát nem arról van szó, hogy a rendelés rosszul volt leadva, vagy nem megfelelően állítottuk össze a kosarat, Nagyon sok mindent, amik nem érkeztek meg ez alapján, és amik így nem kerültek feltöltésre a raktárban. De ezeket most újra hozzá kell majd adnod ilyenkor.
+
+**Operatív következmény:**
+
+- Az agent által összeállított Tesco-kosár **szerkeszthető tervezet**, nem a
+  végleges rendelés és nem automatikus felhatalmazás a rendelés leadására.
+- A user a kosarat pénz, tárolóhely és pillanatnyi igény alapján szabadon
+  módosíthatja. A tervezett és a végleges kosár eltérése önmagában nem hiba.
+- A készletet kizárólag a végleges rendelési/kézbesítési bizonyíték alapján
+  növeljük; a korábban kosárba tett, de végül nem kézbesített tételt nem
+  tekintjük megvásároltnak.
+- A user által a rendelés előtt kivett, ezért nem kézbesített hiánytételek
+  változatlanul nyitva maradnak, és a következő kosárba újra bekerülnek.
+- A rendelési visszaigazolás és a kézbesítés eltérése esetén a tényleges
+  kézbesítés az elsődleges készletbizonyíték; bizonytalanság esetén egy közös
+  egyeztetési köteg készül.
+
+## 2026-08-27 — a kért kosárösszeállítást végre kell hajtani; technikai hibát nem mutatunk a usernek
+
+> Ha a user kéri a Tesco-kosár összeállítását, és a kosár üres vagy hiányos,
+> akkor a biztos tételeket ténylegesen kosárba kell tenni. A dry run és az
+> előteszt csak előellenőrzés, nem helyettesíti a kosárírást.
+
+**Operatív következmény:**
+
+- A biztos, azonosított tételek kosárba helyezése szerkeszthető és
+  visszafordítható tervezet; önmagában nem rendelés, checkout vagy pénzköltés.
+- Ugyanazt a végrehajtási kérést nem kérjük be másodszor. Csak a bizonytalan
+  tételek kerülnek egyetlen közös user-döntési kötegbe.
+- Böngészőindítás előtt kötelező a modern UBH session-kontraktus és a profil
+  preflight sikerének bizonyítása. A legacy `waiting-extension` válasz hard
+  stop: ilyen runtime-mal `open_login_session` nem hívható.
+- Profil-lock, olvashatatlan preference vagy browser-start hiba kizárólag az
+  agent strukturált CLI/MCP hibacsatornájára kerülhet. Chrome `Profile error`
+  dialógust a usernek megjeleníteni tilos.
+- Sikertelen preflight után nincs látható browser retry és nincs újabb ablak;
+  előbb a runtime/adaptor hibát kell javítani vagy támogatott módon frissíteni.
+
 ## Kapcsolódó tartós szabályok
 
 - Termékbizonytalanság, közvetlen link és italból Zero:

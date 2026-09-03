@@ -14,6 +14,55 @@ Szabályok: `current/principles/recurring-tasks.md` (2-3 hetente megrendelés) +
 
 ---
 
+## Aktuális kézbesítés utáni hiány-batch — 2026-08-27
+
+> A végleges rendelésben 0 helyettesítő és 0 nem elérhető tétel volt. Ami a
+> korábbi agent-kosárból nem szerepel a kézbesített listán, azt a user a
+> rendelésleadás előtt kivette; ezért készletben nem írtuk jóvá, és most újra
+> hozzáadandó. Ez a kosár is szerkeszthető tervezet marad.
+
+### Egyértelmű, most kosárba teendő tételek
+
+- [ ] [HELL ZERO White Peach 250 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/121302824) × **1**
+- [ ] [Coca-Cola Cherry Zero 1,75 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121254765) × **2**
+- [ ] [Sprite Zero 1,75 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121217983) × **1**
+- [ ] [Kinley Ginger Ale Zero 1,5 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121217205) × **1**
+- [ ] [Ceres vajas toast kenyér 500 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/2004008932200) × **2**
+- [ ] [Tchibo Espresso Sicilia szemes kávé 1 kg](https://bevasarlas.tesco.hu/shop/hu-HU/products/210408830) × **2**
+- [ ] [Nádudvari E-mentes snidlinges vajkrém 180 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/210552687) × **1**
+- [ ] [Hellmann's fokhagymás szósz 260 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/220021386) × **1**
+- [ ] [Buitoni Piccolinis háromsajtos mini pizza 9 × 30 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/120560507) × **1**
+- [ ] [Fornetti sajtos pogácsa 700 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/220297280) × **1**
+- [ ] [Carte d'Or Tiramisu jégkrém 825 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/105010828) × **1**
+- [ ] [Garnier Fructis Pure Fresh sampon 400 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/209515020) × **2**
+- [ ] [Tesco coleslaw saláta mix 180 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/105007591) × **2** — elfogyott; a bevált wraphoz pótlandó
+- [ ] [Pro Formula C-vitamin + cink](https://bevasarlas.tesco.hu/shop/hu-HU/products/107282289) × **2**
+- [ ] [Pro Formula kalcium + D/K-vitamin](https://bevasarlas.tesco.hu/shop/hu-HU/products/107282210) × **2**
+- [ ] [Pro Formula multivitamin](https://bevasarlas.tesco.hu/shop/hu-HU/products/107280346) × **2**
+- [ ] [Primavera szénsavmentes víz 2 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121233911) × **2 zsugor / 12 palack**
+- [ ] [Szentkirályi extra dús víz 1,5 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121229698) × **1 zsugor / 6 palack**
+- [ ] [Mizse szénsavmentes víz 1,5 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/121233675) × **2 zsugor / 12 palack** — ezután még **3 zsugor / 18 palack** hiány marad
+
+**Biztos kosármennyiség:** 52 darab/csomag/palack. A három víztípus külön-külön
+betartja a típusonkénti 12 palackos és 2 zsugoros maximumot.
+
+### Csak élő elérhetőség esetén teendő kosárba
+
+- [ ] [Viennetta vanília jégkrémtorta 650 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/203199189) × **1**
+- [ ] [Tesco Mini Mix vaníliaízű jégkrém 8 × 50 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/100588549) × **1**
+
+### Egy közös bizonytalansági köteg — a biztos tételeket nem blokkolja
+
+- [ ] Felvágott **40 dkg** — először Delco paprikás sonka; ha nem elérhető,
+  ajánlott fallback: [PICK pultos sertéspárizsi](https://bevasarlas.tesco.hu/shop/hu-HU/products/205959255)
+- [ ] Negro-próba × **1** — jelenlegi jelölt:
+  [feketeribizli C-vitaminnal 63 g](https://bevasarlas.tesco.hu/shop/hu-HU/products/111274660)
+- [ ] Wraphoz való panírozott csirke × **1 csomag** — a Valdor Zizu
+  [`210832246`](https://bevasarlas.tesco.hu/shop/hu-HU/products/210832246) elfogadható
+  fallback, de előbb hasonlítsunk hozzá kisebb darabos alternatívát
+
+---
+
 ## Aktuális stock-alapú batch — 2026-08-24
 
 > Mennyiség = a 2026-08-23/24-i raktár-snapshotban rögzített hiány a
@@ -60,7 +109,7 @@ Szabályok: `current/principles/recurring-tasks.md` (2-3 hetente megrendelés) +
 #### Háztartás és drogéria 🧴
 
 - [ ] [Protect csótány- és hangyairtó 400 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/209762301) × **1**
-- [ ] [Springforce papírtörlő, 4 tekercs](https://bevasarlas.tesco.hu/shop/hu-HU/products/111270024) × **1**
+- [ ] [Zewa Wisch & Weg Sparblatt papírtörlő, 2 rétegű, 4 tekercs](https://bevasarlas.tesco.hu/shop/hu-HU/products/2004010589638) — **végleges jövőbeli preferencia**, csak a készletküszöb alapján kerüljön kosárba; a Springforce `111270024` nem rendelhető újra.
 - [ ] [Garnier Fructis Pure Fresh sampon 400 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/209515020) × **2**
 - [ ] [Jar Lemon mosogatószer 450 ml](https://bevasarlas.tesco.hu/shop/hu-HU/products/220022202) × **2**
 - [ ] [Mr Muscle Power Gel lefolyótisztító 1 l](https://bevasarlas.tesco.hu/shop/hu-HU/products/203157097) × **2**
@@ -93,7 +142,7 @@ Szabályok: `current/principles/recurring-tasks.md` (2-3 hetente megrendelés) +
 
 - [ ] Szendvicscsomag — most nem aktív
 - [ ] Hotdogcsomag — termékei még nincsenek beazonosítva
-- [x] **Wrapcsomag aktiválva és pontosítva** — 2026-08-24: Valdor ×1 + Grill Master tortilla ×3 + Tesco coleslaw ×2 + Hellmann's fokhagymás ×1 + Tesco Edam ×2. A tételek fent, a kosárkész listában szerepelnek.
+- [x] **Wrapcsomag kipróbálva, nagyon bevált** — 2026-09-01: tortilla még kb. 1,5 csomag/zacskó; a saláta és a csirke elfogyott. A Valdor jó fallback, de a következő körben kisebb darabos csirkét is nézzünk.
 
 ### Most kihagyandó — már van belőle ⛔
 

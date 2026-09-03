@@ -1,0 +1,437 @@
+{
+  "status": "superseded-not-order-authorization",
+  "supersededBy": "2026-W37-W38-selection-3.json",
+  "reviewDate": "2026-09-02",
+  "accountSnapshotAt": "2026-09-01T06:19:06.968Z",
+  "accountRefreshSucceeded": false,
+  "weeks": [
+    {
+      "year": 2026,
+      "week": 37,
+      "days": [
+        {
+          "date": "2026-09-07",
+          "meals": [
+            {
+              "menuItemId": 35871,
+              "foodId": 122,
+              "menuDate": "2026-09-07",
+              "foodName": "Western csirkemell steak, vegyes köret (sült burg., párolt rizs)",
+              "portionClass": "small",
+              "quantity": 1,
+              "priceHuf": 1355,
+              "displayLabel": "Western csirkemell steak, krumplis–rizses körettel"
+            },
+            {
+              "menuItemId": 35848,
+              "foodId": 1538,
+              "menuDate": "2026-09-07",
+              "foodName": "Chilis csirke wrap teljes kiőrlésű tortillában",
+              "portionClass": "unspecified",
+              "quantity": 1,
+              "priceHuf": 2095,
+              "displayLabel": "Chilis csirkemell-wrap"
+            }
+          ],
+          "alternatives": [
+            {
+              "menuItemId": 36082,
+              "foodId": 290,
+              "menuDate": "2026-09-07",
+              "foodName": "Kemencés csirkemellcsíkok cheddar sajttal, bulgur salátával",
+              "portionClass": "unspecified",
+              "displayLabel": "Cheddaros csirkemell bulgursalátával"
+            },
+            {
+              "menuItemId": 36037,
+              "foodId": 246,
+              "menuDate": "2026-09-07",
+              "foodName": "Párizsi pulykaszelet, friss vegyes salátával",
+              "portionClass": "unspecified",
+              "displayLabel": "🥗 Párizsi pulykaszelet vegyes salátával — 652 kcal"
+            }
+          ],
+          "extra": null
+        },
+        {
+          "date": "2026-09-08",
+          "meals": [
+            {
+              "menuItemId": 36033,
+              "foodId": 242,
+              "menuDate": "2026-09-08",
+              "foodName": "Oregánós roston csirkemell, pirított édesburgonya hasábokkal",
+              "portionClass": "unspecified",
+              "quantity": 1,
+              "priceHuf": 2295,
+              "displayLabel": "Oregánós csirkemell édesburgonyával"
+            },
+            {
+              "menuItemId": 35708,
+              "foodId": 34,
+              "menuDate": "2026-09-08",
+              "foodName": "Cézár saláta (sült csirkemellel), pirított zsemlekockák, cézár öntet",
+              "portionClass": "small",
+              "quantity": 1,
+              "priceHuf": 1580,
+              "displayLabel": "Csirkés Cézár saláta"
+            }
+          ],
+          "alternatives": [
+            {
+              "menuItemId": 35718,
+              "foodId": 40,
+              "menuDate": "2026-09-08",
+              "foodName": "Olaszos tepsis csirkemell (sajt, parad.), spenótos jázmin rizs",
+              "portionClass": "small",
+              "displayLabel": "Olaszos tepsis csirkemell, spenótos rizs — 507 kcal"
+            },
+            {
+              "menuItemId": 35755,
+              "foodId": 60,
+              "menuDate": "2026-09-08",
+              "foodName": "Rántott camembert, sült burgonya, áfonya öntet*",
+              "portionClass": "full",
+              "displayLabel": "⭐ Rántott camembert, sült krumpli, áfonyaöntet — normál; **⚠ külön tejet tartalmaz**"
+            }
+          ],
+          "extra": null
+        },
+        {
+          "date": "2026-09-09",
+          "meals": [
+            {
+              "menuItemId": 36044,
+              "foodId": 253,
+              "menuDate": "2026-09-09",
+              "foodName": "Rántott csirkemell aranybarna panírban sárgarépás kölessel",
+              "portionClass": "unspecified",
+              "quantity": 1,
+              "priceHuf": 2095,
+              "displayLabel": "Rántott csirkemell sárgarépás kölessel"
+            },
+            {
+              "menuItemId": 36114,
+              "foodId": 322,
+              "menuDate": "2026-09-09",
+              "foodName": "Töltött káposzta csirkemellből",
+              "portionClass": "unspecified",
+              "quantity": 1,
+              "priceHuf": 2020,
+              "displayLabel": "Töltött káposzta csirkemellből"
+            }
+          ],
+          "alternatives": [
+            {
+              "menuItemId": 36014,
+              "foodId": 228,
+              "menuDate": "2026-09-09",
+              "foodName": "Indiai cukkinis, csicseriborsós curry,  steak burgonyával*",
+              "portionClass": "unspecified",
+              "displayLabel": "Cukkinis–csicseriborsós curry steakburgonyával"
+            },
+            {
+              "menuItemId": 35904,
+              "foodId": 137,
+              "menuDate": "2026-09-09",
+              "foodName": "Csirkehússal, tojással rakott sajtos brokkoli",
+              "portionClass": "small",
+              "displayLabel": "🥗 Csirkés–tojásos rakott brokkoli — 504 kcal"
+            }
+          ],
+          "extra": null
+        },
+        {
+          "date": "2026-09-10",
+          "meals": [
+            {
+              "menuItemId": 35715,
+              "foodId": 38,
+              "menuDate": "2026-09-10",
+              "foodName": "Székelykáposzta csirkemellből",
+              "portionClass": "full",
+              "quantity": 1,
+              "priceHuf": 1860,
+              "displayLabel": "Székelykáposzta csirkemellből"
+            },
+            {
+              "menuItemId": 35905,
+              "foodId": 138,
+              "menuDate": "2026-09-10",
+              "foodName": "Roston sült pulykamell, fokhagymás tejfölmártás, jázmin rizs",
+              "portionClass": "small",
+              "quantity": 1,
+              "priceHuf": 1480,
+              "displayLabel": "Roston pulykamell fokhagymás tejfölmártással, rizzsel"
+            }
+          ],
+          "alternatives": [
+            {
+              "menuItemId": 36090,
+              "foodId": 298,
+              "menuDate": "2026-09-10",
+              "foodName": "Roston sült csirkemell, görög saláta",
+              "portionClass": "unspecified",
+              "displayLabel": "🥗 Roston csirkemell görög salátával — 472 kcal"
+            }
+          ],
+          "extra": null
+        },
+        {
+          "date": "2026-09-11",
+          "meals": [
+            {
+              "menuItemId": 35875,
+              "foodId": 120,
+              "menuDate": "2026-09-11",
+              "foodName": "Barbecue pácban sült csirkemell, steak burgonya",
+              "portionClass": "small",
+              "quantity": 1,
+              "priceHuf": 1490,
+              "displayLabel": "Barbecue csirkemell steakburgonyával"
+            },
+            {
+              "menuItemId": 36091,
+              "foodId": 299,
+              "menuDate": "2026-09-11",
+              "foodName": "Csirkemell tzatzikivel, zöldsalátával",
+              "portionClass": "unspecified",
+              "quantity": 1,
+              "priceHuf": 2085,
+              "displayLabel": "Csirkemell tzatzikivel, zöldsalátával"
+            }
+          ],
+          "alternatives": [
+            {
+              "menuItemId": 35896,
+              "foodId": 134,
+              "menuDate": "2026-09-11",
+              "foodName": "Sajtos-tejfölös sült csirkemell csíkok, jázmin rizs",
+              "portionClass": "small",
+              "displayLabel": "Sajtos-tejfölös csirkemell rizzsel"
+            }
+          ],
+          "extra": null
+        }
+      ],
+      "totalHuf": 18355
+    },
+    {
+      "year": 2026,
+      "week": 38,
+      "days": [
+        {
+          "date": "2026-09-14",
+          "meals": [
+            {
+              "menuItemId": 36199,
+              "foodId": 377,
+              "menuDate": "2026-09-14",
+              "foodName": "Mozzarellás csirkemellel töltött cukkíni, barna rizs",
+              "portionClass": "small",
+              "quantity": 1,
+              "priceHuf": 1460,
+              "displayLabel": "Mozzarellás csirkemellel töltött cukkini, barna rizs"
+            },
+            {
+              "menuItemId": 36330,
+              "foodId": 102,
+              "menuDate": "2026-09-14",
+              "foodName": "Quesadilla Grande (tortilla lapok csirkehússal, hagyma, paradicsom, jalapeno paprika, sajt)",
+              "portionClass": "unspecified",
+              "quantity": 1,
+              "priceHuf": 2380,
+              "displayLabel": "Csirkés-sajtos Quesadilla Grande"
+            }
+          ],
+          "alternatives": [
+            {
+              "menuItemId": 36569,
+              "foodId": 619,
+              "menuDate": "2026-09-14",
+              "foodName": "Csirkemell Holstein módra, zöldségekkel, rizzsel",
+              "portionClass": "unspecified",
+              "displayLabel": "Holstein csirkemell zöldségekkel, rizzsel"
+            },
+            {
+              "menuItemId": 36184,
+              "foodId": 371,
+              "menuDate": "2026-09-14",
+              "foodName": "Tavaszi csirkemell saláta, joghurt öntettel",
+              "portionClass": "full",
+              "displayLabel": "🥗 Tavaszi csirkesaláta joghurtöntettel — 445 kcal"
+            }
+          ],
+          "extra": null
+        },
+        {
+          "date": "2026-09-15",
+          "meals": [
+            {
+              "menuItemId": 36565,
+              "foodId": 616,
+              "menuDate": "2026-09-15",
+              "foodName": "Székelykáposztával rakott burgonya (csirkemellfiléből)",
+              "portionClass": "unspecified",
+              "quantity": 2,
+              "priceHuf": 1895,
+              "displayLabel": "⭐ Székelykáposztával rakott burgonya csirkemellből"
+            }
+          ],
+          "alternatives": [
+            {
+              "menuItemId": 36354,
+              "foodId": 455,
+              "menuDate": "2026-09-15",
+              "foodName": "Bácskai rizseshús csirkemellből",
+              "portionClass": "small",
+              "displayLabel": "Bácskai rizseshús csirkemellből"
+            },
+            {
+              "menuItemId": 36575,
+              "foodId": 624,
+              "menuDate": "2026-09-15",
+              "foodName": "Fitt rakott zöldbab (csirkemellel, tejföllel)",
+              "portionClass": "unspecified",
+              "displayLabel": "🥗 Fitt rakott zöldbab csirkemellel — 467 kcal"
+            }
+          ],
+          "extra": {
+            "menuItemId": 36148,
+            "quantity": 1,
+            "status": "favorite-candidate-confirmation-required",
+            "label": "+? Lúdláb szelet — kedvencjelölt"
+          }
+        },
+        {
+          "date": "2026-09-16",
+          "meals": [
+            {
+              "menuItemId": 36355,
+              "foodId": 456,
+              "menuDate": "2026-09-16",
+              "foodName": "Csirkemell rácosan (lecsós, tejfölös) burgonyával",
+              "portionClass": "small",
+              "quantity": 1,
+              "priceHuf": 1485,
+              "displayLabel": "⭐ Rácos csirkemell burgonyával"
+            },
+            {
+              "menuItemId": 36144,
+              "foodId": 351,
+              "menuDate": "2026-09-16",
+              "foodName": "Tojásos lecsó basmati rizzsel*",
+              "portionClass": "unspecified",
+              "quantity": 1,
+              "priceHuf": 2030,
+              "displayLabel": "Tojásos lecsó basmati rizzsel"
+            }
+          ],
+          "alternatives": [
+            {
+              "menuItemId": 36571,
+              "foodId": 621,
+              "menuDate": "2026-09-16",
+              "foodName": "Zöldfűszeres sült csirkemell, wok zöldségkeverék",
+              "portionClass": "unspecified",
+              "displayLabel": "Zöldfűszeres csirkemell wokzöldségekkel"
+            },
+            {
+              "menuItemId": 36186,
+              "foodId": 373,
+              "menuDate": "2026-09-16",
+              "foodName": "Kemencében sült pulykamell csíkok fetasajttal, színes saláta (paprika, par, uborka zöld saláta, oliva, poréh.)",
+              "portionClass": "full",
+              "displayLabel": "🥗 Fetasajtos pulykamell színes salátával — 434 kcal"
+            }
+          ],
+          "extra": null
+        },
+        {
+          "date": "2026-09-17",
+          "meals": [
+            {
+              "menuItemId": 36145,
+              "foodId": 352,
+              "menuDate": "2026-09-17",
+              "foodName": "Sütőtökrizottó camembert sajttal*",
+              "portionClass": "unspecified",
+              "quantity": 2,
+              "priceHuf": 2065,
+              "displayLabel": "⭐ Sütőtökrizottó camembert sajttal — **⚠ nyomokban tej**"
+            }
+          ],
+          "alternatives": [
+            {
+              "menuItemId": 36344,
+              "foodId": 450,
+              "menuDate": "2026-09-17",
+              "foodName": "Házi rakott burgonya",
+              "portionClass": "small",
+              "displayLabel": "⭐ Házi rakott burgonya — **sertéskolbászos**"
+            },
+            {
+              "menuItemId": 36582,
+              "foodId": 631,
+              "menuDate": "2026-09-17",
+              "foodName": "Székelykáposzta csirkemellből (fitt)",
+              "portionClass": "unspecified",
+              "displayLabel": "Fitt székelykáposzta csirkemellből — 454 kcal"
+            }
+          ],
+          "extra": null
+        },
+        {
+          "date": "2026-09-18",
+          "meals": [
+            {
+              "menuItemId": 36593,
+              "foodId": 642,
+              "menuDate": "2026-09-18",
+              "foodName": "Töltött paprika, sós burgonya (csirkemellből)",
+              "portionClass": "unspecified",
+              "quantity": 1,
+              "priceHuf": 2295,
+              "displayLabel": "Csirkemelles töltött paprika, sós burgonya"
+            },
+            {
+              "menuItemId": 36598,
+              "foodId": 647,
+              "menuDate": "2026-09-18",
+              "foodName": "Fűszeres túróval parajjal töltött csirkemellfilé hagymás karottás rizzsel",
+              "portionClass": "unspecified",
+              "quantity": 1,
+              "priceHuf": 1985,
+              "displayLabel": "Túrós–parajos töltött csirkemell, répás rizs"
+            }
+          ],
+          "alternatives": [
+            {
+              "menuItemId": 36403,
+              "foodId": 160,
+              "menuDate": "2026-09-18",
+              "foodName": "Gyroszos pulykamell, vegyes köret (sült burg., párolt rizs)",
+              "portionClass": "unspecified",
+              "displayLabel": "Gyroszos pulykamell krumplis–rizses körettel"
+            },
+            {
+              "menuItemId": 36588,
+              "foodId": 637,
+              "menuDate": "2026-09-18",
+              "foodName": "Roston sült sajtos-tejfölös csirkemell,párolt zöldségköret",
+              "portionClass": "unspecified",
+              "displayLabel": "🥗 Sajtos-tejfölös csirkemell párolt zöldséggel — 488 kcal"
+            }
+          ],
+          "extra": {
+            "menuItemId": 36156,
+            "quantity": 1,
+            "status": "favorite-candidate-confirmation-required",
+            "label": "+? Bableves házi kolbásszal — kedvencjelölt; **⚠ nyomokban tej**"
+          }
+        }
+      ],
+      "totalHuf": 19555
+    }
+  ]
+}

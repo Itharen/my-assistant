@@ -100,7 +100,7 @@
 | Típus | Forrás | Mit | Ütem |
 |---|---|---|---|
 | 🛒 **Tesco-rendelés** | Tesco | mindenféle (bolti bevásárlás) | 2-3 hetente, lásd `current/shopping/list.md` |
-| 🍱 **Interfood-rendelés** | Interfood | hétköznapra napi 2 kaja (azaz hét × 5 nap × 2 = 10 adag/hét) | csütörtökig leadni következő hét(ek)re |
+| 🍱 **Interfood-rendelés** | Interfood | hétköznapra napi 2 kaja (azaz hét × 5 nap × 2 = 10 adag/hét) | az utolsó fedett hét kedd–szerda időablakáig leadni a maximális következő időszakra |
 
 A korábbi "Kaja-rendelés" sor → **Interfood**-ot fedi le. A Tesco külön sor.
 
@@ -118,6 +118,26 @@ A korábbi "Kaja-rendelés" sor → **Interfood**-ot fedi le. A Tesco külön so
   (mert ekkor lehet a leghosszabb távra előre rendelni → a legritkábban kell ismétlést kezdeni)
 - Praktikus időzítés: az utolsó-fedett-hét **hétfő-keddjén** kezdeni az emlékeztetést,
   és a következő interakciókban ismételni a csütörtöki határidőig
+
+### 2026-08-26 — dinamikus ismétlődés pontosítása
+
+> „Ez itt majd egy olyan ismétlődő feladatunk, amihez azt hiszem majd megint
+> kelleni fog egy organizer feature request is, mert ez úgy működik, hogy
+> két-három hetente ismétlődik, attól függően, hogy meddig adtuk le legutóbb
+> a rendeléseket az Interfood kaja rendeléshez. hogy ha két hétre előre adtuk
+> el a rendelést, akkor a két hét lejárta előtt, kedd szerdáig le kell adni a
+> következő adagot, és annyit adunk le, amennyit csak tudunk. Majd ehhez is
+> kell készítenünk egy eszközt is.”
+
+Ez a pontosítás a fenti hétfő–csütörtök emlékeztetési ajánlást az alábbi
+kanonikus működésre szűkíti:
+
+- a ciklus hossza nem fix: az előző rendelés tényleges `coverageEnd` dátumától függ;
+- a következő rendelés célsávja az **utolsó fedett hét kedd–szerda**;
+- mindig a pillanatnyilag elérhető **leghosszabb időszakra** rendelünk;
+- teljesítés csak akkor zárható le, ha rögzítettük, meddig szól az új rendelés;
+- amíg az Organizer nem tud lefedettség-alapú ismétlődést, a következő taskot
+  manuálisan kell újradátumozni/létrehozni a rögzített `coverageEnd` alapján.
 
 ---
 
@@ -297,7 +317,7 @@ határán). Tervezésnél előre 2-3h-ás slot-ot kell lefoglalni.
 | 🧺 Mosás | 3 hetente 1× | bármikor | halogatás-szorzó |
 | 🛁 Fürdés | hetente 2× | **07:00–23:59 között**, **2-3h hosszú blokk**, latest start ~21:00 | halogatás-szorzó |
 | 🛒 Tesco-rendelés (bolti bevásárlás) | 2-3 hetente | bármikor | folyamatos shopping-list gyűjtés (`current/shopping/tesco.md`) a megrendelésig |
-| 🍱 Interfood-rendelés (hétköznapi kaja, napi 2×) | hetente, **2-3 hétre előre** | csütörtökig bezárólag, **emlékeztető az utolsó-fedett-hét hétfőjén kezdjen** | szombatra eltolódva → MAX prio (nagyon-nagyon magas) |
+| 🍱 Interfood-rendelés (hétköznapi kaja, napi 2×) | `coverageEnd` alapján változó, jellemzően **2-3 hetente** | az utolsó fedett hét **kedd–szerda** időablakában; mindig a maximális elérhető távra | csúszáskor fokozódó prioritás; teljesítéskor új `coverageEnd` kötelező |
 | 🏢 Céges hózárás | havonta | minden hónap 2. munkanapja | csúszás → halogatás-szorzó |
 | 🌍 TERA projekt ellenőrzés | heti 2× | **kedd + csütörtök** | csúszás → halogatás-szorzó |
 | 💼 LinkedIn poszt (csak megjelenés-tracking, tartalom out of scope) | heti 2-3× | séta közben szokta összeállítani | heti 0-1 poszt → halogatás-szorzó |
@@ -308,4 +328,5 @@ határán). Tervezésnél előre 2-3h-ás slot-ot kell lefoglalni.
 - **Takarítás csúszás**: ha szerdán nem volt, mikor pótoljuk? (default: amint lehet, halogatás-szorzóval)
 - **Séta**: count-alapú vagy duration-alapú? Most: csak "megvolt-e" elég.
 - **Bevásárlás 2-3 hetente**: 14 vs 21 nap? Default: 18 nap (átlag), de a shopping-list mérete is befolyásolhatja.
-- **Kaja-rendelés**: milyen eskalálódás-görbe? csütörtök = normál → péntek = warn → szombat = kritikus → vasárnap = blokkoló?
+- **Kaja-rendelés csúszása**: a régi csütörtök–vasárnap görbét a 2026-08-26-i
+  kedd–szerda célsávhoz kell majd újrakalibrálni az Interfood-eszköz mérései alapján.

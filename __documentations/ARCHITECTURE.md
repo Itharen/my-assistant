@@ -1,6 +1,22 @@
 # my-assistant — Architecture
 
-**Last verified:** 2026-05-17 (cycle 110 doc-sync; covers marathon 92-109)
+## Interfood integration
+
+```text
+agent → ma interfood
+        ├─ public API client → menus/weeks/nutrition
+        ├─ local preference SoT + user-local registry/order cache → deterministic planner
+        └─ UBH interfood.account → dedicated persistent profile → allowlisted first-party account API
+```
+
+The public branch is browser-free. The authenticated branch never exposes the site token: the UBH content script
+reads browser-local state and returns only redacted API results. `foodId`, date/category-specific `menuItemId`,
+`orderId`, `orderLineId` and `quantity` remain distinct through sync, planning and mutation. Cart writes converge
+against authoritative readback; submitted-order writes additionally require immutable preview-hash approval.
+Routine account output is PII-minimized. Before apply, the adapter revalidates authoritative order state, safety
+decisions and financial effect; partial submitted-order payloads contain changed cart-item rows only.
+
+**Last verified:** 2026-09-01 (Interfood agent-independent ordering toolkit added)
 **Audience:** developers / Claude sessions; canonical implementation reference.
 
 > **Recent additions** (cycle 51-109, see [`CHANGELOG.md`](CHANGELOG.md) milestones 0.1.112 + 0.1.171):
@@ -34,6 +50,7 @@ my-assistant/
 ├── cli/         ★ TS Node CLI (`ma`)         — pattern partner: organizer-cli/cli/
 ├── server/      ★ Express + SQLite           — pattern partner: organizer/server/
 ├── client/      ★ Angular 18 (NgModule)      — pattern partner: organizer/client/
+├── screen-waker/★ Windows webcam wake agent  — independent auxiliary utility
 ├── pipeline.config.json    workspace LDP (`dc ldp`)
 ├── __specifications/       business / functional spec (KÖTELEZŐ entry: main.md)
 ├── __documentations/       this folder — implementation docs (FDP minta)
@@ -42,6 +59,9 @@ my-assistant/
 
 A három sub-projekt **HTTP-n keresztül** kommunikál (server az integráció pontja). Egyik sem importálja a másikat fordítási időben.
 
+A `screen-waker/` nem negyedik application tier: a dashboardtól és a három sub-projekttől független, lokális
+Windows utility. Spec: [`../__specifications/screen-waker/README.md`](../__specifications/screen-waker/README.md).
+
 ## Sub-projekt belépők
 
 | | Forrás | Pipeline | Spec | Implementation README |
@@ -49,12 +69,22 @@ A három sub-projekt **HTTP-n keresztül** kommunikál (server az integráció p
 | **CLI** | `cli/src/` | `cli/pipeline.cicd.config.json` | [`../__specifications/modules/cli.md`](../__specifications/modules/cli.md) | [`../cli/README.md`](../cli/README.md) |
 | **Server** | `server/src/` | `server/pipeline.cicd.config.json` | [`../__specifications/modules/server.md`](../__specifications/modules/server.md) | [`../server/README.md`](../server/README.md) |
 | **Client** | `client/src/` | `client/pipeline.cicd.config.json` | [`../__specifications/modules/client.md`](../__specifications/modules/client.md) | [`../client/README.md`](../client/README.md) |
+| **Screen Waker** | `screen-waker/src/` | önálló `pnpm` gate | [`../__specifications/screen-waker/README.md`](../__specifications/screen-waker/README.md) | [`../screen-waker/README.md`](../screen-waker/README.md) |
 
 ## Cross-cutting features
 
 - [`../__specifications/features/action-log.md`](../__specifications/features/action-log.md) — action-log audit-naplózás
 - [`../__specifications/features/tick-engine.md`](../__specifications/features/tick-engine.md) — A-mode dispatcher
 - [`../__specifications/features/activity-monitoring.md`](../__specifications/features/activity-monitoring.md) — activity-monitor PowerShell ingest
+
+## Organizer stock mirror
+
+Az L3 CLI `ma stocks mirror` parancsa a globális `fo` CLI-n keresztül, cursor-alapon bejárja a teljes
+`stocks.list` és stockonkénti `stock-items.list` adathalmazt. A nyers Organizer-objektumokat megőrző, verziózott
+JSON contract a `current/stock/organizer-mirror.json` fájlba kerül, temp-file + flush + rename cserével.
+
+A generált mirror read-model, nem második owner: az Organizer marad a célrendszer. A kézzel gondozott
+`current/stock/items.md` külön recovery/working mirror, ezért a gépi parancs azt nem írhatja felül.
 
 ## Pipeline
 

@@ -53,7 +53,8 @@ Strukturált stock-tábla. Szabályok: `current/principles/stock-system.md`.
 | Vajkrém | `210552687` | Nádudvari E-mentes snidlinges vajkrém 180 g | Nádudvari; E-mentes; snidlinges; 180 g | 2026-08-24 | User közvetlen terméklink alapján megerősítette. |
 | Szójaszósz | `120256747` | Kikkoman természetesen érlelt szójaszósz csökkentett sótartalommal 150 ml | Kikkoman; természetesen érlelt; csökkentett sótartalmú; mesterséges színező és ízesítő nélkül; 150 ml | 2026-08-24 | User közvetlen linkkel megerősítette; közben vett 1 üveggel, ezért a mostani rendelésből kihagyandó. |
 | Felvágott — fallback | `205959255` | PICK sertés párizsi, pultos | PICK; sertés párizsi; pultos; súlyra rendelhető | 2026-08-24 | Csak fallback: minden rendelésnél előbb a user által „Delco paprikás sonka” néven megadott elsődleges terméket kell keresni; ez az esetek kb. 90%-ában nem kapható. |
-| Papírtörlő / kéztörlő | `111270024` | Springforce 2 rétegű papírtörlő 4 tekercs | Springforce; 2 rétegű; 4 tekercs | 2026-08-24 | User link alapján megerősítette. |
+| Papírtörlő / kéztörlő — jelenlegi készlet, kifutó preferencia | `111270024` | Springforce 2 rétegű papírtörlő 4 tekercs | Springforce; 2 rétegű; 4 tekercs | 2026-08-24 | A meglévő fizikai készlet azonosítója marad. **Újrarendelni nem szabad:** a user 2026-08-28-án a Zewa Wisch & Weg Sparblatt `2004010589638` terméket választotta utódnak. |
+| Papírtörlő / kéztörlő — jövőbeli beszerzési preferencia | `2004010589638` | Zewa Wisch & Weg Sparblatt háztartási papírtörlő 2 rétegű 4 tekercs | Zewa; Wisch & Weg Sparblatt; 2 rétegű; 4 tekercs; 74 lap/tekercs; félbetéphető lapok; kicsavarható és újra használható; nedvesen is erős; komposztálható lapok | 2026-08-28 | User közvetlen Tesco-link alapján véglegesítette. A Springforce `111270024` jövőbeli újrarendelését ez váltja fel; a meglévő Springforce készlet változatlanul készleten marad. Korábbi Tesco-ID alias: `210589638`. |
 | Sampon | `209515020` | Garnier Fructis Pure Fresh sampon gyorsan zsírosodó hajra 400 ml | Garnier Fructis; Pure Fresh; gyorsan zsírosodó hajra; 400 ml | 2026-08-24 | User link alapján megerősítette. |
 | Szóda | `121229698` | Szentkirályi extra dús természetes ásványvíz 1,5 l | Szentkirályi; extra dús; szénsavas; 1,5 l | 2026-08-27 | User az 1,5 literes változatot megerősítette. Stock-egység: 1 zsugor = 6 palack. |
 | Fagyasztott mini pizza | `120560507` | Buitoni Piccolinis háromsajtos mini pizza 9 × 30 g | Buitoni; Piccolinis; háromsajtos; 9 darab; 30 g/db | 2026-08-24 | User megerősítette. |
@@ -62,9 +63,9 @@ Strukturált stock-tábla. Szabályok: `current/principles/stock-system.md`.
 | Lefolyótisztító | `203157097` | Mr Muscle Power Gel lefolyótisztító gél 1000 ml | Mr Muscle; Power Gel; 1 l; haj- és szappanlerakódás okozta makacs dugulásokhoz | 2026-08-24 | User közvetlen terméklink alapján választotta. |
 | Camping / cheddar lapkasajt | `105004912` | Karaván Toast cheddar ízű burger szeletek 100 g | Karaván Toast; cheddar ízű; lágyan olvadó burger-szelet; 100 g; 43% sajt + 15% cheddar; 19 g fehérje/100 g | 2026-08-24 | A user a címkealapú minőségi összehasonlítás után ezt választotta. |
 | Mosogatószer | `220022202` | Jar Lemon folyékony mosogatószer 450 ml | Jar; Lemon; koncentrált; áztatás nélküli zsíroldás; 450 ml-es kis tesztkiszerelés | 2026-08-24 | User végleges választása; a Frosch tesztjelölt nem lett kiválasztva. Nagy kiszerelésre csak beválás után váltsunk. |
-| Wrap — panírozott csirke | `210832246` | Valdor Zizu gyorsfagyasztott, készre sütött, panírozott csirkemellfilé 500 g | Valdor Zizu; csirkemellfilé 60%; gyorsfagyasztott; készre sütött; 500 g | 2026-08-24 | User végleges wrap-választása; a mostani rendelésbe 1 db kell. |
-| Wrap — tortilla | `100429153` | Grill Master elősütött tortilla lapok búzalisztből 4 × 62,5 g (250 g) | Grill Master; búzalisztes; elősütött; 4 lap; 250 g | 2026-08-24 | User végleges wrap-választása; a mostani rendelésbe 3 csomag kell. |
-| Wrap — saláta | `105007591` | Tesco coleslaw saláta mix 180 g | Tesco; mosott; fogyasztásra kész; vörös káposzta, fehér káposzta és répa; 180 g | 2026-08-24 | User végleges wrap-választása; a mostani rendelésbe 2 csomag kell. |
+| Wrap — panírozott csirke | `210832246` | Valdor Zizu gyorsfagyasztott, készre sütött, panírozott csirkemellfilé 500 g | Valdor Zizu; csirkemellfilé 60%; gyorsfagyasztott; készre sütött; 500 g | 2026-09-01 | A wrapban bevált és elfogadható fallback, de a darabok kissé nagyok voltak; következő vásárlásnál hasonlítsunk hozzá kisebb darabos panírozott csirkét. |
+| Wrap — tortilla | `100429153` | Grill Master elősütött tortilla lapok búzalisztből 4 × 62,5 g (250 g) | Grill Master; búzalisztes; elősütött; 4 lap; 250 g | 2026-09-01 | A teljes wrap-összeállítás nagyon bevált; jelenleg körülbelül 1,5 csomag/zacskó maradt. |
+| Wrap — saláta | `105007591` | Tesco coleslaw saláta mix 180 g | Tesco; mosott; fogyasztásra kész; vörös káposzta, fehér káposzta és répa; 180 g | 2026-09-01 | A wrapban bevált; a jelenlegi készlet elfogyott. |
 | Wrap — szósz | `220021386` | Hellmann's fokhagymás szósz 260 g | Hellmann's; fokhagymás; krémes; gluténmentes; 260 g | 2026-08-24 | User végleges wrap-választása; a mostani rendelésbe 1 db kell. |
 | Sör | `121227873` | Dreher Gold minőségi világos sör 5% 6 × 0,5 l | Dreher Gold; világos sör; 5%; 6-os csomag; 6 × 0,5 l | 2026-08-24 | User az Arany Ászok helyett ezt választotta; a mostani rendelésbe 1 hatos csomag kell. |
 | Vanília jégkrémtorta | `203199189` | Viennetta Jégkrém Vanília 650 ml | Viennetta; vanília; kakaós bevonórétegek 11%; 650 ml | 2026-08-24 | User kiválasztotta; a mostani rendelésbe 1 db kell, de a Tesco termékoldala 2026-08-24-én nem elérhetőnek jelzi. |
@@ -83,9 +84,93 @@ Strukturált stock-tábla. Szabályok: `current/principles/stock-system.md`.
 | Negro mézes | Győri Negro méz 63 g | `111274658` | A 140 g-os változat nem elérhető. |
 | Negro új próba | Győri Negro feketeribizli C-vitaminnal 63 g | `111274660` | Elérhető, eltérő új íz; ajánlott próba. |
 
+### 2026-08-28 — Zewa papírtörlő utódtermék, választás lezárva
+
+> A Springforce `111270024` a meglévő készlet történeti azonosítója, de **nem
+> rendelhető újra automatikusan**. A user a Zewa Wisch & Weg Sparblatt
+> `2004010589638` terméket választotta végleges utódnak. A többi sor a döntés
+> történeti alternatívájaként marad meg.
+
+| Prioritás | Tesco-jelölt | Product ID | Terméklenyomat / döntési pont |
+|---|---|---|---|
+| Nem választott alternatíva — minőség | Zewa Premium Jumbo háztartási papírtörlő 3 rétegű 1 tekercs | `220295126` | 3 rétegű; 230 teljes méretű lap; puha, vastag; nedvesen is erős; nagy nedvszívás; hosszú tekercs. |
+| Nem választott alternatíva — tartósság/érték | Zewa Jumbo háztartási papírtörlő 2 rétegű 1 tekercs | `2004009747391` | 2 rétegű; 325 teljes méretű lap; erős; jó nedvszívás; a legtovább tartó hagyományos tekercs a shortlistben. Korábbi Tesco-ID alias: `209747391`. |
+| ⭐ **Kiválasztva** | **Zewa Wisch & Weg Sparblatt háztartási papírtörlő 2 rétegű 4 tekercs** | **`2004010589638`** | **4 tekercs; 74 lap/tekercs; félbetéphető lapok; kicsavarható, újra használható; nedvesen is erős.** Korábbi Tesco-ID alias: `210589638`. |
+| Nem választott alternatíva — hagyományos 4 tekercses | Zewa Wisch & Weg Original háztartási papírtörlő 2 rétegű 4 tekercs | `2004010589621` | 4 tekercs; 45 teljes méretű lap/tekercs; puha, vastag; dörzsölésálló; kicsavarható és újra használható. Korábbi Tesco-ID alias: `210589621`. |
+
 ---
 
-## 2026-08-23 — aktuális Tesco snapshot
+## 2026-09-01 — wrap-készlet és terméktapasztalat
+
+> Forrás: user által közvetlenül felmért otthoni készlet. Ez a snapshot a
+> három felsorolt tételnél felülírja a 2026-08-27-i kézbesítési állapotot.
+
+| Name | currentQty | targetQty | unit / size | shoppingSource | product / notes |
+|---|---:|---:|---|---|---|
+| Grill Master tortilla | **kb. 1,5** | TBD | csomag/zacskó; 4 × 62,5 g | Tesco | `100429153`; a wrap-összeállítás nagyon bevált |
+| Tesco coleslaw saláta mix | **0** | TBD | csomag; 180 g | Tesco | `105007591`; elfogyott, a következő wrap-körhöz pótlandó |
+| Wraphoz való panírozott csirke | **0** | TBD | csomag; 500 g | Tesco | a Valdor Zizu `210832246` elfogyott és elfogadható fallback; következőre kisebb darabos alternatívát is hasonlítsunk össze |
+
+## 2026-08-27 — kézbesítés utáni aktuális Tesco snapshot
+
+> Forrás: a `3331-8817-62` rendelés végleges Tesco-összegzője és a user
+> megerősítése, hogy a kiszállítás megtörtént. A levél szerint **0 helyettesítő
+> és 0 nem elérhető tétel** volt. Ezért csak a ténylegesen felsorolt, kézbesített
+> mennyiségeket adtuk hozzá; az agent korábbi kosarából a user által kivett
+> tételek hiánya változatlanul nyitva marad.
+
+| Name | currentQty | targetQty | hiány a targethez | unit / size | shoppingSource | product / notes |
+|---|---:|---:|---:|---|---|---|
+| HELL White Peach energiaital | **5** | **6** | **1** | db; 250 ml | Tesco | 1 volt + 4 kézbesítve; Zero; `121302824` |
+| Primavera víz | **3** | **5** | **2** | zsugor; 1 zsugor = 6 × 2 l | Tesco | nem érkezett; következő kosárba 2 zsugor / 12 palack; `121233911` |
+| Szóda | **4** | **5** | **1** | zsugor; 1 zsugor = 6 × 1,5 l | Tesco | Szentkirályi extra dús; nem érkezett; következő kosárba 1 zsugor / 6 palack; `121229698` |
+| Mizse víz | **0** | **5** | **5** | zsugor; 1 zsugor = 6 × 1,5 l | Tesco | nem érkezett; teljes hiány 30 palack; következő kosárba max. 2 zsugor / 12 palack; 3 zsugor továbbviendő; `121233675` |
+| Sör | **24** | **24** | **0** | palack; 0,5 l | Tesco | 18 volt + 1 darab 6-os Dreher Gold tálca/csomag; `121227873` |
+| Cherry Coke | **2** | **4** | **2** | palack; 1,75 l | Tesco | Coca-Cola Cherry Zero; `121254765` |
+| Kóla | **3** | **3** | **0** | palack; 1,75 l | Tesco | Coca-Cola Zero; `121218435` |
+| Gyömbér | **5** | **6** | **1** | palack; 1,5 l | Tesco | Kinley Ginger Ale Zero; `121217205` |
+| Sprite | **5** | **6** | **1** | palack; 1,75 l | Tesco | Sprite Zero; `121217983` |
+| Tonik | **3** | **3** | **0** | palack; 1,5 l | Tesco | Kinley Tonic Zero; `121217228` |
+| Fanta bodza | **4** | **4** | **0** | palack; 1,75 l | Tesco | Fanta Zero citrom-bodza; `121217885` |
+| Fanta narancs | **4** | **4** | **0** | palack; 1,75 l | Tesco | Fanta Zero narancs; `121218354` |
+| Xixo barackos tea | **4** | **4** | **0** | palack; 1,5 l | Tesco | XIXO Ice Tea Zero őszibarack; `121225512` |
+| Alpro vaníliás szójaital | **10** | **10** | **0** | doboz; 1 l | Tesco | 10 kézbesítve; `209847121` |
+| Ceres vajas toast kenyér | **0** | **2** | **2** | csomag; 500 g | Tesco | nem érkezett; `2004008932200` |
+| Président sós vaj | **1** | **1** | **0** | csomag; 200 g | Tesco | `220220272` |
+| Szeletelt sajt | **2** | **2** | **0** | csomag; 300 g | Tesco | Tesco Edam; `220343486` |
+| Alpro karamellás puding | **4** | **4** | **0** | db; 125 g | Tesco | 1 volt + 3 kézbesítve; `220299326` |
+| Alpro csokis puding | **2** | **2** | **0** | db; 125 g | Tesco | 1 volt + 1 kézbesítve; `210736575` |
+| Camping sajt | **3** | **3** | **0** | db; 100 g | Tesco | Karaván Toast cheddar; 1 volt + 2 kézbesítve; `105004912` |
+| Abonett szendvics | **10** | **10** | **0** | db; 26 g | Tesco | 1 volt + 9 kézbesítve; `220318949` |
+| Papírtörlő / kéztörlő | **2** | **2** | **0** | csomag; 4 tekercs | Tesco | Springforce; `111270024` |
+| Tchibo Espresso Sicilia szemes kávé | **1** | **3** | **2** | csomag; 1 kg | Tesco | nem érkezett; `210408830` |
+| Rovarirtó | **3** | **2** | **0** | aeroszol; 400 ml | Tesco | 1 volt + 2 Protect kézbesítve; target fölött 1-gyel; `209762301` |
+| Sampon | **2** | **4** | **2** | flakon; 400 ml | Tesco | nem érkezett; Garnier Fructis Pure Fresh; `209515020` |
+| Fagyasztott mini pizza | **2** | **3** | **1** | csomag; 9 × 30 g | Tesco | Buitoni Piccolinis; `120560507` |
+| C-vitamin pezsgőtabletta | **3** | **5** | **2** | tubus | Tesco | nem érkezett; Pro Formula; `107282289` |
+| Kalcium pezsgőtabletta | **3** | **5** | **2** | tubus | Tesco | nem érkezett; Pro Formula; `107282210` |
+| Multivitamin pezsgőtabletta | **3** | **5** | **2** | tubus | Tesco | nem érkezett; Pro Formula; `107280346` |
+| Mosogatószer | **2** | **2** | **0** | flakon; 450 ml | Tesco | 2 Jar Lemon kézbesítve; `220022202` |
+| Lefolyótisztító | **2** | **2** | **0** | flakon; 1 l | Tesco | 2 Mr Muscle Power Gel kézbesítve; `203157097` |
+| Tejföl | **3** | **3** | **0** | pohár | Tesco | 1 × 330 g + 2 × 140 g kézbesítve; a készletegység itt pohár |
+
+### Kézbesítéssel igazolt egyszeri / TBD-baseline tételek
+
+Ezeknél korábban nem volt megbízható pontos `currentQty`, ezért hamis
+összesített készletszám helyett a kézbesített növekményt és a jelen batch
+teljesülését őrizzük:
+
+| Tétel | Kézbesített növekmény | Aktuális batch-státusz |
+|---|---:|---|
+| Bella sajtos mini burek `105004749` | +1 csomag | teljesítve |
+| Valdor Zizu csirke `210832246` | +1 csomag | teljesítve |
+| Grill Master tortilla `100429153` | +3 csomag | teljesítve |
+| Tesco coleslaw `105007591` | +2 csomag | teljesítve |
+| Hellmann's fokhagymás szósz `220021386` | +0 | továbbra is nyitott: 1 db |
+| Fornetti sajtos pogácsa `220297280` | +0 | továbbra is nyitott: 1 db |
+| Carte d'Or tiramisu `105010828` | +0 | továbbra is nyitott: 1 db |
+
+## 2026-08-23 — aktuális Tesco snapshot (történeti, kézbesítés előtti)
 
 | Name | currentQty | targetQty | hiány a targethez | unit / size | shoppingSource | product / notes |
 |---|---:|---:|---:|---|---|---|
@@ -273,6 +358,9 @@ A részletes átmeneti szabály: `current/principles/meal-shopping-modes.md`.
 | Name | currentQty | targetQty | reorderThreshold | reorderQty | unit | notes |
 |---|---|---|---|---|---|---|
 | Aftershave | TBD | 3 (default) | 2 (default) | 2 (default) | flakon | hozzáadva 2026-05-07 — *"aftershave-et is venni kell"* |
+| Szappan | **6** | **6** | TBD | TBD | db | 2026-08-29: target teljesítve; jelenleg nem vásárolandó; beszerzési hely és pontos termék TBD. |
+| Rexona For Men deo stift | **3** | **3** | TBD | TBD | db | 2026-08-29: target teljesítve; jelenleg nem vásárolandó; pontos változat és beszerzési hely TBD. |
+| Rexona For Men deo spray | **0** | **2** | TBD | TBD | db | 2026-08-29: elfogyott; hiány a targethez **2**; fújós változat, külön készlettétel a stifttől; pontos változat és beszerzési hely TBD. |
 
 ## Gyógyszer / patika 🏥
 
@@ -301,6 +389,7 @@ A részletes átmeneti szabály: `current/principles/meal-shopping-modes.md`.
 | Nasi (általános) | TBD | 3 (default) | 2 (default) | 2 (default) | ? | általános fogalom, alkategória-jelölt |
 | Kinder Bueno Mini | **0** | **2** | TBD | TBD | csomag | 2026-08-26: elfogyott; hiány a targethez **2**; beszerzési hely és pontos kiszerelés TBD. |
 | Kinder Pingui | **0** | **1** | TBD | TBD | csomag | 2026-08-26: elfogyott; hiány a targethez **1**; beszerzési hely és pontos kiszerelés TBD. |
+| Mogyorós Túró Rudi | **0** | **5** | TBD | TBD | db | 2026-08-29: elfogyott; hiány a targethez **5**; pontos termék, kiszerelés és beszerzési hely TBD; STT-normalizálás: „magyarós” → „mogyorós”. |
 
 ---
 
