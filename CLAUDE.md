@@ -248,7 +248,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `pi-session-docs` | Dated session docs | `fdp-documentations/rules/project-internal/pi-session-docs.md` |
 | `pi-specifications-immutable` | __specifications/ is immutable | `fdp-documentations/rules/project-internal/pi-specifications-immutable.md` |
 
-**`project-type/` — 4 szabaly**
+**`project-type/` — 5 szabaly**
 
 | ruleId | Cim | Fajl |
 |---|---|---|
@@ -256,6 +256,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `pt-ngx-pkg` | NGX package pattern | `fdp-documentations/rules/project-type/pt-ngx-pkg.md` |
 | `pt-nts` | NTS server pattern | `fdp-documentations/rules/project-type/pt-nts.md` |
 | `pt-unity-cli` | Unity CLI — használd előszeretettel minden Unity-projektben | `fdp-documentations/rules/project-type/pt-unity-cli.md` |
+| `pt-unity-master-slave` | Unity: master-slave felépítés + INDULÁSKORI önellenőrzés — a hiba a betöltéskor bukjon ki | `fdp-documentations/rules/project-type/pt-unity-master-slave.md` |
 <!-- FDP-FLEET-RULES:END -->
 
 ## Mi ez a projekt
