@@ -249,7 +249,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `pi-session-docs` | Dated session docs | `fdp-documentations/rules/project-internal/pi-session-docs.md` |
 | `pi-specifications-immutable` | __specifications/ is immutable | `fdp-documentations/rules/project-internal/pi-specifications-immutable.md` |
 
-**`project-type/` — 5 szabaly**
+**`project-type/` — 6 szabaly**
 
 | ruleId | Cim | Fajl |
 |---|---|---|
@@ -258,6 +258,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `pt-nts` | NTS server pattern | `fdp-documentations/rules/project-type/pt-nts.md` |
 | `pt-unity-cli` | Unity CLI — használd előszeretettel minden Unity-projektben | `fdp-documentations/rules/project-type/pt-unity-cli.md` |
 | `pt-unity-master-slave` | Unity: master-slave felépítés + INDULÁSKORI önellenőrzés — a hiba a betöltéskor bukjon ki | `fdp-documentations/rules/project-type/pt-unity-master-slave.md` |
+| `pt-unity-prefab-tree` | Unity: a prefab-fát ELŐRE kell megtervezni — a variáns bázisa write-once | `fdp-documentations/rules/project-type/pt-unity-prefab-tree.md` |
 <!-- FDP-FLEET-RULES:END -->
 
 ## Mi ez a projekt
