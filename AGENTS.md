@@ -173,7 +173,7 @@ rövidíthető és sosem szűrhető: ha egy szabály szövegére szükség van, 
 fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-global/` = FDP-repóban ·
 `project-internal/` = projekt-workspace-ben · `project-type/` = projekt-típus szerint.
 
-**`global/` — 44 szabaly**
+**`global/` — 45 szabaly**
 
 | ruleId | Cim | Fajl |
 |---|---|---|
@@ -216,6 +216,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `core-ssot-unified` | Single Source of Truth + Unified | `fdp-documentations/rules/global/core-ssot-unified.md` |
 | `core-stale-doc-marking` | core-stale-doc-marking (global, hard rule) | `fdp-documentations/rules/global/core-stale-doc-marking.md` |
 | `core-stt-input` | Handle user input critically (STT-aware) | `fdp-documentations/rules/global/core-stt-input.md` |
+| `core-substantive-work-first` | Substantive product work comes first — a review round is what follows the work, never what replaces it | `fdp-documentations/rules/global/core-substantive-work-first.md` |
 | `core-typescript-only` | TypeScript only | `fdp-documentations/rules/global/core-typescript-only.md` |
 | `core-ux-qa-naive-user` | Anything the user can SEE gets a naive-user UX-QA pass — as a deliverable, not an afterthought | `fdp-documentations/rules/global/core-ux-qa-naive-user.md` |
 | `core-wakeup-state-file` | core-wakeup-state-file (global, hard rule) | `fdp-documentations/rules/global/core-wakeup-state-file.md` |
