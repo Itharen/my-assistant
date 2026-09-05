@@ -36,8 +36,10 @@ export interface LinkedInDraft {
   body: string;
   createdAt: string;
   updatedAt: string;
-  status: 'draft' | 'copied' | 'discarded';
+  status: LinkedInDraftStatus;
 }
+
+export type LinkedInDraftStatus = 'draft' | 'copied' | 'discarded' | 'manual-send-reported';
 
 export interface LinkedInCalibration {
   snapshotSchemaObserved: boolean;

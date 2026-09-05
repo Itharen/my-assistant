@@ -1,9 +1,9 @@
 # HYPERPLAN — LinkedIn Personal Inbox + Publishing Integration
 
 **ID:** HP-LI-001
-**Status:** in-progress — live bootstrap and needs-reply reads green; unread calibration pending
+**Status:** in-progress — guided manual-send workspace complete; unread calibration pending
 **Created:** 2026-08-26
-**Last updated:** 2026-09-02
+**Last updated:** 2026-09-05
 **Owner:** itharen3@gmail.com
 **Coordinator:** My Assistant
 **Canonical request:** `current/feature-requests/social-media-integration.md`
@@ -23,7 +23,8 @@ scope/progress below; unknown eligibility must be resolved with LinkedIn first.
 | MP-LI-03 — Inbox intelligence, drafts and CLI | 3 | 3/3 (100%) | ✅ complete |
 | MP-LI-04 — Automated verification and observability | 2 | 2/2 (100%) | ✅ complete |
 | MP-LI-05 — Live onboarding and calibrated rollout | 2 | 1/2 (50%) | ⚠️ unread calibration pending |
-| **Overall** | **12** | **11/12 (92%)** | **live inbox delivered; unread calibration pending** |
+| MP-LI-06 — Guided manual-send workspace | 4 | 4/4 (100%) | ✅ complete |
+| **Overall** | **16** | **15/16 (94%)** | **guided workspace live; unread calibration pending** |
 
 Planning gate: 2/2 consecutive clean reviews ✅ (structure/traceability; API/security/privacy).
 
@@ -144,7 +145,8 @@ before that calibration record exists.
 7. API version is a single constant with structured `426` diagnostics.
 8. Rate limiting honors `Retry-After`; bounded retries only for safe GET requests.
 9. Content and credentials never enter stdout diagnostics unless the user explicitly requests thread content.
-10. No browser scraping, browser extension or UI automation fallback.
+10. No LinkedIn browser scraping or DOM/UI automation. The companion extension may frame only the own localhost
+    workspace and open the real LinkedIn page as a top-level tab after an explicit user action.
 11. Snapshot processing/not-ready is distinct from an empty inbox and never overwrites a complete cache.
 12. Local cache purge requires explicit confirmation and removes messages, drafts, cursors and calibration state.
 
@@ -171,6 +173,7 @@ before that calibration record exists.
 | LI-J04 | Existing complete cache → failed refresh → previous cache remains usable | timeout, malformed page, cursor loop |
 | LI-J05 | Secret lookup → API call → action-log review | missing key, redaction, token never persisted |
 | LI-J06 | Existing cache → confirmed purge → no local LinkedIn data | declined purge, confirmed purge |
+| LI-J07 | Start My Assistant → open LinkedIn work mode → inspect thread → save/copy draft → owner reports manual send | app already running, app offline/recovery, extension absent fallback, extension-connected side panel |
 
 Each journey carries state from one step to the next and asserts business state, not only process exit codes.
 
@@ -186,6 +189,10 @@ Each journey carries state from one step to the next and asserts business state,
 | LI-F06 | Reply draft lifecycle with no-send invariant | LI-J03 |
 | LI-F07 | Redacted envelope, errors and action logging | LI-J01..LI-J06 |
 | LI-F08 | Confirmed deletion of all derived local LinkedIn data | LI-J06 |
+| LI-F09 | Local LinkedIn review API and compact side-panel UI | LI-J07 |
+| LI-F10 | Vendor-neutral Chrome extension bridge with no LinkedIn DOM permission | LI-J07 |
+| LI-F11 | Idempotent My Assistant startup and health-gated opening | LI-J07 |
+| LI-F12 | Manual-send acknowledgement that never claims API delivery | LI-J07 |
 
 | Journey ID | Features carried across the journey | Cleanup |
 |---|---|---|
@@ -195,6 +202,7 @@ Each journey carries state from one step to the next and asserts business state,
 | LI-J04 | LI-F02 → LI-F03 → LI-F07 | delete interrupted/resumed cache/log root |
 | LI-J05 | LI-F01 → LI-F07 | delete fake credential/config/log root |
 | LI-J06 | LI-F02 → LI-F08 → LI-F07 | assert purge, then remove test root |
+| LI-J07 | LI-F11 → LI-F09 → LI-F10 → LI-F06 → LI-F12 → LI-F07 | discard temporary draft/cache and close test tab/context |
 
 ## 9. Masterplan ledger
 
@@ -205,6 +213,7 @@ Each journey carries state from one step to the next and asserts business state,
 | [MP-LI-03](master-plans/mp-03-inbox-intelligence-cli.plan.md) | 3 | MP-LI-02 |
 | [MP-LI-04](master-plans/mp-04-verification-observability.plan.md) | 2 | MP-LI-02..03 |
 | [MP-LI-05](master-plans/mp-05-live-rollout.plan.md) | 2 | MP-LI-01..04 |
+| [MP-LI-06](master-plans/mp-06-guided-manual-send-workspace.plan.md) | 4 | MP-LI-02..05 read-side contracts |
 
 ## 10. Delivery gates
 
@@ -214,6 +223,9 @@ Each journey carries state from one step to the next and asserts business state,
 - Gate D — live read-only: owner consent, complete INBOX bootstrap, incremental event canary.
 - Gate E — calibration: unread result checked against LinkedIn UI manually by the owner.
 - Gate F — agent compatibility: installed CLI invoked successfully outside the development shell.
+- Gate G — workspace: startup is idempotent, health-gated and opens the own `/linkedin` route.
+- Gate H — browser boundary: the extension requests no LinkedIn host permission and performs no LinkedIn DOM read/write.
+- Gate I — guided-send journey: thread read, draft persist/copy and owner-reported manual send work with pagination and recovery variants.
 
 Message send is not part of these gates, cannot be marked delivered by this Hyperplan, and has no planned
 implementation without a separately verified LinkedIn partner grant and new owner-approved plan.

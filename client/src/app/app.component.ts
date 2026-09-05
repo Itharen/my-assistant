@@ -17,6 +17,8 @@ import { A_Socket_ControlService } from './_services/control-services/a-socket.c
  */
 export class AppComponent {
   readonly title: string = 'my-assistant';
+  readonly isSidePanelMode: boolean = typeof window !== 'undefined'
+    && new URLSearchParams(window.location.search).get('surface') === 'sidepanel';
 
   /** Trigger A_Socket_ControlService singleton-instantiation → auto-connect + subscribe. */
   private readonly socket: A_Socket_ControlService = inject(A_Socket_ControlService);

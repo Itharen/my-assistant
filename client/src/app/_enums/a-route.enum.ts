@@ -4,6 +4,7 @@ export enum A_Route {
   dashboard = 'dashboard',
   status = 'status',
   integrations = 'integrations',
+  linkedin = 'linkedin',
   /** FR #3g Reports panel (cycle 96, AGB-24). */
   reports = 'reports',
   // Future: actions = 'actions', userInput = 'user-input', activity = 'activity'

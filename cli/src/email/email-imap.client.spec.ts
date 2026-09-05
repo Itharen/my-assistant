@@ -12,6 +12,7 @@ describe('email IMAP lifecycle', () => {
   const envKeys: string[] = [
     'MY_ASSISTANT_EMAIL_IMAP_HOST',
     'MY_ASSISTANT_EMAIL_IMAP_PORT',
+    'MY_ASSISTANT_EMAIL_ACCOUNT_DEFAULT_PROVIDER',
     'MY_ASSISTANT_EMAIL_ACCOUNT_DEFAULT_ADDRESS',
     'MY_ASSISTANT_EMAIL_ACCOUNT_DEFAULT_PASSWORD',
   ];
@@ -21,6 +22,7 @@ describe('email IMAP lifecycle', () => {
     previous = Object.fromEntries(envKeys.map((key: string): [string, string | undefined] => [key, process.env[key]]));
     process.env.MY_ASSISTANT_EMAIL_IMAP_HOST = 'imap.example.test';
     process.env.MY_ASSISTANT_EMAIL_IMAP_PORT = '993';
+    process.env.MY_ASSISTANT_EMAIL_ACCOUNT_DEFAULT_PROVIDER = 'imap-smtp';
     process.env.MY_ASSISTANT_EMAIL_ACCOUNT_DEFAULT_ADDRESS = 'reader@example.test';
     process.env.MY_ASSISTANT_EMAIL_ACCOUNT_DEFAULT_PASSWORD = 'test-password';
   });

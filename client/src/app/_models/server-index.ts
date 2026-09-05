@@ -27,6 +27,19 @@ export type {
   GoogleStatusResponse,
 } from '@server/_models/interfaces/integrations/google.interface';
 
+export type {
+  LinkedInWorkspaceFilter,
+  LinkedInWorkspaceDraftStatus,
+  LinkedInWorkspaceInboxItem,
+  LinkedInWorkspaceInboxResponse,
+  LinkedInWorkspaceMessage,
+  LinkedInWorkspaceDraft,
+  LinkedInWorkspaceThreadResponse,
+  LinkedInWorkspaceDraftCreateRequest,
+  LinkedInWorkspaceDraftStatusRequest,
+  LinkedInWorkspaceDraftReceipt,
+} from '@server/_models/interfaces/integrations/linkedin.interface';
+
 // === (a meglévő server-envelope.interface.ts marad külön — wire shape-ek,
 //      itt nem re-export, mert már most is `import type ... from '../_models/server-envelope.interface'`
 //      mintával hivatkozott.) =================================================

@@ -4,6 +4,7 @@ import { LinkedInToolError } from './linkedin.error.js';
 import {
   type LinkedInCache,
   type LinkedInDraft,
+  type LinkedInDraftStatus,
   type LinkedInInboxSummary,
   type LinkedInMessage,
 } from './linkedin.models.js';
@@ -18,11 +19,16 @@ export interface LinkedInInboxPage {
 
 export type LinkedInInboxFilter = 'all' | 'unread' | 'needs-reply';
 
+export interface LinkedInInboxQueryOptions {
+  sinceMs?: number;
+}
+
 export function summarizeInbox(
   cache: LinkedInCache,
   filter: LinkedInInboxFilter,
   offset: number,
   limit: number,
+  options: LinkedInInboxQueryOptions = {},
 ): LinkedInInboxPage {
   validatePage(offset, limit);
   const grouped: Map<string, LinkedInMessage[]> = new Map<string, LinkedInMessage[]>();
@@ -37,6 +43,7 @@ export function summarizeInbox(
   const all: LinkedInInboxSummary[] = [...grouped.entries()]
     .map(([threadId, messages]: [string, LinkedInMessage[]]) => summarizeThread(cache, threadId, messages))
     .filter((summary: LinkedInInboxSummary) => matchesFilter(summary, filter))
+    .filter((summary: LinkedInInboxSummary) => options.sinceMs === undefined || summary.latestMessageAt >= options.sinceMs)
     .sort((left: LinkedInInboxSummary, right: LinkedInInboxSummary) => filter === 'needs-reply'
       ? left.latestMessageAt - right.latestMessageAt || left.threadId.localeCompare(right.threadId)
       : right.latestMessageAt - left.latestMessageAt || left.threadId.localeCompare(right.threadId));
@@ -91,6 +98,21 @@ export function deleteDraft(cache: LinkedInCache, draftId: string): LinkedInCach
   return {
     ...cache,
     drafts: cache.drafts.filter((draft: LinkedInDraft) => draft.id !== draftId),
+  };
+}
+
+export function updateDraftStatus(
+  cache: LinkedInCache,
+  draftId: string,
+  status: LinkedInDraftStatus,
+  now: Date = new Date(),
+): LinkedInCache {
+  getDraft(cache, draftId);
+  return {
+    ...cache,
+    drafts: cache.drafts.map((draft: LinkedInDraft): LinkedInDraft => draft.id === draftId
+      ? { ...draft, status: status, updatedAt: now.toISOString() }
+      : draft),
   };
 }
 

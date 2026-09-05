@@ -78,7 +78,9 @@ Hivatalos referenciák:
 `linkedin-inbox-review` flow és a HU/EN válaszsablon v1 owner-review alatt áll. Az automatikus személyes
 üzenetküldéshez nincs Messages API partnerjogosultság. A jelenlegi alkalmazás szempontjából a válasz **nem**:
 az agent draftot készít, de a küldés manuális. Az elméletileg létező partner-API nem használható úgy, mintha reális
-vagy várható megoldási út lenne.
+vagy várható megoldási út lenne. A 2026-09-05-én jóváhagyott guided manual-send workspace a saját Angular
+`/linkedin` nézetet Chrome Side Panelben nyitja a valódi LinkedIn lap mellett. Ez a kézi küldés kényelmi felülete,
+nem Messages API, és nem automatizálja a LinkedIn DOM-ját.
 
 ## Dependency
 

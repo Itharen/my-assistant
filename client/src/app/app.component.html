@@ -1,4 +1,4 @@
-<div class="app-shell">
+<div class="app-shell" [class.side-panel-mode]="isSidePanelMode">
   <!-- FR #3f Phase 4.B (cycle 60): version-reload banner — server-bump után 5s countdown / dev-silent. -->
   <s-version-reload-banner></s-version-reload-banner>
   <header class="app-header">
@@ -7,6 +7,7 @@
       <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
       <a routerLink="/status" routerLinkActive="active">Status</a>
       <a routerLink="/reports" routerLinkActive="active">Reports</a>
+      <a routerLink="/linkedin" routerLinkActive="active">LinkedIn</a>
     </nav>
   </header>
   <main class="app-main">
@@ -15,7 +16,9 @@
   <!-- Global feedback system FAB (M3 generic shell + M4 feedback plugin registered in App_Module). -->
   <dynx-fab-shell></dynx-fab-shell>
   <!-- FR #3f Phase 4.A (cycle 59): status-bar footer (server + client version). -->
-  <s-status-bar></s-status-bar>
+  @if (!isSidePanelMode) {
+    <s-status-bar></s-status-bar>
+  }
 </div>
 
 <!-- FR-059-B0 — a NÉMA-ÉRTESÍTÉS bug javítása.

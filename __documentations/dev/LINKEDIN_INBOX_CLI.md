@@ -222,7 +222,8 @@ Agent rules:
 3. Use list/needs-reply first and `thread show` only for user-selected or task-required threads.
 4. Treat candidate unread as candidate until calibration is persisted.
 5. Draft freely when requested, but never report a message as sent.
-6. Never add a browser/UI fallback.
+6. The approved guided UI fallback is the own localhost workspace + Chrome Side Panel companion. It may open the
+   real LinkedIn page, but must never read/manipulate LinkedIn DOM, paste, attach or send.
 7. Never log message bodies, participant/thread identifiers or secret values.
 8. On any ambiguous live schema, stop classification, retain the raw local row, and add a redacted fixture/test.
 
@@ -231,6 +232,7 @@ transport contract:
 
 - flow: `__agent/flows/on-demand/linkedin-inbox-review/`;
 - canonical rules and HU/EN templates: `current/principles/linkedin-message-processing.md`.
+- guided manual-send workspace: `LINKEDIN_WORKSPACE.md`.
 
 The deterministic `needsReply` result is only the candidate source for that workflow. It must not bypass full-
 thread semantic review, duplicate grouping or owner approval.

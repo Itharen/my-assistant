@@ -1,0 +1,152 @@
+<section class="l-workspace" aria-labelledby="linkedin-workspace-title">
+  <header class="l-hero">
+    <div>
+      <p class="l-eyebrow">Vezetett, kézi küldés</p>
+      <h1 id="linkedin-workspace-title">LinkedIn munkamód</h1>
+      <p class="l-subtitle">Üzenetolvasás és draft itt; CV-csatolás, ellenőrzés és Küldés a LinkedIn saját felületén.</p>
+    </div>
+    <button class="l-primary" type="button" (click)="handleOpenWorkspace()">
+      LinkedIn + oldalsáv megnyitása
+    </button>
+  </header>
+
+  <div class="l-boundary" role="note">
+    <span [class.connected]="isBridgeConnected" class="l-bridge-dot" aria-hidden="true"></span>
+    {{ isBridgeConnected ? 'Companion bővítmény kapcsolódva' : 'Bővítmény nélkül normál LinkedIn lap nyílik' }}
+    <strong>A My Assistant nem küld és nem kattint a LinkedInben.</strong>
+  </div>
+
+  @if (error) {
+    <div class="l-feedback error" role="alert">{{ error }}</div>
+  }
+  @if (notice) {
+    <div class="l-feedback notice" role="status">{{ notice }}</div>
+  }
+
+  <div class="l-toolbar" aria-label="Inbox szűrők">
+    <label>
+      Lista
+      <select [(ngModel)]="filter" (ngModelChange)="handleFilterChange()">
+        <option value="needs-reply">Válaszra vár</option>
+        <option value="unread">Olvasatlan jelölt</option>
+        <option value="all">Minden beszélgetés</option>
+      </select>
+    </label>
+    <label>
+      Időablak
+      <select [(ngModel)]="sinceDays" (ngModelChange)="handleFilterChange()">
+        <option [ngValue]="30">30 nap</option>
+        <option [ngValue]="90">3 hónap</option>
+        <option [ngValue]="180">6 hónap</option>
+        <option [ngValue]="3650">Minden helyi adat</option>
+      </select>
+    </label>
+    <button type="button" (click)="handleFilterChange()" [disabled]="isInboxLoading">Helyi lista frissítése</button>
+    <span class="l-cache">Cache: {{ cacheUpdatedAt ?? 'nincs adat' }}</span>
+  </div>
+
+  <div class="l-layout">
+    <aside class="l-inbox" aria-label="LinkedIn beszélgetések">
+      <div class="l-section-heading">
+        <h2>Beszélgetések</h2>
+        <span>{{ total }} találat</span>
+      </div>
+      @if (isInboxLoading) {
+        <p class="l-empty">Betöltés…</p>
+      } @else if (inboxItems.length === 0) {
+        <p class="l-empty">Ebben a szűrésben nincs beszélgetés.</p>
+      } @else {
+        <div class="l-thread-list">
+          @for (item of inboxItems; track item.threadId) {
+            <button
+              type="button"
+              class="l-thread-card"
+              [class.selected]="item.threadId === selectedThreadId"
+              (click)="handleSelectThread(item.threadId)"
+            >
+              <span class="l-thread-title">{{ item.displayName }}</span>
+              <span class="l-thread-meta">{{ item.displayDate }} · {{ item.messageCount }} üzenet</span>
+              <span class="l-badges">
+                @if (item.needsReply) { <span class="l-badge needs-reply">válaszra vár</span> }
+                @if (item.unread) { <span class="l-badge">olvasatlan {{ item.unreadConfidence === 'candidate' ? 'jelölt' : '' }}</span> }
+              </span>
+            </button>
+          }
+        </div>
+      }
+      <div class="l-pagination">
+        <button type="button" (click)="handlePreviousPage()" [disabled]="previousOffsets.length === 0 || isInboxLoading">Előző</button>
+        <span>{{ inboxItems.length === 0 ? 0 : offset + 1 }}–{{ offset + inboxItems.length }}</span>
+        <button type="button" (click)="handleNextPage()" [disabled]="nextOffset === null || isInboxLoading">Következő</button>
+      </div>
+    </aside>
+
+    <main class="l-thread" aria-label="Kiválasztott LinkedIn beszélgetés">
+      <div class="l-section-heading">
+        <h2>Beszélgetés</h2>
+        <a href="https://www.linkedin.com/messaging/" target="_blank" rel="noopener">Megnyitás a LinkedInben</a>
+      </div>
+      @if (!selectedThreadId) {
+        <p class="l-empty">Válassz beszélgetést a bal oldali listából.</p>
+      } @else if (isThreadLoading) {
+        <p class="l-empty">Beszélgetés betöltése…</p>
+      } @else {
+        <div class="l-messages">
+          @for (message of messages; track message.id) {
+            <article class="l-message" [class.outbound]="message.direction === 'outbound'">
+              <header>
+                <strong>{{ message.directionLabel }}</strong>
+                <time>{{ message.displayDate }}</time>
+              </header>
+              <p>{{ message.content }}</p>
+            </article>
+          }
+        </div>
+
+        @if (drafts.length > 0) {
+          <div class="l-saved-drafts">
+            <span>Mentett draftok:</span>
+            @for (draft of drafts; track draft.id) {
+              <button type="button" (click)="handleLoadDraft(draft)" [class.active]="draft.id === selectedDraftId">
+                {{ draft.updatedAt | date:'MM.dd. HH:mm' }} · {{ draft.status }}
+              </button>
+            }
+          </div>
+        }
+
+        <section class="l-composer" aria-labelledby="linkedin-draft-title">
+          <h3 id="linkedin-draft-title">Válasz-draft</h3>
+          <textarea
+            [(ngModel)]="draftBody"
+            (ngModelChange)="handleDraftChange($event)"
+            rows="9"
+            placeholder="Az agent által előkészített vagy kézzel szerkesztett válasz…"
+            aria-label="LinkedIn válasz-draft"
+          ></textarea>
+          <div class="l-draft-actions">
+            <button type="button" (click)="handleSaveDraft()" [disabled]="isDraftSaving">Draft mentése</button>
+            <button class="l-primary" type="button" (click)="handleCopyDraft()" [disabled]="isDraftSaving">Mentés és másolás</button>
+          </div>
+
+          <fieldset class="l-cv-check">
+            <legend>CV ellenőrzés</legend>
+            <label><input type="radio" name="cvCheck" value="attached" [(ngModel)]="cvCheck"> Szükséges és csatoltam a LinkedInben</label>
+            <label><input type="radio" name="cvCheck" value="not-required" [(ngModel)]="cvCheck"> Ehhez az üzenethez nem szükséges</label>
+            <label><input type="radio" name="cvCheck" value="pending" [(ngModel)]="cvCheck"> Még nincs ellenőrizve</label>
+          </fieldset>
+
+          @if (!isManualSendArmed) {
+            <button class="l-manual" type="button" (click)="handleArmManualSend()" [disabled]="!selectedDraftId || isDraftDirty">
+              Kézzel elküldtem…
+            </button>
+          } @else {
+            <div class="l-confirm">
+              <p>Csak akkor erősítsd meg, ha a LinkedIn saját Küldés gombját már megnyomtad.</p>
+              <button type="button" (click)="handleConfirmManualSend()" [disabled]="cvCheck === 'pending'">Igen, rögzítsd owner-jelentésként</button>
+            </div>
+          }
+        </section>
+      }
+    </main>
+  </div>
+</section>

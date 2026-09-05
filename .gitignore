@@ -34,6 +34,7 @@ server/activity-monitor/data/
 # Screen Waker local build/test artifacts
 screen-waker/build/
 screen-waker/coverage/
+browser-extension/dist/
 
 # Windows crash dumps
 *.stackdump

@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "My Assistant Companion",
+  "version": "0.1.0",
+  "description": "Opens the real LinkedIn messaging page beside the local My Assistant review workspace.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtt12PUyroBcsDsKG6BsogIhOX35ftoE96kmIt2nzABkWEs/TgvNhPnHT4PD1T0h60ixg/gOtya1HAMbJMwRt/6TREb3AqAErcUE0sOnwnc4UqMqKtwmMCtWAHrrQGIbFTMT/WIAfO5KC9FnLu/SYtirkYikLOG0RQLwd09L+69X8YDJr7IgdQCSmIb9oDRHOQjoUKDe8AISfNr3rf32sSW6usv4HeqIWQ+tK4KnjwDv9Z/bhWpJ+UthZ7pamisKoBwChZj7fTCwou9PE6bTPc+ltgKA4VBQG/LQK6vhZZYLnBX8b/Cqy0ILWCtoNuWSGMgZWHattYVJhW4QH9BJJRwIDAQAB",
+  "minimum_chrome_version": "116",
+  "permissions": ["sidePanel", "tabs"],
+  "host_permissions": [
+    "http://127.0.0.1:39245/*",
+    "http://localhost:39245/*"
+  ],
+  "background": {
+    "service_worker": "dist/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "LinkedIn munkamód megnyitása"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://127.0.0.1:39245/*",
+        "http://localhost:39245/*"
+      ],
+      "js": ["dist/app-bridge.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src http://127.0.0.1:39245 http://localhost:39245"
+  }
+}

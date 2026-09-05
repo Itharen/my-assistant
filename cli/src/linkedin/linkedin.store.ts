@@ -8,6 +8,7 @@ import {
   type LinkedInCache,
   type LinkedInCalibration,
   type LinkedInDraft,
+  type LinkedInDraftStatus,
   type LinkedInMessage,
   type LinkedInMessageDirection,
   type LinkedInProcessedActivity,
@@ -148,7 +149,7 @@ function parseMessage(value: unknown, cachePath: string): LinkedInMessage {
 function parseDraft(value: unknown, cachePath: string): LinkedInDraft {
   const record: Record<string, unknown> = requireRecord(value, 'drafts[]', cachePath);
   const status: string = requireString(record.status, 'drafts[].status', cachePath);
-  if (status !== 'draft' && status !== 'copied' && status !== 'discarded') {
+  if (!isDraftStatus(status)) {
     throw schemaError(`Invalid draft status: ${status}.`, cachePath);
   }
   return {
@@ -159,6 +160,13 @@ function parseDraft(value: unknown, cachePath: string): LinkedInDraft {
     updatedAt: requireString(record.updatedAt, 'drafts[].updatedAt', cachePath),
     status: status,
   };
+}
+
+function isDraftStatus(value: string): value is LinkedInDraftStatus {
+  return value === 'draft'
+    || value === 'copied'
+    || value === 'discarded'
+    || value === 'manual-send-reported';
 }
 
 function parseCalibration(value: unknown, cachePath: string): LinkedInCalibration {

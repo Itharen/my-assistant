@@ -1,4 +1,4 @@
-import { createDraft, getThread, summarizeInbox } from './linkedin.analyzer.js';
+import { createDraft, getThread, summarizeInbox, updateDraftStatus } from './linkedin.analyzer.js';
 import { createEmptyLinkedInCache, type LinkedInMessage } from './linkedin.models.js';
 import { redactLinkedInCommandArgs, redactLinkedInSensitiveText } from './linkedin.error.js';
 import { applyChangeLogEvents } from './linkedin.normalizer.js';
@@ -36,6 +36,19 @@ describe('LinkedIn inbox classification and drafts', () => {
     expect(second.nextOffset).toBeNull();
   });
 
+  it('applies the time window before pagination totals are calculated', () => {
+    const cache = createEmptyLinkedInCache();
+    cache.messages = [
+      message('old', 'thread-old', 'inbound', 100, null),
+      message('new', 'thread-new', 'inbound', 300, null),
+    ];
+
+    const result = summarizeInbox(cache, 'needs-reply', 0, 20, { sinceMs: 200 });
+
+    expect(result.total).toBe(1);
+    expect(result.items[0]?.threadId).toBe('thread-new');
+  });
+
   it('creates a local draft for an existing thread without any send operation', () => {
     const cache = createEmptyLinkedInCache();
     cache.messages = [message('a', 'thread-a', 'inbound', 100, null)];
@@ -45,6 +58,18 @@ describe('LinkedIn inbox classification and drafts', () => {
     expect(next.drafts.length).toBe(1);
     expect(next.drafts[0]?.status).toBe('draft');
     expect(getThread(next, 'thread-a').length).toBe(1);
+  });
+
+  it('records manual-send-reported as local draft evidence only', () => {
+    const cache = createEmptyLinkedInCache();
+    cache.messages = [message('a', 'thread-a', 'inbound', 100, null)];
+    const withDraft = createDraft(cache, 'thread-a', 'Draft', new Date('2026-08-26T09:00:00Z'));
+    const draftId: string = withDraft.drafts[0]!.id;
+
+    const next = updateDraftStatus(withDraft, draftId, 'manual-send-reported', new Date('2026-08-26T09:05:00Z'));
+
+    expect(next.drafts[0]?.status).toBe('manual-send-reported');
+    expect(next.drafts[0]?.updatedAt).toBe('2026-08-26T09:05:00.000Z');
   });
 
   it('preserves prior fields when a PARTIAL_UPDATE only changes readAt', () => {

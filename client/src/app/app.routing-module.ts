@@ -27,6 +27,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: A_Route.linkedin,
+    loadChildren: (): Promise<Type<unknown>> =>
+      import('./_modules/linkedin/linkedin.module').then(
+        (m: typeof import('./_modules/linkedin/linkedin.module')): Type<unknown> => m.LinkedIn_Module,
+      ),
+  },
+  {
     path: A_Route.reports,
     loadChildren: (): Promise<Type<unknown>> =>
       import('./_modules/reports/reports.module').then(

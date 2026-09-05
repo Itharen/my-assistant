@@ -40,3 +40,18 @@
   padding: 0;
   background: var(--ma-bg);
 }
+
+.app-shell.side-panel-mode {
+  .app-header {
+    padding: 8px 12px;
+
+    h1,
+    nav a:not([href="/linkedin"]) {
+      display: none;
+    }
+
+    nav a {
+      margin-left: 0;
+    }
+  }
+}

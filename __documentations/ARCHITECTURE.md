@@ -1,5 +1,26 @@
 # my-assistant — Architecture
 
+## LinkedIn guided manual-send workspace
+
+The official Member Data Portability integration remains the only LinkedIn read source. Its user-local cache and
+drafts are reused by `/api/linkedin/*` and the Angular `/linkedin` route; the UI does not create a parallel store.
+
+`browser-extension/` is a separate MV3 Chrome companion. A content script exists only on the exact My Assistant
+loopback origins and relays an explicit owner click to the service worker. The worker opens Chrome's Side Panel and
+a normal top-level LinkedIn messaging tab. The panel embeds only the own localhost workspace. The manifest has no
+LinkedIn host permission, no LinkedIn content script, and the code has no LinkedIn DOM/paste/send capability.
+The checked-in manifest key pins a stable extension ID. A pre-static server middleware removes `SAMEORIGIN` only
+from `/linkedin?surface=sidepanel` and replaces it with an exact `frame-ancestors` allow for that extension origin;
+ordinary routes retain the default frame protection.
+
+The LinkedIn API additionally enforces loopback from the socket remote address, independently of the shared
+server's network bind and forwarded headers.
+
+The root TypeScript launcher reuses a healthy server or starts the canonical LDP, waits on its file status events
+until no restart is pending, waits for the HTTP-listening log event, performs one post-start health check and opens
+the requested local route. Full contract and runbook:
+[`dev/LINKEDIN_WORKSPACE.md`](dev/LINKEDIN_WORKSPACE.md).
+
 ## Interfood integration
 
 ```text

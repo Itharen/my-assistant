@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="hu">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Assistant · LinkedIn</title>
+    <link rel="stylesheet" href="sidepanel.css">
+  </head>
+  <body>
+    <main id="offline" class="offline" hidden>
+      <p class="eyebrow">My Assistant offline</p>
+      <h1>Indítsd el a helyi alkalmazást</h1>
+      <p>A projekt gyökerében futtasd:</p>
+      <code>npm start</code>
+      <button id="retry" type="button">Újrapróbálás</button>
+      <pre id="diagnostic" aria-live="polite"></pre>
+    </main>
+    <iframe id="workspace" title="My Assistant LinkedIn munkafelület" hidden></iframe>
+    <script type="module" src="dist/sidepanel.js"></script>
+  </body>
+</html>

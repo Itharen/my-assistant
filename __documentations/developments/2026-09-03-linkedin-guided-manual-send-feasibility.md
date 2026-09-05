@@ -1,7 +1,8 @@
 # LinkedIn a My Assistant mellett — iframe és vezetett kézi küldés
 
 **Ellenőrizve:** 2026-09-03, 04:10 Europe/Budapest körül.
-**Állapot:** megvalósíthatósági vizsgálat és javaslat; nem elfogadott implementációs döntés, nem elkészült UI.
+**Állapot:** owner által 2026-09-05-én elfogadva; implementálva a saját Chrome Side Panel companion és a helyi
+LinkedIn workspace. Operációs runbook: `../dev/LINKEDIN_WORKSPACE.md`.
 Előzmény: [hivatalos Messages API hozzáférési kutatás](2026-09-02-linkedin-messaging-access-research.md).
 
 ## Mérés
@@ -48,3 +49,31 @@ A `frame-ancestors` érték nem engedi meg a localhost szülőt.
   a meglévő read-side adatkezelési kötelezettségek ettől nem változnak.
 
 Nem módosult app, token, böngészőablak, task-státusz vagy send-szabály. Csak e vizsgálat és javaslat került rögzítésre.
+
+## Kiegészítés — saját indítógomb és böngésző-oldalpanel
+
+Az owner következő kérdése: megnyitható-e a kétoldalas munkamód a saját alkalmazás funkciójával?
+
+- Egy sima weboldal gombja megnyithat LinkedIn-lapot/ablakot (`window.open`), de ez önmagában nem a böngésző
+  natív Split View bekapcsolása. A popupkezelés és a méretezés böngészőfüggő.
+  [Window.open](https://developer.mozilla.org/en-US/docs/Web/API/Window/open).
+- Az ellenőrzött Chrome Tabs API `splitViewId` állapotot és szűrést dokumentál, de Split View létrehozó
+  metódust nem találtam benne. Ne ígérjük a gyári Split View közvetlen webes indítását.
+  [Chrome Tabs API](https://developer.chrome.com/docs/extensions/reference/api/tabs).
+- **Konkrét alternatíva: saját extension-oldalpanel.** Chrome `sidePanel.open()` dokumentáltan indítható
+  felhasználói kattintással, extension-oldalról vagy content-script közvetítésével. A fő lap lehet az eredeti
+  LinkedIn; mellé a My Assistant kompakt draft-kezelője kerül a böngésző saját, nem a weboldalba injektált paneljébe.
+  [Chrome Side Panel API](https://developer.chrome.com/docs/extensions/reference/api/sidePanel).
+- Ehhez saját, agent-/szolgáltatófüggetlen böngészőbővítmény szükséges; a panel belépési HTML-je a bővítmény
+  csomagjában van, a My Assistant backendhez célzott kapcsolattal. Ez nem puszta localhost iframe a LinkedIn körül.
+- „LinkedIn munkamód” indítógomb a saját webfelületen extension-híddal kialakítható irány. A felhasználói
+  aktiváció továbbadását, panelnyitás/navigáció sorrendjét és a dedikált ablak viselkedését prototípussal kell
+  igazolni; a meglévő UBH ilyen funkcióját nem vizsgáltuk és nem állítjuk késznek. Biztosan dokumentált alapindító
+  a bővítmény saját eszköztárgombja.
+- A javasolt panel csak saját tartalmat kezel; nem tölt ki vagy küld LinkedIn-üzenetet, nem olvassa a LinkedIn
+  DOM-ját, nem helyez rá overlayt. A küldés és a csatolás kézi marad. Ez technikai architektúrajavaslat,
+  nem LinkedIn által jóváhagyott integráció állítása.
+
+Ez a kézi natív Split View mellé felvett, gombbal indítható alternatíva 2026-09-05-én owner-jóváhagyást kapott.
+A megvalósítás változatlanul csak a saját localhost UI-t teszi Side Panelbe; a LinkedIn normál top-level lap,
+host permission és DOM-automatizálás nélkül. A tényleges küldés továbbra is kézi.

@@ -2,6 +2,17 @@
 
 Személyes feladat-rendszerező és priorizáló assistant.
 
+## Indítás
+
+```powershell
+npm start
+```
+
+Az indító újrahasznosítja a már egészséges helyi szervert, vagy elindítja a teljes LDP-t, megvárja a health gate-et,
+majd megnyitja a LinkedIn munkafelületet. Agentből böngészőnyitás nélkül: `npm run start:agent`. A Chrome Side Panel
+egyszeri beállítása és a vezetett kézi küldés runbookja:
+[`LINKEDIN_WORKSPACE.md`](__documentations/dev/LINKEDIN_WORKSPACE.md).
+
 ## Cél
 
 Napi / heti / havi feladatok, naptár, jegyzetek, napló, bevásárlólisták, készletek,

@@ -4,7 +4,7 @@
 //
 // Pattern source: `LIVE-projects/master-prompter/server/src/app.server.ts`.
 
-import { Request, Response } from 'express';
+import { Application, Request, Response } from 'express';
 import * as path from 'path';
 
 import { DyFM_AnyError, DyFM_Log } from '@futdevpro/fsm-dynamo';
@@ -15,6 +15,7 @@ import {
   DyNTS_GlobalService_Settings,
   DyNTS_Http_Settings,
   DyNTS_RoutingModule,
+  DyNTS_RouteSecurity,
   DyNTS_StaticClient_Settings
 } from '@futdevpro/nts-dynamo';
 import { DyNTS_AppExtended, DyNTS_SocketServerService } from '@futdevpro/nts-dynamo/socket';
@@ -40,6 +41,9 @@ import { Google_Controller } from './_routes/google/google.controller';
 import { Version_Controller } from './_routes/version/version.controller';
 import { SleepState_Controller } from './_routes/sleep-state/sleep-state.controller';
 import { Reports_Controller } from './_routes/reports/reports.controller';
+import { LinkedInWorkspace_Controller } from './_routes/linkedin/linkedin-workspace.controller';
+import { LinkedInWorkspace_FrameMiddleware } from './_routes/linkedin/linkedin-workspace-frame.middleware';
+import { Health_Controller } from './_routes/health/health.controller';
 
 import { VersionBroadcast_SocketServerService } from './_services/socket-services/version-broadcast.socket-server-service';
 import { WeatherPoll_Service } from './_services/weather-poll.service';
@@ -102,6 +106,10 @@ export class App extends DyNTS_AppExtended {
   override getRoutingModules(): DyNTS_RoutingModule[] {
     return [
       new DyNTS_RoutingModule({
+        route: '',
+        controllers: [ Health_Controller.getInstance() ],
+      }),
+      new DyNTS_RoutingModule({
         route: '/wave',
         controllers: [
           Wave_Controller.getInstance(),
@@ -159,6 +167,10 @@ export class App extends DyNTS_AppExtended {
         route: '/reports',
         controllers: [ Reports_Controller.getInstance() ],
       }),
+      new DyNTS_RoutingModule({
+        route: '/linkedin',
+        controllers: [ LinkedInWorkspace_Controller.getInstance() ],
+      }),
     ];
   }
 
@@ -173,6 +185,11 @@ export class App extends DyNTS_AppExtended {
       assetCacheMaxAge: 60 * 60,
       fallbackCacheMaxAge: 0,
     };
+  }
+
+  /** Allows the pinned local Chrome companion to frame only the dedicated LinkedIn side-panel surface. */
+  override registerCustomMiddleware(express: Application, _security: DyNTS_RouteSecurity): void {
+    express.use(LinkedInWorkspace_FrameMiddleware.handle);
   }
 
   // DyNTS_SocketServerService<T> requires T extends DyNTS_SocketPresence;

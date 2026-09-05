@@ -7,6 +7,7 @@
       "./cli/src",
       "./server/src",
       "./client/src",
+      "./browser-extension",
       "./cli/spec",
       "./server/spec",
       "./cli/scripts/agent-handlers/src",
@@ -22,7 +23,7 @@
       "./pnpm-workspace.yaml",
       "./pipeline.config.json"
     ],
-    "extensions": ["ts", "json", "html", "scss", "yaml"],
+    "extensions": ["ts", "json", "html", "scss", "css", "yaml"],
     "ignore": [
       "node_modules",
       "build",
@@ -95,12 +96,27 @@
     },
     {
       "label": "lint-server",
-      "command": "cd server && eslint src",
+      "command": "cd server && node_modules\\.bin\\eslint.cmd src",
       "fatal": false
     },
     {
       "label": "client-build",
       "command": "cd client && ng build --configuration production --base-href /",
+      "fatal": true
+    },
+    {
+      "label": "browser-extension-build",
+      "command": "cd browser-extension && pnpm run build",
+      "fatal": true
+    },
+    {
+      "label": "browser-extension-test",
+      "command": "cd browser-extension && node --test dist/background.test.js dist/manifest-contract.test.js",
+      "fatal": false
+    },
+    {
+      "label": "startup-test",
+      "command": "tsx --tsconfig server/tsconfig.json --test scripts/start-my-assistant.test.ts scripts/linkedin-workspace.journey.test.ts",
       "fatal": false
     },
     {
@@ -110,7 +126,7 @@
     },
     {
       "label": "lint-client",
-      "command": "cd client && eslint src",
+      "command": "cd client && node_modules\\.bin\\eslint.cmd src",
       "fatal": false
     }
   ]
