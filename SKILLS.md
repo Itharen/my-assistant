@@ -347,12 +347,15 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
 - 🔴 **Hangszórós kapu:** a `ma cast notify` mostantól **csak ÉBREN + ITTHON** állapotban szólal
   meg (ITTHON = használja a gépét; ÉBREN = itthon-jel VAGY Discord-válasz +1 óra). **Ismeretlen
   jel ⇒ tilt.** Kézi felülbíráláshoz `--force` — mindig naplózódik.
-- ⚠️ A kapu jelenleg **tilt**, mert a jelenlét-figyelő nem fut. Élesítés (owner-lépés,
-  rendszer-szintű): `pwsh -File scripts/install-autostart.ps1 -Mode apply` — **egy szkript, mindkét
-  szolgáltatás** (jelenlét-figyelő + Discord-figyelő tartalék), AtLogon indul, hiba esetén
-  újraindul; módosítás nélküli ellenőrzés: `-Mode check`, eltávolítás: `-Mode remove`.
-  *(A Discord-figyelőt normál üzemben a szerver viszi — az ütemezett feladat a tartalék arra az
-  esetre, ha a szerver nem fut.)*
+- ⭐ **A jelenlét-figyelőt is a SZERVER indítja** (2026-09-06): a `PresenceMonitor_Service` a
+  `server/activity-monitor/logger.ps1`-et futtatja felügyelten. Tehát **nincs külön teendő** —
+  ha fut az LDP (és alatta a szerver), a kapu adata is gyűlik.
+  🔴 **Miért:** ez a figyelő **112 napig volt halott**, mert ütemezett feladaton múlt, amit
+  senki nem ellenőrzött.
+- **Tartalék** (ha a szerver NEM fut): `pwsh -File scripts/install-autostart.ps1 -Mode apply` —
+  egy szkript, mindkét szolgáltatás, AtLogon indul, hiba esetén újraindul; módosítás nélküli
+  ellenőrzés: `-Mode check`, eltávolítás: `-Mode remove`. A szerver felismeri, ha az ütemezett
+  feladat már fut, és **nem indít másodikat**.
 - **Buktatók (mértek):** a Windows PowerShell 5.1 **ANSI-ként** olvassa a `.ps1`-et → ékezetes
   szöveg töri a parse-t, ezért **UTF-8 BOM** kell · a `Join-Path` 3-argumentumos alakja csak PS7+.
 - Terv: `__agent/plans/discord-two-way-hyperplan/` · szabályok:

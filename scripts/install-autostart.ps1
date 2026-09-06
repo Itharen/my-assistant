@@ -1,5 +1,12 @@
 ﻿# My Assistant — a FOLYAMATOSAN FUTÓ szolgáltatások automatikus indítása.
 #
+# ⚠️ EZ MA MÁR TARTALÉK, NEM AZ ELSŐDLEGES ÚT (2026-09-06 óta).
+#   Normál üzemben a `dc ldp` alatt futó SZERVER indítja és felügyeli MINDKÉT figyelőt
+#   (`DiscordListener_Service`, `PresenceMonitor_Service`). Lásd:
+#   `current/principles/ldp-default-runtime.md`.
+#   Ez a szkript arra az esetre való, ha a szerver NEM fut (pl. bejelentkezés után, LDP nélkül).
+#   A szerver felismeri, ha az ütemezett feladat már fut, és NEM indít másodikat.
+#
 # KÉT szolgáltatást állít be, mert a kommunikációs csatorna mindkettőt igényli:
 #
 #   1. jelenlét-figyelő  → ettől tudjuk, hogy az owner ITTHON van (a gépét használja).

@@ -297,7 +297,9 @@ async function checkPresenceMonitor(projectRoot: string, checks: CommCheck[]): P
       label: 'Jelenlét-figyelő (itthon vagyok-e)',
       status: 'missing',
       detail: `Nincs adatkönyvtár: ${dataDirectory}`,
-      remedy: 'Indítsd el a jelenlét-figyelőt: server/activity-monitor/logger.ps1 (hyperplan MP-5).',
+      remedy: 'Indítsd el a szervert: `npm --prefix server run start-prod` (vagy `dc ldp`) — '
+        + 'a jelenlét-figyelőt a szerver indítja és tartja életben. '
+        + 'Kézi tartalék: `pwsh -File scripts/install-autostart.ps1 -Mode apply`.',
     });
     return;
   }
@@ -311,7 +313,8 @@ async function checkPresenceMonitor(projectRoot: string, checks: CommCheck[]): P
       label: 'Jelenlét-figyelő (itthon vagyok-e)',
       status: 'unknown',
       detail: 'Van adatkönyvtár, de nem találtam benne értelmezhető mérést.',
-      remedy: 'Ellenőrizd a figyelő naplóját, és indítsd újra (hyperplan MP-5).',
+      remedy: 'Nézd meg a szerver naplójában a `MA-PRESENCE-MONITOR-CRASH` bejegyzést — '
+        + 'az tartalmazza a figyelő utolsó kimeneti sorait.',
     });
     return;
   }
@@ -329,8 +332,9 @@ async function checkPresenceMonitor(projectRoot: string, checks: CommCheck[]): P
       : `⚠️ A legutóbbi mérés ${formatAge(ageMinutes)} — a figyelő NEM fut.`,
     remedy: isFresh
       ? undefined
-      : 'Indítsd újra a jelenlét-figyelőt, és tedd automatikus indulásúvá (hyperplan MP-5). '
-        + 'Enélkül nem tudjuk, itthon vagy-e → a hangszóró nem használható.',
+      : 'Ellenőrizd, hogy FUT-E A SZERVER — a jelenlét-figyelőt ő indítja és tartja életben '
+        + '(`PresenceMonitor_Service`). Ha fut, a szerver naplójában a `MA-PRESENCE-MONITOR-CRASH` '
+        + 'bejegyzés mondja meg, min akadt el. Enélkül nem tudjuk, itthon vagy-e → a hangszóró tilt.',
   });
 }
 

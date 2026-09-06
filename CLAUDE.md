@@ -613,6 +613,7 @@ megfogalmazása lesz a referencia.
 | `current/principles/weekly-rhythm.md` | **Heti ciklus munkanap-alapú** (NEM naptári) — péntek=utolsó munkanap, szombat=szabat, csúszik szabadságok/event-ek mentén |
 | `current/principles/cast-notifier-defaults.md` | Cast-notifier operacionális default-ok: All Speakers target, férfi HU TTS, volume save→up→restore (NEM duck), Spotify resume |
 | `current/principles/recording-discipline.md` | **Univerzális hard rule**: "jegyezz fel" = kötelező rögzítés MINDENHOL, **elsősorban az organizerbe** (`fo {modul}.create`) + lokál tükör org-ref-fel. Lokál-only = félrevezető. Elmaradt rögzítés = kritikus hiba. Organizer-down = P0 blokkoló + fallback `current/tasks/inbox.md` |
+| `current/principles/ldp-default-runtime.md` | **Az LDP a default futtatási mód**: az agent indítja, saját látható terminálablakban, és **alatta él minden háttér-figyelő** (a szerver a gazda, `getRootServices()` + `SupervisedChild`). Külön indítandó dolog = előbb-utóbb nem indul el, és a nem-indulás CSENDES |
 
 **Új alapelv kezelése:** ha a user új szabály-szerű dolgot mond, **soha ne csak
 "vegyük tudomásul"** — minden esetben:

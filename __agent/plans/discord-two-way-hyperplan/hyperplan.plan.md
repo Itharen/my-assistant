@@ -9,8 +9,8 @@ alaposan tervezd meg mindent, ami ehhez szükséges. Készíts egy Hyperplant"*
 
 ```yaml
 state: live-verified
-overall_progress: "A csatorna ONMUKODO: a SZERVER inditja es felugyeli a figyelot, a kikuldes automatikus (15s), a gepel-visszajelzes el. 344 CLI-teszt zold."
-blocking: "A DISCORD KESZ ES ONMUKODOEN ELOBEN IGAZOLT. Marad: a jelenlet-figyelo elesitese, a torott interfood fajl dontese (ez blokkolja az LDP-t is), es 7 nyitott kerdes."
+overall_progress: "EGY belepesi pont: dc ldp -> szerver -> Discord-figyelo + Jelenlet-figyelo. Mindketto felugyelve (SupervisedChild). CLI 345/345 + szerver 28/28 zold."
+blocking: "NINCS technikai blokkolo. Az LDP fut, az interfood-utkozes osszevonassal feloldva, a jelenlet-figyelot a szerver viszi. Marad: 7 nyitott kerdes."
 architecture_decision: "SAJÁT bot (owner, 2026-09-06) + a CCAP hivatalos prompt-végpontja a bejuttatásra, SAJÁT oldali kötegeléssel (1 futás, nem N)"
 review_loop: "MINDKÉT szakaszra TELJESÜLT — 1. szakasz 8 kör/11 javítás, figyelő 7 kör/10 javítás; mindkettőnél az utolsó KETTŐ tiszta."
 last_updated: 2026-09-06
@@ -23,10 +23,11 @@ last_updated: 2026-09-06
 | MP-2 | Kötegelő + előtag + **figyelő** + **életjel** + **automatikus kiküldés** | ✅ **KÉSZ, ÖNMŰKÖDŐ** — a figyelő 15 mp-enként maga küldi ki a köteget (korábban kézi `flush` kellett) |
 | MP-3 | Válasz-kötelezettség Discordra | ✅ **KÉSZ** — `ma comm say` + a G-1 automatikus elmaradás-ellenőrzés a `doctor`-ban, élőben igazolva |
 | MP-4 | Session-azonosság futásidejű feloldása | ✅ **KÉSZ, élőben zöld** — `ma ccap whoami` |
-| MP-5 | Jelenlét + ébrenlét (a hangszórós kapu) | ✅ **kapu KÉSZ + bekötve**, élőben TILT · 🔴 a **figyelő élesítése** owner-lépés |
+| MP-5 | Jelenlét + ébrenlét (a hangszórós kapu) | ✅ **KÉSZ** — a kapu bekötve, a figyelőt a `PresenceMonitor_Service` tartja életben |
 | MP-6 | Csatorna-diagnosztika | ✅ **KÉSZ** — `ma comm doctor` |
 | MP-7 | Státusz-kivonat + a tick | ✅ **KÉSZ száraz futásig** — `ma status digest` · `ma tick plan` |
 | MP-8 | **A szerver a gazda** + „gépel…" visszajelzés | ✅ **ÉLŐBEN IGAZOLT** (2026-09-06) — `DiscordListener_Service` felügyeli a figyelőt; a Discordon látszik, hogy dolgozom |
+| MP-9 | **`dc ldp` a default futtatási mód** | ✅ **ÉLŐBEN FUT** (2026-09-07) — saját terminálablak; alatta a szerver mindkét figyelőt viszi. Elv: `current/principles/ldp-default-runtime.md` |
 
 > ⚠️ **Ezt a blokkot a review-kör 5 találta elavultnak** (2026-09-06): „0/7, az építés nem
 > indult" állt benne, miközben 5 csomag elkészült. Mivel az ébresztő-prompt **erre a fájlra**

@@ -14,9 +14,9 @@
 active_plan: __agent/plans/discord-two-way-hyperplan/hyperplan.plan.md
 state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
-tests: "344/344 zold a teljes CLI-suite-ban (ebbol a Discord/comm resz 94)"
+tests: "CLI 345/345 + szerver 28/28 zold"
 owner_available: false        # "most nem vagyok a gépnél… majd ha hazaértem"
-blocked_on_owner: "NINCS a Discordra - ONMUKODOEN EL (a szerver a gazda). Marad: jelenlet-figyelo elesitese, a torott interfood fajl dontese (ez blokkolja az LDP-t), es a 7 kerdes."
+blocked_on_owner: "NINCS. Az LDP fut, a szerver alatta a Discord- ES a jelenlet-figyelot is viszi. Az interfood-blokkolo osszevonassal feloldva. Marad: a 7 kerdes."
 ```
 
 **Owner-utasítás (2026-09-06):** *„kezd el ennek a Hyperplan-nek a lefejlesztését, és amíg a
@@ -37,9 +37,11 @@ végére nem érsz, addig tartsd magad mozgásban a Schedule Wake-up-pal"*.
 | MP-2 **automatikus kiküldés** | ✅ **ÉLŐBEN IGAZOLT** — a figyelő 15 mp-enként maga küld; korábban kézi `flush` kellett | — |
 | MP-8 **a szerver a gazda** | ✅ **ÉLŐBEN IGAZOLT** — `DiscordListener_Service` indítja/újraindítja a figyelőt | — |
 | MP-8 **„gépel…" visszajelzés** | ✅ **ÉLŐBEN IGAZOLT** — 7 mp-es frissítés, 15 perces biztonsági szelep | — |
+| MP-5.1 jelenlét-figyelő | ✅ **A SZERVER INDÍTJA** (`PresenceMonitor_Service`) — már NEM owner-lépés | — |
+| MP-9 `dc ldp` mint default | ✅ **ÉLŐBEN FUT** — saját terminálablak, 1370 mp-es kör, minden lépés zöld | — |
 | MP-4 session-önazonosítás | ✅ **KÉSZ + élőben zöld** (2026-09-06) | **nem** |
 | MP-5 hangszórós kapu (megépítve + bekötve) | ✅ **KÉSZ, élő próbán TILTOTT**, 8/8 teszt zöld | nem |
-| MP-5.1 jelenlét-figyelő újraélesztése | 🔴 **owner-lépésre vár** (rendszer-szintű: ütemezett feladat) | nem |
+| MP-5.1 jelenlét-figyelő újraélesztése | ✅ **MEGOLDVA** — a szerver felügyeli (2026-09-06), nem ütemezett feladat | nem |
 | MP-6 csatorna-diagnosztika | ✅ **KÉSZ, élesben lefuttatva, 9/9 teszt zöld** (2026-09-06) | nem |
 | MP-7 státusz-kivonat | ✅ **KÉSZ, élő organizer-adaton**, 12/12 teszt zöld | nem |
 | MP-7 a tick maga (Daytime/Nighttime) | ✅ **KÉSZ száraz futásig**, élő adaton, 10/10 teszt zöld | nem |

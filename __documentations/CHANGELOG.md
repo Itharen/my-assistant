@@ -4,6 +4,35 @@
 
 ---
 
+## Az LDP a default futtatasi mod + a jelenlet-figyelo is a szerver ala kerult — 2026-09-06
+
+> **Owner:** *"btw amugy is ez kene legyen az alap/default LDP mukodes... Azt a jelenletfigyelot is
+> vagy integralni kene a My Assistant szerverbe, vagy neki kene inditania."*
+
+- **Uj alapelv:** `current/principles/ldp-default-runtime.md` — az alapallapot, hogy **fut az LDP,
+  sajat lathato terminalablakban**, es **alatta el minden hatter-figyelo**. Az agent inditja, ha
+  nem fut; az agent igazodik hozza, nem forditva. Hivatkozva a `CLAUDE.md` / `AGENTS.md` parbol.
+- **`SupervisedChild` (uj, kozos vaz):** a Discord-figyelo utan a jelenlet-figyelo lett a MASODIK
+  felugyelt gyermek. A lassulo ujrainditas, a kimenet-megorzes es a "fut-e mar mashol?" logika
+  **kiemelve kozosbe** — ket masolat garantaltan szetcsuszott volna.
+- **`PresenceMonitor_Service` (uj):** a szerver futtatja es felugyeli a
+  `server/activity-monitor/logger.ps1`-et. A Win32-es merest **nem irtuk ujra TypeScriptben**.
+  🔴 **Miert kellett:** ez a figyelo **112 napig volt halott**, mert az inditasa egy utemezett
+  feladaton mult, amit senki nem ellenorzott — es enelkul a hangszoros kapu TILT.
+  "Fut-e mar mashol?": a legfrissebb minta-fajl 3 percnel frissebb-e (tiszta fuggveny, tesztelt).
+  Az utemezett feladat innentol **tartalek**, nem az elsodleges ut.
+- **LDP-blokkolo feloldva:** a `cli/src/interfood/interfood.api-client.ts`-ben ket parhuzamos
+  session mindegyike hozzaadott egy `getImageUrl`-t (TS2393) -> a `tsc-cli` fatal lepes dolt, es
+  az LDP **22 oran at** allt. **Nem valasztottunk a ketto kozul — osszevontuk:** a 960x640
+  alapertek az egyikbol, a teljes parameter-ellenorzes + `URLSearchParams` a masikbol.
+- **Elo igazolas:** a teljes LDP-kor **1370 mp alatt, minden lepes zold** (`cli-test` 345/345),
+  a vegen a szerver elindult es 8 mp mulva hozta a Discord-figyelot.
+- **Teszt-allas:** CLI **345/345**, szerver **28/28** zold.
+- ⚠️ **Mert figyelmeztetes:** a teljes kor hosszu (`client-build` 536 s, `client-test` 377 s), es
+  a build alatt a gep **95%-on allt RAM-ban**. Fejlesztes kozben ehhez kell igazodni.
+
+---
+
 ## A Discord-csatorna ÖNMŰKÖDŐVÉ vált — a szerver a gazda + „gépel…" — 2026-09-06
 
 - **🔴 A figyelő gazdája a SZERVER** (owner-kérés: *„a szervernek kéne futnia, a szervernek kéne

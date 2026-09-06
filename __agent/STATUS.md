@@ -1,5 +1,28 @@
 # STATUS
 
+## 🎉 EGY belépési pont: `dc ldp` — alatta minden figyelő él — 2026-09-07
+
+**Owner-elv (új):** *„amúgy is ez kéne legyen az alap/default LDP működés… Azt a jelenlétfigyelőt
+is vagy integrálni kéne a My Assistant szerverbe, vagy neki kéne indítania."*
+⇒ `current/principles/ldp-default-runtime.md`.
+
+```
+dc ldp  →  szerver  →  Discord-figyelő  +  Jelenlét-figyelő
+```
+
+- **`PresenceMonitor_Service` (új)** — a szerver futtatja és felügyeli a `logger.ps1`-et.
+  A Win32-es mérést NEM írtuk újra; az ütemezett feladat innentől **tartalék**.
+- **`SupervisedChild` (új, közös váz)** — a felügyelet (lassuló újraindítás, kimenet-megőrzés,
+  „fut-e már máshol?") egy helyen, mert most már **két** felügyelt gyermek van.
+- **LDP-blokkoló feloldva** — a duplikált `getImageUrl` **összevonva** (nem választva).
+  A teljes kör **1370 mp, minden lépés zöld**.
+- **Teszt:** CLI **345/345**, szerver **28/28**.
+
+⏳ **Owner-műveletre vár:** ❓ **7 kérdés** — `current/open-questions.md` H) szekció.
+*(A jelenlét-figyelő élesítése MÁR NEM owner-lépés — a szerver csinálja.)*
+
+---
+
 ## 🎉 A Discord-csatorna ÖNMŰKÖDŐ — a szerver a gazda — 2026-09-06 (este)
 
 **A figyelő gazdája mostantól a `my-assistant` szerver** (owner-kérés). Nincs külön indítandó
