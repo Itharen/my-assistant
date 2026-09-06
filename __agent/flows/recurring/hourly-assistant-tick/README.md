@@ -1,5 +1,17 @@
 # Flow: Óránkénti Assistant-tick — a folyamatos My Assistant workflow
 
+> 🧭 **HASZNÁLATI EMLÉKEZTETŐ — ne ugord át.**
+> **Ki vagy:** `__agent/IDENTITY.md` (Honnie) · **Minden workflow szabálya:**
+> `__agent/workflow-rules.md` · **Belépési pont:** `__agent/ENTRY.md`
+> **Mindhármat FRISSEN olvasd be** — kompaktálás után a fejedben már nincsenek meg.
+>
+> **Ehhez a flow-hoz tartozó külön szabályok:** `current/principles/sleep-system.md` (a napszak-ágak az ÉBRENLÉTHEZ kötöttek) · `current/principles/working-style.md` (rövid, tömör) · a hangszórós kapu: CSAK ébren + itthon
+> **A flow adatforrása(i):** `ma status digest` (organizer + lokál) · `ma comm doctor` (jelenlét/ébrenlét) · Discord-köteg
+> **Kilépési feltétel (a kész definíciója):** megszületett a döntés, hogy MIRŐL és MELYIK csatornán szólunk — és a döntés naplózva van, **a csendes is**.
+
+---
+
+
 > **Ez a tényleges Assistant-workflow.** Óránként lefut, átnézi a helyzetet, és eldönti:
 > **miről kell értesíteni az ownert, miről nem — és melyik csatornán.**
 >

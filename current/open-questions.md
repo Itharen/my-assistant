@@ -420,5 +420,42 @@
 | `Q-2026-09-06-07` | **Mi számít éjszaka „valóban nem halasztható"-nak?** | A workflow szerint az éjszakai ág alapból gyűjt, de kivétel lehet. A kritérium nincs kimondva — **nem találom ki magamtól**. | **m** | open |
 
 **Owner-műveletre váró tételek** (nem kérdés, hanem teendő — a `CONTINUATION.md` is viszi):
-saját Discord-alkalmazás + bot-token a `.env`-be · `install-autostart.ps1 -Mode apply`
-a jelenlét-figyelőhöz.
+~~saját Discord-alkalmazás + bot-token~~ ✅ KÉSZ · ~~`install-autostart.ps1 -Mode apply`~~
+✅ TÁRGYTALAN (a szervert a `PresenceMonitor_Service` viszi, 2026-09-06).
+
+---
+
+## I) Időbeosztás — a Schedule Guardian flow ⏰ (2026-09-07)
+
+> A user kijelölte az **első számú asszisztensi területet**: az időbeosztás folyamatos
+> segítését. A flow váza megvan (`__agent/flows/recurring/schedule-guardian/README.md`), de
+> **a számoláshoz szükséges preferenciák nincsenek meg** — és ezeket ⛔ **nem találjuk ki**.
+>
+> Owner szó szerint: *„Lesznek majd különféle preferenciák, meg mit vigyek magammal, mire
+> figyeljek oda mielőtt elkészülök, mennyi idő oda jutni, mikor kell elkezdjek készülődni,
+> ugye itt lesz egy csomó szabály majd, preferenciák, meg mennyi idő alatt készülök el, stb."*
+
+| ID | Kérdés | Miért blokkoló | Fontosság | Status |
+|---|---|---|---|---|
+| `Q-2026-09-07-I1` | **Mennyi idő alatt készülsz el?** Egységes szám, vagy esemény-típusonként más (otthoni hívás / bolt / hivatalos ügy / edzés / társasági)? | Enélkül nincs **készülődés-kezdés** — pedig ez a flow legfontosabb kimenete. | **h** | open |
+| `Q-2026-09-07-I2` | **Mennyi ráhagyást akarsz?** Hány perccel érj oda korábban, és típusonként más-e? | Enélkül nincs indulási idő. | **h** | open |
+| `Q-2026-09-07-I3` | **Hogyan közlekedsz alapból?** (tömegközlekedés / autó / gyalog / bringa) És mikor tér el ettől? | Enélkül nincs menetidő. | **h** | open |
+| `Q-2026-09-07-I4` | **Milyen eszközzel nézzek utána útvonalnak/menetidőnek?** Van-e elfogadható **nem fizetős** megoldás? | `no-paid-solutions.md` miatt nem választhatok magamtól fizetős API-t. | **h** | open |
+| `Q-2026-09-07-I5` | **Mit viszel magaddal?** Van-e alap-készlet, és mi jön hozzá esemény-típusonként? | Enélkül nincs „mit vigyek" checklist. | **m** | open |
+| `Q-2026-09-07-I6` | **Mire kell figyelni indulás előtt?** (pl. vízcsap, ablak, töltő, kulcs) | Ez a te „mire figyeljek oda" pontod — a tartalmát csak te tudod. | **m** | open |
+| `Q-2026-09-07-I7` | **Mennyivel korábban szóljak?** Csak a készülődés-kezdésnél, vagy legyen előjelzés is? | Ez a riasztás alakja. | **m** | open |
+| `Q-2026-09-07-I8` | **Éjjel is szóljak** egy másnap kora reggeli eseményről, vagy csak ébredés után? | Ütközik az alvás-ciklussal (`sleep-system.md`). | **m** | open |
+
+---
+
+## J) Az asszisztens szerepe és képességei 🤖 (2026-09-07)
+
+> A képesség-katalógus (`__agent/capabilities/CATALOG.md`) minden sora **jóváhagyásra vár**
+> — owner: *„azokat majd apróvolom még, hogy elfogadhatók-e. szépen sorba vesszük."*
+
+| ID | Kérdés | Miért kell | Fontosság | Status |
+|---|---|---|---|---|
+| `Q-2026-09-07-J1` | **A `⏳` képességek közül melyek lépnek `✅`-be?** (C-10…C-20 — státusz-kivonat, tick, hangszóró, feladatok, napló, Interfood, LinkedIn, bevásárlás, hónapzárás, alvás, fit/health) | Amíg `⏳`, minden használat előtt kérdeznem kell — ez lassít. | **h** | open |
+| `Q-2026-09-07-J2` | **Melyik jóváhagyott képesség futhat ÜRESJÁRATBAN**, amikor nem vagy itt? | A proaktív sáv addig üres, amíg ez nincs eldöntve. | **h** | open |
+| `Q-2026-09-07-J3` | **Az orkesztráció (feladat átadása másoknak) mikor és milyen keretben legyen megbeszélve?** | Owner: *„az egyelőre még nem approve-olt"* — addig nem delegálok. | **m** | open |
+| `Q-2026-09-07-J4` | **Mi számít „nem vagyok elérhető"-nek?** Elég a gép-inaktivitás, vagy legyen külön „ne zavarj" jelzés? | Ez kapcsolja be az üresjárati sávot — rossz küszöbnél vagy zavarlak, vagy sosem dolgozom. | **m** | open |

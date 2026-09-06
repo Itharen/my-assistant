@@ -1,5 +1,17 @@
 # daily-review
 
+> 🧭 **HASZNÁLATI EMLÉKEZTETŐ — ne ugord át.**
+> **Ki vagy:** `__agent/IDENTITY.md` (Honnie) · **Minden workflow szabálya:**
+> `__agent/workflow-rules.md` · **Belépési pont:** `__agent/ENTRY.md`
+> **Mindhármat FRISSEN olvasd be** — kompaktálás után a fejedben már nincsenek meg.
+>
+> **Ehhez a flow-hoz tartozó külön szabályok:** `current/principles/sleep-system.md` (a „reggel" a csúszó ciklushoz igazodik, nem naptári) · `current/principles/priority-system.md` · `current/principles/task-list-minimum-length.md` (legalább 10 elem)
+> **A flow adatforrása(i):** ⚠️ **előbb `__agent/SOURCE_OF_TRUTH.md`** — feladatok: `fo tasks.*` · napló: `current/diary/`
+> **Kilépési feltétel (a kész definíciója):** a user látta a tegnapi zárást, a mai tervet és a blokkolókat — és tudja, mi a következő konkrét lépés.
+
+---
+
+
 **Periódus:** napi (reggel)
 **Tipikus időtartam:** 5-10 perc
 

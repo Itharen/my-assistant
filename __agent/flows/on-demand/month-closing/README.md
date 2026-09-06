@@ -1,5 +1,17 @@
 # month-closing
 
+> 🧭 **HASZNÁLATI EMLÉKEZTETŐ — ne ugord át.**
+> **Ki vagy:** `__agent/IDENTITY.md` (Honnie) · **Minden workflow szabálya:**
+> `__agent/workflow-rules.md` · **Belépési pont:** `__agent/ENTRY.md`
+> **Mindhármat FRISSEN olvasd be** — kompaktálás után a fejedben már nincsenek meg.
+>
+> **Ehhez a flow-hoz tartozó külön szabályok:** `current/principles/priority-system.md` · `current/principles/mvp-focus.md` (a hónap-értékelés a pénzkeresés-fókuszhoz mérendő)
+> **A flow adatforrása(i):** ⚠️ **előbb `__agent/SOURCE_OF_TRUTH.md`** — feladatok/pénzügy: `fo` · retro: `current/`
+> **Kilépési feltétel (a kész definíciója):** a hónap le van zárva: pénzügyi kép + retro + a következő hónap terve megvan, és a nyitva maradt tételek nevesítve vannak.
+
+---
+
+
 **Mikor fut:** hónap utolsó hetében vagy a következő hónap elején.
 **Tipikus időtartam:** 30-60 perc.
 
