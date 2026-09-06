@@ -448,6 +448,24 @@
 
 ---
 
+## K) Üzenet-kézbesítés megbízhatósága 📮 (2026-09-07)
+
+> Owner: *„az üzeneteid nem mindig jutnak el hozzám, illetve lehet, hogy el-elúsznak, amit
+> nekem szánsz info. Ez még a Discordon is előfordulhat, de Discordot fogom legjobban
+> figyelni. első körben, amíg nincsen egyéb saját megoldás."*
+> Elv: `current/principles/message-delivery-reliability.md`
+
+| ID | Kérdés | Miért kell | Fontosság | Status |
+|---|---|---|---|---|
+| `Q-2026-09-07-K1` | **Mi számít „fontos, nyugtázandó" üzenetnek?** Minden? Csak a határidős/cselekvést igénylő? | Ha mindent nyugtáztatok, az zaj lesz; ha semmit, marad a mostani helyzet. | **h** | open |
+| `Q-2026-09-07-K2` | **Mennyi idő után ismételjek meg egy nyugtázatlan üzenetet?** És hányszor? | Enélkül vagy tolakodó vagyok, vagy hatástalan. | **h** | open |
+| `Q-2026-09-07-K3` | **Mi legyen a nyugta formája?** Reakció-emoji a Discordon (legkisebb súrlódás), válasz, vagy elég a megnyitás? | Ez dönti el, mit tudok egyáltalán mérni. | **h** | open |
+| `Q-2026-09-07-K4` | **Hova kerüljön a POSTALÁDA?** Discord pinned üzenet · a My Assistant kliens egy felülete · fájl · organizer? | Ez a „nem tud elúszni" fele — a helye meghatározza, mennyire kézenfekvő átnézni. | **h** | open |
+| `Q-2026-09-07-K5` | **Mi legyen a saját megoldás iránya?** Telefonos push (ntfy vagy saját app), e-mail, vagy a kliens? | Owner: *„amíg nincsen egyéb saját megoldás"* — tehát ez cél, nem opció. | **m** | open |
+| `Q-2026-09-07-K6` | **Ha nem vagy elérhető és sürgős:** meddig várjak, mielőtt eszkalálok (hangszóró / ismétlés)? | Az esemény-riasztásnál (`schedule-guardian`) ez éles kérdés lesz. | **m** | open |
+
+---
+
 ## J) Az asszisztens szerepe és képességei 🤖 (2026-09-07)
 
 > A képesség-katalógus (`__agent/capabilities/CATALOG.md`) minden sora **jóváhagyásra vár**

@@ -67,6 +67,20 @@ mit visz magával) — lásd `current/open-questions.md` I) szekció. **Ezeket n
 
 ---
 
+### Kommunikáció-megbízhatóság (a baseline MEGERŐSÍTÉSE)
+
+> Owner: *„az üzeneteid nem mindig jutnak el hozzám, illetve lehet, hogy el-elúsznak"*
+
+| # | Képesség | Státusz | Mit csinál | Hol |
+|---|---|---|---|---|
+| C-40 | **Nyugta-követés** | 📝 **javaslat** | A fontos üzenet „nyugtázandó"; ha nincs rá reakció, ismétlés/eszkaláció | ❓ tervezendő |
+| C-41 | **Postaláda** *(perzisztens „neked szánt info")* | 📝 **javaslat** | Ami nem üzenet, az nem tud elúszni — bármikor átnézhető lista | ❓ tervezendő |
+
+⚠️ Mindkettő `❓ NYITOTT` kérdésekre vár — `open-questions.md` **K)**.
+Elv: `current/principles/message-delivery-reliability.md`.
+
+---
+
 ## 2️⃣ FEJLESZTÉSI KÉPESSÉGEK
 
 > **Owner:** *„sokszor fogok fejlesztési munkákat is kérni, bár az főként projektem belül
@@ -77,6 +91,18 @@ mit visz magával) — lásd `current/open-questions.md` I) szekció. **Ezeket n
 | C-30 | **Fejlesztés a `my-assistant` projekten belül** | ✅ **jóváhagyott** | a user rendszeresen kéri; LDP alatt |
 | C-31 | **Fejlesztés a projekten kívül** | ⛔ | csak külön kérésre, esetileg |
 | C-32 | 🚫 **ORKESZTRÁCIÓ — feladat átadása másoknak** | ⛔ **NEM JÓVÁHAGYOTT** | *„az egyelőre még nem approve-olt"* — külön megbeszélést igényel |
+
+### Hang-képességek (importálandó a régi CCAP-ból)
+
+> Owner, 2026-09-07: *„a régi CCAP-ból ki kéne emelni a hangfelismerést, beszédfelismerést,
+> illetve beszédet, feldolgozásokat… Szeretném azt is, hogy tudjál voice üzenetet olvasni,
+> meg hogy tudjunk beszélni egy voice channelon."*
+
+| # | Képesség | Státusz | Megjegyzés |
+|---|---|---|---|
+| C-33 | **Voice üzenet olvasása** (STT) | 📝 **javaslat** | Discord hangüzenet → szöveg → feldolgozás |
+| C-34 | **Beszélgetés voice channelen** | 📝 **javaslat** | kétirányú hang a Discord voice channelen |
+| C-35 | **STT/TTS kiemelése a régi CCAP-ból** | 📝 **javaslat** | ez a C-33/C-34 előfeltétele — organizerben felvéve feladatként |
 
 ---
 

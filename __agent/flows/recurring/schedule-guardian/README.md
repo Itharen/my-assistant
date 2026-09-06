@@ -51,6 +51,22 @@ Minden eseményhez, ami a **közeljövőben** van, négy kérdésre válaszol:
                 └─ ⏰ MIKOR KEZDJEK KÉSZÜLŐDNI?  ← indulás − készülődési idő
 ```
 
+### 🔔 ÁLLANDÓ emlékeztetők — MINDEN eseménynél járnak
+
+| Emlékeztető | Mikor | Forrás |
+|---|---|---|
+| 🔋 **Töltsd fel a telefont** | **a készülődés KEZDETÉN** *(vagy még előző este)* | user, 2026-09-07 |
+| 🦶 Láb bekenése körömvirágkrémmel | indulás előtt | user, 2026-09-07 |
+
+> **Owner szó szerint:** *„események előtt emlékeztes, hogy… Töltsen fel a telefonomat.
+> Kimozdulás van, akkor legyen feltöltve, nem erüljek le."*
+
+⚠️ **A töltés IDŐBE TELIK** — ezért nem az „indulás előtt" listára tartozik, hanem a
+készülődés elejére. Ez pont az a fajta emlékeztető, ami későn adva **használhatatlan**.
+
+📌 A teljes „mit vigyek + mit csináljak indulás előtt" kép:
+`current/inventory/personal-items.md`.
+
 ⭐ **A legfontosabb kimenet a KÉSZÜLŐDÉS-KEZDÉS ideje** — nem az esemény kezdete. Az eseményt
 a naptár is tudja; azt, hogy *mikor kell felállni*, csak ez a flow.
 

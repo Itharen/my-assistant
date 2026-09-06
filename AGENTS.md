@@ -687,6 +687,9 @@ megfogalmazása lesz a referencia.
 | `current/principles/ldp-default-runtime.md` | **Az LDP a default futtatási mód**: az agent indítja, saját látható terminálablakban, és **alatta él minden háttér-figyelő** (a szerver a gazda, `getRootServices()` + `SupervisedChild`). Külön indítandó dolog = előbb-utóbb nem indul el, és a nem-indulás CSENDES |
 | `current/principles/assistant-identity.md` | **Ki vagy: Honnie** — a szerep („a Jarvis-od"), a három sáv (baseline / elsődleges / üresjárat), a képesség-jóváhagyás elve, és hogy az **orkesztráció NEM jóváhagyott** |
 | `current/principles/workflow-system.md` | **Hogyan épülnek a workflow-k** — a lokális szabályok védelme a generált blokk mellett, FAM projekt vs. flotta, a kötelező fejléc-blokk, a belépési pont, és a preferenciák visszacsatornázása |
+| `current/principles/proactive-lookup.md` | **Egy kérés → tartós alapértelmezés**: ha egyszer kérte, hogy nézzek utána, legközelebb **magamtól** megteszem (program, helyszín, megközelítés). Az utánanézés automatikus, a **cselekvés nem** |
+| `current/principles/message-delivery-reliability.md` | **A „sent: true" ≠ „megkapta"** — az üzenetek elúszhatnak. Discord az elsődleges, amíg nincs saját megoldás; irány: nyugta-követés + perzisztens postaláda |
+| `current/principles/thought-storm-inputs.md` | **Gondolat-orkán inputok**: egy üzenetben több téma. Szétbontás → besorolás → routing → visszajelzés. ⚠️ A **zárójeles félmondat** gyakran tartós szabály |
 
 **Új alapelv kezelése:** ha a user új szabály-szerű dolgot mond, **soha ne csak
 "vegyük tudomásul"** — minden esetben:

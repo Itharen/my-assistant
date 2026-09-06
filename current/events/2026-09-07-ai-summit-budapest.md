@@ -97,9 +97,10 @@ következtetésem — az valószínűleg a jegyvásárláskor kapott levélben /
 
 ## ✅ Indulás előtt
 
+- [ ] 🔋 **TELEFON FELTÖLTVE?** — *„Kimozdulás van, akkor legyen feltöltve, nem erüljek le."*
+      ⚠️ Ezt **a készülődés elején** (vagy még este) kell elkezdeni, nem induláskor.
 - [ ] 🦶 **Láb bekenése körömvirágkrémmel** *(user, 2026-09-07)*
-- [ ] Jegy / QR elérhető a telefonon?
-- [ ] Telefon feltöltve?
+- [ ] 🎫 Jegy / QR elérhető a telefonon?
 
 ---
 

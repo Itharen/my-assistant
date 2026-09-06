@@ -69,7 +69,15 @@ kulcs · szemüveg
 
 | Teendő | Mikor | Forrás |
 |---|---|---|
+| 🔋 **TELEFON FELTÖLTÉSE** | **esemény / kimozdulás ELŐTT** | user, 2026-09-07 |
 | 🦶 **Láb bekenése körömvirágkrémmel** | **indulás előtt** | user, 2026-09-07 |
+
+> **Owner, 2026-09-07 (szó szerint):** *„események előtt emlékeztes, hogy… Töltsen fel a
+> telefonomat. Kimozdulás van, akkor legyen feltöltve, nem erüljek le."*
+>
+> ⭐ Ez **nem javaslat, hanem állandó emlékeztető**: MINDEN esemény/kimozdulás előtt jár.
+> ⚠️ **Időzítés számít:** a töltés időbe telik, tehát ez nem az „indulás előtt 2 perccel"
+> teendő, hanem a **készülődés KEZDETÉN** — vagy még előtte, este.
 
 ⚠️ Ez **a készülődés része**, tehát a `schedule-guardian` flow készülődés-checklistjébe
 tartozik — nem az inventoryba. Itt azért szerepel, hogy egy helyen legyen az „indulás előtt"
