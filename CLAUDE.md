@@ -173,7 +173,7 @@ rövidíthető és sosem szűrhető: ha egy szabály szövegére szükség van, 
 fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-global/` = FDP-repóban ·
 `project-internal/` = projekt-workspace-ben · `project-type/` = projekt-típus szerint.
 
-**`global/` — 45 szabaly**
+**`global/` — 46 szabaly**
 
 | ruleId | Cim | Fajl |
 |---|---|---|
@@ -209,6 +209,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `core-record-learnings` | Record successes and failures | `fdp-documentations/rules/global/core-record-learnings.md` |
 | `core-review-until-clean` | Review-fix loop until two consecutive clean passes — run it at the END of the work | `fdp-documentations/rules/global/core-review-until-clean.md` |
 | `core-rich-error-handling` | Rich error handling everywhere | `fdp-documentations/rules/global/core-rich-error-handling.md` |
+| `core-rule-authoring` | Where a rule goes, and when it becomes active | `fdp-documentations/rules/global/core-rule-authoring.md` |
 | `core-rule-integrity` | Rules must never be lost — no reducing, condensing or shortening | `fdp-documentations/rules/global/core-rule-integrity.md` |
 | `core-rule-validation` | Rule-validation protocol | `fdp-documentations/rules/global/core-rule-validation.md` |
 | `core-second-failure-step-back` | At the SECOND consecutive failure: step back and review WHAT and HOW you are doing | `fdp-documentations/rules/global/core-second-failure-step-back.md` |

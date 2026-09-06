@@ -1,6 +1,6 @@
 {
   "name": "my-assistant",
-  "version": "0.1.305",
+  "version": "0.1.306",
   "description": "my-assistant — personal life-management ecosystem (cli + server + client). FDP-shaped, self-built, FOSS-only.",
   "private": true,
   "DyBu_settings": {
@@ -30,7 +30,7 @@
     "test-client": "cd client && pnpm test",
     "test-screen-waker": "cd screen-waker && pnpm test",
     "test-browser-extension": "cd browser-extension && pnpm test",
-    "test-startup": "tsx --tsconfig server/tsconfig.json --test scripts/start-my-assistant.test.ts scripts/linkedin-workspace.journey.test.ts",
+    "test-startup": "tsx --tsconfig server/tsconfig.json --test scripts/start-my-assistant.test.ts scripts/linkedin-workspace.journey.test.ts scripts/linkedin-semantic-triage.journey.test.ts",
     "test:coverage": "pnpm run test-cli:coverage ; pnpm run test-server:coverage ; pnpm run test-client:coverage",
     "test-cli:coverage": "cd cli && pnpm run test:coverage",
     "test-server:coverage": "cd server && pnpm run test:coverage",
