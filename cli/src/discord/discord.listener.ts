@@ -89,6 +89,16 @@ export class DiscordListener {
   /** Mikor naplóztunk utoljára kiküldési hibát — a napló-elárasztás ellen. */
   private lastFlushErrorLoggedAt: number = 0;
 
+  /**
+   * Fut-e ÉPP egy kiküldés.
+   *
+   * 🔴 MIÉRT KELL: a `setInterval` nem várja meg az előző kört. Ha a CCAP lassan válaszol
+   * (>15 mp), két kiküldés futna EGYSZERRE — mindkettő ugyanazt a köteget olvasná és
+   * ELKÜLDENÉ, majd mindkettő véglegesítene. Az owner ugyanazt az üzenetet kapná kétszer,
+   * és a köteg elejéről a duplájat törölnénk — vagyis üzenet is VESZHETNE.
+   */
+  private flushInFlight: boolean = false;
+
   constructor(private readonly bridge: DiscordBridge = new DiscordBridge()) {}
 
   /**
@@ -350,6 +360,10 @@ export class DiscordListener {
    * a bejövő üzenetek is elvesznének.
    */
   private async flushTick(): Promise<void> {
+    if (this.flushInFlight) return;
+
+    this.flushInFlight = true;
+
     try {
       const result = await this.bridge.flush();
 
@@ -387,6 +401,8 @@ export class DiscordListener {
             + 'CC session: `ma ccap whoami`. Az üzenetek addig a kötegben MARADNAK, nem vesznek el.',
         },
       });
+    } finally {
+      this.flushInFlight = false;
     }
   }
 

@@ -77,9 +77,20 @@ export class DiscordListener_Service {
 
     // A szerver leállásakor a gyermek is menjen — különben árva figyelő marad hátra,
     // ami a következő indulásnál dupla kapcsolatot jelentene.
-    for (const signal of ['exit', 'SIGINT', 'SIGTERM'] as const) {
+    process.once('exit', (): void => {
+      this.stop();
+    });
+
+    // 🔴 A JEL-KEZELŐ ÖNMAGÁBAN VESZÉLYES: amint a Node-on van `SIGINT`/`SIGTERM` figyelő,
+    // az ALAPÉRTELMEZETT leállás ELMARAD. Kezelő nélkül a Ctrl+C és a szabályos leállítás
+    // megölné a szervert; kezelővel viszont a folyamat csak… tovább futna. Az LDP
+    // újraindítása így két párhuzamos szervert hagyna hátra.
+    // Ezért: takarítunk, majd ÚJRAKÜLDJÜK a jelet — a `once` addigra levette a kezelőt,
+    // tehát a második jel már az alapértelmezett viselkedést váltja ki.
+    for (const signal of ['SIGINT', 'SIGTERM'] as const) {
       process.once(signal, (): void => {
         this.stop();
+        process.kill(process.pid, signal);
       });
     }
   }

@@ -85,6 +85,16 @@ export class TypingIndicator {
   private typingStartedAt: number | undefined = undefined;
   private timer: NodeJS.Timeout | null = null;
 
+  /**
+   * Elsült-e már a biztonsági szelep az AKTUÁLIS munkára.
+   *
+   * 🔴 MIÉRT KELL KÜLÖN ÁLLAPOT: a szelep elsülésekor nullázzuk a kezdő-időbélyeget, így a
+   * következő körben a döntés újra „jelezz"-t adna — a szelep tehát mindössze EGY kört
+   * (7 másodpercet) szüneteltetne, és a bot valójában örökké gépelne. A zászlót csak az
+   * oldja fel, ha a munka ténylegesen lezárult (nincs várakozó üzenet és nincs tartozás).
+   */
+  private suppressedUntilIdle: boolean = false;
+
   constructor(
     private readonly sendTyping: () => Promise<void>,
     private readonly readState: () => Promise<{ pendingCount: number; owesReply: boolean }>,
@@ -111,6 +121,7 @@ export class TypingIndicator {
     }
 
     this.typingStartedAt = undefined;
+    this.suppressedUntilIdle = false;
   }
 
   /**
@@ -122,6 +133,23 @@ export class TypingIndicator {
   async tick(now: number = Date.now()): Promise<TypingDecision> {
     try {
       const state = await this.readState();
+
+      // A munka lezárult → tiszta lap: a szelep is feloldódik.
+      if (state.pendingCount === 0 && !state.owesReply) {
+        this.typingStartedAt = undefined;
+        this.suppressedUntilIdle = false;
+
+        return { shouldType: false, reason: 'Nincs várakozó üzenet és nincs válasz-tartozás.' };
+      }
+
+      if (this.suppressedUntilIdle) {
+        return {
+          shouldType: false,
+          reason: 'A biztonsági szelep már elsült erre a munkára — csendben maradunk, '
+            + 'amíg a munka le nem zárul.',
+        };
+      }
+
       const decision: TypingDecision = decideTyping({
         pendingCount: state.pendingCount,
         owesReply: state.owesReply,
@@ -130,7 +158,10 @@ export class TypingIndicator {
       });
 
       if (!decision.shouldType) {
+        // Munka VAN, mégsem jelzünk ⇒ csak a szelep szólhatott közbe. Rögzítjük, hogy ne
+        // induljon újra a következő körben.
         this.typingStartedAt = undefined;
+        this.suppressedUntilIdle = true;
 
         return decision;
       }

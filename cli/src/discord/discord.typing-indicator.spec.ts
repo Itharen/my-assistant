@@ -101,6 +101,25 @@ describe('TypingIndicator', () => {
     expect(sent).toBe(1);
   });
 
+  it('stays silent AFTER the cap while the work is still outstanding', async () => {
+    // Regresszio: a szelep elsulesekor nullaztuk a kezdo-idobelyeget, ezert a kovetkezo
+    // korben a dontes ujra "jelezz"-t adott - a szelep igy csak EGY kort szuneteltetett.
+    let sent: number = 0;
+    const indicator = new TypingIndicator(
+      async (): Promise<void> => { sent += 1; },
+      async () => ({ pendingCount: 1, owesReply: true }),
+    );
+
+    const start: number = Date.parse('2026-09-06T20:00:00.000Z');
+
+    await indicator.tick(start);
+    await indicator.tick(start + TYPING_MAX_MS);
+    await indicator.tick(start + TYPING_MAX_MS + 7_000);
+    await indicator.tick(start + TYPING_MAX_MS + 14_000);
+
+    expect(sent).toBe(1);
+  });
+
   it('restarts the clock after a quiet period, so a later message signals again', async () => {
     let sent: number = 0;
     let pendingCount: number = 1;

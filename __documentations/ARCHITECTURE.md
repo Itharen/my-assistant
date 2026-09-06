@@ -4,11 +4,17 @@
 
 The official Member Data Portability integration remains the only LinkedIn read source. Its user-local cache and
 drafts are reused by `/api/linkedin/*` and the Angular `/linkedin` route; the UI does not create a parallel store.
+The analyzer separates a deterministic `technicalNeedsReplyCandidate` (latest known message is inbound) from the
+semantic `needsReply` decision. Any agent can persist an explainable review through `ma linkedin review`; it is
+bound to the exact latest message and becomes stale on new activity. Only fresh reply-worthy categories enter the
+default queue, and only a draft bound to that same message is current.
 
 `browser-extension/` is a separate MV3 Chrome companion. A content script exists only on the exact My Assistant
 loopback origins and relays an explicit owner click to the service worker. The worker opens Chrome's Side Panel and
 a normal top-level LinkedIn messaging tab. The panel embeds only the own localhost workspace. The manifest has no
 LinkedIn host permission, no LinkedIn content script, and the code has no LinkedIn DOM/paste/send capability.
+Outside Chrome with that extension, the workspace offers only the truthful normal-tab action because no Side Panel
+API is available.
 The checked-in manifest key pins a stable extension ID. A pre-static server middleware removes `SAMEORIGIN` only
 from `/linkedin?surface=sidepanel` and replaces it with an exact `frame-ancestors` allow for that extension origin;
 ordinary routes retain the default frame protection.
@@ -44,6 +50,7 @@ decisions and financial effect; partial submitted-order payloads contain changed
 > - **Socket layer** — server `VersionBroadcast_SocketServerService` + `broadcastDomainEvent(topic, op, payload)`; client `A_Socket_ControlService` + `A_DomainEvent_DataService` (Subject event-bus) — push-driven refresh path-orthogonal a poll mellett.
 > - **Reports module** (`client/_modules/reports/`) — 3 panel (R_Home/R_DevIO/R_UserIO) — 9 GET + 3 POST unauth endpoint (`server/_routes/reports/`), inline-write USER_INPUT + AGB-reply + status-shift, Phase 5 auto-refresh.
 > - **Sleep + Weather services** — `SleepState_Service` (`/api/sleep-state` env-overridable window) + `WeatherPoll_Service` (OpenMeteo 15min, dry→rain 3x3-trigger emit).
+> - **`DiscordListener_Service`** (2026-09-06) — a bejövő Discord-csatorna **felügyelője**. A CLI-figyelőt (`ma comm listen`) gyermek-folyamatként futtatja, összeomlás után újraindítja (5 mp → ×2 → max 5 perc), és a gyermek utolsó kimeneti sorait a hiba-bejegyzésbe teszi. ⛔ A figyelő logikája **nem** duplikálódik a szerverbe — a kanonikus megvalósítás a `cli/src/discord/`-ban van. Owner-indok: a szerver az egyetlen folyamat, ami az LDP alatt folyamatosan fut, tehát ez a helyes gazda.
 > - **Wave panel Phase 5a-e** — x-tick density, sin/cos LSQ fit overlay, interval picker + localStorage, fullscreen, marker overlay (action-log scan).
 > - **Tests:** 88 → 102 spec (cycle 106-108 burst: wave-sinusoid-fit + error-extract + d-dashboard.data-service).
 
