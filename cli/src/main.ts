@@ -129,6 +129,22 @@ async function runInterfoodSubcommand(command: string, args: string[]): Promise<
   return (await import('./commands/interfood.command.js')).runInterfoodCommand(command, args);
 }
 
+async function runCcapSubcommand(command: string, args: string[]): Promise<void> {
+  return (await import('./commands/ccap.command.js')).runCcapCommand(command, args);
+}
+
+async function runCommSubcommand(command: string, args: string[]): Promise<void> {
+  return (await import('./commands/comm.command.js')).runCommCommand(command, args);
+}
+
+async function runStatusSubcommand(command: string, args: string[]): Promise<void> {
+  return (await import('./commands/status.command.js')).runStatusCommand(command, args);
+}
+
+async function runTickSubcommand(command: string, args: string[]): Promise<void> {
+  return (await import('./commands/tick.command.js')).runTickCommand(command, args);
+}
+
 const COMMAND_TREE: Record<string, Record<string, CommandHandler>> = {
   cast: {
     discover: runDiscoverCommand,
@@ -161,6 +177,22 @@ const COMMAND_TREE: Record<string, Record<string, CommandHandler>> = {
   stocks: {
     mirror: runStocksMirrorCommand,
   },
+  ccap: {
+    whoami: (args: string[]) => runCcapSubcommand('whoami', args),
+    runtime: (args: string[]) => runCcapSubcommand('runtime', args),
+  },
+  comm: {
+    doctor: (args: string[]) => runCommSubcommand('doctor', args),
+    flush: (args: string[]) => runCommSubcommand('flush', args),
+    listen: (args: string[]) => runCommSubcommand('listen', args),
+    say: (args: string[]) => runCommSubcommand('say', args),
+  },
+  status: {
+    digest: (args: string[]) => runStatusSubcommand('digest', args),
+  },
+  tick: {
+    plan: (args: string[]) => runTickSubcommand('plan', args),
+  },
   linkedin: {
     configure: (args: string[]) => runLinkedInSubcommand('configure', args),
     auth: (args: string[]) => runLinkedInSubcommand('auth', args),
@@ -168,12 +200,15 @@ const COMMAND_TREE: Record<string, Record<string, CommandHandler>> = {
     inbox: (args: string[]) => runLinkedInSubcommand('inbox', args),
     thread: (args: string[]) => runLinkedInSubcommand('thread', args),
     reply: (args: string[]) => runLinkedInSubcommand('reply', args),
+    review: (args: string[]) => runLinkedInSubcommand('review', args),
     cache: (args: string[]) => runLinkedInSubcommand('cache', args),
   },
   interfood: {
     weeks: (args: string[]) => runInterfoodSubcommand('weeks', args),
     menu: (args: string[]) => runInterfoodSubcommand('menu', args),
     'menu-range': (args: string[]) => runInterfoodSubcommand('menu-range', args),
+    'last-minute': (args: string[]) => runInterfoodSubcommand('last-minute', args),
+    recommendation: (args: string[]) => runInterfoodSubcommand('recommendation', args),
     auth: (args: string[]) => runInterfoodSubcommand('auth', args),
     orders: (args: string[]) => runInterfoodSubcommand('orders', args),
     foods: (args: string[]) => runInterfoodSubcommand('foods', args),
@@ -288,8 +323,12 @@ function printHelp(): void {
       '  action-log  Action-log entry emit (kanonikus belépés)',
       '  email       Gmail OAuth/API + provider-neutral IMAP/SMTP tools',
       '  stocks      Organizer stock mirror (complete paginated local snapshot)',
-      '  linkedin    Official Member Data Portability inbox sync and local reply drafts',
+      '  linkedin    Official inbox sync, semantic review and local reply drafts',
       '  interfood   Public weekly-menu and nutrition reader',
+      '  ccap        CCAP CC-session integration (whoami / runtime)',
+      '  comm        Communication channel diagnostics + Discord batch flush',
+      '  status      Authoritative status digest (within-hour / today / overdue)',
+      '  tick        Hourly assistant tick — dry-run plan (sends nothing)',
       '',
       'Run `ma <group> --help` for group-specific help.',
       '',
@@ -461,6 +500,8 @@ function printGroupHelp(group: string): void {
         '  ma linkedin inbox bootstrap --dry-run --pretty',
         '  ma linkedin inbox sync --pretty',
         '  ma linkedin inbox needs-reply --limit 20 --pretty',
+        '  ma linkedin review list --state unreviewed --since-days 90 --pretty',
+        '  ma linkedin review apply --stdin --pretty',
         '  ma linkedin thread show --id THREAD_ID --pretty',
         '  ma linkedin reply draft --thread THREAD_ID --body-file C:\\absolute\\reply.txt --pretty',
         '',
@@ -481,23 +522,110 @@ function printGroupHelp(group: string): void {
         '  weeks          List the current and published order weeks',
         '  menu           Read one normalized weekly menu (defaults to current week)',
         '  menu-range     Read the current and following weeks (default: 3)',
+        '  last-minute   Read the currently orderable next-day Last Minute inventory',
         '',
         'Examples:',
         '  ma interfood weeks --pretty',
         '  ma interfood menu --pretty',
         '  ma interfood menu --year 2026 --week 37 --pretty',
         '  ma interfood menu-range --weeks 3 --pretty',
+        '  ma interfood last-minute --pretty',
         '',
         '  ma interfood auth status|start --pretty',
         '  ma interfood orders sync|list|week|coverage|patterns [--add-ons-only] [--summary] --pretty',
         '  ma interfood foods identify|list [--commit] [--summary] --pretty',
         '  ma interfood preference set|compare|portion|list --pretty',
         '  ma interfood plan week [--meals-per-day 2] [--repetition-windows 7,14,28] [--summary] --pretty',
+        '  ma interfood recommendation publish --selection <file> [--review <file>] [--output <file>] --pretty',
         '  ma interfood nutrition compare --ids 35853,35859 --pretty',
         '  ma interfood cart show|add|set|subtract|remove|clear|diff|reconcile --pretty',
         '  ma interfood order show|check|change-preview|change-apply --pretty',
         '',
         'Public menu reads need no login. Account commands use one persistent dedicated UBH profile.',
+        '',
+      ].join('\n'),
+    );
+    return;
+  }
+  if (group === 'ccap') {
+    process.stdout.write(
+      [
+        '',
+        'ma ccap — CCAP CC-session integration',
+        '',
+        'Subcommands:',
+        '  whoami   Which CC session am I in CCAP (runtime resolution, nothing hard-coded)',
+        '  runtime  Am I busy right now; CCAP queue length and lock state',
+        '',
+        'Flags:',
+        '  --pretty        Pretty-print JSON envelope',
+        '  --session <id>  Explicit CC session id (runtime only; default: myself)',
+        '',
+        'The identity is resolved by matching CLAUDE_CODE_SESSION_ID against the CCAP',
+        'cc-session list, because the ccs-… id can change between restarts.',
+        '',
+      ].join('\n'),
+    );
+    return;
+  }
+  if (group === 'comm') {
+    process.stdout.write(
+      [
+        '',
+        'ma comm — Communication channel diagnostics + Discord batch flush',
+        '',
+        'Subcommands:',
+        '  doctor   Itemised report: what works, what is missing, and WHAT TO DO about it',
+        '  flush    Send the pending Discord batch as ONE prompt through CCAP',
+        '  listen   Run the Discord listener (long-running; only the owner\'s messages are queued)',
+        '',
+        'Flags:',
+        '  --json     Machine-readable envelope (doctor prints a human report by default)',
+        '  --pretty   Pretty-print JSON',
+        '  --force    flush only: skip the batching decision and send now',
+        '',
+        'doctor exits non-zero when something is broken or degraded, so scripts notice.',
+        'An unmeasurable check is reported as UNKNOWN — never as OK.',
+        '',
+      ].join('\n'),
+    );
+    return;
+  }
+  if (group === 'status') {
+    process.stdout.write(
+      [
+        '',
+        'ma status — Authoritative status digest',
+        '',
+        'Subcommands:',
+        '  digest   Overdue · within the hour · today · undated high-priority',
+        '',
+        'Flags:',
+        '  --json --pretty   Machine-readable output',
+        '',
+        'Tasks and deadlines come from the organizer as the primary source, fully paginated.',
+        'If a source fails, the digest is marked PARTIAL and exits non-zero — a missing',
+        'source must never look like "nothing to do".',
+        '',
+      ].join('\n'),
+    );
+    return;
+  }
+  if (group === 'tick') {
+    process.stdout.write(
+      [
+        '',
+        'ma tick — Hourly assistant tick',
+        '',
+        'Subcommands:',
+        '  plan   DRY RUN: what the tick would do right now. Sends nothing.',
+        '',
+        'Flags:',
+        '  --json --pretty   Machine-readable output',
+        '',
+        'Daytime/Nighttime follows WAKEFULNESS, not the clock. The speaker is only used',
+        'when awake AND at the machine AND a deadline is within the hour.',
+        'Every decision is written to the action log — including a silent tick.',
         '',
       ].join('\n'),
     );

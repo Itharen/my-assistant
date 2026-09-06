@@ -399,3 +399,26 @@
 | Q-food-3 | "Egészségtelen szokások" — konkrét mintázatok amiket ki akarunk küszöbölni (gyors-kaja / cukor / éhezés-csapongás)? | `food-tracking.md` | medium | open |
 | Q-food-4 | "Mikor ettél utoljára" — emlékeztető-passzív mód: ha N óra óta nincs étkezés-event, kérdezzen rá az assistant? | `food-tracking.md` | medium | open |
 | Q-food-5 | Étkezés utáni séta/edzés: szabály-szintű (mindig) vagy ajánlás (rugalmas)? | `recurring-tasks.md` + `fit-system.md` | medium | open |
+
+---
+
+## H) Kommunikációs csatorna + Assistant-tick 📡 (2026-09-06)
+
+> Ezek a kérdések a Discord-csatorna és az óránkénti tick fejlesztése közben merültek fel.
+> A chatben mindegyik elhangzott, a permanens hely ez a fájl.
+> Terv: `__agent/plans/discord-two-way-hyperplan/` · szabályok:
+> `__agent/flows/recurring/hourly-assistant-tick/README.md`
+
+| ID | Kérdés | Kontextus / miért kell | Fontosság | Status |
+|---|---|---|---|---|
+| `Q-2026-09-06-01` | **Javítsam a `cli/src/interfood/interfood.api-client.ts` duplikált `getImageUrl` metódusát, vagy a másik session zárja le?** | Idegen, commitolatlan munka; a **teljes CLI-build bukik** miatta, ezért a tesztek csak kerülőúton futnak. | **h** | open |
+| `Q-2026-09-06-02` | **Megtartsuk a „dátum nélküli, magas prioritású" rekeszt a státusz-kivonatban? Jó a P≥100 küszöb?** | Ez az **assistant kiegészítése**, nem owner-kérés. Azért kellett, mert a feladatok többségének nincs határideje, és nélküle a kivonat majdnem üres. | **m** | open |
+| `Q-2026-09-06-03` | **Jó a 6 órás ismétlés-elnyomás?** (ugyanarról a tételről ennyi ideig nem szólunk újra) | Szintén **assistant-kiegészítés**. Enélkül egy lejárt feladat óránként újra kimenne és zajjá tenné a csatornát. | **m** | open |
+| `Q-2026-09-06-04` | **Legyen külön „jó reggelt, ez történt éjjel" összegzés az ébredés pillanatában?** | Az éjszakai ág gyűjt; nyitott, hogy a csomag magától menjen-e ki ébredéskor. | **m** | open |
+| `Q-2026-09-06-05` | **Mivel bővül még a tick ellenőrzés-listája?** (most: feladat/határidő, naptár, ismétlődők, alvás, készlet, kaja-fedettség) | A lista owner-rel közösen véglegesítendő. | **m** | open |
+| `Q-2026-09-06-06` | **Telefonos jelenlét-visszajelzés — hogyan?** *„ha belső hálózaton vagyok, akkor azt kiderüljön neked a státuszból"* | Owner vetette fel; a jelenlegi szabályon (gép-használat) **túli** bővítés, most nem blokkoló. | **l** | open |
+| `Q-2026-09-06-07` | **Mi számít éjszaka „valóban nem halasztható"-nak?** | A workflow szerint az éjszakai ág alapból gyűjt, de kivétel lehet. A kritérium nincs kimondva — **nem találom ki magamtól**. | **m** | open |
+
+**Owner-műveletre váró tételek** (nem kérdés, hanem teendő — a `CONTINUATION.md` is viszi):
+saját Discord-alkalmazás + bot-token a `.env`-be · `install-autostart.ps1 -Mode apply`
+a jelenlét-figyelőhöz.

@@ -4,8 +4,104 @@
 
 ---
 
+## A Discord-csatorna ÖNMŰKÖDŐVÉ vált — a szerver a gazda + „gépel…" — 2026-09-06
+
+- **🔴 A figyelő gazdája a SZERVER** (owner-kérés: *„a szervernek kéne futnia, a szervernek kéne
+  ezt figyelnie… LDP-vel, hogy folyamatosan fusson"*). Új:
+  `server/src/_services/discord-listener.service.ts` — a `WeatherPoll_Service` mintájára
+  boot-időben induló singleton, ami a CLI-figyelőt **gyermek-folyamatként** futtatja és felügyeli.
+  ⛔ A figyelő logikája **nem másolódott** a szerverbe: egy forrás, egy igazság.
+  - Összeomlás után **újraindít**, lassuló ütemben (5 mp → ×2 → max 5 perc); 60 mp-nél hosszabb
+    futás után a várakozás nullázódik.
+  - A hiba-bejegyzésbe beteszi a gyermek **utolsó 12 kimeneti sorát** — így a naplóból kiderül,
+    MI hiányzott, nem csak az, hogy „meghalt".
+  - Friss **idegen életjel** esetén nem indít másodikat; az életjel mostantól a **PID-et** is
+    tartalmazza, így egy épp elhalt figyelő jele nem mutatja percekig „foglaltnak" a csatornát.
+- **🔴 KRITIKUS HIÁNY JAVÍTVA — a kiküldés eddig KÉZI volt.** A figyelő csak **gyűjtött**; a
+  köteg átadásához valakinek le kellett futtatnia a `ma comm flush`-t. Vagyis még futó figyelő
+  mellett is a köteg-fájlban álltak volna az üzenetek, miközben kívülről ez pontosan úgy néz ki,
+  mintha meg sem érkeztek volna. **Mostantól automatikus, 15 mp-enként.** A kiküldési hiba
+  naplózva van (első alkalommal azonnal, utána legfeljebb 5 percenként), és az üzenetek a
+  kötegben **maradnak** — nem vesznek el.
+- **⌨️ „Gépel…" visszajelzés** (owner-kérés: *„vagy dolgozol, vagy valami visszajelzést… egy
+  typing üzét küldhetnél… Ugye az egy idővel le is jár, ilyenkor frissíteni kell"*). Új:
+  `cli/src/discord/discord.typing-indicator.ts`. Akkor jelez, ha **van várakozó üzenet** vagy
+  **válasz-tartozás**; **7 mp-enként** frissül (a Discordé ~10 mp után lejár); **15 perc** után
+  biztonsági szeleppel leáll — az örökké gépelő bot félrevezetőbb, mint a néma. 11 új teszt.
+- **Élő igazolás (2026-09-06 22:33):** a szerver elindult → felügyelt figyelőt indított → a
+  visszamenőleges beolvasás behozta a 2 kimaradt üzenetet → **automatikusan** átment a CC
+  sessionbe (`deliveredCount: 2, queued: true`), emberi beavatkozás nélkül.
+- **Teszt-állás:** a teljes CLI-suite **344/344 zöld**.
+- ⚠️ **Nyitott blokkoló:** a `cli/src/interfood/interfood.api-client.ts`-ben **két** `getImageUrl`
+  van (TS2393, másik session commitolatlan munkája). Ez elhasalasztja a `tsc-cli` lépést, ami az
+  LDP-ben `fatal` — ezért az **LDP jelenleg nem tud végigfutni**, és a szervert közvetlenül kell
+  indítani. Owner-döntésre vár (`current/open-questions.md` H).
+
+---
+
+## Kommunikációs csatorna alapok — CCAP-híd, hangszórós kapu, tick — 2026-09-06
+
+- **Saját CC session-önazonosítás** (`ma ccap whoami` / `runtime`): a `CLAUDE_CODE_SESSION_ID`
+  futásidejű összepárosítása a CCAP `/api/cc-session` rekordjával. Semmi beégetett azonosító.
+- **Discord-kötegelő** (`cli/src/discord/`): a bejövő üzenetek lemezen gyűlnek, és **EGYETLEN**
+  prompttá összefűzve mennek be a CCAP hivatalos `prompt` végpontján — mert minden prompt egy
+  külön futás. Üzenet nem veszhet el: a köteg csak igazolt átadás után ürül.
+- **🔴 Hangszórós kapu** (`cli/src/cast/notify.presence-gate.ts`): a `ma cast notify` mostantól
+  **csak ÉBREN + ITTHON** állapotban szólal meg. Ismeretlen jel ⇒ **tilt**. Kézi felülbírálás
+  `--force`-szal, mindig naplózva. Korábban a bemondás útján **semmilyen kapu nem volt**.
+- **Csatorna-diagnosztika** (`ma comm doctor`): tételesen mi él, mi hiányzik, és **mi a teendő**.
+  Az `unknown` külön állapot — ami nem mérhető, az sosem látszik „rendben"-nek.
+- **Státusz-kivonat** (`ma status digest`): elmúlt / egy órán belül / ma / dátum nélküli magas
+  prioritású, az organizerből mint elsődleges forrásból. Forrás-hiba esetén **HIÁNYOS** jelzés.
+- **Assistant-tick** (`ma tick plan`, száraz futás): Daytime/Nighttime ág **az ébrenléthez**
+  kötve, nem napszakhoz; csatorna-választás; ismétlés-elnyomás; minden döntés naplózva —
+  a csendes tick is.
+- **Javított mért hibák:** a státusz-kivonat **nem lapozott** (131 feladatból 10-et látott) ·
+  a jelenlét-olvasó éjfélkor hamis „nincs mérés"-t adott volna · a kapu összeomlott volna
+  olvasási hibánál.
+- **Discord-figyelő** (`ma comm listen`, `discord.js` 14.27): csak az owner üzenetei, csak a
+  dedikált csatornából; a saját bot üzenetei kiszűrve (visszhang-hurok). A figyelő **csak a
+  kötegbe tesz** — szerkezetileg nem tudja megkerülni a CCAP-ot.
+- **Életjel a figyelőhöz:** 60 mp-enként frissülő jel, és a `comm doctor` a jel
+  **frissességét** nézi — nem a konfiguráció meglétét. Egy csendben elhalt figyelő így
+  nem néz ki úgy, mintha az owner nem írt volna. *(A jelenlét-figyelő 112 napig volt
+  halott pontosan ilyen jel hiányában.)*
+- Tesztek: **78 új spec**, mind zöld.
+
+## LinkedIn semantic reply triage — 2026-09-06
+
+- Split latest-inbound technical candidacy from the message-bound semantic `needsReply` decision.
+- Added agent-neutral `ma linkedin review list|apply`, explainable categories/confidence/reasons, stale-review
+  invalidation and idempotent agent drafts tied to the reviewed latest message.
+- Backfilled the live 90-day inbox: 5 reply-worthy conversations and drafts; automated, closed and duplicate
+  threads no longer pollute **Válaszra vár**.
+- Made the workspace show review state, semantic reason and stale/current draft state, and distinguish Chrome Side
+  Panel availability from the normal-tab fallback.
+- Added full internal review-list pagination and LI-J08 semantic state-carrying journey coverage.
+
+## LinkedIn guided manual-send workspace — 2026-09-05
+
+- Added the responsive Angular `/linkedin` inbox/thread/draft workspace over the existing official read-only cache.
+- Added explicit pagination, 90-day needs-reply default, CV checkpoint, clipboard flow and truthful
+  `manual-send-reported` local evidence.
+- Added the vendor-neutral `My Assistant Companion` MV3 Chrome Side Panel extension. It has no LinkedIn host
+  permission/content script and never reads, fills or sends through LinkedIn.
+- Pinned the companion's stable extension ID and scoped iframe permission to that exact origin on the dedicated
+  side-panel surface; ordinary app routes retain `SAMEORIGIN`.
+- Added an idempotent, health-gated TypeScript launcher behind `npm start` and `npm run start:agent`; it waits for
+  the actual HTTP-listening event rather than the LDP's earlier process-start flag.
+- Added manifest/security tests and LI-J07 state-carrying happy/restricted/restart variants with cleanup.
+- Added the operational runbook and wired the extension/startup checks into the normal root and LDP gates.
+
 ## Interfood agent-independent ordering toolkit — 2026-09-01
 
+- Added browser-free `ma interfood last-minute` live inventory reading for expired normal-order deadlines, with
+  exact occurrence/order-window normalization, empty-inventory warning and IF-J08 regression variants.
+- Added a non-cancellable Last Minute finalization gate (fresh inventory read + dedicated owner confirmation) and
+  fixed 🍲 soup / 🍰 dessert owner-review markers.
+- Refined owner-review ranking so explicit favorites remain selected with visible warnings (hard rejects still
+  exclude), added exact Mexican meat-and-bean tortilla plus quinoa/bulgur preferences and the lecsó-over-
+  Székelykáposzta pairwise decision, changed the health marker to 🥦, and removed empty soup/dessert placeholders.
 - Added agent-neutral `ma interfood weeks|menu|menu-range` commands against Interfood's first-party public API.
 - Normalizes weekly occurrence/food IDs, category context, prices, ingredients and component-level portion/per-100g nutrition.
 - Live smoke verified current plus two following enabled weeks (2026-W36..W38, 482 rows each).

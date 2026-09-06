@@ -43,9 +43,11 @@ import { SleepState_Controller } from './_routes/sleep-state/sleep-state.control
 import { Reports_Controller } from './_routes/reports/reports.controller';
 import { LinkedInWorkspace_Controller } from './_routes/linkedin/linkedin-workspace.controller';
 import { LinkedInWorkspace_FrameMiddleware } from './_routes/linkedin/linkedin-workspace-frame.middleware';
+import { InterfoodRecommendation_Controller } from './_routes/interfood/interfood-recommendation.controller';
 import { Health_Controller } from './_routes/health/health.controller';
 
 import { VersionBroadcast_SocketServerService } from './_services/socket-services/version-broadcast.socket-server-service';
+import { DiscordListener_Service } from './_services/discord-listener.service';
 import { WeatherPoll_Service } from './_services/weather-poll.service';
 
 /** my-assistant App bootstrap. DyNTS_AppExtended-t terjeszti — Mongo + routes + static client + sockets. */
@@ -171,6 +173,10 @@ export class App extends DyNTS_AppExtended {
         route: '/linkedin',
         controllers: [ LinkedInWorkspace_Controller.getInstance() ],
       }),
+      new DyNTS_RoutingModule({
+        route: '/interfood',
+        controllers: [ InterfoodRecommendation_Controller.getInstance() ],
+      }),
     ];
   }
 
@@ -196,11 +202,16 @@ export class App extends DyNTS_AppExtended {
   // `any` is the master-prompter convention for the socket-service tuples
   // (heterogeneous service types).
   /**
-   * Root services — boot-időben példányosítandó singleton-ok. FR #8a Phase 1
-   * (cycle 90): WeatherPoll_Service indít egy 15-min OpenMeteo poll-loopot.
+   * Root services — boot-időben példányosítandó singleton-ok.
+   *
+   * • `WeatherPoll_Service` (FR #8a Phase 1, cycle 90): 15-perces OpenMeteo poll-loop.
+   * • `DiscordListener_Service` (owner, 2026-09-06): a bejövő Discord-csatorna figyelője.
+   *   Azért ITT van, mert a szerver az egyetlen folyamatunk, ami az LDP alatt
+   *   FOLYAMATOSAN fut — külön indított figyelő esetén a le nem futás csendes, és az
+   *   owner üzenete úgy tűnik el, mintha meg sem írták volna.
    */
   override async getRootServices(): Promise<unknown[]> {
-    return [ WeatherPoll_Service.getInstance() ];
+    return [ WeatherPoll_Service.getInstance(), DiscordListener_Service.getInstance() ];
   }
 
   /**

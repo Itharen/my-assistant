@@ -1,0 +1,132 @@
+// Kimenő irány — ÉN → Discord.
+//
+// Owner-szabály (2026-09-06): a Discordról érkező üzenetre **nem elég a sessionben
+// válaszolni — Discordon IS kell**. Enélkül a csatorna fél lábon áll: látom, amit írsz,
+// de te nem látod a választ.
+//
+// Egyszeri küldés: bejelentkezik, küld, bont. Nem tart fenn állandó kapcsolatot — az a
+// figyelő dolga (`discord.listener.ts`), és két párhuzamos gateway-kapcsolat fölösleges.
+
+import { Client, GatewayIntentBits, type TextBasedChannel } from 'discord.js';
+
+import { recordOutbound } from './discord.reply-tracker.js';
+
+/** A Discord üzenet-hossz korlátja. E fölött darabolunk. */
+const DISCORD_MAX_MESSAGE_CHARS: number = 2000;
+
+export interface DiscordSendResult {
+  sent: boolean;
+  /** Hány részletben ment ki (hosszú szöveget darabolunk). */
+  partCount: number;
+  detail: string;
+  /** MIT KELL TENNI, ha nem ment. */
+  remedy?: string;
+}
+
+/**
+ * Üzenet küldése a beállított csatornába.
+ *
+ * 🔴 Hiba esetén NEM dob kivételt, hanem leíró eredményt ad — a hívónak (és az ownernek)
+ * az a hasznos, hogy MI hiányzik, nem egy verem-nyom.
+ */
+export async function sendDiscordMessage(text: string): Promise<DiscordSendResult> {
+  const token: string = (process.env['MA_DISCORD_BOT_TOKEN'] ?? '').trim();
+  const channelId: string = (process.env['MA_DISCORD_CHANNEL_ID'] ?? '').trim();
+  const trimmed: string = text.trim();
+
+  if (!trimmed) {
+    return { sent: false, partCount: 0, detail: 'Üres üzenetet nem küldünk.', remedy: 'Adj meg szöveget.' };
+  }
+
+  if (!token || !channelId) {
+    return {
+      sent: false,
+      partCount: 0,
+      detail: 'Hiányzik a bot-token vagy a csatorna-azonosító.',
+      remedy: 'Állítsd be a `.env`-ben: MA_DISCORD_BOT_TOKEN és MA_DISCORD_CHANNEL_ID.',
+    };
+  }
+
+  // A küldéshez elég a `Guilds` intent — üzenetet olvasni nem akarunk, csak írni.
+  const client: Client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+  try {
+    await client.login(token);
+
+    const channel = await client.channels.fetch(channelId);
+
+    if (!channel || !channel.isTextBased() || !('send' in channel)) {
+      return {
+        sent: false,
+        partCount: 0,
+        detail: `A csatorna nem érhető el, vagy nem szöveges (${channelId}).`,
+        remedy: 'Ellenőrizd a MA_DISCORD_CHANNEL_ID-t, és hogy a bot látja-e a csatornát.',
+      };
+    }
+
+    const parts: string[] = splitForDiscord(trimmed);
+
+    for (const part of parts) {
+      await (channel as TextBasedChannel & { send: (content: string) => Promise<unknown> }).send(part);
+    }
+
+    // G-1: a valasz-kotelezettseg kovetesehez rogzitjuk, hogy valaszoltunk.
+    await recordOutbound();
+
+    return {
+      sent: true,
+      partCount: parts.length,
+      detail: parts.length === 1 ? 'Elküldve.' : `Elküldve ${parts.length} részletben.`,
+    };
+  } catch (err: unknown) {
+    const message: string = err instanceof Error ? err.message : String(err);
+
+    return {
+      sent: false,
+      partCount: 0,
+      detail: `A küldés nem sikerült: ${message}`,
+      remedy: 'Ellenőrizd, hogy a botnak van-e `Send Messages` joga a csatornában, '
+        + 'és hogy a token érvényes-e.',
+    };
+  } finally {
+    // A kapcsolatot MINDIG bontjuk — különben a folyamat nem állna le.
+    await client.destroy().catch(() => undefined);
+  }
+}
+
+/**
+ * Hosszú szöveg darabolása a Discord 2000 karakteres korlátja alá.
+ *
+ * Soronként vágunk, hogy a mondatok ne törjenek szét. Egy önmagában túl hosszú sort
+ * kényszerből darabolunk — de ez ritka, és jobb, mint az elveszett üzenet.
+ */
+export function splitForDiscord(text: string): string[] {
+  if (text.length <= DISCORD_MAX_MESSAGE_CHARS) return [text];
+
+  const parts: string[] = [];
+  let current: string = '';
+
+  for (const line of text.split('\n')) {
+    if (line.length > DISCORD_MAX_MESSAGE_CHARS) {
+      if (current) { parts.push(current); current = ''; }
+
+      for (let index = 0; index < line.length; index += DISCORD_MAX_MESSAGE_CHARS) {
+        parts.push(line.slice(index, index + DISCORD_MAX_MESSAGE_CHARS));
+      }
+
+      continue;
+    }
+
+    // +1 az újsor karakterre.
+    if (current.length + line.length + 1 > DISCORD_MAX_MESSAGE_CHARS) {
+      parts.push(current);
+      current = line;
+    } else {
+      current = current ? `${current}\n${line}` : line;
+    }
+  }
+
+  if (current) parts.push(current);
+
+  return parts;
+}

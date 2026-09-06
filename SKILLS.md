@@ -162,18 +162,33 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
 
 ### LinkedIn personal inbox
 
-- Kanonikus agent-semleges CLI: `ma linkedin`; MCP, browser extension és Computer Use nem szükséges és nincs fallback.
+- Kanonikus agent-semleges read/sync CLI: `ma linkedin`; a guided manual-send felület indítása `npm start`, agentből
+  böngészőnyitás nélkül `npm run start:agent`.
 - Hivatalos, read-only LinkedIn Member Data Portability API: snapshot bootstrap + incremental changelog sync.
-- Runbook: `__documentations/dev/LINKEDIN_INBOX_CLI.md`; terv: `__agent/plans/linkedin-integration-hyperplan/`.
-- Titok kizárólag FDP Keystore-ban; a lokális config csak project/branch/environment/key hivatkozást tárol.
+- CLI runbook: `__documentations/dev/LINKEDIN_INBOX_CLI.md`; workspace/extension runbook:
+  `__documentations/dev/LINKEDIN_WORKSPACE.md`; terv: `__agent/plans/linkedin-integration-hyperplan/`.
+- A jelenlegi owner-választás szerint a token a gitignored root `.env` `LINKEDIN_MEMBER_ACCESS_TOKEN` kulcsán van;
+  FDP Keystore opcionális provider. A lokális config csak credential-source/key hivatkozást tárol.
 - Alap állapotgyökér: `%USERPROFILE%/.config/my-assistant/linkedin/`; nem repo és nem Source of Truth.
 - Első diagnosztika: `ma linkedin auth status --pretty`, majd `ma linkedin doctor --pretty`.
 - Teljes bootstrap: `ma linkedin inbox bootstrap --pretty`; biztonságos próba: `--dry-run`.
 - Normál frissítés: `ma linkedin inbox sync --pretty`; a changelog 28 napos, ezért rendszeres sync kötelező.
 - Lapozás: listázáskor `nextOffset` minden oldalát követni kell `null`-ig.
-- `unread` a live kalibrációig csak candidate; `needs-reply` determinisztikusan a legutolsó üzenet irányából jön.
+- Első triázs: `ma linkedin review list --state unreviewed --since-days 90 --pretty`; minden teljes thread elolvasása
+  után egy atomi `ma linkedin review apply --stdin`, majd `ma linkedin inbox needs-reply --since-days 90 --pretty`.
+- `technicalNeedsReplyCandidate` csak a legutolsó inbound üzenet determinisztikus technikai jelzése. A
+  `needsReply` kizárólag friss, az aktuális utolsó üzenethez kötött agenti értékelésből jön; lezárás, automatizmus és
+  duplikáció nem kerül a válaszsorba. Új aktivitás a review-t és a hozzá kötött draftot elavulttá teszi.
+- `unread` a live kalibrációig csak candidate.
 - `thread show` és `reply show` explicit content-revealing művelet; listák nem adnak vissza message/draft body-t.
 - Nincs send parancs: a reply draft lokális, LinkedIn-küldést soha nem szabad állítani official write receipt nélkül.
+- A saját `browser-extension/` MV3 companion csak a localhost My Assistant laphoz kap host permissiont. A Chrome
+  Side Panelben a saját `/linkedin` UI-t mutatja, normál LinkedIn messaging tabot nyit, de nincs LinkedIn content
+  script/host permission/DOM-hozzáférés. Build/test: `pnpm run build-browser-extension`,
+  `pnpm run test-browser-extension`.
+- Az unpacked extension manifest key miatt stabil ID-je `amdkdmdajbhlhfgacbodpnlkjjfioclm`. A szerver csak ezt az
+  origint engedi a `/linkedin?surface=sidepanel` frame-jéhez; eltérő Chrome-ID hibás vagy régi extension-betöltést jelez.
+- A UI `manual-send-reported` állapota owner-jelentés, nem API receipt. CV-csatolás és natív Send mindig kézi.
 - Törlés: draft/cache csak explicit `--confirm`; a config cache purge mellett megmarad.
 - Globális telepítés ezen a gépen: a tartós `PNPM_HOME=E:\pnpm\bin` hibásan `bin\bin`-t képez, ezért a javított
   értéket csak a telepítő processzre add: `$env:PNPM_HOME='E:\pnpm'; pnpm add --global '<repo>\cli'`.
@@ -185,6 +200,9 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
 - Rendelhető hetek: `ma interfood weeks --pretty`.
 - Egy hét: `ma interfood menu --pretty`, vagy explicit `--year <YYYY> --week <1..53>`.
 - Aktuális + következő két hét: `ma interfood menu-range --weeks 3 --pretty`.
+- Lejárt normál határidő után a következő napi élő készlet: `ma interfood last-minute --pretty`. Csak az aktuális
+  `isLastMinuteOrderable=true`, `disabled=false` occurrence választható; üres válasznál a nap megoldatlan marad, a
+  lejárt heti étlapra nem esünk vissza. A nyers készletszámlálókból nem találunk ki maradék-képletet.
 - `complete=false` és `warning` esetén kevesebb hét érhető el; ezt soha ne kezeld üres menüként.
 - A `menuItemId` heti/dátumspecifikus rendelési azonosító; `foodId` az ételazonosítás egyik jele.
 - A `foodId` alapján order-line-t tilos összevonni. Külön identitás a dátum/adag-specifikus `menuItemId`, az
@@ -196,6 +214,9 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
   `ma interfood auth status|start`, majd `orders sync|list|coverage|patterns`. Rutin agent-futtatásnál használd a
   `--summary` kapcsolót; account/cart/order output alapból PII-minimal summary, `--full` csak helyi diagnosztika;
   jelszó/cookie/session nem env.
+- `UBH-BROKER-NOT-RUNNING-001` esetén `ubh broker start`, majd ha az `auth status` szerint a dedikált browser nem
+  fut, pontosan egyszer `ma interfood auth start --pretty`. A perzisztens profil megőrzi a sessiont; futó browserre
+  ne indíts újabb login ablakot, hanem a visszaadott `nextSafeAction` szerint diagnosztizálj és olvass vissza.
 - Történeti jelöltek: `ma interfood orders patterns --minimum-units 2 --limit 30 --pretty`; a
   `--double-orders-only` csak azokat mutatja, amelyekből legalább egy napon összesen kettő vagy több adag volt.
   Ez megfigyelt bizonyíték, nem explicit preferencia; csak owner-megerősítés után használd a `preference set`-et.
@@ -211,6 +232,8 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
   kikapcsolja az adott szabályt (például hal dislike, kivéve halrud; marha/sertés dislike, kivéve darált).
 - Teljes kívánt kosárhoz először `cart diff --items-file ...`, majd jóváhagyott összeállításnál
   `cart reconcile --items-file ...`; a fájlban nem szereplő meglévő sorokat a reconcile eltávolítja.
+- A Last Minute végleges rendelés a provider szerint nem mondható le. A draft kosárkezelés után is közvetlenül a
+  véglegesítés előtt friss `last-minute` readback és külön owner-megerősítés szükséges.
 - Azonosítás és terv: `foods identify|list`, `plan week`, `nutrition compare`.
 - Ha az owner külön hét/időtartomány nélkül kér Interfood-ajánlást, először `weeks`, majd minden nem disabled,
   current/future hétre `orders coverage` + `plan week`; az összes lefedetlen napot egy batch-ben mutasd. A teljesen
@@ -231,10 +254,13 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
   deduplikált, és egyik alternatíva sem automatikus plusz kosártétel.
 - Egy táblázatsor/nap: a két főétel egymás alatt egy cellában, a kedvenc leves/desszert alattuk külön `+` soron.
   Alternatívák ugyanennek a táblának másik oszlopában. ID-k csak a belső gépi adatban; a usernek nem kellenek.
-- Fix jelölések: ⭐ kedvenc, 🥗 egészségesebbnek szánt/tekintett választás, ⚠️ figyelmeztetés a konkrét okkal.
-  Korrekció után mindig a TELJES többhetes ajánlás jön újra a chatben, nem csak módosult sorok vagy fájllink.
+- Fix jelölések: ⭐ kedvenc, 🥦 egészségesebbnek szánt/tekintett választás, ⚠️ figyelmeztetés a konkrét okkal,
+  🍲 leves és 🍰 desszert. A jelölések kombinálódnak (például `🍲 ⭐`).
+  Üres add-on esetén ne írj `nincs leves` / `nincs desszert` placeholder sort.
+  Korrekció után mindig a TELJES kért horizontú ajánlás jön újra a chatben, nem csak módosult sorok vagy fájllink.
 - A compact candidate `dietaryWarnings` mezőjét mindig kiemelten jelenítsd meg. Kizárólag tej/tejszín allergiajel
-  minden biztonságos étel mögé sorol és health lane-ből kizár; ha jobb jelölt híján mégis bekerül, a warning maradjon
+  health lane-ből kizár; nem kedvencet biztonságos étel mögé sorol, de explicit ⭐ kedvencet nem tolhat félre. A
+  warning a kiválasztott kedvenc mellett is maradjon
   látható. Tejföl, joghurt, túró, vaj és sajt explicit rendben van (owner-pontosítás 2026-09-02); a korábbi tágabb
   értelmezés felülírva. Későbbi explicit owner-pontosítás: sajtoknál, így camembertnél nincs tejjelzés; más érintett
   ételeknél marad a tej/tejszín figyelmeztetés. Ez személyes megjelenítési kivétel, nem biztonsági igazolás. History nem írja
@@ -253,6 +279,9 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
 - A planner alapértelmezett ismétlési ablakai 7/14/28 nap; szükség esetén
   `plan week --repetition-windows 7,14,28` formában három szigorúan növekvő napértékkel állíthatók.
 - A `fallback` stance erős hátrasorolás, de nem kizárás: csak jobb elfogadható jelölt hiányában kerül elő.
+- Quinoa, kuszkusz és bulgur aktívan keresett/preferált; ez nem írja felül a társított negatív összetevőt.
+  Exact `food:2131` Mexikói húsos, babos tortilla kedvenc, és `food:323` Házi lecsó virslivel, bulgurral előbbre
+  való `food:38` Székelykáposzta csirkemellből ételnél.
 - A szombati Interfood-menü pénteken érkezik. A `plan week` a pénteki és szombati occurrence-öket egyetlen pénteki
   poolban rangsorolja, a kimenet `sourceDates` mezője jelzi a forrásnapokat; a kiválasztott sor eredeti dátuma/ID-je
   a candidate `menuDate`/`menuItemId` mezőjében változatlan marad a kosárhoz.
@@ -273,3 +302,59 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
   a leadott order change pénzügyi preview-hashhez kötött külön approvalt igényel.
 - Folyamatos dokumentáció: minden új Interfood-kérés, működési tapasztalat és döntés ugyanabban a change-setben
   kerüljön az összes érintett helyre; kötelező mátrix: `current/principles/interfood-continuous-documentation.md`.
+
+### Kommunikációs csatorna — CCAP-híd, hangszórós kapu, tick
+
+- **Ki vagyok a CCAP-ban:** `ma ccap whoami --pretty` — a `CLAUDE_CODE_SESSION_ID`-t párosítja a
+  CCAP `/api/cc-session` rekordjával, és visszaadja a CC session-t + a CCAP instance-t. **Nincs
+  beégetett azonosító**: a `ccs-…` indításonként változhat, ezért mindig futásidőben oldjuk fel.
+- **Foglalt vagyok-e:** `ma ccap runtime --pretty` — `isBusyProcessing`, a CCAP sorának hossza,
+  zárolás. A Discord-kötegelő ebből dönt.
+- **Csatorna-diagnosztika:** `ma comm doctor` — tételes lista arról, mi él, mi hiányzik, és
+  **mi a teendő**. Alapból ember-olvasható, `--json` gépi. Hibás/részleges állapotnál nem-nulla
+  kilépési kód. ⚠️ Az `unknown` KÜLÖN állapot: ami nem mérhető, az sosem „rendben".
+- 🔴 **A figyelő GAZDÁJA a SZERVER** (owner, 2026-09-06): a `my-assistant` szerver indítja,
+  felügyeli és **újraindítja** (`server/src/_services/discord-listener.service.ts`). Normál
+  üzemben tehát **nem kell külön indítani semmit** — elég, hogy a szerver fut (LDP alatt
+  folyamatosan). A felügyelő a gyermek **utolsó kimeneti sorait** a hiba-bejegyzésbe teszi, és
+  friss idegen életjel esetén **nem indít másodikat**.
+- **Discord-figyelő kézi indítása:** `ma comm listen` — **hosszan futó** parancs, a kapcsolat addig
+  él, amíg fut (Ctrl+C állítja le). Csak az **owner** üzeneteit fogadja el, csak a **dedikált
+  csatornából**; a saját botunk üzeneteit kiszűri (visszhang-hurok ellen). ⛔ Közvetlenül SEMMIT
+  nem küld a CC sessionbe — csak a **kötegbe tesz**, a bejuttatás a CCAP `prompt` végpontján megy.
+  Hiányzó token/azonosító esetén **tisztán, teendővel** bukik el, nem verem-nyommal.
+- ⭐ **A kiküldés AUTOMATIKUS** (2026-09-06): a figyelő **15 mp-enként** megnézi, kiküldhető-e a
+  köteg. 🔴 **Mért hiány, ez javította:** eddig a figyelő CSAK gyűjtött, a kiküldéshez **kézzel**
+  kellett `ma comm flush`-t futtatni — így az owner üzenete a köteg-fájlban állt, és kívülről
+  pontosan úgy nézett ki, mintha meg sem érkezett volna.
+- 🔴 **Honnan tudod, hogy a figyelő ÉL:** 60 mp-enként **életjelet** ír; a `ma comm doctor`
+  a jel **frissességét** nézi. Elhallgatott jel → `broken` + *„a Discordon írt üzeneteid NEM
+  jutnak el hozzám"*. (A jelenlét-figyelő 112 napig volt halott, mert nem volt ilyen jel.)
+- **Discord-köteg kézi kiküldése:** `ma comm flush [--force]`. Normál üzemben **nem kell** — a
+  figyelő magától küld; ez a diagnosztikai/kényszerített út. A köteg **csak igazolt átadás után** ürül.
+- **Kimenő üzenet:** `ma comm say --text "…"` — 2000 karakter fölött **sorhatáron** darabol, és
+  rögzíti a kimenő naplóba. Erre épül a **válasz-kötelezettség** ellenőrzése: ha az utolsó
+  bejuttatott bejövő üzenet ÚJABB, mint az utolsó kimenő válasz, a `ma comm doctor` `degraded`-et
+  jelez — mert a leggyakoribb csendes hiba az, hogy csak a sessionben válaszolok.
+- ⌨️ **„gépel…" visszajelzés** (owner-kérés, 2026-09-06): amíg van várakozó üzenet **vagy**
+  válasz-tartozás, a bot **7 mp-enként** frissíti a Discord gépelés-jelzést (a Discordé ~10 mp
+  után lejár). **15 perc** után magától leáll — az örökké gépelő bot félrevezetőbb, mint a néma.
+- **Státusz-kivonat:** `ma status digest` — elmúlt / egy órán belül / ma / dátum nélküli magas
+  prioritású. ⚠️ Az `fo tasks.list` **alapból csak 10 tételt** ad (`totalCount` 131!), ezért a
+  kivonat **végiglapoz**; forrás-hiba esetén `HIÁNYOS` fejléc + nem-nulla kilépési kód.
+- **Tick száraz futása:** `ma tick plan` — megmutatja, mit tenne most (Daytime/Nighttime ág,
+  csatorna, érintett tételek). **Nem küld semmit.** Minden döntést naplóz, a csendeset is.
+- 🔴 **Hangszórós kapu:** a `ma cast notify` mostantól **csak ÉBREN + ITTHON** állapotban szólal
+  meg (ITTHON = használja a gépét; ÉBREN = itthon-jel VAGY Discord-válasz +1 óra). **Ismeretlen
+  jel ⇒ tilt.** Kézi felülbíráláshoz `--force` — mindig naplózódik.
+- ⚠️ A kapu jelenleg **tilt**, mert a jelenlét-figyelő nem fut. Élesítés (owner-lépés,
+  rendszer-szintű): `pwsh -File scripts/install-autostart.ps1 -Mode apply` — **egy szkript, mindkét
+  szolgáltatás** (jelenlét-figyelő + Discord-figyelő tartalék), AtLogon indul, hiba esetén
+  újraindul; módosítás nélküli ellenőrzés: `-Mode check`, eltávolítás: `-Mode remove`.
+  *(A Discord-figyelőt normál üzemben a szerver viszi — az ütemezett feladat a tartalék arra az
+  esetre, ha a szerver nem fut.)*
+- **Buktatók (mértek):** a Windows PowerShell 5.1 **ANSI-ként** olvassa a `.ps1`-et → ékezetes
+  szöveg töri a parse-t, ezért **UTF-8 BOM** kell · a `Join-Path` 3-argumentumos alakja csak PS7+.
+- Terv: `__agent/plans/discord-two-way-hyperplan/` · szabályok:
+  `__agent/flows/recurring/hourly-assistant-tick/README.md` · beállítás:
+  `__documentations/dev/DISCORD_BOT_SETUP.md`.

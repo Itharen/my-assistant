@@ -1,5 +1,102 @@
 # STATUS
 
+## 🎉 A Discord-csatorna ÖNMŰKÖDŐ — a szerver a gazda — 2026-09-06 (este)
+
+**A figyelő gazdája mostantól a `my-assistant` szerver** (owner-kérés). Nincs külön indítandó
+folyamat: ha a szerver fut, a csatorna él. A szerver a figyelőt gyermek-folyamatként futtatja,
+összeomlás után **újraindítja**, és a gyermek utolsó kimeneti sorait a hiba-bejegyzésbe teszi.
+
+🔴 **Közben kiderült egy kritikus, csendes hiba:** a figyelő eddig **csak gyűjtött** — a köteg
+átadásához kézzel kellett `ma comm flush`-t futtatni. Vagyis futó figyelő mellett is a
+köteg-fájlban álltak volna az üzenetek. **Javítva: a kiküldés automatikus, 15 mp-enként.**
+
+⌨️ **Új: „gépel…" visszajelzés** a Discordon, amíg van várakozó üzenet vagy válasz-tartozás —
+7 mp-enként frissül, 15 perc után biztonsági szeleppel leáll.
+
+✅ **Élő igazolás 22:33-kor:** szerver indul → figyelőt indít → a 2 kimaradt üzenet
+**automatikusan** átment a CC sessionbe, emberi beavatkozás nélkül. **344/344 CLI-teszt zöld.**
+
+⚠️ **Az LDP jelenleg NEM tud végigfutni:** a `cli/src/interfood/interfood.api-client.ts`-ben két
+`getImageUrl` van (TS2393 — másik session commitolatlan munkája), a `tsc-cli` lépés pedig `fatal`.
+Ezért a szervert most közvetlenül indítottuk. **Owner-döntésre vár.**
+
+⏳ **Owner-műveletre vár:** ① `pwsh -File scripts/install-autostart.ps1 -Mode apply` (jelenlét-figyelő
+→ enélkül a hangszóró tiltva marad; egyben tartalék Discord-figyelő) · ② döntés a törött
+`interfood.api-client.ts`-ről (ez blokkolja az LDP-t) · ❓ **7 kérdés**: `current/open-questions.md` H).
+
+---
+
+## Kommunikációs csatorna — a DISCORD ÉLŐBEN MŰKÖDIK, mindkét irányban — 2026-09-06
+
+A Discord kétirányú csatorna hyperplanjának (`HP-DSC-001`) minden olyan darabja elkészült, ami nem
+igényel owner-műveletet. Megépült és élőben igazolt: **CC session-önazonosítás** (`ma ccap whoami`),
+**Discord-kötegelő** (N üzenet → EGY prompt a CCAP hivatalos `prompt` végpontján), **Discord-figyelő**
+(`ma comm listen`, csak az owner üzenetei, visszhang-hurok kizárva), **életjel + életjel-ellenőrzés**
+(a `doctor` megmondja, hogy a figyelő tényleg FUT-e), **hangszórós kapu** (`ma cast notify` csak
+ÉBREN + ITTHON; ismeretlen ⇒ tilt), **csatorna-diagnosztika** (`ma comm doctor`), **státusz-kivonat**
+(`ma status digest`) és az **Assistant-tick száraz futása** (`ma tick plan`, Daytime/Nighttime az
+ébrenléthez kötve). **78 teszt zöld** *(a Discord/comm rész; a teljes CLI-suite azóta 344 zöld)*.
+
+A `core-review-until-clean` kapu **MINDKÉT szakaszra teljesült**: 1. szakasz **8 kör / 11 javítás**,
+a figyelő **7 kör / 10 javítás** — mindkettőnél az utolsó **kettő tiszta**. A legsúlyosabb megtalált hibák:
+a státusz-kivonat **nem lapozott** (131 feladatból 10-et látott) · a hangszórós kapu **összeomlott
+volna** olvasási hibánál · egy **naplózási hiba megölte volna a figyelőt** · a figyelőnek **nem volt
+életjele**, tehát csendben elhalhatott volna.
+
+✅ **2026-09-06 este: a Discord-csatorna ÉLŐBEN IGAZOLT.** A bot `Honnie#6234` néven csatlakozik
+(csak a bot-tokennel — se Client Secret, se OAuth-link). Az owner üzenete végigment a teljes láncon
+a CC sessionig, és a válasz vissza is ment Discordra (`ma comm say`).
+
+⏳ **Owner-műveletre vár:** ① ~~Discord bot-token~~ **KÉSZ** ·
+② `pwsh -File scripts/install-autostart.ps1 -Mode apply` (enélkül a hangszóró tiltva marad) ·
+③ döntés a `cli/src/interfood/interfood.api-client.ts` duplikált metódusáról (idegen félkész munka,
+a teljes CLI-buildet blokkolja). ❓ **7 kérdés** vár válaszra: `current/open-questions.md` H) szekció.
+
+Kanonikus: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md` · állapot:
+`__agent/CONTINUATION.md` · szabályok: `__agent/flows/recurring/hourly-assistant-tick/README.md` ·
+beállítás: `__documentations/dev/DISCORD_BOT_SETUP.md`.
+
+
+## Kommunikációs csatorna — Discord az első kör, Cast élőben igazolva — 2026-09-06
+
+Owner-döntés: a **Discord** az első köri kommunikációs csatorna, **két iránnyal** — üzenetküldés
+ÉS az owner válaszainak olvasása. Mért megállapítás: a meglévő webhook-alapú megoldás **egyirányú**,
+a válaszok olvasására alkalmatlan → ahhoz Discord-**bot** kell; kész minta a `ccap-revisioned`
+`discord-toolkit` moduljában. A Google Home / Cast csatorna **élőben igazolt** ma 12:14-kor
+(`ma cast notify ok`, 36 679 ms, 6 hangszóró, nulla hiba). A telefonos push (ntfy) és a Discord
+handler egyaránt **kész kódban, de beállítás híján sosem élesedett**.
+
+⏳ **Owner-feladat, ez blokkolja az első kört:** Discord-csatorna + webhook-cím → `MA_DISCORD_WEBHOOK_URL`
+(+ opcionálisan `MA_DISCORD_USER_ID` a ping-hez), majd a bot-token az olvasás-irányhoz.
+
+Kanonikus: `__documentations/developments/2026-09-06-communication-channel-analysis-and-cast-live-test.md`
+· FR: `current/feature-requests/discord-webhook-notification.md`.
+
+
+## Interfood W37 cart draft applied — 2026-09-05
+
+Az owner által jóváhagyott W37 review v6 teljes kosárdraftja alkalmazva és authoritative readbackkel ellenőrizve:
+10 sor / 10 adag / 19 500 HUF, napi két főétel. A friss order sync szerint W37-re előtte nem volt leadott rendelés;
+a kiinduló kosár üres volt. A reconcile utáni és a külön megismételt diff is pontos egyezést, nulla további effektet
+adott. Checkout/rendelésleadás nem történt. A hétfői két Last Minute tétel véglegesítése nem lemondható, ezért ahhoz
+új élő inventory-read és külön közvetlen owner-megerősítés kell. Kanonikus receipt:
+`current/interfood/proposals/2026-W37-cart-receipt-1.md`.
+
+## LinkedIn vezetett kézi küldési munkamód — 2026-09-05
+
+A `/linkedin` inbox/thread/draft felület, a külön MV3 Chrome Side Panel companion és a health-gated TypeScript
+indító elkészült. A tényleges LinkedIn-küldés és CV-csatolás továbbra is owner-művelet a LinkedIn natív lapján;
+`manual-send-reported` kizárólag helyi owner-jelentés. Kanonikus runbook:
+`__documentations/dev/LINKEDIN_WORKSPACE.md`. MP-LI-06 lezárva: a tiszta cold start és az idempotens újrahívás
+élőben zöld; a szerver csak a stabil-ID-jű saját extension számára és csak a side-panel nézetet engedi frame-elni.
+
+## Új heti feladat — 2026-09-03
+
+LinkedIn-posztolás: `org:task:6a98e83e482367e7f640c1d4`; heti (7 napos) ismétlődési
+minta elmentve. Nap/időpont és első esedékesség megerősítésére vár, emiatt még nincs
+időzített példány vagy aktív külön emlékeztető. Külön a blokkolt LinkedIn-üzenetküldéstől.
+Részletek: `current/tasks/inbox.md`, `current/principles/recurring-tasks.md`.
+
 ## Feladatállapot — owner-frissítés, 2026-09-02
 
 - Tesco átvétel és készletre vétel: kész; augusztus 27-i dokumentáció alapján az Organizer-task szeptember 2-án lezárva.
@@ -18,9 +115,9 @@
 state: awaiting-approval
 active_flow: interfood-integration-hyperplan
 active_phase: live-calibration
-last_event: 2026-09-01T09:06:58+02:00
-last_event_type: interfood-protein-rules-history-affinity-and-two-week-review-green
-next_action: "2026-09-02 10:00-kor a heartbeat friss menü/history/coverage alapján elindítja a következő rendelés összeállítását és batcheli a bizonytalan tételeket. A capability release gate továbbra is owner-jóváhagyásra vár: W37 2026-09-07, Gombapaprikás orsó tésztával (menuItemId 35853, 1650 Ft) pontosan 1 db add → authoritative readback → remove → authoritative empty-cart readback. Checkout/payment nincs."
+last_event: 2026-09-05T23:26:14+02:00
+last_event_type: interfood-w37-cart-reconcile-applied-and-read-back
+next_action: "A kosárdraft pontosan összeállt. Checkout előtt friss cart + Last Minute readback és külön közvetlen owner-megerősítés kell, mert a hétfői Last Minute tételek végleges megrendelése nem lemondható. A live removal/cleanup mutációs láb továbbra sincs külön canaryval hitelesítve; a kívánt kosarat emiatt most nem bontjuk vissza."
 
 active_plans:
   - "__agent/plans/interfood-integration-hyperplan/hyperplan.plan.md"  # HP-IF-001 — implementation complete, live calibration pending
