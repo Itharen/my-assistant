@@ -5,6 +5,24 @@ használunk (deadline-ok, mikor érdemes elindulni, stb.).
 
 ---
 
+## 🏠 Otthon (kiindulópont)
+
+| Mező | Érték | Forrás |
+|---|---|---|
+| **Cím** | **Tas vezér utca 17, 1113 Budapest** (Újbuda) | user 2026-09-07 |
+| Legközelebbi csomópont | **Móricz Zsigmond körtér** — M4 · 4/6 villamos · 19/41/47/48/49/56 villamos · buszok | térkép-alapú |
+| Alap közlekedési mód | **BKV** *(user: „a BKV-val megyek általában")* | user 2026-09-07 |
+| Roller | **közeli** célnál szokott rollerezni | user 2026-09-07 |
+
+> *Szó szerint (user, 2026-09-07):* *„Nem tudom mennyi idő alatt érek oda, a BKV-val megyek
+> általában kicsit távolabb, hogyha meg relatíve közel van, ahol megyek, akkor szoktam
+> rollerezni is."*
+
+⚠️ **Ez a kiindulópont MINDEN odajutás-számításhoz** (`schedule-guardian` flow).
+❓ Hol a határ „közeli" (roller) és „távolabbi" (BKV) között? → `open-questions.md` I-3.
+
+---
+
 ## Patika 💊
 
 | Mező | Érték | Forrás |
