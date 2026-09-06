@@ -50,6 +50,16 @@
 
 ---
 
+## 2026-09-07 — az ütemezés és a trigger-üzenet
+
+> majd mondd meg nekem, hogy mennyi időnként kéne beállítanom, a Scheduled, ami triggerelt
+> téged, és mi legyen az üzenet. Általában az üzenet annyi szakott csak lenni, hogy rámutatunk
+> a kiindulási workflow file-ra, és emlékeztetjük a szabályfrissítési szabályra, hogy
+> frissítsen szabályt rendszeresen, már hogy te frissítsél szabályt. Reggel nem ártana egy
+> újraindítás ELSŐNEK
+
+---
+
 ## Strukturált összefoglaló (assistant-jegyzet, NEM a user szavai)
 
 ### 1. A lokális szabályok védelme (mért, nem feltételezés)
@@ -89,10 +99,15 @@ Minden flow `README.md`-je **KÖTELEZŐEN** a `__agent/workflow-rules.md`-ben de
 **fejléc-blokkal** kezdődik. Ez azért van, mert a workflow-t sokszor **kontextus-kompaktálás
 után** olvassa el az agent, amikor a szabályok már kiestek a fejéből.
 
-### 4. A belépési pont
+### 4. A belépési pont és az ütemezés
 
 `__agent/ENTRY.md` — a Schedule ezt triggereli. Leírja, **hogyan kell elvégezni a dolgokat**,
 és ⚠️ **maga is karbantartandó**: a benne lévő tudás nem konzerv, hanem élő.
+
+**Az ütemezés + a trigger-üzenet kanonikus szövege:** `__agent/SCHEDULE.md`.
+Röviden: **60 percenként** a fő kör, **06:30-kor** a napindítás *(az elsŐ lépése
+rendszer-újraindítás)*. A trigger-üzenet **rövid pointer** két fájlra (belépési pont +
+állapot) + a szabály-frissítés emlékeztetője. ⛔ Az állapot SOSEM a trigger-szövegben van.
 
 ### 5. Preferencia-visszacsatornázás (KÖTELEZŐ)
 

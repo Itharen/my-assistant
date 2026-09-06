@@ -380,6 +380,7 @@ vagy futtass esedékes recurring flow-t.
 | Ki vagy te, mi a szereped (Honnie) | `__agent/IDENTITY.md` |
 | A MINDEN workflow-ra érvényes szabályok | `__agent/workflow-rules.md` |
 | A belépési pont (a Schedule ezt hívja) | `__agent/ENTRY.md` |
+| Az ütemezés + a trigger-üzenet szövege | `__agent/SCHEDULE.md` |
 | Mit tudsz megcsinálni + mi van jóváhagyva | `__agent/capabilities/CATALOG.md` |
 | Az agent governance (workflow / status / plans) | `__agent/` |
 | User élő szövegek + kanonikus szabályai | `current/` |

@@ -24,6 +24,38 @@
 
 ---
 
+## 0. NAPINDÍTÁS — a nap ELSŐ körében, minden más előtt
+
+> **Owner (2026-09-07):** *„Reggel nem ártana egy újraindítás ELSŐNEK"*
+
+Ha ez a nap első futása *(vagy a napi 06:30-as trigger hívott)*:
+
+| # | Lépés | Miért |
+|---|---|---|
+| 1 | 🔄 **Rendszer-újraindítás** — LDP + alatta a szerver és a figyelők | egy egész éjszakát futott folyamat elfáradt: memória, elakadt kapcsolat, félbemaradt build. A friss indulás **olcsóbb, mint a néma romlás.** |
+| 2 | Ellenőrzés: `ma comm doctor` — tényleg felállt-e minden | ⛔ az újraindítás **nem hit kérdése** — meg kell nézni |
+| 3 | Csak ezután jöhet az 1. szakasz (tájékozódás) | |
+
+**Az újraindítás menete:**
+```bash
+# 1. a futó LDP/szerver leállítása (a terminálablakban Ctrl+C, vagy a folyamat-fa kilövése)
+# 2. újraindítás — ez hozza a szervert, az pedig a két figyelőt:
+dc ldp
+# 3. ellenőrzés (a szerver felállása után ~1 perccel):
+ma comm doctor
+```
+
+⚠️ **HA A USER MÉG ALSZIK:** a napindítás **technikai** részét elvégzed (újraindítás,
+adat-frissítés), de ⛔ **NEM szólsz** — a napi áttekintés az **ébredés utáni** első körben
+megy ki. *(A 06:30 ütemezés naptári, a te ébredésed csúszó — `sleep-system.md`.)*
+
+⚠️ **HA ESEMÉNY VAN AZNAP:** az újraindítás után **azonnal** a `schedule-guardian` jön —
+a készülődés-kezdés kiszámolása nem várhat a következő órás körre.
+
+📌 Az ütemezés és a trigger-üzenet kanonikus szövege: **`__agent/SCHEDULE.md`**.
+
+---
+
 ## 1. TÁJÉKOZÓDÁS — mindig ezzel kezdesz
 
 | # | Lépés | Parancs / fájl |
@@ -134,3 +166,4 @@ STATUS-blokkja nem — és a következő session **újra elvégzi a kész munká
 | Időbeosztás (első számú terület) | `__agent/flows/recurring/schedule-guardian/README.md` |
 | A user szó szerinti szabályai | `current/principles/` |
 | Governance (flow-szerkezet, authority) | `__agent/WORKFLOW.md` |
+| **Az ütemezés + a trigger-üzenet szövege** | `__agent/SCHEDULE.md` |
