@@ -58,6 +58,18 @@ const DEFAULT_QUIET_MS: number = 5_000;
 const DEFAULT_MAX_PENDING: number = 10;
 
 /**
+ * A kiesés-okok sorrendje és címkéje.
+ *
+ * ⭐ A SORREND SZÁMÍT: elől a leggyakoribb és legtöbbet mondó ok áll — az owner a lista
+ * **elejét** olvassa el biztosan.
+ */
+const KIND_LABELS: readonly { kind: MissedSpeechKind; label: string }[] = [
+  { kind: 'discarded-by-recorder', label: '🎚️ a felvevő eldobta — túl halk, túl rövid, vagy nem ismerte fel beszédnek' },
+  { kind: 'recognition-failed', label: '❌ a felismerés nem adott használható szöveget' },
+  { kind: 'not-understood', label: '❓ hallottam, de nem értettem biztosan — ⛔ nem cselekszem rá' },
+];
+
+/**
  * Az összefoglaló szövege.
  *
  * ⭐ MIÉRT DARABSZÁM **ÉS** MÁSODPERC: a „3 megszólalás" még tűnhet apróságnak; a
@@ -81,13 +93,10 @@ export function composeMissedSpeechSummary(params: {
     + (seconds > 0 ? ` (összesen ${seconds} mp beszéd)` : '')
     + ':';
 
-  const lines: string[] = ([
-    ['discarded-by-recorder', '🎚️ a felvevő eldobta — túl halk, túl rövid, vagy nem ismerte fel beszédnek'],
-    ['recognition-failed', '❌ a felismerés nem adott használható szöveget'],
-    ['not-understood', '❓ hallottam, de nem értettem biztosan — ⛔ nem cselekszem rá'],
-  ] as [MissedSpeechKind, string][])
-    .map(([kind, label]: [MissedSpeechKind, string]): string => {
-      const group: MissedSpeech[] = params.missed.filter((m: MissedSpeech): boolean => m.kind === kind);
+  const lines: string[] = KIND_LABELS
+    .map((entry: { kind: MissedSpeechKind; label: string }): string => {
+      const group: MissedSpeech[] = params.missed
+        .filter((m: MissedSpeech): boolean => m.kind === entry.kind);
 
       if (!group.length) return '';
 
@@ -95,7 +104,7 @@ export function composeMissedSpeechSummary(params: {
         group.reduce((sum: number, m: MissedSpeech): number => sum + (m.seconds ?? 0), 0),
       );
 
-      return `> • ${group.length}× ${label}`
+      return `> • ${group.length}× ${entry.label}`
         + (groupSeconds > 0 ? ` — ${groupSeconds} mp` : '');
     })
     .filter((line: string): boolean => line.length > 0);
