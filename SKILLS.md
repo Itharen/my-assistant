@@ -390,10 +390,14 @@ A lánc: hang-kapcsolat → **átemelt CCAP-felvevő** → WAV → a mi STT-nk �
   — közös fékkel a „hallak" **elnyelné** az eldobás-jelzést (t≈1,4 s).
 - 📊 **A MÉRÉS KIOLVASÁSA — egy parancs** *(ne grep-elj kézzel)*:
   ```bash
-  ma comm voice-funnel                    # a mai nap (Europe/Budapest)
-  ma comm voice-funnel --day 2026-09-08   # egy másik nap
+  ma comm voice-funnel                    # ⭐ gördülő 12 óra — ÁTÍVEL az éjfélen
+  ma comm voice-funnel --hours 24         # hosszabb ablak
+  ma comm voice-funnel --day 2026-09-08   # egy konkrét naptári nap
   ma comm voice-funnel --json --pretty    # gépi envelope
   ```
+  🔴 **Miért gördülő ablak az alap** *(mérve 2026-09-08 00:51)*: az owner ébrenléte **csúszik**,
+  tehát egy éjfélen átnyúló beszélgetés naptári napokra bontva **kettévágódna** — és egyik nap sem
+  mutatná az igazi arányt. ⚠️ Ez a rosszabbik hiba: **nem hibázik, csak nem mond igazat.**
   ⭐ A tetején az **ÁTVITELI ARÁNY** áll — az a szám, amit az owner kérdezett *(„egy százaléka
   ment át")*. 🔴 **5 megszólalás alatt „KEVÉS MINTA"-ként jelzi**, hogy még nem lehet
   következtetni — pontosan az a túlállítás, amiért 22:08-kor jogos kritikát kaptam.

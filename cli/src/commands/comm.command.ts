@@ -86,6 +86,7 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
       file: { type: 'string' },
       long: { type: 'boolean' },
       day: { type: 'string' },
+      hours: { type: 'string' },
     },
     strict: false,
   });
@@ -188,10 +189,36 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
       // 📊 AZ ÁTVITELI ARÁNY — a szám, amit az owner ténylegesen kérdezett (22:08).
       // ⛔ A napi akció-naplóból dolgozik, NEM az élő szondából: az a szerver-folyamatban él,
       // ezt a CLI nem látná. A napló viszont a tartós rekord, és túléli az újraindítást.
-      const day: string = String(parsed.values.day ?? '').trim() || todayInBudapest();
+      //
+      // 🔴 AZ ALAPÉRTELMEZÉS GÖRDÜLŐ ABLAK, NEM NAPTÁRI NAP (mérve 2026-09-08 00:51):
+      // az owner ébrenléte csúszik, tehát egy éjfélen átnyúló beszélgetés naptári napokra
+      // bontva KETTÉVÁGÓDNA, és egyik nap sem mutatná az igazi arányt. A `--day` továbbra is
+      // kérhető, ha valaki tényleg egy konkrét naptári napot akar látni.
+      const day: string = String(parsed.values.day ?? '').trim();
+      const hoursRaw: string = String(parsed.values.hours ?? '').trim();
+      const hours: number = Number(hoursRaw);
+
+      if (hoursRaw && (!Number.isFinite(hours) || hours <= 0)) {
+        writeEnvelope(
+          fail(
+            action,
+            requestId,
+            startedAt,
+            'MA-COMM-BAD-HOURS',
+            `A --hours értéke nem értelmezhető pozitív számként: „${hoursRaw}".`,
+            { given: hoursRaw, remedy: 'Adj meg órát számként, pl. `--hours 24`.' },
+          ),
+          pretty || !asJson,
+        );
+        process.exitCode = 1;
+
+        return;
+      }
+
       const funnel: VoiceFunnelReport = await buildVoiceFunnelReport({
         projectRoot: resolveProjectRoot(),
-        day: day,
+        ...(day ? { day: day } : {}),
+        ...(hoursRaw ? { hours: hours } : {}),
       });
 
       if (asJson) writeEnvelope(ok(action, requestId, startedAt, funnel), pretty);
@@ -270,20 +297,4 @@ function renderReport(report: CommDoctorReport): string {
   lines.push('');
 
   return lines.join('\n');
-}
-
-/**
- * A mai nap `YYYY-MM-DD` alakban, **Europe/Budapest** szerint.
- *
- * ⚠️ MIÉRT NEM `new Date().toISOString().slice(0,10)`: az **UTC**-t adná, és éjfél után két
- * óráig **az előző napot** mondaná — pont akkor, amikor az owner a legvalószínűbben nézné meg
- * egy esti beszélgetés után. A napló napi fájljai budapesti naptári nap szerint állnak.
- */
-function todayInBudapest(): string {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/Budapest',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(new Date());
 }

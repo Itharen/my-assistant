@@ -162,10 +162,24 @@ a valódi eldobással. Ezért kellett a fájl-szintű mérés.
 ### 8.3b 📊 A KIOLVASÁS — `ma comm voice-funnel`
 
 ```bash
-ma comm voice-funnel                    # a mai nap (Europe/Budapest)
-ma comm voice-funnel --day 2026-09-08
+ma comm voice-funnel                    # ⭐ gördülő 12 óra — ÁTÍVEL az éjfélen
+ma comm voice-funnel --hours 24         # hosszabb ablak
+ma comm voice-funnel --day 2026-09-08   # egy konkrét naptári nap
 ma comm voice-funnel --json --pretty
 ```
+
+🔴 **AZ ALAPÉRTELMEZÉS GÖRDÜLŐ ABLAK, NEM NAPTÁRI NAP** — mért hiba, 2026-09-08 00:51.
+
+Az owner ébrenléte **csúszik** *(fix 18 óra, `current/principles/sleep-system.md`)*, tehát a napja
+**nem** a naptári nap. Mérve: a 09-07 21:49-es beszéd a 09-07-es fájlban van, a 09-08-as jelentés
+viszont **üres** volt. ⇒ Egy éjfélen átnyúló beszélgetés **kettévágódna**, és **egyik nap sem**
+mutatná az igazi arányt — az owner reggel „nem működik"-et látna.
+
+⚠️ **Ez a rosszabbik fajta hiba: nem hibázik, csak nem mond igazat.**
+*(„Üres állapot magyarázó hiba nélkül tilos" — `core-rich-error-handling`.)*
+
+⭐ A jelentés **mindig kiírja a saját ablakát** (`windowLabel`) — különben egy üres tábláról nem
+dönthető el, hogy *„nem beszélt"* vagy *„rossz időszakot néztem"*.
 
 ⭐ **A mérés önmagában nem elég — ki is kell tudni olvasni.** Ha a válaszhoz kézzel kell
 `grep`-elni és fejben összeadni, akkor a mérés **gyakorlatilag nincs meg**.

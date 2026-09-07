@@ -14,17 +14,39 @@
 // pedig külön folyamat — nem látná. A napló viszont a **tartós rekord** (`core-document-everything`),
 // és egy szerver-újraindítást is túlél. ⚠️ Ebből következik a korlát is: amit a napló nem
 // rögzített, azt ez sem tudja — nem talál ki semmit.
+//
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+// 🔴 MIÉRT NEM NAPTÁRI NAP AZ ALAPÉRTELMEZÉS — MÉRT HIBA (2026-09-08 00:51)
+// ═══════════════════════════════════════════════════════════════════════════════════════════
+//
+// Az owner ébrenléte **csúszik** *(fix 18 óra, `current/principles/sleep-system.md`)* — a napja
+// tehát **nem** a naptári nap. Mérve: a 09-07-es beszéd adata a 09-07-es fájlban van, a 09-08-as
+// jelentés viszont **üres** volt. ⇒ Egy **éjfélen átnyúló** beszélgetés **kettévágódna**, és
+// **egyik nap sem** mutatná az igazi arányt — az owner reggel „nem működik"-et látna.
+//
+// ⚠️ És ez a rosszabbik fajta hiba: **nem hibázik, csak nem mond igazat.** *(„Üres állapot
+// magyarázó hiba nélkül tilos" — `core-rich-error-handling`.)*
+//
+// ⭐ Ezért az alapértelmezés **gördülő ablak** (12 óra), ami átível az éjfélen; a naptári nap
+// továbbra is kérhető (`--day`).
 
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import { VOICE_LOG_CODES } from './voice-log-codes.js';
 
-/** Egy nap hang-tölcsére. */
+/** Egy időszak hang-tölcsére. */
 export interface VoiceFunnelReport {
-  /** `YYYY-MM-DD` — melyik napot néztük. */
+  /** `YYYY-MM-DD` — naptári nap módban a nézett nap; gördülő ablakban a vég-nap. */
   day: string;
-  /** Volt-e egyáltalán napló erre a napra. ⚠️ A „nincs adat" NEM ugyanaz, mint a „nulla". */
+  /**
+   * Ember-olvasható leírás arról, **mit mértünk**.
+   *
+   * ⭐ A jelentés **mindig megmondja a saját ablakát** — különben egy üres tábláról nem dönthető
+   * el, hogy „nem beszélt" vagy „rossz időszakot néztem".
+   */
+  windowLabel: string;
+  /** Volt-e egyáltalán napló erre az időszakra. ⚠️ A „nincs adat" NEM ugyanaz, mint a „nulla". */
   hasData: boolean;
   /** Hány owner-megszólalást érzékelt a Discord (`speaking.start`). */
   speechDetected: number;
@@ -68,7 +90,17 @@ export interface VoiceFunnelReport {
  */
 export const WEAK_SAMPLE_THRESHOLD: number = 5;
 
+/**
+ * Az alapértelmezett gördülő ablak.
+ *
+ * ⭐ 12 óra: bőven átfog egy estét és az azt követő reggelt, tehát az éjfél **nem vágja ketté** a
+ * beszélgetést — de nem is olyan hosszú, hogy tegnapelőtti adatot keverne a mába.
+ * ⚠️ Asszisztensi választás, nem owner-adat; a `--hours` felülírja.
+ */
+export const DEFAULT_WINDOW_HOURS: number = 12;
+
 interface ActionLogLine {
+  ts?: string;
   extra?: {
     code?: string;
     detected?: number;
@@ -84,21 +116,32 @@ export function resolveActionLogPath(projectRoot: string, day: string): string {
 }
 
 /**
- * A tölcsér kiszámítása a napi naplóból.
+ * A tölcsér kiszámítása — **gördülő ablakból** (alap) vagy egy megadott **naptári napból**.
  *
  * ⚠️ HIBÁT NEM DOB hiányzó naplóra: a `hasData: false` **leíró válasz**, nem kivétel — egy
- * olyan napra kérdezni, amikor nem futott semmi, teljesen jogos.
+ * olyan időszakra kérdezni, amikor nem futott semmi, teljesen jogos.
  */
 export async function buildVoiceFunnelReport(params: {
   projectRoot: string;
-  day: string;
+  /** Naptári nap mód. Ha nincs megadva, **gördülő ablak** jár (l. `hours`). */
+  day?: string;
+  /** Gördülő ablak órában. Alapérték 12 — csak `day` nélkül érvényes. */
+  hours?: number;
+  /** Tesztelhetőség: a „most". */
+  now?: () => Date;
   read?: (path: string) => Promise<string>;
 }): Promise<VoiceFunnelReport> {
   const read: (path: string) => Promise<string> = params.read
     ?? (async (path: string): Promise<string> => readFile(path, 'utf8'));
+  const now: Date = (params.now ?? ((): Date => new Date()))();
+  const rolling: boolean = !params.day;
+  const hours: number = params.hours ?? DEFAULT_WINDOW_HOURS;
+  const cutoffMs: number = rolling ? now.getTime() - hours * 3_600_000 : Number.NEGATIVE_INFINITY;
+  const days: string[] = rolling ? daysSpanned(cutoffMs, now) : [params.day as string];
 
-  const empty: VoiceFunnelReport = {
-    day: params.day,
+  const report: VoiceFunnelReport = {
+    day: days[days.length - 1] ?? budapestDay(now),
+    windowLabel: rolling ? `az elmúlt ${hours} óra` : `${params.day as string} (naptári nap)`,
     hasData: false,
     speechDetected: 0,
     delivered: 0,
@@ -112,32 +155,39 @@ export async function buildVoiceFunnelReport(params: {
     attempts: 0,
   };
 
-  let raw: string;
-
-  try {
-    raw = await read(resolveActionLogPath(params.projectRoot, params.day));
-  } catch {
-    return empty;
-  }
-
-  const report: VoiceFunnelReport = { ...empty, hasData: true };
-
-  for (const line of raw.split('\n')) {
-    const trimmed: string = line.trim();
-
-    if (!trimmed) continue;
-
-    let entry: ActionLogLine;
+  for (const day of days) {
+    let raw: string;
 
     try {
-      entry = JSON.parse(trimmed) as ActionLogLine;
+      raw = await read(resolveActionLogPath(params.projectRoot, day));
     } catch {
-      // ⚠️ Egy sérült sor NEM buktathatja meg a jelentést — a napló append-only, és egy
-      // félbeszakadt írás utolsó sora csonka lehet. A többi sor adata attól még érvényes.
+      // ⚠️ Hiányzó napi fájl NEM hiba: az ablak átívelhet olyan napra, amelyen nem futott semmi.
       continue;
     }
 
-    applyEntry(report, entry);
+    report.hasData = true;
+
+    for (const line of raw.split('\n')) {
+      const trimmed: string = line.trim();
+
+      if (!trimmed) continue;
+
+      let entry: ActionLogLine;
+
+      try {
+        entry = JSON.parse(trimmed) as ActionLogLine;
+      } catch {
+        // ⚠️ Egy sérült sor NEM buktathatja meg a jelentést — a napló append-only, és egy
+        // félbeszakadt írás utolsó sora csonka lehet. A többi sor adata attól még érvényes.
+        continue;
+      }
+
+      // ⏰ Gördülő ablakban az ablakon kívüli sorok kimaradnak. ⚠️ Az értelmezhetetlen időbélyeg
+      // **BENT marad**: egy hiányzó `ts` miatt nem dobunk el mérési adatot.
+      if (isBeforeCutoff(entry.ts, cutoffMs)) continue;
+
+      applyEntry(report, entry);
+    }
   }
 
   report.lostAudioSeconds = round1(report.lostAudioSeconds);
@@ -212,8 +262,8 @@ function computeTransferRate(report: VoiceFunnelReport): number | null {
 /** Ember-olvasható tábla. */
 export function renderVoiceFunnel(report: VoiceFunnelReport): string {
   if (!report.hasData) {
-    return `\n📊 Hang-tölcsér — ${report.day}\n\n`
-      + '  ⚪ Nincs napló erre a napra — nem futott semmi, vagy más a dátum.\n\n';
+    return `\n📊 Hang-tölcsér — ${report.windowLabel}\n\n`
+      + '  ⚪ Nincs napló erre az időszakra — nem futott semmi, vagy más időszakot kell nézni.\n\n';
   }
 
   const weak: boolean = report.attempts > 0 && report.attempts < WEAK_SAMPLE_THRESHOLD;
@@ -221,7 +271,7 @@ export function renderVoiceFunnel(report: VoiceFunnelReport): string {
     ? '❓ nem mérhető (nem hangzott el megszólalás)'
     : `${report.transferRatePct}%  (${report.attempts} megszólalásból)`;
 
-  // 🔴 KEVÉS MINTA = NINCS KOVETKEZTETES. Egyetlen sikeres felvetel „100%"-ot ad — es epp ez
+  // 🔴 KEVES MINTA = NINCS KOVETKEZTETES. Egyetlen sikeres felvetel „100%"-ot ad — es epp ez
   // a tulallitas volt az, amit az owner 22:08-kor kijavitott: „egy mondat ≠ mukodik".
   const icon: string = report.transferRatePct === null || weak
     ? '⚪'
@@ -229,7 +279,7 @@ export function renderVoiceFunnel(report: VoiceFunnelReport): string {
 
   return [
     '',
-    `📊 Hang-tölcsér — ${report.day}`,
+    `📊 Hang-tölcsér — ${report.windowLabel}`,
     '',
     `  ${icon} ÁTVITELI ARÁNY: ${rate}`,
     ...(weak
@@ -254,4 +304,54 @@ export function renderVoiceFunnel(report: VoiceFunnelReport): string {
 
 function round1(value: number): number {
   return Math.round(value * 10) / 10;
+}
+
+/** Egy dátum `YYYY-MM-DD` alakban, **Europe/Budapest** szerint. */
+export function budapestDay(when: Date): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Budapest',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(when);
+}
+
+/**
+ * Mely napi fájlokat kell beolvasni egy `[cutoff, now]` ablakhoz.
+ *
+ * ⚠️ Naptári napokban gondolkodunk, mert a napló így van szervezve — az ablak két (hosszabb
+ * ablaknál több) fájlt is érinthet. ⭐ A hiányzó fájl nem hiba, csak kimarad.
+ */
+function daysSpanned(cutoffMs: number, now: Date): string[] {
+  const days: string[] = [];
+  const dayMs: number = 24 * 3_600_000;
+
+  for (let t: number = cutoffMs; t <= now.getTime(); t += dayMs) {
+    const day: string = budapestDay(new Date(t));
+
+    if (!days.includes(day)) days.push(day);
+  }
+
+  const today: string = budapestDay(now);
+
+  if (!days.includes(today)) days.push(today);
+
+  return days;
+}
+
+/**
+ * Az ablak előtti-e a bejegyzés.
+ *
+ * ⚠️ **A hiányzó vagy értelmezhetetlen időbélyeg NEM zár ki.** Egy mérési adatot nem dobunk el
+ * azért, mert a metaadata hiányos — inkább legyen bent egy régi sor, mint hiányozzon egy friss.
+ */
+function isBeforeCutoff(ts: string | undefined, cutoffMs: number): boolean {
+  if (cutoffMs === Number.NEGATIVE_INFINITY) return false;
+  if (!ts) return false;
+
+  const parsed: number = Date.parse(ts);
+
+  if (Number.isNaN(parsed)) return false;
+
+  return parsed < cutoffMs;
 }

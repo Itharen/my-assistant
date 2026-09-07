@@ -1,3 +1,5 @@
+import { basename } from 'node:path';
+
 import {
   buildVoiceFunnelReport,
   renderVoiceFunnel,
@@ -168,5 +170,122 @@ describe('kevés minta — az arány NEM állítható túl', () => {
     expect(report.attempts).toBe(8);
     expect(renderVoiceFunnel(report)).toContain('✅ ÁTVITELI ARÁNY');
     expect(renderVoiceFunnel(report)).not.toContain('KEVÉS MINTA');
+  });
+});
+
+describe('🔴 gördülő ablak — az éjfél NEM vághatja ketté a beszélgetést', () => {
+  /** Egy sor konkrét időbélyeggel. */
+  function at(ts: string, code: string, extra: Record<string, unknown> = {}): string {
+    return JSON.stringify({ ts: ts, kind: 'note', extra: { code: code, ...extra } });
+  }
+
+  /** Hamis fájlrendszer napi fájlokkal. */
+  function fsWith(files: Record<string, string[]>): (path: string) => Promise<string> {
+    return async (path: string): Promise<string> => {
+      // ⚠️ `basename`, nem regex: a napi fájl útvonala platformfüggő elválasztót használ
+      // (`node:path.join`), és egy kézzel írt karakterosztály itt már egyszer elrontotta a
+      // tesztet — a szabványos függvény mindkét platformon helyes.
+      const day: string = basename(path, '.jsonl');
+      const lines: string[] | undefined = files[day];
+
+      if (!lines) throw new Error(`ENOENT: ${day}`);
+
+      return lines.join('\n');
+    };
+  }
+
+  const NOW = (): Date => new Date('2026-09-08T00:51:00+02:00');
+
+  it('⭐ AZ ÉJFÉLEN ÁTNYÚLÓ beszélgetést EGYBEN méri (ez volt a mért hiba)', async () => {
+    const report = await buildVoiceFunnelReport({
+      projectRoot: '/p',
+      now: NOW,
+      read: fsWith({
+        '2026-09-07': [
+          at('2026-09-07T23:50:00+02:00', 'MA-VOICE-SPEECH-QUEUED'),
+          at('2026-09-07T23:55:00+02:00', 'MA-VOICE-SPEECH-DROPPED-SILENTLY', {
+            reason: 'discarded-by-recorder', lostAudioSeconds: 2,
+          }),
+        ],
+        '2026-09-08': [at('2026-09-08T00:10:00+02:00', 'MA-VOICE-SPEECH-QUEUED')],
+      }),
+    });
+
+    // 🔴 Naptári napokra bontva 09-07 → 50%, 09-08 → 100% lenne. Egyben: 2/3.
+    expect(report.queued).toBe(2);
+    expect(report.droppedByRecorder).toBe(1);
+    expect(report.attempts).toBe(3);
+    expect(report.transferRatePct).toBe(66.7);
+    expect(report.windowLabel).toContain('elmúlt 12 óra');
+  });
+
+  it('az ablakon KÍVÜLI sor kimarad', async () => {
+    const report = await buildVoiceFunnelReport({
+      projectRoot: '/p',
+      hours: 2,
+      now: NOW,
+      read: fsWith({
+        '2026-09-07': [
+          at('2026-09-07T12:00:00+02:00', 'MA-VOICE-SPEECH-QUEUED'),
+          at('2026-09-07T23:50:00+02:00', 'MA-VOICE-SPEECH-QUEUED'),
+        ],
+        '2026-09-08': [],
+      }),
+    });
+
+    expect(report.queued).toBe(1);
+    expect(report.windowLabel).toContain('elmúlt 2 óra');
+  });
+
+  it('⚠️ a HIÁNYZÓ időbélyegű sor BENT marad — nem dobunk el mérési adatot metaadat-hiány miatt', async () => {
+    const report = await buildVoiceFunnelReport({
+      projectRoot: '/p',
+      now: NOW,
+      read: fsWith({
+        '2026-09-08': [JSON.stringify({ kind: 'note', extra: { code: 'MA-VOICE-SPEECH-QUEUED' } })],
+        '2026-09-07': [],
+      }),
+    });
+
+    expect(report.queued).toBe(1);
+  });
+
+  it('⚠️ az ablakban lévő HIÁNYZÓ napi fájl nem hiba — a másik nap adata megjön', async () => {
+    const report = await buildVoiceFunnelReport({
+      projectRoot: '/p',
+      now: NOW,
+      read: fsWith({ '2026-09-07': [at('2026-09-07T23:00:00+02:00', 'MA-VOICE-SPEECH-QUEUED')] }),
+    });
+
+    expect(report.hasData).toBe(true);
+    expect(report.queued).toBe(1);
+  });
+
+  it('`--day` módban viszont TÉNYLEG csak az a naptári nap számít', async () => {
+    const report = await buildVoiceFunnelReport({
+      projectRoot: '/p',
+      day: '2026-09-07',
+      now: NOW,
+      read: fsWith({
+        '2026-09-07': [at('2026-09-07T12:00:00+02:00', 'MA-VOICE-SPEECH-QUEUED')],
+        '2026-09-08': [at('2026-09-08T00:10:00+02:00', 'MA-VOICE-SPEECH-QUEUED')],
+      }),
+    });
+
+    expect(report.queued).toBe(1);
+    expect(report.windowLabel).toContain('naptári nap');
+  });
+
+  it('a renderelt tábla MEGMONDJA az ablakot — üres jelentésnél is', async () => {
+    const report = await buildVoiceFunnelReport({
+      projectRoot: '/p',
+      now: NOW,
+      read: async (): Promise<string> => {
+        throw new Error('ENOENT');
+      },
+    });
+
+    expect(report.hasData).toBe(false);
+    expect(renderVoiceFunnel(report)).toContain('elmúlt 12 óra');
   });
 });

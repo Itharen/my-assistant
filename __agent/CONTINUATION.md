@@ -2113,3 +2113,57 @@ igényelnek. A journey ezt nem adja el másnak.
 ### Teszt
 
 **CLI 607/607 zöld** *(+3 journey; a szókincs-megosztás után minden korábbi teszt is zöld)*.
+
+
+---
+
+## ✅ 2026-09-08 00:51–01:00 — DEV: az ÉJFÉL már nem vágja ketté a mérést
+
+### A hibát maga az ébredési kör mutatta meg
+
+`ma comm voice-funnel` lefutott — és **üres** volt:
+
+```
+📊 Hang-tölcsér — 2026-09-08          📊 Hang-tölcsér — 2026-09-07
+  ⚪ nem mérhető                        ⚪ 100% (1 megszólalásból)
+```
+
+⇒ Ugyanaz az adat, két nap, két külön jelentés. 🔴 **Egy éjfélen átnyúló beszélgetés
+kettévágódna, és egyik nap sem mutatná az igazi arányt** — az owner reggel „nem működik"-et
+látna, pedig csak rossz ablakot néztünk.
+
+⚠️ **Ez a rosszabbik fajta hiba: nem hibázik, csak nem mond igazat.** A frissített szabályok
+pont ezt mondják ki: *„üres állapot magyarázó hiba nélkül tilos"*.
+
+📌 **És strukturális, nem véletlen:** az owner ébrenléte **csúszik** *(fix 18 óra,
+`sleep-system.md`)* ⇒ a napja **soha nem** a naptári nap. Egy naptári napra kötött mérés neki
+elvi okból rossz.
+
+### 🩹 A javítás
+
+| | |
+|---|---|
+| **alap** | 🔄 **gördülő 12 órás ablak** — átível az éjfélen, több napi fájlt olvas |
+| `--hours N` | hosszabb/rövidebb ablak |
+| `--day YYYY-MM-DD` | ha tényleg egy konkrét naptári nap kell |
+| ⭐ minden jelentés | **kiírja a saját ablakát** (`windowLabel`) — különben egy üres tábláról nem dönthető el, hogy „nem beszélt" vagy „rossz időszakot néztem" |
+
+⚠️ **A hiányzó időbélyegű sor BENT marad:** egy mérési adatot nem dobunk el azért, mert a
+metaadata hiányos. Inkább legyen bent egy régi sor, mint hiányozzon egy friss.
+
+### ✅ Élőben igazolva
+
+A gördülő ablak a 09-08 00:59-es futásban **megtalálta a 09-07 21:49-es adatot** — pontosan az,
+ami előtte kiesett. A hibás `--hours abc` **strukturált hibát** ad, `exit=1`.
+
+### 🔴 EGY SAJÁT TANULSÁG — a bash heredoc megette a backslash-t
+
+A teszt először **öt** hibával bukott: a heredoc-kal beírt `[\/]` karakterosztályból
+**egy backslash eltűnt**, így a hamis fájlrendszer sosem találta meg a napi fájlt.
+🩹 Javítva `basename`-re *(a szabványos függvény mindkét platformon helyes)*.
+📌 **Tanulság:** backslash-t tartalmazó kódot **ne heredoc-kal** írjak — a szerkesztő-eszköz
+biztonságos. *(A tesztek pirosa fogta meg, ahogy kell.)*
+
+### Teszt
+
+**CLI 613/613 zöld** *(+6 gördülő-ablak teszt, köztük az éjfél-átívelés)*.
