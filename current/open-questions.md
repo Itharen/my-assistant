@@ -621,3 +621,48 @@ a védelme **megszűnt** — egy újraküldött Discord-esemény másodszor is b
 a mérhető hiba **nem a tárolón** múlt, és egy adatbázis-függőség idehozása **több hibalehetőség**
 lenne ugyanazért a garanciáért. ⚠️ Ha viszont a hangüzenet-számok nőnek, az archívum
 végigolvasása üzenetenként lassulni fog — **azt majd mérni kell**, és akkor indexelni.
+
+---
+
+## L) Helyzet-megosztás: OwnTracks vagy SAJÁT mobil-app? — 2026-09-07 15:03
+
+> **Owner (14:56, hangüzenetben):** *„itt ez az own tracks alkalmazásnál egy kicsit
+> elbizonytalanodtam, hogy ez tényleg kellene nekünk. Lehet, hogy jobb lenne, hogyha a My
+> Assistant client tudná a pozícióinfókat rögzíteni, és közölni a relay-en keresztül, illetve
+> akkor már a My Assistant is elérhető kéne legyen a relay-en keresztül"*
+
+> **Owner (15:03):** *„Jobban preferálom a saját fejlesztéseket.... Pl mobil app fejlesztési
+> patternjeink is vannak és azt az irányt jobban preferálom...."*
+
+> **Owner (15:04, hangüzenetben):** *„Csak hát persze a saját alkalmazás fejlesztésében benne
+> van az is, hogy ott az auto-update-et, meg az alkalmazás-telepítést, meg a location
+> sharing-et, meg mindenféle ilyen [pittyet] meg kéne oldani."*
+
+⭐ **Az owner MAGA mondta ki mindkét oldalt** — ez nem bizonytalanság, hanem pontos
+helyzetértékelés: az irány a saját app, az ára viszont ismert.
+
+| | **OwnTracks** *(kész)* | **Saját mobil-app** |
+|---|---|---|
+| Helyzet-küldés | ✅ kész, bevált | meg kell írni |
+| Telepítés | ✅ bolti | 🔴 megoldandó |
+| Auto-update | ✅ bolti | 🔴 megoldandó |
+| Illeszkedés | idegen séma | ⭐ **saját minta, saját kontroll** |
+| Kétirányúság | ⛔ csak küld | ⭐ a my-assistant **elérhető** lenne a relayen |
+
+| ID | Kérdés | Fontosság |
+|---|---|---|
+| `L1` | 🔵 **OwnTracks most, saját app később** — vagy egyből a saját app? | `h` |
+| `L2` | 🔵 A saját app **egy funkcióval** induljon-e *(csak helyzet-küldés)*? | `m` |
+
+**Az ajánlásom — és épp a te ma kimondott szabályod alapján:**
+
+⭐ *„EGY funkció elég"* (`one-function-is-enough.md`). A saját app **első funkciója a
+helyzet-küldés** legyen, semmi más. A telepítés/auto-update **nem funkció**, hanem annak a
+feltétele, hogy az az egy működjön — ezt te magad választottad el.
+
+⚠️ **De van egy sorrendi érv is:** a relay **már kész és igazolt** *(ingest + pull + ack, élő
+próbán mérve)*, és a szerződése **ugyanaz** marad, akárki küld rá. ⇒ Az OwnTracks-szel a lánc
+**ma** működni tudna, és a saját app később **ugyanabba** a relaybe csatlakozna — nem
+eldobott munka, hanem ugyanaz a végpont.
+
+📌 Ez **owner-döntés**: a „saját fejlesztést preferálom" a te elved, én nem írom felül.

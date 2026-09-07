@@ -122,3 +122,126 @@ következtetésem — az valószínűleg a jegyvásárláskor kapott levélben /
 - [AI SUMMIT 2026 — visithungary.com](https://visithungary.com/event/ai-summit-2026)
 - [Magyar Zene Háza — BKK](https://bkk.hu/jegyek-es-berletek/budapest-kartya/elfogadohelyek/latnivalok/magyar-zene-haza.14743/)
 - [Magyar Zene Háza — GYIK / megközelítés](https://zenehaza.hu/gyakran-ismetelt-kerdesek)
+
+---
+
+# 📋 NAP 1 EREDMÉNYE + NAP 2 TERVEZÉS — 2026-09-07 14:44
+
+> **Owner (hangüzenetben, 14:42):** *„most mindjárt bedobom neked a mai AI Summit-nak az
+> eredményét. Ezt egy másik sessionbe vezettem eddig, hogy tudjak folyamatosan konzultálni.
+> Holnap már veled fogok, úgyhogy majd ezeket fel kéne dolgozd."*
+
+⇒ **Ez egy átadás egy másik sessionből.** Az alábbi az owner SZÖVEGE, tartalmilag hűen.
+
+## Fő érdeklődési prioritások — SORRENDBEN
+
+1. **Jövőtechnológiák / Physical AI / robotika**
+2. Agentic rendszerek, AI-agentek, orchestration, workflow automation
+3. AI + reklám / kreatívipar
+4. AI engineering / coding / infrastruktúra
+5. Local / sovereign / open-source AI
+6. Konkrét technikai implementációk és **Expert** szintű előadások
+
+**⛔ ALACSONY prioritás:** általános AI-bevezetők · túl business/corporate/marketing ·
+HR, általános társadalmi és filozófiai témák · amiből technikailag kevés új várható
+
+## 🔴 A NAP 1 LEGFONTOSABB TAPASZTALATA
+
+> *„A délelőtti agentes előadásoknál az volt az érzése, hogy kevés új dolgot mondanak, mert a
+> témák jelentős részével már eleve tisztában van."*
+
+⇒ **Az általános agentes / AI-first előadásokat ERŐSEBBEN kell szűrni.** Előnyben:
+Expert szint · konkrét technikai mélység · új architektúrák · robotics/Physical AI ·
+engineering · valódi implementációk · jövőtechnológia.
+
+## Amit ténylegesen megnézett (nap 1)
+
+nyitó · délelőtti Prompt Aréna · generatív robotikás blokk · „AI Agentek a gyakorlatban" ·
+Alibaba / Reliable AI Agents környéki agentes blokk → átment a **Néprajzi Múzeumba** →
+elkezdte az **AI Robotics Summitot**, és **biztosan eljutott** az *„Az emberbarát robot vagy a
+robotbarát ember a jövő?"* előadásig *(14:05)*. **A délutáni program csúszott.**
+
+## ⏳ PENDING — visszanézésre, a nap 1-ből
+
+**Kiemelten:** Megtestesült AI és funkcionális biztonság · G1 humanoid robot ·
+A következő AI-forradalomnak teste van · Az AI fizikai valósága ·
+Logisztikai szolgáltatás építése AI-agentekkel · Robotok a való világban ·
+Robotizált jelen — AI-agentek és automatizáció fúziója
+
+**Szintén érdekes:** Agentic Cloud for AI Innovation · Agentic use case heatmap ·
+Vibe Coding · AI-videó / reklám · egyéb Expert / infrastructure / sovereign / open-model
+
+⭐ **MÉRVE (2026-09-07 ~15:00):** ezek a tételek mind a **Méta Open Lab** (Néprajzi Múzeum)
+szeptember **7-i** programjában vannak, **14:25–16:45** között — vagyis **ma**, azután, hogy
+az owner eljött. ⇒ A „pending" besorolás **helyes**: ezek tényleg visszanézésre valók.
+
+## 🔴 SZERVEZÉSI TANULSÁGOK — a nap 2-re
+
+- ⛔ **Ne próbáljuk a teljes programot lefedni.**
+- Előre legyen **A-lista és B-lista**; minden idősávnál eldöntve az elsődleges választás.
+- **Minimalizálni az épületek közti mozgást**; egy helyszínen blokkban gondolkodni.
+- ⚠️ A hivatalos időpontok **csúszhatnak** ⇒ helyben **az app az elsődleges forrás**.
+- Amit vissza lehet nézni, azt **nem kell élőben**.
+- 🔴 **Energia:** túl sok egymás utáni előadás nem működik. Tudatosan betervezni:
+  **étkezés · ivás · ülő/pihenő idő · legalább egy hosszabb szünet**.
+- **Felszerelés:** táska · víz · étel/snack · powerbank
+
+## 🔴 ÚJ DÖNTÉS — owner, 14:45 (hangüzenetben)
+
+> *„biztos, hogy nem megyek ki reggel holnap, hanem csak akkor, amikor már a tényleg érdekes
+> történetek vannak. Most például már eljöttem a tényleges érdekes részéről, mert nagyon
+> elfáradtam már."*
+
+⇒ **Nem reggeli indulás.** És ⚠️ **a fáradtság MÉRT, ismétlődő jelenség**: ma is emiatt jött
+el a számára érdekes rész közepén. A nap 2 tervének ezt **be kell építenie**, nem
+mellékfeltételként.
+
+---
+
+## 🔎 A NAP 2 PROGRAM — amit MÉRTEM (2026-09-07 ~15:00)
+
+🔴 **A szeptember 8-i RÉSZLETES program NINCS publikálva.** Három forrás egybehangzóan:
+
+- `aisummitbudapest.hu/agenda` → nap 2-re **csak** az „AI Trends (continuation)" látszik
+- `aisummit.hu/en/agenda` → *„day 2 detailed programme is not displayed"*
+- `aisummit.hu/en/program` → *„the complete programme only for September 7"*, és
+  *„The full, minute-by-minute programme is updated as the event approaches"*
+
+⚠️ **HIBAFORRÁS, amit elkerültem:** az `?day=2` paraméterrel lekért „robotika-lista"
+valójában a **7-i** program volt. Felismerhető volt róla, hogy **pontosan az owner pending
+listája** — ha erre terveztem volna a holnapot, az teljesen rossz lett volna.
+
+### Ami PUBLIKÁLT a nap 2-re: AI Trends, MBH Bank Visionary Stage (Magyar Zene Háza)
+
+- 09:00 When Bounded Minds Meet: Human and Machine Judgment in Government Cybersecurity — *General*
+- 09:20 From China to Europe: Scaling AI Solutions Across Borders — *General*
+- 09:40 Building an AI native super app at global scale *(Rakuten Viber)* — *General*
+- 10:00 Growing a global AI startup from zero to One — *General, Case Study*
+- 10:20 ☕ szünet
+- 10:35 Building the Cowork Model — Korea / SME manufacturing AI — *General*
+- 10:55 Nem a technológia, hanem a tudás versenye — *General*
+- 11:15 Amikor az AI bevezetése valódi versenyelőnyt jelent — *General*
+- 11:35 Agentic AI a piloton túl: hogyan kerüljük el a korai bevezetés hibáit? — *General, Case Study*
+- ⭐ **11:55 Adatközpontok szerepe az AI ökoszisztémában — `Expert`** *(Prof. Dr. Gál Zoltán)*
+- 12:15 A chatbotoktól az agentekig — *General, panel*
+- 12:35 🍽️ ebédszünet
+- 13:30 Az AI-tudós: amikor rendszereink már nem csak válaszolnak, hanem felfedeznek — *General*
+
+### 🎯 ÉRTÉKELÉS a prioritásaid szerint
+
+| | |
+|---|---|
+| **TUTI ÉRDEKEL** | ⛔ **egy sem** ebből a színpadból |
+| **LEHET ÉRDEKES** | ⭐ **11:55 Adatközpontok** *(az EGYETLEN Expert; infrastruktúra = 4. prioritás)* |
+| **NEM ÉRDEKES** | az összes többi — General/business, és a 11:35 agentes is „piloton túl" szintű, amiről ma épp azt mérted, hogy keveset ad |
+
+⇒ ⭐ **A reggeli kimaradás nem kompromisszum, hanem a helyes döntés** — a publikált délelőtti
+program a te szűrőd szerint gyakorlatilag üres.
+
+### ⏭️ AMI HÁTRAVAN a nap 2 tervéhez
+
+🔴 **A robotics / Physical AI / Expert sávok a nap 2-re nincsenek fent.** Amint megjelennek
+*(vagy az appból)*, a besorolás elvégezhető — a kritériumok ebben a fájlban készen állnak.
+
+⚠️ **Az app az elsődleges forrás** — ezt te magad mondtad ki tanulságként, és a mai mérés
+igazolta: a webes agenda nap 2-re hiányos.

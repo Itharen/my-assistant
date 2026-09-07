@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 14:54
+**Utoljára frissítve:** 2026-09-07 15:33
 
 ---
 
@@ -71,6 +71,8 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 
 | # | Ki | Feladat | Hol tart | Következő lépés |
 |---|---|---|---|---|
+| T-43 | 🤝 | 📍 **Saját mobil-app a helyzet-küldéshez** *(OwnTracks helyett)* | owner 15:03: *„Jobban preferálom a saját fejlesztéseket... mobil app fejlesztési patternjeink is vannak"* — ⚠️ ő maga sorolta fel az árát: telepítés, auto-update, location sharing | **L1/L2 owner-döntés** nyitva: OwnTracks most + saját app később, vagy egyből saját? ⭐ A relay **kész**, és a szerződése azonos marad, akárki küld rá |
+| T-44 | 🤝 | 📅 **AI Summit nap 2 terve** | owner 14:44 átadta a nap 1 eredményét egy másik sessionből | ⏸️ **a 8-i részletes program NINCS publikálva** (3 forrás). Ami publikált (AI Trends), az **egy Expert tétel kivételével** mind alacsony prioritás ⇒ a reggeli kimaradás igazolt. A besorolási kritériumok készen állnak: `current/events/2026-09-07-ai-summit-budapest.md` |
 | T-41 | 🤖 | **Agent a támogatásokra / pályázatokra / sales-lehetőségekre** | owner 2026-09-07 13:30: *„van egy csomó támogatás meg pályázat meg sales lehetőség amire rá kéne állítani egy agent-et"* — ⚠️ illeszkedik az **MVP = pénzkeresés** fókuszhoz | felderítés: milyen forrásokat figyeljen, és mi a kimenet |
 | T-22 | 🤖 | 🔴 **Voice control ÁTEMELÉSE a régi CCAP-ból** *(nagy)* — **ELŐREVÉVE** | **4/5 szakasz**: mind a **70 fájl** bent, 2 fájl kivételével fordul. Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md` | ⚠️ a `Buffer`→`BodyInit` típus-ütközés feloldása *(3 próba nem vezetett célra — a régi botban ez a 2 fájl HIBÁTLAN)*, majd bekötés + élő próba |
 | T-10 | 🤖 | 🔴 **Sikertelen STT újrapróbálása** | **megépítve**, 474/474 teszt — `cli/src/stt/stt.retry-queue.ts` | ⚠️ **élő próbára vár**: a következő sikertelen felismerésnél derül ki. Addig NEM ✅ |
