@@ -65,10 +65,17 @@ egyetlen belépési pont (`dc ldp`), ami alatt minden más automatikusan él.
   hiba-bejegyzésben, és annak felismerése, hogy máshol már fut egy példány.
 - **Az ütemezett feladat (`scripts/install-autostart.ps1`) tartalék marad** arra az esetre,
   ha a szerver nem fut — nem az elsődleges út.
+- 🔴 **KORREKCIÓ (2026-09-07, mérve):** korábban azt írtam ide, hogy a build alatt a szerver —
+  és vele a Discord-csatorna — **áll**. **EZ TÉVES VOLT.** Futó pipeline közben mérve: a
+  szerver-port ÉLT, a Discord-figyelő és a jelenlét-figyelő életjele **friss** volt. Az LDP a
+  szervert **végig futásban tartja**, és csak a pipeline **sikeres lezárása után** indítja
+  újra. *(A `status.json` `serverRunning: false` mezője az LDP belső „restart pending"
+  jelzése, nem a szerver valós állapota — ezt olvastam félre.)*
 - ⚠️ **A teljes LDP-kör hosszú** (mérve: ~23 perc, a `client-build` 536 s és a `client-test`
-  377 s dominál). Fejlesztés közben ehhez kell igazodni: a mentés utáni újraindulás nem
-  azonnali, és alatta a szerver — tehát a Discord-csatorna is — rövid ideig áll.
-  *(Az üzenetek nem vesznek el: a visszamenőleges beolvasás pótolja őket.)*
+  377 s dominál). Fejlesztés közben ehhez kell igazodni: a mentés **utáni** újraindulás nem
+  azonnali — az **új kód** csak a kör végén lép életbe.
+  ✅ **De a szerver közben FUT** *(lásd a fenti korrekciót)*: csak a kör legvégén van egy
+  rövid újraindulás, és az alatt kiesett üzeneteket a **visszamenőleges beolvasás** pótolja.
 
 ### Kapcsolódó
 

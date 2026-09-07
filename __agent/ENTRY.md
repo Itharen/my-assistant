@@ -194,6 +194,20 @@ Minden érdemi kör **végén**, mielőtt kilépsz:
 | 5 | Az akció maga | `ma action-log emit` |
 | 6 | Ha a **működés** változott | az érintett doksi + **ez a fájl** |
 
+🔴 **HA FEJLESZTÉST VÉGEZTÉL, EZ IS KELL** *(owner, 2026-09-07)*:
+
+| # | Ellenőrzés | Mivel |
+|---|---|---|
+| 1 | zölden lefutott-e a pipeline | `logs/live-dev-pipeline/status.json` |
+| 2 | **él-e a szerver** | a port ténylegesen figyel-e |
+| 3 | **élnek-e a figyelők** | Discord-életjel + jelenlét-minta **frissessége** |
+| 4 | ép-e a csatorna | `ma comm doctor` |
+
+⚠️ **Egy állapot-mező NEVE nem a jelentése.** A `status.json` `serverRunning: false` az LDP
+belső „restart pending" jelzése — **nem** azt jelenti, hogy a szerver nem fut. Mérve
+2026-09-07: futó pipeline közben a port ÉLT és mindkét figyelő friss volt.
+*(`current/principles/post-development-verification.md`.)*
+
 ⚠️ **Fél-frissítés = hiba.** A mért hibaminta: a `CONTINUATION.md` frissül, a hyperplan
 STATUS-blokkja nem — és a következő session **újra elvégzi a kész munkát**.
 
