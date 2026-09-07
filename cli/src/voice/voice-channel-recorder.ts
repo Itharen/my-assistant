@@ -25,6 +25,7 @@ import type { VoiceConnection } from '@discordjs/voice';
 import { transcribeAudio } from '../stt/stt.client.js';
 import { VoiceChannelBridge } from './voice-channel-bridge.js';
 import { VoiceDropProbe, type VoiceDropObservation } from './voice-drop-probe.js';
+import type { MissedSpeechKind } from './voice-missed-speech.js';
 
 /**
  * A felvevő `recordings` könyvtára.
@@ -87,6 +88,13 @@ export interface RecordingHandled {
   transcribed: boolean;
   queued: boolean;
   detail: string;
+  /**
+   * 🔇 Ha nem jutott át: MIÉRT — hogy a hang-csatornában is látszódjon.
+   *
+   * ⚠️ Enélkül a „nem értettem" és a „meg sem hallottam" megkülönböztethetetlen az owner
+   * számára — pontosan ezt írta le 22:08-kor.
+   */
+  missed?: MissedSpeechKind;
 }
 
 /**
@@ -154,6 +162,7 @@ export async function handleFinishedRecording(params: {
       fromOwner: true,
       transcribed: false,
       queued: false,
+      missed: 'recognition-failed',
       detail: `A felvétel NEM olvasható: ${error instanceof Error ? error.message : String(error)}`,
     };
   }
@@ -169,6 +178,9 @@ export async function handleFinishedRecording(params: {
       fromOwner: true,
       transcribed: false,
       queued: false,
+      // ⭐ A KETTŐ KÜLÖNBÖZIK, és az ownernek is másképp kell látnia: a „gyanús" azt jelenti,
+      // HALLOTTAM, csak nem bízom benne; a „nem adott szöveget" azt, hogy a felismerés bukott.
+      missed: result.suspicious ? 'not-understood' : 'recognition-failed',
       detail: result.suspicious
         ? `Gyanús átirat — NEM cselekszem rá: ${result.suspicionReason ?? result.detail}`
         : `A felismerés nem adott használható szöveget: ${result.detail}`,

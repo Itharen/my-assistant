@@ -154,7 +154,26 @@ export class VoiceChannelBridge {
    * szavaimat is odatenném, azok később **owner-üzenetként** jönnének vissza hozzám.
    * *(Ugyanaz a hibaosztály, amiért a Discord-figyelő is kiszűri a saját botunk visszhangját.)*
    */
-  async mirrorOwnSpeech(params: { text: string; assistantName: string }): Promise<VoiceTranscriptResult> {
+  async mirrorOwnSpeech(params: {
+    text: string;
+    assistantName: string;
+    /**
+     * 🔴 A HANG-csatorna azonosítója.
+     *
+     * ⚠️ **MEGELŐZŐ JAVÍTÁS (2026-09-07 23:00).** Ez a metódus **csatorna nélkül** küldött,
+     * tehát a `sendDiscordMessage` alapértelmezése szerint a **fő szöveges csatornába** ment
+     * volna — pontosan az a hiba, amit a `handleOwnerSpeech`-nél 21:47-kor már megjavítottunk,
+     * itt viszont **bennmaradt**.
+     *
+     * ⭐ Élesben még nem okozott kárt: **mérve — a metódusnak ma nincs hívója**, a saját
+     * beszédem tükrözése még nincs bekötve. A hiba viszont már benne állt, és az első
+     * bekötéskor csendben elvitte volna a tükröt a rossz csatornába.
+     *
+     * 📌 Tanulság: egy hibaosztályt **minden** előfordulási helyén meg kell keresni — a
+     * javított példány nem bizonyítja a többit.
+     */
+    channelId?: string;
+  }): Promise<VoiceTranscriptResult> {
     const trimmed: string = params.text.trim();
 
     if (!trimmed) {
@@ -164,6 +183,7 @@ export class VoiceChannelBridge {
     const mirror = await this.send(
       composeVoiceMirror({ speaker: 'assistant', speakerName: params.assistantName, text: trimmed }),
       'ack',
+      params.channelId,
     );
 
     return {

@@ -1632,3 +1632,56 @@ nem ez a change-set okozta; a JS elkészül)*.
 🔊 **3. követelmény: hangjelzések** — a `voice-output` modul már át van emelve
 (`cli/src/_modules/voice-output/`), csak be kell kötni: érzékelés / feldolgozás / eldobás / kész.
 ⛔ A szűrő-küszöbhöz **nem nyúlok**, amíg nincs élő mérési adat — az lenne a találgatás.
+
+
+---
+
+## ✅ 2026-09-07 22:44–23:00 — DEV: AMI NEM JUT ÁT, AZ IS LÁTSZIK (T-22, 2. követelmény)
+
+### 🔴 A mért hiány: a sikertelen felismerés TELJES CSENDET adott
+
+`handleFinishedRecording` korán visszatért *(olvasási hiba · gyanús átirat · üres szöveg)*, és
+a hidat **meg sem hívta** ⇒ a hang-csatornában **semmi** nem történt. Az owner számára a
+*„nem értettem"* és a *„meg sem hallottam"* **megkülönböztethetetlen** volt — szó szerint ezt
+írta le: *„fingom nincs, hogy mi ment át, mi nem."*
+
+### ⭐ A megoldás NEM „üzenet minden hibáról"
+
+Ma az eldobás a **többség (~99%)** ⇒ a megszólalásonkénti jelzés a csatornát
+**használhatatlanná spammelné**, és az elárasztott csatorna ugyanúgy láthatatlan, mint a néma.
+⇒ **Összevonás:** `cli/src/voice/voice-missed-speech.ts` — a rövid időn belüli kiesések EGY
+összefoglalóba kerülnek, **darabszámmal és másodperccel**, három megkülönböztetett okkal:
+
+| Jel | Mit jelent |
+|---|---|
+| 🎚️ | a felvevő eldobta — túl halk / túl rövid / nem ismerte fel beszédnek |
+| ❌ | a felismerés nem adott használható szöveget |
+| ❓ | hallottam, de nem értettem biztosan — ⛔ **nem cselekszem rá** |
+
+⛔ **Ami NEM változott:** a kiesett megszólalás **nem kerül a kötegbe**. A jelzés azt mondja,
+hogy *hallottam valamit, de nem értem* — sosem tesz úgy, mintha értené.
+⛔ Az **üres** (csak fejléc) felvételről nem szólunk: ott tényleg nem volt beszéd, és az üzenet
+csak zaj lenne.
+
+### 🩹 Két további javítás ugyanebben a change-setben
+
+1. **`mirrorOwnSpeech` a FŐ csatornába küldött** — ugyanaz a hibaosztály, amit a
+   `handleOwnerSpeech`-nél 21:47-kor már javítottunk, itt viszont **bennmaradt**. Kapott
+   `channelId`-t. ⚠️ **Megelőző javítás:** a metódusnak ma **nincs hívója** *(mérve:
+   `grep` — csak a definíció)*, tehát élesben még nem okozott hibát. 📌 Tanulság: egy
+   hibaosztályt **minden** előfordulási helyén meg kell keresni — a javított példány nem
+   bizonyítja a többit.
+2. **A `stop()` megvárható lett.** Elereszve („fire-and-forget") a folyamat leállhatna a küldés
+   előtt, és az owner utolsó, át nem jutott megszólalásai **némán vesznének el** — pont az a
+   hibaosztály, ami miatt az egész komponens készült.
+
+### Teszt
+
+**CLI 564/564 zöld** *(+14 az előző körhöz képest)* · fő `tsc` zöld.
+
+### ⏭️ A következő lépés — 3. owner-követelmény
+
+🔊 **HANGJELZÉSEK, ahogy a CCAP-ban voltak** — owner: *„kis ilyen-olyan printy-pringy hangok…
+elkezdted a feldolgozást, eldobtad azt az üzenetet, folyik az üzenet, megjött az üzenet"*.
+A `voice-output` modul **már át van emelve** (`cli/src/_modules/voice-output/`) — ⛔ nem írjuk
+újra, csak bekötjük.

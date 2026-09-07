@@ -57,6 +57,7 @@ import {
   type SpeechAttemptStats,
 } from '../voice/voice-channel-recorder.js';
 import type { VoiceDropObservation, VoiceDropProbe } from '../voice/voice-drop-probe.js';
+import { MissedSpeechReporter } from '../voice/voice-missed-speech.js';
 import { transcribeAudio } from '../stt/stt.client.js';
 import { composeMirrorMessage } from '../stt/stt.mirror.js';
 import {
@@ -205,6 +206,9 @@ export class DiscordListener {
   /** 🔍 Az élő eldobás-szonda — a `stop()`-nak le KELL állítania (különben duplán mérne). */
   private dropProbe: VoiceDropProbe | null = null;
 
+  /** 🔇 A kiesés-jelentő — ami NEM jutott át, az is látszik a hang-csatornában. */
+  private missedSpeech: MissedSpeechReporter | null = null;
+
 
 
   constructor(private readonly bridge: DiscordBridge = new DiscordBridge()) {}
@@ -341,6 +345,13 @@ export class DiscordListener {
     // „mennyi hang veszett el" szám **duplázódna**. Egy hazudó mérés rosszabb, mint a semmi.
     this.dropProbe?.stop();
     this.dropProbe = null;
+
+    // ⚠️ A `stop()` a fuggoben levo kieseseket meg KIKULDI — leallaskor sem nyeljuk el azt,
+    // amit az owner mondott es nem jutott at.
+    // ⚠️ MEGVARJUK: a fuggoben levo kiesesek meg kimennek. Elereszve a folyamat leallhatna a
+    // kuldes elott, es az owner utolso, at nem jutott megszolalasai NEMAN vesznenek el.
+    await this.missedSpeech?.stop();
+    this.missedSpeech = null;
 
     this.voicePresence.leave();
 
@@ -490,6 +501,23 @@ export class DiscordListener {
 
     if (!connection) return;
 
+    // 🔇 A KIESES-JELENTO. Owner 22:08: „fingom nincs, hogy mi ment at, mi nem." Eddig a
+    // sikertelen felismeres TELJES CSENDET adott — a „nem ertettem" es a „meg sem hallottam"
+    // megkulonboztethetetlen volt. ⭐ Osszevonva kuld, kulonben a mai ~99%-os eldobas-arany
+    // mellett szetspammelne a csatornat (`voice-missed-speech.ts`).
+    await this.missedSpeech?.stop();
+    this.missedSpeech = new MissedSpeechReporter({
+      channelId: channelId,
+      speakerName: 'Itharen',
+      onError: (detail: string): void => {
+        void this.safeLog({
+          kind: 'error',
+          summary: `[discord/listener] MA-VOICE-MISSED-REPORT-FAILED: ${detail}`,
+          extra: { code: 'MA-VOICE-MISSED-REPORT-FAILED' },
+        });
+      },
+    });
+
     const result = await startVoiceRecording({
       connection: connection,
       ownerUserId: (process.env['MA_DISCORD_USER_ID'] ?? '').trim(),
@@ -533,6 +561,15 @@ export class DiscordListener {
               : 'A felvétel a fejlécen túl üres volt — itt tényleg nem volt mit felismerni.',
           },
         });
+
+        // 🔇 ⛔ AZ URES FAJLT NEM JELENTJUK AZ OWNERNEK: ott tenyleg nem volt beszed, es a
+        // „nem jutott at" uzenet ilyenkor zaj lenne — pont a lathatosagot rontana.
+        if (observation.reason !== 'empty-file') {
+          this.missedSpeech?.note({
+            kind: 'discarded-by-recorder',
+            seconds: observation.lostAudioSeconds,
+          });
+        }
       },
       onProbeError: (detail: string): void => {
         void this.safeLog({
@@ -551,8 +588,12 @@ export class DiscordListener {
             code: outcome.queued ? 'MA-VOICE-SPEECH-QUEUED' : 'MA-VOICE-SPEECH-DROPPED',
             fromOwner: outcome.fromOwner,
             transcribed: outcome.transcribed,
+            ...(outcome.missed ? { missed: outcome.missed } : {}),
           },
         });
+
+        // 🔇 Ami nem jutott at, az is LATSZIK — a hang-csatornaban, osszevonva.
+        if (outcome.missed) this.missedSpeech?.note({ kind: outcome.missed });
       },
     });
 

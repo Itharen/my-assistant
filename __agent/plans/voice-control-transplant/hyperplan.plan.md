@@ -11,7 +11,7 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 22:44
+## 📊 STATUS — 2026-09-07 23:00
 
 > ⛔ **A KORÁBBI, 18:05-ös STATUS TÚLÁLLÍTOTT.** „6/6 szakasz megépítve" ⇒ a lánc **össze van
 > kötve**, de az **átviteli arány ~1%** volt: az owner végigbeszélt egy beszélgetést, és
@@ -22,9 +22,9 @@
 |---|---|
 | **Fázis** | 🟡 **A lánc él, az ÁTVITELI ARÁNY ismeretlen** — most épült meg a mérőeszköz, ami megmondja |
 | **Az 1. owner-követelmény** *(mérd ki, hol vész el)* | ✅ **MEGÉPÍTVE** — `voice-drop-probe.ts`. ⏳ Az élő adat az owner beszédére vár |
-| **A 2. owner-követelmény** *(MINDEN átirat a hang-csatornába)* | 🟡 a tükör célpontja már a hang-csatorna; a „minden" a mérés után dől el |
+| **A 2. owner-követelmény** *(MINDEN átirat a hang-csatornába)* | ✅ **MEGÉPÍTVE** — a sikertelen/gyanús/eldobott megszólalás is **látható nyomot** hagy, összevont jelentéssel (`voice-missed-speech.ts`) |
 | **A 3. owner-követelmény** *(🔊 hangjelzések, mint a CCAP-ban)* | 🔴 **nincs** — a `voice-output` modul már át van emelve, csak be kell kötni |
-| **Teszt** | CLI **550/550** zöld *(+14 szonda)*; fő `tsc` zöld; a transzplantált build emittál |
+| **Teszt** | CLI **564/564** zöld *(+14 szonda, +14 kiesés-jelentő)*; fő `tsc` zöld; a transzplantált build emittál |
 | **Következő lépés** | 🔊 **3. követelmény: hangjelzések** — a `voice-output` bekötése (érzékelés / feldolgozás / eldobás / kész). ⛔ A szűrő-küszöbhöz NEM nyúlunk, amíg nincs élő mérési adat |
 
 ### 🔍 A MÉRŐESZKÖZ, ami 22:44-kor megépült — és MIÉRT nem volt elég a régi számláló
