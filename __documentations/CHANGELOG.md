@@ -29,7 +29,8 @@ kódot hozta, az assetet nem. Futásidőben igazolva: útvonal + **ffmpeg-dekód
 - ⛔ **A szűrő-küszöbökhöz nem nyúlunk**, amíg nincs élő mérési adat — az találgatás lenne.
 - ⏳ **Az átviteli arány még méretlen:** ahhoz az ownernek beszélnie kell a `honnie-place`-ben.
 
-CLI **575/575** zöld. Részletek: `__documentations/dev/VOICE_CONTROL_REFERENCE.md` §8.
+CLI **582/582** zöld *(a záró review-kör két valós hibát fogott meg: a duplikátum „veszteségnek"
+látszott a naplóban, és a „hallak" jelzés fékje **elnyelte volna** az „eldobva" jelzést)*. Részletek: `__documentations/dev/VOICE_CONTROL_REFERENCE.md` §8.
 
 ---
 
