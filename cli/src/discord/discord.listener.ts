@@ -16,7 +16,12 @@ import { logAction } from '../action-log/action-log.client.js';
 import { DiscordBridge } from './discord.bridge.js';
 import type { DiscordInboundMessage } from './discord.models.js';
 import { HEARTBEAT_INTERVAL_MS, writeHeartbeat } from './discord.heartbeat.js';
-import { checkReplyObligation } from './discord.reply-tracker.js';
+import { checkReplyObligation, recordOutbound } from './discord.reply-tracker.js';
+import {
+  markVoiceHeard,
+  replyToVoice,
+  type VoiceAcknowledgeTarget,
+} from './discord.voice-acknowledge.js';
 import { TypingIndicator } from './discord.typing-indicator.js';
 import {
   filterIncomingMessage,
@@ -30,7 +35,7 @@ import {
   type CurrentMessageState,
 } from './discord.batch-refresh.js';
 import { composeDeliveryNotice } from './discord.receipt.js';
-import { sendDiscordMessage } from './discord.sender.js';
+import { sendDiscordMessage, splitForDiscord } from './discord.sender.js';
 import {
   composeTranscriptForBatch,
   downloadVoiceAttachment,
@@ -312,7 +317,7 @@ export class DiscordListener {
     // 🎙️ HANGÜZENET: a szöveget előbb elő kell állítani — STT + TÜKÖR-ÜZENET.
     // Ha nem sikerül megbízhatóan, a kötegbe SEMMI nem kerül (lásd a metódus doksiját).
     if (verdict.hasAudio) {
-      const spoken: string | null = await this.transcribeVoiceMessage(incoming);
+      const spoken: string | null = await this.transcribeVoiceMessage(incoming, message);
 
       if (spoken === null) return;
 
@@ -367,18 +372,44 @@ export class DiscordListener {
    *
    * @returns a kötegbe teendő, megjelölt átirat — vagy `null`, ha nem szabad továbbadni.
    */
-  private async transcribeVoiceMessage(incoming: IncomingDiscordMessage): Promise<string | null> {
+  private async transcribeVoiceMessage(
+    incoming: IncomingDiscordMessage,
+    /**
+     * 👂 Maga a Discord-üzenet — ezen jelenik meg a fül-reakció, és ERRE megy a válasz.
+     *
+     * Owner, 2026-09-07: *„tudsz-e dobni egy fül emojit a hangüzenetekre, és tudsz-e
+     * riplájolni a hangüzenetekre, hogy összeköthessük"*.
+     */
+    source: VoiceAcknowledgeTarget,
+  ): Promise<string | null> {
     // ⛔ Ugyanazt a hangot nem ismerjük fel kétszer: drága, és MÁSODIK tükör-üzenetet küldene.
     if (this.transcribedMessageIds.has(incoming.messageId)) return null;
 
     this.transcribedMessageIds.add(incoming.messageId);
     this.forgetOldestTranscribedIds();
 
+    // 👂 A LEGELSŐ dolog: jelezzük, hogy EZT az üzenetet meghallottuk. A felismerés percekig
+    // tarthat (RAM-terheléskor mérve 5 percig is) — addig ez az EGYETLEN visszajelzés arról,
+    // hogy melyik hangüzeneten dolgozom.
+    const heard = await markVoiceHeard(source);
+
+    if (!heard.ok) {
+      await this.safeLog({
+        kind: 'error',
+        summary: `[discord/listener] MA-DISCORD-VOICE-REACT-FAILED: ${heard.detail}`,
+        extra: { code: 'MA-DISCORD-VOICE-REACT-FAILED', messageId: incoming.messageId, remedy: heard.remedy },
+      });
+    }
+
     const selection = selectVoiceAttachment(incoming.attachments ?? []);
 
     if (!selection.attachment) {
       // Ide elvileg nem jutunk (a szűrő már látott hangot) — de ha mégis, MONDJUK MEG.
-      await this.reportVoiceProblem(incoming, `Nem találtam feldolgozható hangot. ${selection.rejection ?? ''}`);
+      await this.reportVoiceProblem(
+        incoming,
+        source,
+        `Nem találtam feldolgozható hangot. ${selection.rejection ?? ''}`,
+      );
 
       return null;
     }
@@ -389,6 +420,7 @@ export class DiscordListener {
     if (!download.ok || !download.bytes) {
       await this.reportVoiceProblem(
         incoming,
+        source,
         `A hangüzenet letöltése nem sikerült. ${download.detail}`,
         download.remedy,
       );
@@ -404,7 +436,7 @@ export class DiscordListener {
 
     // ⭐ A TÜKÖR MINDIG MEGY — sikernél, bizonytalanságnál és bukásnál is. Ez az egyetlen
     // pont, ahol az owner MÉG A CSELEKVÉS ELŐTT elkaphatja a félreértést.
-    await this.sendMirror(composeMirrorMessage(result), incoming.messageId);
+    await this.sendMirror(composeMirrorMessage(result), incoming.messageId, source);
 
     if (!result.ok || result.suspicious) {
       await this.safeLog({
@@ -481,7 +513,19 @@ export class DiscordListener {
   }
 
   /** A tükör-üzenet kiküldése. A küldési hiba nem akaszthatja meg a feldolgozást. */
-  private async sendMirror(text: string, messageId: string): Promise<void> {
+  private async sendMirror(
+    text: string,
+    messageId: string,
+    /**
+     * Ha megvan a forrás-üzenet, a tükör **VÁLASZKÉNT** megy rá — így a Discordon
+     * összekötve marad a hang és az átirata (owner-kérés, 2026-09-07).
+     */
+    source?: VoiceAcknowledgeTarget,
+  ): Promise<void> {
+    // ⭐ ELSŐ PRÓBA: válasz a hangüzenetre. Ez az egyetlen mód, ami LÁTHATÓAN összeköti az
+    // átiratot a forrásával — és ráadásul olcsóbb is, mert a figyelő kapcsolatát használja.
+    if (source && await this.replyMirror(text, messageId, source)) return;
+
     try {
       const sent = await sendDiscordMessage(text);
 
@@ -503,9 +547,58 @@ export class DiscordListener {
     }
   }
 
+  /**
+   * A tükör VÁLASZKÉNT a hangüzenetre.
+   *
+   * 🔴 A MEGKERÜLÉSNEK UGYANAZT A SZERZŐDÉST KELL TELJESÍTENIE, mint a `sendDiscordMessage`-nek:
+   * ugyanaz a 2000-karakteres darabolás (`splitForDiscord`) és ugyanaz a kimenő-rögzítés
+   * (`recordOutbound`). Enélkül a válasz-kötelezettség követése némán elromlana — egy
+   * „gyorsabb út", ami közben kikapcsol egy őrt, rosszabb, mint a lassú út.
+   *
+   * ⚠️ A tükör `'ack'`: NEM törli a válasz-kötelezettséget. Az átirat visszhangja nem válasz
+   * arra, amit az owner kért — azzal még tartozom.
+   *
+   * @returns `true`, ha a válasz-lánc kiment; `false`, ha a hívónak a csatornára kell esnie.
+   */
+  private async replyMirror(
+    text: string,
+    messageId: string,
+    source: VoiceAcknowledgeTarget,
+  ): Promise<boolean> {
+    try {
+      const outcome = await replyToVoice(source, splitForDiscord(text.trim()));
+
+      if (!outcome.ok) {
+        await this.safeLog({
+          kind: 'error',
+          summary: `[discord/listener] MA-DISCORD-MIRROR-REPLY-FAILED: ${outcome.detail} — `
+            + 'átváltok a csatornára.',
+          extra: { code: 'MA-DISCORD-MIRROR-REPLY-FAILED', messageId, remedy: outcome.remedy },
+        });
+
+        return false;
+      }
+
+      await recordOutbound(new Date().toISOString(), 'ack');
+
+      return true;
+    } catch (err: unknown) {
+      // Ide csak akkor jutunk, ha maga a rögzítés/darabolás bukik — a válasz már kiment.
+      await this.safeLog({
+        kind: 'error',
+        summary: '[discord/listener] MA-DISCORD-MIRROR-REPLY-FAILED: váratlan hiba a válasz-láncban — '
+          + `${err instanceof Error ? err.message : String(err)}`,
+        extra: { code: 'MA-DISCORD-MIRROR-REPLY-FAILED', messageId },
+      });
+
+      return false;
+    }
+  }
+
   /** Hangüzenet-probléma: az ownernek is MEGMONDJUK, nem csak a naplóba tesszük. */
   private async reportVoiceProblem(
     incoming: IncomingDiscordMessage,
+    source: VoiceAcknowledgeTarget,
     detail: string,
     remedy?: string,
   ): Promise<void> {
@@ -520,6 +613,7 @@ export class DiscordListener {
         + (remedy ? `\n→ ${remedy}` : '')
         + '\n\n📌 **Nem tippelek arra, mit mondtál** — írd le, vagy küldd újra.',
       incoming.messageId,
+      source,
     );
   }
 
@@ -561,7 +655,7 @@ export class DiscordListener {
         // URES tartalommal kerulne a kotegbe — vagyis a backfill pont azt veszitene el,
         // amiert letezik. (Merve 2026-09-07: a backfill NEM a handleMessage-en megy at.)
         if (verdict.hasAudio) {
-          const spoken: string | null = await this.transcribeVoiceMessage(incoming);
+          const spoken: string | null = await this.transcribeVoiceMessage(incoming, message);
 
           if (spoken === null) continue;
 
