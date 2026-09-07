@@ -186,6 +186,7 @@ const COMMAND_TREE: Record<string, Record<string, CommandHandler>> = {
     flush: (args: string[]) => runCommSubcommand('flush', args),
     listen: (args: string[]) => runCommSubcommand('listen', args),
     say: (args: string[]) => runCommSubcommand('say', args),
+    history: (args: string[]) => runCommSubcommand('history', args),
   },
   status: {
     digest: (args: string[]) => runStatusSubcommand('digest', args),
@@ -586,6 +587,7 @@ function printGroupHelp(group: string): void {
         '  --force    flush only: skip the batching decision and send now',
         '  --text     say only: the message text',
         '  --file     say only: read the message from a file (better for long/multiline text)',
+        '  --limit    history only: how many recent entries to show (default 30, 0 = all)',
         '',
         'doctor exits non-zero when something is broken or degraded, so scripts notice.',
         'An unmeasurable check is reported as UNKNOWN — never as OK.',

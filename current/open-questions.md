@@ -574,3 +574,21 @@ Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md` · feladat: **T
 ⚠️ **Egyik sem blokkolja** a 2. szakaszt (függőségek) — az a válaszoktól függetlenül halad.
 
 📌 A `V3` a legfontosabb: ez **a szállítmány méretét** dönti el, nem csak egy beállítást.
+
+### ✅ V1–V3 MEGVÁLASZOLVA — 2026-09-07 13:43
+
+> **Owner, SZÓ SZERINT:** *„A voice-hoz: server: 1467012131378434151 channel:
+> 1489036734632034496 mindig ülj bent amikor megy a my assistant. Jó lenne a beszédes rész is
+> beemelni de másik voice id val kell majd menj és ha hazaértem tudok elevenlabs kulcsot adni."*
+
+| ID | Válasz |
+|---|---|
+| `V1` | ✅ **szerver** `1467012131378434151` · **csatorna** `1489036734632034496` |
+| `V2` | ✅ **Mindig bent ülök**, amíg a my-assistant fut — nem hívásra csatlakozom |
+| `V3` | ✅ **A `voice-output` IS kell** ⇒ a szállítmány a **teljes 11 251 sor**, nem szűkíthető |
+
+⚠️ **Két új, ebből fakadó tétel:**
+- 🔑 **Külön voice id** kell a kimenő beszédhez — *„másik voice id val kell majd menj"*
+- 🙋 **ElevenLabs-kulcs**: az owner adja, ha hazaért. ⛔ Én **nem javasoltam** fizetős
+  szolgáltatást *(`no-paid-solutions`)* — ez **az ő döntése**, és csak a **kimenő beszéd**
+  minőségét érinti. A **felismerés** marad a helyi FDP AI-n, kulcs nélkül.

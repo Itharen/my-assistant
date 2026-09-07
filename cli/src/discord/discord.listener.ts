@@ -788,7 +788,7 @@ export class DiscordListener {
         return false;
       }
 
-      await recordOutbound(new Date().toISOString(), 'ack');
+      await recordOutbound(new Date().toISOString(), 'ack', text);
 
       return true;
     } catch (err: unknown) {

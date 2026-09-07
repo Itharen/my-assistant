@@ -19,6 +19,7 @@ import type { CommCheck, CommCheckStatus, CommDoctorReport } from '../comm/comm.
 import { DiscordBridge } from '../discord/discord.bridge.js';
 import { DiscordListener } from '../discord/discord.listener.js';
 import { sendDiscordMessage } from '../discord/discord.sender.js';
+import { formatCommHistory, readCommHistory } from '../comm/comm.history.js';
 import { CcapError } from '../ccap/ccap.error.js';
 import { fail, makeRequestId, ok, writeEnvelope } from '../output/envelope.js';
 
@@ -130,6 +131,23 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
       writeEnvelope(ok(action, requestId, startedAt, result), pretty || !asJson);
 
       if (!result.sent) process.exitCode = 1;
+      return;
+    }
+
+    if (subcommand === 'history') {
+      const limitRaw: unknown = parsed.values['limit'];
+      const limit: number = typeof limitRaw === 'string' && Number.isFinite(Number(limitRaw))
+        ? Number(limitRaw)
+        : 30;
+      const report = await readCommHistory(limit);
+
+      if (asJson) {
+        writeEnvelope(ok(action, requestId, startedAt, report), pretty);
+      } else {
+        process.stdout.write(`${formatCommHistory(report)}
+`);
+      }
+
       return;
     }
 

@@ -90,7 +90,7 @@ export async function sendDiscordMessage(
 
     // G-1: a valasz-kotelezettseg kovetesehez rogzitjuk a kimeno uzenetet.
     // A `kind` donti el, hogy ez VALASZNAK szamit-e, vagy csak nyugta volt.
-    await recordOutbound(new Date().toISOString(), kind);
+    await recordOutbound(new Date().toISOString(), kind, trimmed);
 
     // ⭐ KÜLDÉS UTÁNI VISSZAOLVASÁS (owner-javaslat, 2026-09-07). A `send()` visszatérése
     // csak azt mondja meg, hogy ELINDULT — azt nem, hogy TELJES EGÉSZÉBEN megérkezett.

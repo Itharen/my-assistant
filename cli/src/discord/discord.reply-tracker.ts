@@ -32,16 +32,30 @@ export function resolveOutboundLogPath(): string {
  */
 export type OutboundKind = 'reply' | 'ack';
 
-/** Egy kimenő üzenet rögzítése. Hibát NEM dob — a naplózás nem akaszthatja meg a küldést. */
+/**
+ * Egy kimenő üzenet rögzítése. Hibát NEM dob — a naplózás nem akaszthatja meg a küldést.
+ *
+ * ⭐ A `text` 2026-09-07 óta rögzül. **Owner-kérdés:** *„Van am eszközöd amivel vissza tudod
+ * nézni az üzeneteimet? +Transcripted? Tiédeket?"* — a bejövő oldalra a válasz IGEN volt
+ * *(archívum + hangüzenet-átirat)*, a **sajátomra NEM**: itt addig csak `sentAt` és `kind`
+ * állt, vagyis tudtam, **mikor** írtam, de nem, hogy **mit**.
+ *
+ * 🔴 Ez pont a rossz oldalon volt hiányos: ha nem tudom, mit ígértem, nem tudom betartani sem.
+ */
 export async function recordOutbound(
   sentAt: string = new Date().toISOString(),
   kind: OutboundKind = 'reply',
+  text?: string,
 ): Promise<void> {
   const path: string = resolveOutboundLogPath();
 
   try {
     await mkdir(dirname(path), { recursive: true });
-    await appendFile(path, `${JSON.stringify({ sentAt, kind })}\n`, 'utf-8');
+    await appendFile(
+      path,
+      `${JSON.stringify({ sentAt, kind, ...(text ? { text: text } : {}) })}\n`,
+      'utf-8',
+    );
   } catch {
     // Elnyelve: ha nem tudjuk rögzíteni, a következő ellenőrzés „tartozunk válasszal"-t
     // mond — ami az ÓVATOS irány. A hamis „rendben" lenne a veszélyes.

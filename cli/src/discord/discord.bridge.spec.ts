@@ -286,18 +286,20 @@ describe('DiscordBridge.flush — 🔴 a SORBA ÁLLÍTÁS NEM KÉZBESÍTÉS', ()
     else process.env['CLAUDE_CODE_SESSION_ID'] = savedSessionId;
   });
 
-  it('🔴 `queued: true` esetén NEM véglegesít, és 0 kézbesítettet jelent', async () => {
+  it('🔴 `queued: true` esetén IS véglegesít — az újraküldés DUPLIKÁCIÓT okozna', async () => {
     const { store, committed } = makeStore(old);
     const bridge = new DiscordBridge(store as never, makeCcap(true) as never, CONFIG);
 
     const result = await bridge.flush({ now: NOW, force: true });
 
-    // Ez nyelt el 5 owner-üzenetet 2026-09-07-én: a sorba tett prompt sosem érkezett meg,
-    // mi mégis kézbesítettnek könyveltük.
+    // Owner (2026-09-07): „Az nem jó ha újraküldöd amit már sorba állítottunk.... Az megint
+    // duplikáció...". MÉRVE: a sorba tett prompt MEGÉRKEZIK, csak késve — tehát az
+    // újraküldés mindkét példányt kézbesítené.
     expect(result?.queued).toBe(true);
-    expect(result?.deliveredCount).toBe(0);
-    expect(committed).toEqual([]);
-    expect(result?.detail ?? '').toContain('NEM kézbesítés');
+    expect(result?.deliveredCount).toBe(1);
+    expect(committed).toEqual([1]);
+    // De NEM hallgatjuk el: a sorba kerülés maga a rendellenesség.
+    expect(result?.detail ?? '').toContain('NEM VÁRT');
   });
 
   it('igazolt átvételnél viszont véglegesít', async () => {

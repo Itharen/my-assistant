@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 13:15
+**Utoljára frissítve:** 2026-09-07 13:48
 
 ---
 
@@ -71,7 +71,8 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 
 | # | Ki | Feladat | Hol tart | Következő lépés |
 |---|---|---|---|---|
-| T-22 | 🤖 | 🔴 **Voice control ÁTEMELÉSE a régi CCAP-ból** *(nagy)* — **ELŐREVÉVE** | **1/5 szakasz kész** (23 levél-fájl bent, 6 import-sor az EGYETLEN változás). Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md` | 2. szakasz: `@futdevpro/fsm-dynamo` + hang-függőségek. ⚠️ **V-1…V-3 owner-kérdés** nyitva — de nem blokkol |
+| T-41 | 🤖 | **Agent a támogatásokra / pályázatokra / sales-lehetőségekre** | owner 2026-09-07 13:30: *„van egy csomó támogatás meg pályázat meg sales lehetőség amire rá kéne állítani egy agent-et"* — ⚠️ illeszkedik az **MVP = pénzkeresés** fókuszhoz | felderítés: milyen forrásokat figyeljen, és mi a kimenet |
+| T-22 | 🤖 | 🔴 **Voice control ÁTEMELÉSE a régi CCAP-ból** *(nagy)* — **ELŐREVÉVE** | **1/5 szakasz kész** (23 levél-fájl bent, 6 import-sor az EGYETLEN változás). Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md` | 2. szakasz: hang-függőségek. ✅ **V1–V3 megválaszolva** (csatorna megvan, mindig bent ül, a `voice-output` IS kell ⇒ teljes 11 251 sor) |
 | T-10 | 🤖 | 🔴 **Sikertelen STT újrapróbálása** | **megépítve**, 474/474 teszt — `cli/src/stt/stt.retry-queue.ts` | ⚠️ **élő próbára vár**: a következő sikertelen felismerésnél derül ki. Addig NEM ✅ |
 
 ---
@@ -103,7 +104,7 @@ a darabolás **kikapcsolható marad**, ha rontana.
 
 | # | Ki | Feladat | Miért | Forrás |
 |---|---|---|---|---|
-| T-40 | 🤖 | 🔴 **Az üzenetek nem jutnak el hozzám az LDP-újraindítások között** | owner 2026-09-07 12:57: *„félek, hogy egy kicsit elsikkadt egy pár üzenet. Itt a LDP-s folyamatos újraindítások között nem perzisztálnak rendesen az üzenetek"* — **MÉRVE, igaza van**: 5 üzenet `delivered`-nek jelölve, de a sessionbe **nem érkezett meg** | owner 12:57 + saját mérés |
+| T-40 | 🤖 | 🔴 **Az üzenetek nem jutnak el hozzám az LDP-újraindítások között** | owner 2026-09-07 12:57: *„félek, hogy egy kicsit elsikkadt egy pár üzenet. Itt a LDP-s folyamatos újraindítások között nem perzisztálnak rendesen az üzenetek"* — **MÉRVE, igaza van — de az ok MÁS**: a szelep foglalt sessionbe küldött, a CCAP sorba tette, és onnan **késve, ÜZENETENKÉNT KÜLÖN futásban** érkezett *(nem veszett el)*. ⇒ a foglaltság-kapu javítva | owner 12:57 + saját mérés |
 | T-12 | 🤖 | **Figyelés/riasztás a sikertelen feldolgozásokra** | *„nem ártana valami kezelés, figyelés"* — ⚠️ a T-10 sora már **szól**, ha végleg feladja; ami HIÁNYZIK: a **várakozó sor láthatósága** *(konzol-pulzus + `comm doctor`)* | owner 12:00 |
 
 ### Egyéb

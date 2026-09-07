@@ -61,3 +61,54 @@ A Discord a **cselekvési felület**, nem az olvasónapló.
 
 - `current/principles/discord-first-output.md` — hova megy
 - `current/principles/working-style.md` — a rövidség alapszabálya
+
+---
+
+## 🔴 2026-09-07 — A DISCORD NEM TUD TÁBLÁZATOT
+
+> **Owner, 2026-09-07 13:24 — SZÓ SZERINT:**
+>
+> *„A Discord nem tud táblázatokat megjeleníteni..."*
+
+⛔ **Markdown-táblázat (`| … | … |`) SOHA nem megy Discordra.** A Discord **nem rendereli**:
+az owner nyers csővonalakat és kötőjel-sorokat lát — vagyis a táblázat, ami a repóban a
+legolvashatóbb forma, ott a **legolvashatatlanabb**.
+
+🔴 **Miért nem apróság:** pont azt teszi tönkre, amiért a táblázatot választottam — az
+áttekinthetőséget. Egy nem-renderelt táblázat rosszabb, mint a folyószöveg, mert a szem
+struktúrát keres benne, és zajt talál.
+
+### Helyette — ami a Discordon TÉNYLEG renderelődik
+
+| Cél | Amit használj |
+|---|---|
+| felsorolás | `-` vagy `•` lista |
+| kiemelés | `**félkövér**` |
+| állapot / kategória | emoji az elején (✅ 🔴 ⚠️ ⏭️) |
+| kód, útvonal, parancs | `` `backtick` `` vagy hármas-backtick blokk |
+| „ez → az" viszony | **nyíl** egy sorban: `régi → új` |
+
+*(Ez a táblázat a **repóban** van, ahol renderelődik. A Discordra menő szövegben ⛔ nincs.)*
+
+### A helyettesítés mintája
+
+⛔ **Rossz** *(Discordon nyers csövek)*:
+```
+| Mit | Állapot |
+|---|---|
+| relay | kész |
+```
+
+✅ **Jó**:
+```
+✅ relay — kész
+🔴 kulcsok — rád várnak
+```
+
+⚠️ **Ellenőrző kérdés küldés előtt:** *van a szövegben `|` karakter sor elején?* Ha igen,
+át kell írni listára.
+
+## Kapcsolódó
+
+- [[discord-first-output]] — **hova** megy az info
+- [[message-delivery-reliability]] — a „sent: true" ≠ „megkapta"

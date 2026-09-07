@@ -232,32 +232,37 @@ export class DiscordBridge {
 
     const result = await this.ccap.sendPrompt({ sessionId: identity.sessionId, content: prompt });
 
-    // 🔴 A SORBA ÁLLÍTÁS NEM KÉZBESÍTÉS — és ezt MÉRTÜK, nem feltételezzük.
+    // ⚠️ A SORBA ÁLLÍTÁS IS ÁTADÁS — AZ ÚJRAKÜLDÉS VOLNA A HIBA.
     //
-    // 2026-09-07: öt owner-üzenet `delivered`-ként lett elkönyvelve, és **soha nem érkezett
-    // meg** a sessionbe — a köztes ~40 perc alatt több futás-határ is eltelt. A CCAP `queued`
-    // válasza tehát NEM azt jelenti, hogy „majd megkapod": azt jelenti, hogy „elvettem".
+    // 🔴 SAJÁT HIBA, ugyanezen a napon: néhány órán át itt `deliveredCount: 0` állt, azzal az
+    // indokkal, hogy a sorba állítás „nem kézbesítés", tehát a köteg maradjon várakozó.
+    // **Ez rossz volt**, és az owner azonnal ki is mondta:
     //
-    // ⇒ Ilyenkor a köteg **VÁRAKOZÓ MARAD**, és a következő körben — szabad session mellett —
-    // újra kimegy. Egy esetleges ismétlés LÁTHATÓ; a néma elnyelés nem.
-    // *(Ugyanaz az elv, mint a relay `/ack`-jénél: a törlés csak igazolt átvétel után jön.)*
-    if (result.queued) {
-      return {
-        deliveredCount: 0,
-        queued: true,
-        promptPreview: prompt.slice(0, 400),
-        detail: `⚠️ A CCAP SORBA TETTE a promptot (${batch.length} tétel) — ez NEM kézbesítés, `
-          + 'ezért a köteg várakozó maradt, és a következő szabad körben újra megy.',
-      };
-    }
-
-    // Csak IDE eljutva véglegesítünk — igazolt átadás után.
+    // > *„Az nem jó ha újraküldöd amit már sorba állítottunk.... Az megint duplikáció..."*
+    //
+    // ⭐ MÉRVE, ami az eredeti következtetést MEGDÖNTÖTTE: a `queued: true`-val átadott
+    // promptok **MEGÉRKEZNEK** — csak késve, a következő futás-határon. Amit „véglegesen
+    // elveszettnek" hittem, az valójában **sorban állt**. Újraküldve MINDKÉT példány
+    // megérkezne, és pontosan azt a zajt csinálnánk, amire az owner panaszkodott
+    // *(üzenetenként külön prompt, külön fejléccel-lábléccel)*.
+    //
+    // ⇒ A helyes védelem nem az újraküldés, hanem hogy **be se kerüljön a sorba**: a
+    // `decideFlush` foglalt session mellett NEM küld (owner: *„ha running vagy van message a
+    // queue-ban akkor csak gyűjtünk"*). Ha ide mégis `queued: true`-val jutunk, azt
+    // **jelezzük** — de véglegesítünk. A duplikátum rosszabb, mint a késés.
     await this.store.commitDelivered(batch.length);
 
     return {
       deliveredCount: batch.length,
-      queued: false,
+      queued: result.queued,
       promptPreview: prompt.slice(0, 400),
+      ...(result.queued
+        ? {
+          detail: `⚠️ A CCAP SORBA TETTE a promptot (${batch.length} tétel) — meg fog érkezni, `
+            + 'de KÉSVE, külön futásban. Ez NEM VÁRT: a foglaltság-kapunak meg kellett volna '
+            + 'előznie. Ha ismétlődik, a kapu romlott el.',
+        }
+        : {}),
     };
   }
 }
