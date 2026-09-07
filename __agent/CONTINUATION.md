@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 23:42
+**Utoljára frissítve:** 2026-09-08 00:05
 
 ---
 
@@ -1607,6 +1607,50 @@ es a „nem foglalt" nem egyenlo a „fogadokesz"-szel.)*
 
 Javitva: `__agent/references/ccap-session-messaging.md` *(uj szekcio + checklist)* es
 `__agent/ENTRY.md` §5b.
+
+
+
+---
+
+## ✅ 2026-09-08 00:05 — AZ ELSO ERDEMI VERIFIKACIO: a DEV SZALLIT
+
+**A 4c lepes szerint mérve** — nem statusz, hanem **KIMENET**:
+
+| Session | Statusz | Esemenyek | Sor | Kimenet |
+|---|---|---|---|---|
+| **DEV** | `running`, busy | 1271 → **2277** | 0 | ⭐ **6+ commit 23:11–23:41** |
+| **FDP** | `waiting-input` | 0 → **1016** | 0 | ⚠️ nincs lathato nyoma (l. lent) |
+
+### ⭐ A DEV pontosan azt csinalta, amit a handoffban elso lepeskent kertem
+
+**`ma comm voice-funnel`** — az **atviteli arany egy paranccsal**. Es jobb lett, mint amit kertem:
+megkulonbozteti a **valodi vesztest** a nem-vesztestol *(duplikatum · idegen · ures felvetel ·
+„a megszolalas beleolvadhatott egy futo felvetelbe")*, es kiirja az **elveszett hang masodperceit**.
+
+Tovabbi commitjai: a „hallak" jelzes **elnyelte volna** az „eldobva" jelzest ⇒ ket sav, ket fek ·
+a duplikatum **nem veszteseg** ⇒ harom kimenetel, harom kod · as-cast kivaltasa a
+`fdp-naming-imports` szerint.
+
+📌 **Amit ez igazol:** a **DEV-HANDOFF.md** mukodott. A minimalis prompt + ket pointer eleg volt
+ahhoz, hogy a helyes elso lepest valassza *(meres a szuro-allitgatas ELOTT)*.
+
+⚪ **A merés most 0/0** — a szerver-ujrainditas ota nem hangzott el megszolalas. Az arany
+**az owner elso beszedenel** lesz olvashato.
+
+### ⚠️ Az FDP session: futott, de nincs lathato eredmeny
+
+1016 esemenyt termelt, majd `waiting-input`-ra allt, ures sorral. Az `AGENT_BUS.md`-ben **nincs
+uj bejegyzes** *(a legutolso ottani tetel 2026-05-29-es)*.
+
+⛔ **NEM kuldok utana** — §7.3: helyesbito prompt csak akkor, ha igazoltan dolgozik ES erdemi
+munkat takarit meg. Itt egyik sem all. Lehet, hogy az FDP-oldali repoba irt.
+🎯 **Kovetkezo kor:** megnezni, irt-e valahova; ha semmi, akkor **egy** pontositott prompt.
+
+### 🧹 Inbox kiuritve — a sajat szabalyom szerint
+
+A ket feldolgozott fajl a `current/events/2026-09-08-summit-source/`-ba kerult, README-vel.
+⚠️ A `planning-spec.md` melle odairtam, hogy **nem hatter-info volt, hanem a feladat resze** —
+ezt egyszer mar rosszul iteltem meg.
 
 
 ### A következő konkrét lépés

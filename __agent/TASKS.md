@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 23:24
+**Utoljára frissítve:** 2026-09-08 00:05
 
 ---
 
@@ -82,7 +82,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 | T-50 | 🙋 | 📝 **LinkedIn posztok kitétele** | Owner 21:20: *„a LinkedIn posztokat ki kéne tenni, amiket terveztem"* | 🙋 **kérdés nála:** nála vannak megtervezve, vagy nekem kell összeszedni? |
 | T-51 | 🤖 | 📮 **CC-session üzenetküldés — szabályok ADOPTÁLVA** | ✅ `__agent/references/ccap-session-messaging.md`: a 6 HARD szabály (§7), a végpontok, és a **beazonosított ID-k** — 🔴 a fájl tetején a kötelező „a szabályokat MINDIG előbb olvasd el" figyelmeztetéssel. FDP Assistant: `ccs-eb7533f2-msf45rno` | ⛔ küldés **csak owner-jóváhagyással**; a `status` küldés előtt újra lekérdezendő |
 | T-41 | 🙋 | **Agent a támogatásokra / pályázatokra / mikromunkára** | ⭐ **HATÓKÖR-KORREKCIÓ (owner 2026-09-07 20:49):** *„ez nem a te feladatod lesz, az arra majd egy agentet kell összeállítsunk és elindítsunk"* ⇒ ⛔ **NEM én csinálom.** A mai feltárás (`current/leads/2026-09-07-exploration.md`) az agent **kiindulása** marad, nem kidobott munka | ⏸️ **owner-vezérelt**: az agent összeállítása. ⛔ Magamtól nem indítok agentet (nincs jóváhagyva) |
-| T-22 | 🤝 | 🔊 **Voice control — a FEJLESZTŐI RÉSZ LEZÁRVA** | ⭐ **2026-09-07 23:25:** (1) `voice-drop-probe.ts` — a néma eldobás **MÁSODPERCBEN** mérhető; (2) `voice-missed-speech.ts` — ami nem jutott át, az is **látszik**, összevonva; (3) `voice-cues.ts` — 🔊 hangjelzések a CCAP **eredeti** hangjaival; (4) **`ma comm voice-funnel`** — az **átviteli arány** egy paranccsal. CLI **595/595** zöld | ⏳ **ÉLŐ MÉRÉSRE VÁR** *(nem fejlesztés)*: az owner beszél → `ma comm voice-funnel`. ❓ Q-07 (hang-hozzárendelés) · Q-08 (fejhallgató-e) |
+| T-22 | 🤝 | 🔊 **Voice control — a DEV DOLGOZIK RAJTA** | ⭐ **Verifikálva 00:05:** 6+ commit, köztük **`ma comm voice-funnel`** — az átviteli arány egy paranccsal, valódi vs. nem-valódi veszteség szétválasztva. A handoff működött: a **mérést** választotta elsőnek, nem a szűrő-állítgatást | ⏸️ a mérés **0/0**, amíg az owner nem szólal meg. Utána olvasható az arány |
 | T-10 | 🤖 | 🔴 **Sikertelen STT újrapróbálása** | **megépítve**, 474/474 teszt — `cli/src/stt/stt.retry-queue.ts` | ⚠️ **élő próbára vár**: a következő sikertelen felismerésnél derül ki. Addig NEM ✅ |
 
 ---
