@@ -1,7 +1,6 @@
 {
   "name": "my-assistant LDP",
   "outputDir": "./logs/live-dev-pipeline",
-
   "watch": {
     "paths": [
       "./cli/src",
@@ -13,6 +12,9 @@
       "./cli/scripts/agent-handlers/src",
       "./cli/scripts/agent-handlers/tsconfig.json",
       "./cli/scripts/agent-handlers/package.json",
+      "./relay/src",
+      "./relay/tsconfig.json",
+      "./relay/package.json",
       "./cli/package.json",
       "./server/package.json",
       "./client/package.json",
@@ -23,7 +25,14 @@
       "./pnpm-workspace.yaml",
       "./pipeline.config.json"
     ],
-    "extensions": ["ts", "json", "html", "scss", "css", "yaml"],
+    "extensions": [
+      "ts",
+      "json",
+      "html",
+      "scss",
+      "css",
+      "yaml"
+    ],
     "ignore": [
       "node_modules",
       "build",
@@ -34,7 +43,6 @@
     "delayMs": 2000,
     "legacyWatch": true
   },
-
   "timing": {
     "debounceQuietMs": 30000,
     "serverGraceMs": 120000,
@@ -43,21 +51,17 @@
     "teeMaxRuntimeMs": 600000,
     "pendingCheckMs": 2000
   },
-
   "log": {
     "runtimeMaxBytes": 102400,
     "trimCheckEveryN": 200
   },
-
   "versionBump": {
     "enabled": false
   },
-
   "serverRestart": {
     "enabled": true,
     "postPipelineCommand": "npm --prefix server run start-prod"
   },
-
   "steps": [
     {
       "label": "rimraf-cli-dist",
@@ -93,6 +97,18 @@
       "label": "server-test",
       "command": "cd server && jasmine --config=spec/support/jasmine.json",
       "fatal": false
+    },
+    {
+      "label": "rimraf-relay-dist",
+      "command": "cd relay && rimraf ./build"
+    },
+    {
+      "label": "tsc-relay",
+      "command": "cd relay && npx tsc -p tsconfig.json --pretty"
+    },
+    {
+      "label": "relay-test",
+      "command": "cd relay && jasmine --config=spec/support/jasmine.json"
     },
     {
       "label": "lint-server",

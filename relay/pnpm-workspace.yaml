@@ -1,0 +1,15 @@
+# `packages: []` KOTELEZO — a pnpm a workspace.yaml-t workspace-deklaraciokent kezeli
+# es `packages:` mezot kovetel. Ures tomb = settings-only workspace, vagyis a `relay/`
+# ONALLO telepitesi gyoker (ugyanaz a minta, mint `server/` es `cli/`).
+packages: []
+
+minimumReleaseAgeExclude:
+  # `@futdevpro/*` wildcard — a sajat bedrock package-jeink SOHA ne essenek a
+  # minimumReleaseAge ("cooldown") gate ala; kulonben egy friss bedrock-bump
+  # megbuktatja az install lepest a runneren. (Ugyanaz, mint `server/`-ben.)
+  - '@futdevpro/*'
+
+allowBuilds:
+  # pnpm v11: explicit true/false dontes nelkul az install MEGBUKIK
+  # (ERR_PNPM_IGNORED_BUILDS).
+  esbuild: true

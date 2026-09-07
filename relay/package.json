@@ -1,0 +1,36 @@
+{
+  "name": "@my-assistant/relay",
+  "version": "0.1.0",
+  "description": "Helyzet-relay — a telefon (OwnTracks) es a my-assistant kozotti PUFFER. A test szerveren fut.",
+  "type": "module",
+  "main": "index.ts",
+  "private": true,
+  "scripts": {
+    "prep": "npm i -g pnpm rimraf jasmine typescript && pnpm i",
+    "start-dev": "node ../node_modules/tsx/dist/cli.mjs ./src/index.ts",
+    "start-prod": "node ../node_modules/tsx/dist/cli.mjs ./src/index.ts",
+    "build": "npm run build-base",
+    "build-base": "rimraf ./build && tsc",
+    "test": "npm run build-base && jasmine --config=spec/support/jasmine.json",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf ./build && rimraf pnpm-lock.yaml && rimraf ./node_modules",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix"
+  },
+  "dependencies": {
+    "@futdevpro/fsm-dynamo": "1.16.35",
+    "@futdevpro/nts-dynamo": "1.15.133",
+    "express": "4.21.2",
+    "tslib": "~2.6.2"
+  },
+  "devDependencies": {
+    "@futdevpro/dynamo-eslint": "1.15.8",
+    "@types/express": "4.17.21",
+    "@types/jasmine": "~5.1.0",
+    "@types/node": "~20.11.0",
+    "dotenv": "^16.4.7",
+    "jasmine": "~5.1.0",
+    "rimraf": "^5.0.10",
+    "typescript": "5.5.4"
+  }
+}
