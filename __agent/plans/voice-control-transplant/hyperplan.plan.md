@@ -11,15 +11,32 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 14:15
+## 📊 STATUS — 2026-09-07 14:26
 
 | | |
 |---|---|
-| **Fázis** | 🟠 **1–2. szakasz KÉSZ** — a levél-fájlok bent, a hang-lánc IGAZOLTAN működik |
-| **Haladás** | 2/5 szakasz |
-| **Teszt** | CLI 477/477 zöld; a fő build **érintetlen** *(az átemelt kód kizárva)* |
-| **Következő lépés** | 3. szakasz **MEGÍRÁSA** — a specifikáció kész, ⭐ **nincs több ismeretlen** |
-| **Blokkoló** | nincs. ✅ V-1…V-3 megválaszolva · ✅ az `llmChat_CS` kérdése is megoldva |
+| **Fázis** | 🟠 **1–3. szakasz KÉSZ** — az illesztő megvan és **igazoltan illeszkedik** |
+| **Haladás** | 3/5 szakasz |
+| **Teszt** | CLI 481/481 zöld; a fő build **érintetlen** |
+| **Következő lépés** | 4. szakasz: a `voice-output` + a maradék `voice/` service-ek átemelése |
+| **Blokkoló** | nincs |
+
+### A 3. szakasz igazolása — az illesztő MŰKÖDIK
+
+| | |
+|---|---|
+| Új fájl | `cli/src/_services/ccap.master-service.ts` + `_services/new-ass/ccap.service-base.ts` |
+| ⭐ **Az útvonal-terv bevált** | az átemelt `cv.service-base.ts`-ben **EGYETLEN** változás: a `.js` kiterjesztés |
+| Próba | átemeltem a **valódi fogyasztót** (`cv-result-review`) — a típushibák **eltűntek** |
+| Maradék | **6 hiba, mind `TS2307`** *(hiányzó modul)* ⇒ tisztán a **4. szakasz** munkája |
+
+⭐ **MÉRT EGYSZERŰSÍTÉS:** a voice **12** szolgáltatása közvetlenül a `DyNTS_SingletonService`-ből
+származik, és **EGYETLENEGY** épül a CCAP-ősre — épp a `cv-result-review`, amelynek a feladatát
+nálunk **én** látom el. Ezért a 95 soros ős helyett elég volt egy **szűk** illesztő.
+
+⛔ **Az illesztő SEHOL nem hallgat:** ami még nincs bekötve *(`io_CS`, `defaultMessagingProvider`)*,
+az **leíró hibát dob**, nem `null`-t ad. Egy néma üres visszatérés itt elnyelné a felismert
+szöveget — pontosan azt, amiért az egész hang-út létezik.
 
 ### Az 1. szakasz igazolása — mért, nem állított
 
