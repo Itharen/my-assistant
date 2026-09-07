@@ -26,6 +26,7 @@ import { transcribeAudio } from '../stt/stt.client.js';
 import { VoiceChannelBridge } from './voice-channel-bridge.js';
 import { VoiceDropProbe, type VoiceDropObservation } from './voice-drop-probe.js';
 import type { MissedSpeechKind } from './voice-missed-speech.js';
+import { VOICE_LOG_CODES } from './voice-log-codes.js';
 
 /**
  * A felvevő `recordings` könyvtára.
@@ -110,17 +111,17 @@ export interface RecordingHandled {
  */
 export type RecordingOutcomeCode =
   /** ✅ Bekerült a kötegbe. */
-  | 'MA-VOICE-SPEECH-QUEUED'
+  | typeof VOICE_LOG_CODES.queued
   /** 🔴 VESZTESÉG: az owner beszélt, de nem lett belőle semmi. */
-  | 'MA-VOICE-SPEECH-DROPPED'
+  | typeof VOICE_LOG_CODES.dropped
   /** ⚪ Se nem siker, se nem veszteség: duplikátum, vagy nem az owner beszélt. */
-  | 'MA-VOICE-SPEECH-SKIPPED';
+  | typeof VOICE_LOG_CODES.skipped;
 
 export function classifyRecordingOutcome(outcome: RecordingHandled): RecordingOutcomeCode {
-  if (outcome.queued) return 'MA-VOICE-SPEECH-QUEUED';
-  if (outcome.missed !== undefined) return 'MA-VOICE-SPEECH-DROPPED';
+  if (outcome.queued) return VOICE_LOG_CODES.queued;
+  if (outcome.missed !== undefined) return VOICE_LOG_CODES.dropped;
 
-  return 'MA-VOICE-SPEECH-SKIPPED';
+  return VOICE_LOG_CODES.skipped;
 }
 
 /**

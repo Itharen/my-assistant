@@ -18,6 +18,8 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+import { VOICE_LOG_CODES } from './voice-log-codes.js';
+
 /** Egy nap hang-tölcsére. */
 export interface VoiceFunnelReport {
   /** `YYYY-MM-DD` — melyik napot néztük. */
@@ -151,7 +153,7 @@ function applyEntry(report: VoiceFunnelReport, entry: ActionLogLine): void {
   if (!code) return;
 
   switch (code) {
-    case 'MA-VOICE-SPEECH-DETECTED':
+    case VOICE_LOG_CODES.speechDetected:
       // ⭐ A számláló KUMULATÍV: minden sor az addigi összesítést hordozza, tehát a
       // MAXIMUMOT kell venni, nem az összeget. *(Összeadva 1+2+3… jönne ki.)*
       report.speechDetected = Math.max(report.speechDetected, entry.extra?.detected ?? 0);
@@ -159,7 +161,7 @@ function applyEntry(report: VoiceFunnelReport, entry: ActionLogLine): void {
 
       return;
 
-    case 'MA-VOICE-SPEECH-DROPPED-SILENTLY':
+    case VOICE_LOG_CODES.droppedSilently:
       if (entry.extra?.reason === 'empty-file') report.emptyFiles += 1;
       else report.droppedByRecorder += 1;
 
@@ -167,17 +169,17 @@ function applyEntry(report: VoiceFunnelReport, entry: ActionLogLine): void {
 
       return;
 
-    case 'MA-VOICE-SPEECH-QUEUED':
+    case VOICE_LOG_CODES.queued:
       report.queued += 1;
 
       return;
 
-    case 'MA-VOICE-SPEECH-DROPPED':
+    case VOICE_LOG_CODES.dropped:
       report.droppedAfterTranscribe += 1;
 
       return;
 
-    case 'MA-VOICE-SPEECH-SKIPPED':
+    case VOICE_LOG_CODES.skipped:
       report.skipped += 1;
 
       return;

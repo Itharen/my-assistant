@@ -2061,3 +2061,55 @@ felvevőből **nem áll elő**, és az új tábla ott a helyeset teszi.
 
 ⏳ Továbbra is az **élő mérés** hiányzik, és az **nem fejlesztés**. Ha az owner beszél:
 `ma comm voice-funnel`.
+
+
+---
+
+## ✅ 2026-09-08 00:08 — DEV: 🧭 A HANG-LÁNC USER-JOURNEY-JE (kötelező réteg, eddig hiányzott)
+
+### Miért ez volt a következő
+
+A `core-e2e-user-journey` **MUST-HAVE** hard rule, és a hang-láncnak **nem volt** journey-je.
+⭐ A projektben már van minta *(interfood, linkedin, stocks)* — azt követtem
+(`core-patterns-first`).
+
+⚠️ **És pont ez a réteg hiányzott ott, ahol a baj volt:** minden darab külön zöld volt, a lánc
+mégis **1%-on** teljesített. A hibák a **darabok KÖZÖTT** voltak *(a tükör rossz csatornába
+ment · a duplikátum veszteségnek látszott · a „hallak" féke elnyelte az „eldobva" jelzést)* —
+ezt egy unit-teszt szerkezetileg **nem tudja** elkapni.
+
+### 🔴 A journey írása közben találtam egy valós, NÉMA kockázatot
+
+Az **író** (`discord.listener.ts`) és az **olvasó** (`voice-funnel-report.ts`) a napló-kódokat
+**külön-külön, sztring-literálként** tartalmazta. Egy átnevezés az egyik oldalon:
+
+> ⚠️ a tölcsér **nem hibázna — NULLÁT jelentene**, és úgy nézne ki, mintha nem veszett volna el
+> semmi. ⇒ **Pontosan az a néma, jóindulatúnak látszó adatvesztés, ami ellen az egész mérés
+> készült.**
+
+🩹 `cli/src/voice/voice-log-codes.ts` — **egy** forrás, mindkét oldal onnan veszi.
+
+### ✅ POZITÍV KONTROLL — a teszt nem látszat-védelem
+
+⛔ Nem elég, hogy zöld: azt is meg kellett mérni, hogy **piros lenne-e**, ha elromlik.
+Szándékosan elírtam egy kódot ⇒ **10 teszt bukott el**. Utána visszaállítva: **607/607 zöld**.
+📌 *(`core-review-until-clean`: „a nulla finding legyen KIÉRDEMELT, ne feltételezett".)*
+
+### A három journey
+
+| Journey | Mit visz végig |
+|---|---|
+| ✅ **teljes út** | felvétel → felismerés → **köteg** + tükör a **HANG-csatornába** → a tölcsér 100%-ot mér, `attempts: 1`-gyel |
+| 🔴 **veszteség-variáns** | 3 mp beszéd → a felvevő eldobja → látható összefoglaló a hang-csatornában **másodperccel** → a tölcsér 0% |
+| ⚪ **megszakítás-variáns** | idegen beszélő + duplikátum ⇒ **csend**, és a mérést **nem rontják** (100% marad) |
+
+Mind a hat kötelező tulajdonság teljesül: cross-feature · sorrendhelyes · **állapot-továbbadó**
+*(a 2. lépés az 1. lépésben létrehozott fájlon dolgozik)* · lépésenkénti business-assert · az
+**értéket adó kimenetig** fut · **cleanup** (temp-könyvtár törlése).
+
+⛔ **Amit a journey NEM állít:** nincs benne valódi Discord-hang és valódi STT — azok élő mérést
+igényelnek. A journey ezt nem adja el másnak.
+
+### Teszt
+
+**CLI 607/607 zöld** *(+3 journey; a szókincs-megosztás után minden korábbi teszt is zöld)*.

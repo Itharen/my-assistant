@@ -59,6 +59,7 @@ import {
   type SpeechAttemptStats,
 } from '../voice/voice-channel-recorder.js';
 import type { VoiceDropObservation, VoiceDropProbe } from '../voice/voice-drop-probe.js';
+import { VOICE_LOG_CODES } from '../voice/voice-log-codes.js';
 import { MissedSpeechReporter } from '../voice/voice-missed-speech.js';
 import { VoiceCuePlayer } from '../voice/voice-cues.js';
 import {
@@ -527,7 +528,7 @@ export class DiscordListener {
         void this.safeLog({
           kind: 'error',
           summary: `[discord/listener] MA-VOICE-MISSED-REPORT-FAILED: ${detail}`,
-          extra: { code: 'MA-VOICE-MISSED-REPORT-FAILED' },
+          extra: { code: VOICE_LOG_CODES.missedReportFailed },
         });
       },
     });
@@ -543,7 +544,7 @@ export class DiscordListener {
         void this.safeLog({
           kind: 'error',
           summary: `[discord/listener] MA-VOICE-CUE-FAILED: ${detail}`,
-          extra: { code: 'MA-VOICE-CUE-FAILED' },
+          extra: { code: VOICE_LOG_CODES.cueFailed },
         });
       },
     });
@@ -567,7 +568,7 @@ export class DiscordListener {
           summary: `[discord/listener] 🎙️ Megszólalás érzékelve — ${stats.detected} észlelt / `
             + `${stats.delivered} eljutott a feldolgozásig.`,
           extra: {
-            code: 'MA-VOICE-SPEECH-DETECTED',
+            code: VOICE_LOG_CODES.speechDetected,
             detected: stats.detected,
             delivered: stats.delivered,
             droppedSoFar: stats.detected - stats.delivered,
@@ -584,7 +585,7 @@ export class DiscordListener {
           summary: `[discord/listener] MA-VOICE-SPEECH-DROPPED-SILENTLY: `
             + `${observation.lostAudioSeconds} mp hang ELVESZETT (${observation.reason}).`,
           extra: {
-            code: 'MA-VOICE-SPEECH-DROPPED-SILENTLY',
+            code: VOICE_LOG_CODES.droppedSilently,
             filename: observation.filename,
             lostAudioSeconds: observation.lostAudioSeconds,
             maxSizeBytes: observation.maxSizeBytes,
@@ -605,7 +606,7 @@ export class DiscordListener {
         void this.safeLog({
           kind: 'error',
           summary: `[discord/listener] MA-VOICE-PROBE-ERROR: ${detail}`,
-          extra: { code: 'MA-VOICE-PROBE-ERROR' },
+          extra: { code: VOICE_LOG_CODES.probeError },
         });
       },
       onHandled: (outcome: RecordingHandled): void => {
@@ -614,8 +615,8 @@ export class DiscordListener {
         const outcomeCode: RecordingOutcomeCode = classifyRecordingOutcome(outcome);
 
         void this.safeLog({
-          kind: outcomeCode === 'MA-VOICE-SPEECH-DROPPED' ? 'error' : 'note',
-          summary: `[discord/listener] ${outcomeCode === 'MA-VOICE-SPEECH-QUEUED' ? '🎙️ Hang-csatorna:' : `${outcomeCode}:`} `
+          kind: outcomeCode === VOICE_LOG_CODES.dropped ? 'error' : 'note',
+          summary: `[discord/listener] ${outcomeCode === VOICE_LOG_CODES.queued ? '🎙️ Hang-csatorna:' : `${outcomeCode}:`} `
             + `${outcome.detail}`,
           extra: {
             code: outcomeCode,
