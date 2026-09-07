@@ -1863,3 +1863,59 @@ ugyanabban a change-setben.
 **Teszt: CLI 582/582 zöld** · szerver típus-ellenőrzés zöld *(nem nyúltam hozzá, ellenőrizve)*.
 A transzplantált build 2 hibája **mérve**: mindkettő az átemelt fában
 (`cv-audio-classification` / `cv-local-speech-recognition`), nem ez a change-set okozta.
+
+
+---
+
+## ✅ 2026-09-07 23:18–23:25 — DEV: 📊 A MÉRÉS KIOLVASHATÓ — `ma comm voice-funnel`
+
+### Miért ez volt még hátra
+
+A szonda és a kiesés-jelentő **napló-sorokat** ír. De ha a válaszhoz kézzel kell `grep`-elni és
+fejben összeadni, akkor a mérés **gyakorlatilag nincs meg**. ⇒ Egy parancs, aminek a tetején az
+a szám áll, amit az owner **ténylegesen kérdezett**: az **átviteli arány**.
+
+```bash
+ma comm voice-funnel                    # a mai nap (Europe/Budapest)
+ma comm voice-funnel --day 2026-09-08
+ma comm voice-funnel --json --pretty
+```
+
+⛔ **A napi akció-naplóból dolgozik, nem az élő szondából** — az a szerver-folyamatban él, a CLI
+nem látná. A napló a **tartós rekord**, és túléli az újraindítást.
+
+### 🔴 KÉT HIBA, amit CSAK az ÉLES FUTTATÁS mutatott meg
+
+**1. A parancs nem is létezett.** 593 teszt zölden futott, a `tsc` zöld volt — de a `main.ts`
+**allowlistjébe** nem volt felvéve, tehát élesben `Unknown subcommand`.
+📌 Pontosan az a hibaosztály, ami már kétszer megfogott: **a zöld típus-ellenőrzés elfedi a
+futásidejű hiányt.** Ezért futtattam le élesben — és ezért kell mindig.
+
+**2. Az első futás „✅ 100%"-ot írt ki — EGYETLEN mintából.** 🔴 Ez szó szerint az a túlállítás,
+amiért 22:08-kor jogos kritikát kaptam: *„egy mondat ≠ működik"*.
+🩹 Beépítve: **5 megszólalás alatt „KEVÉS MINTA"** + ⚪ jel a ✅ helyett, és az arány **mindig a
+darabszámmal együtt** jelenik meg. Megszólalás nélkül `null`, **nem 0%** — a 0% azt hazudná,
+hogy minden elveszett.
+
+⛔ A nevezőből kimarad az **üres** felvétel *(nem volt beszéd)* és a `SKIPPED`
+*(duplikátum / idegen beszélő)* — egyik sem az owner elveszett mondata.
+
+### Élő futás eredménye (a mai naplón)
+
+```
+⚪ ÁTVITELI ARÁNY: 100%  (1 megszólalásból)
+⚠️  KEVÉS MINTA (< 5) — ebből MÉG NEM lehet következtetni.
+```
+
+⭐ **Pontosan a helyes válasz:** a 21:49-es egyetlen sikeres átjutás megvan, és a rendszer maga
+mondja meg, hogy **ebből még semmi nem következik**.
+
+### Teszt
+
+**CLI 595/595 zöld** *(+13 tölcsér-jelentés)*.
+
+### ⏭️ EZZEL A T-22 FEJLESZTŐI RÉSZE LEZÁRULT
+
+Mind a három owner-követelmény megépült és **futásidőben igazolt**. ⏳ Ami hátra van, az **NEM
+fejlesztés**: az owner beszél a `honnie-place`-ben, és `ma comm voice-funnel` megmondja az
+arányt. ⛔ A szűrő-küszöbökhöz **addig nem nyúlok** — az lenne a találgatás.

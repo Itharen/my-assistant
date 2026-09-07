@@ -159,6 +159,30 @@ speechStarts  →  filesOpened  →  filesDelivered
 ⚠️ **A `detected − delivered` önmagában NEM veszteség** — összemossa a beleolvadt megszólalást
 a valódi eldobással. Ezért kellett a fájl-szintű mérés.
 
+### 8.3b 📊 A KIOLVASÁS — `ma comm voice-funnel`
+
+```bash
+ma comm voice-funnel                    # a mai nap (Europe/Budapest)
+ma comm voice-funnel --day 2026-09-08
+ma comm voice-funnel --json --pretty
+```
+
+⭐ **A mérés önmagában nem elég — ki is kell tudni olvasni.** Ha a válaszhoz kézzel kell
+`grep`-elni és fejben összeadni, akkor a mérés **gyakorlatilag nincs meg**.
+
+⛔ **A napi akció-naplóból dolgozik, NEM az élő szondából** — az a szerver-folyamatban él, a
+CLI nem látná. A napló viszont a **tartós rekord**, és túléli az újraindítást.
+
+🔴 **KÉT BEÉPÍTETT ÓVINTÉZKEDÉS a túlállítás ellen:**
+
+| Óvintézkedés | Miért |
+|---|---|
+| **5 megszólalás alatt „KEVÉS MINTA"** — és ⚪ jel, nem ✅ | egyetlen sikeres felvétel „100%"-ot adna; **ez** volt a 22:08-as jogos kritika |
+| megszólalás nélkül az arány **`null`**, nem 0% | a 0% azt hazudná, hogy minden elveszett |
+
+⛔ **A nevezőből kimarad** az üres felvétel *(nem volt beszéd)* és a `SKIPPED`
+*(duplikátum / idegen beszélő)* — egyik sem az owner elveszett mondata.
+
 ### 8.4 Hangjelzések — a hozzárendelés és a kockázata
 
 A hangok a CCAP eredetijei (`LIVE-projects/ccap/discord-bot/src/_assets/sounds/`), a

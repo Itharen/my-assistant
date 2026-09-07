@@ -21,6 +21,12 @@ import { DiscordListener } from '../discord/discord.listener.js';
 import { sendDiscordMessage } from '../discord/discord.sender.js';
 import { formatCommHistory, readCommHistory } from '../comm/comm.history.js';
 import { AUDIT_LIMIT, auditDiscordChannel, formatChannelAudit } from '../comm/comm.channel-audit.js';
+import {
+  buildVoiceFunnelReport,
+  renderVoiceFunnel,
+  type VoiceFunnelReport,
+} from '../voice/voice-funnel-report.js';
+import { resolveProjectRoot } from '../utils/project-root.js';
 import { CcapError } from '../ccap/ccap.error.js';
 import { fail, makeRequestId, ok, writeEnvelope } from '../output/envelope.js';
 
@@ -79,6 +85,7 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
       text: { type: 'string' },
       file: { type: 'string' },
       long: { type: 'boolean' },
+      day: { type: 'string' },
     },
     strict: false,
   });
@@ -177,6 +184,22 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
       return;
     }
 
+    if (subcommand === 'voice-funnel') {
+      // 📊 AZ ÁTVITELI ARÁNY — a szám, amit az owner ténylegesen kérdezett (22:08).
+      // ⛔ A napi akció-naplóból dolgozik, NEM az élő szondából: az a szerver-folyamatban él,
+      // ezt a CLI nem látná. A napló viszont a tartós rekord, és túléli az újraindítást.
+      const day: string = String(parsed.values.day ?? '').trim() || todayInBudapest();
+      const funnel: VoiceFunnelReport = await buildVoiceFunnelReport({
+        projectRoot: resolveProjectRoot(),
+        day: day,
+      });
+
+      if (asJson) writeEnvelope(ok(action, requestId, startedAt, funnel), pretty);
+      else process.stdout.write(renderVoiceFunnel(funnel));
+
+      return;
+    }
+
     if (subcommand === 'listen') {
       // ⚠️ HOSSZAN FUTÓ parancs: a Discord-kapcsolat addig él, amíg ez a folyamat fut.
       const listener: DiscordListener = new DiscordListener();
@@ -247,4 +270,20 @@ function renderReport(report: CommDoctorReport): string {
   lines.push('');
 
   return lines.join('\n');
+}
+
+/**
+ * A mai nap `YYYY-MM-DD` alakban, **Europe/Budapest** szerint.
+ *
+ * ⚠️ MIÉRT NEM `new Date().toISOString().slice(0,10)`: az **UTC**-t adná, és éjfél után két
+ * óráig **az előző napot** mondaná — pont akkor, amikor az owner a legvalószínűbben nézné meg
+ * egy esti beszélgetés után. A napló napi fájljai budapesti naptári nap szerint állnak.
+ */
+function todayInBudapest(): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Budapest',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
 }

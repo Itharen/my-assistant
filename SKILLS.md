@@ -388,11 +388,15 @@ A lánc: hang-kapcsolat → **átemelt CCAP-felvevő** → WAV → a mi STT-nk �
 - 🔇 **`MA_VOICE_CUES=off`** — a hangjelzések azonnali kikapcsolása kódmódosítás nélkül
   *(hangszóró-visszacsatolás esetére)*. ⏱️ **Két sáv, két fék:** „hallak" **3 s**, kimenetel **0,8 s**
   — közös fékkel a „hallak" **elnyelné** az eldobás-jelzést (t≈1,4 s).
-- 🔍 **A mérés kiolvasása** a naplóból:
+- 📊 **A MÉRÉS KIOLVASÁSA — egy parancs** *(ne grep-elj kézzel)*:
   ```bash
-  grep MA-VOICE-SPEECH-DROPPED-SILENTLY __agent/log/actions/$(date +%F).jsonl
-  grep MA-VOICE-SPEECH-QUEUED __agent/log/actions/$(date +%F).jsonl
+  ma comm voice-funnel                    # a mai nap (Europe/Budapest)
+  ma comm voice-funnel --day 2026-09-08   # egy másik nap
+  ma comm voice-funnel --json --pretty    # gépi envelope
   ```
+  ⭐ A tetején az **ÁTVITELI ARÁNY** áll — az a szám, amit az owner kérdezett *(„egy százaléka
+  ment át")*. 🔴 **5 megszólalás alatt „KEVÉS MINTA"-ként jelzi**, hogy még nem lehet
+  következtetni — pontosan az a túlállítás, amiért 22:08-kor jogos kritikát kaptam.
 - ⚠️ **BUKTATÓ:** a fő `tsc` önmagában **nem elég** — az átemelt fa külön projekt:
   ```bash
   cd cli && npx tsc -p tsconfig.transplanted.json && npx tsx scripts/transplanted-build-fix.ts
