@@ -93,17 +93,113 @@ ténynek veszi. ⛔ Ezt nem állítom mérésnek.
 
 ---
 
-## 6. ❓ AMI DÖNTÉSRE VÁR
+## 6. ~~❓ AMI DÖNTÉSRE VÁR~~ — ⛔ ELAVULT
 
-1. **Mehet-e a relay a test szerverre?** *(fdp-devops-ot érint ⇒ ez az owner döntése)*
-2. **Milyen néven?** pl. `test-relay.futdevpro.hu` — a DNS + cert az owner köre.
-3. **Kell-e a végpontok közti titkosítás?** *(⭐ ajánlom; előbb élőben igazolandó)*
-4. **Meddig pufferelhet a relay**, ha a my-assistant napokig nem húzza le? *(javaslat: 7 nap, aztán dobja)*
-
----
+> ⛔ **ELAVULT (2026-09-07 11:03).** Az owner megadta, hogy **minden adott** — nem kitalálni kell, hanem **követni**. A bevett utat a **§8** írja le, a valóban nyitott kérdéseket a **§9**.
 
 ## 7. Kapcsolódó
 
 - `__documentations/dev/OWNTRACKS_LOCATION.md` — az app + a már **kész** fogadó végpont
 - `current/principles/location-retention.md` — mit tárolunk és mit nem
 - `current/open-questions.md` **N)** — a helyzet-követés döntései
+
+---
+
+## 8. ✅ A BEVETT ÚT — mérve, nem kitalálva (2026-09-07 11:03)
+
+> **Owner:** *„A relay deploy-t a cicd fogja csinálni. A test szerver elérhető a belső
+> hálózatról. Ez a gép a RAVEN. A test szerver a PLO KOON. A production szerver a TARKIN.
+> A relay-t fel kell venni a megfelelő módon az overseer-be. A devops-ot is/gateway configot
+> is be kell majd állítani. Ezeknek meg annak a dedikált helyei és módjai. Semmi ilyet ne
+> találj ki. Ezek mind adottak!!"*
+
+⇒ **A §6 kérdés-listája ELAVULT** — nem kitalálni kell, hanem **követni**. Az alábbi a
+FAM-ból és a repóból **kiolvasott** út.
+
+### 8.1 A gép-térkép (owner, 2026-09-07 — ÚJ, eddig sehol nem volt rögzítve)
+
+| Név | Szerep | Mérés |
+|---|---|---|
+| **RAVEN** | ez a gép *(a my-assistant itt fut)* | ✅ `COMPUTERNAME=RAVEN`; a CCAP-doksi szerint `200.33.0.101` |
+| **PLO KOON** | **test szerver** | owner |
+| **TARKIN** | production szerver | owner |
+
+⭐ **A test szerver a belső hálózatról elérhető** — vagyis a my-assistant `PLO KOON`-t
+**LAN-on** éri el. ⇒ A pull-modell nemhogy működik, hanem **még egyszerűbb**: a lehúzás
+**el sem hagyja a belső hálózatot**.
+
+### 8.2 A KANONIKUS MINTA: fleet-onboarding hyperplan
+
+⭐ **Nem kell új folyamatot kitalálni — VAN rá kész, követendő terv-készlet:**
+`LIVE-projects/hero-coordinator/__agent/plans/hyperplan-fleet-onboarding/`
+
+| Terv | Miről szól |
+|---|---|
+| `MASTERPLAN-B-fleet-registration.md` | a flottába való felvétel egésze |
+| **`SUBPLAN-B2-overseer.md`** | ⭐ **Overseer-regisztráció — a „megfelelő mód"** |
+| **`SUBPLAN-B3-fdp-devops.md`** | ⭐ **gateway-conf + futtatókörnyezet** |
+| `SUBPLAN-C2-cicd.md` | a CI/CD-bekötés |
+
+### 8.3 Overseer-regisztráció — a 4 szerkesztés *(`SUBPLAN-B2` szerint)*
+
+| # | Fájl (`LIVE-projects/overseer/`) | Mit |
+|---|---|---|
+| 1 | `server/src/_enums/fdp-system.enum.ts` | új rendszer-tag *(**kebab-case** — ez a konvenció)* |
+| 2 | `server/src/_enums/server-project.enum.ts` | `…-server` tag |
+| 3 | `server/src/_enums/client-project.enum.ts` | `…-client` tag *(⚠️ a relay-nek valószínűleg **nincs** kliense)* |
+| 4 | `server/src/_collections/project-matrix.const.ts` | a mátrix-bejegyzés(ek) |
+
+> ⚠️ **KRITIKUS, a subplanból:** a `projectMatrix` **EXHAUSTIVE** `Record`. Ha az enum-tag
+> bekerül, de a mátrix-bejegyzés nem, **az Overseer szerver NEM FORDUL LE.**
+
+**Amit ez ad:** a webhook felismeri a repo-slugot → **queue-priority**; a build-report és a
+step-progress megjelenik a dashboardon; az `fdp build-detail --project …` értelmezhető
+projektet kap. Enélkül a push default `priority: 50`-nel futna, mátrix-bejegyzés nélkül.
+
+### 8.4 Gateway-conf *(`SUBPLAN-B3` + a meglévő confok szerint)*
+
+**Hely:** `fdp-devops/nginx/confs/<projekt>.conf` — ma **20+ ilyen fájl** van, az `art-tarot`
+a hivatkozott minta.
+
+**Szerkezet:** HTTP `:80` → ACME-include + 301 HTTPS · HTTPS `:443` → cert + közös include-ok
++ `proxy_pass http://test-server:<port>/`.
+
+**Kötelező include-ok** *(a flotta SSOT-jai)*:
+```
+include /etc/nginx/includes/acme-challenge.conf;          # CSAK a :80 blokkban
+include /etc/nginx/includes/client-header-buffers.conf;   # FR-078
+include /etc/nginx/includes/error-pages.conf;
+```
+
+⭐ **DNS: nem kell új rekord.** A `*.futdevpro.hu` **wildcard** lefedi az aldomaint
+*(`SUBPLAN-B3`)*.
+
+⭐ **A confok RUN-TIME volume-mounttal jönnek** *(`reference_gateway_confs_runtime_mount`)* ⇒
+a conf-változtatás **fix-forward**, nem igényel image-rebuildet.
+⚠️ **De:** egy hibás conf `emerg`-gel megdöntheti a gateway-t, és akkor **MINDEN**
+`*.futdevpro.hu` leáll — 2026-06-05-ön ez P0 incidens volt. ⇒ `nginx -t` **kötelező** előtte.
+
+### 8.5 SSL *(mérve)*
+
+`fdp-devops/webhook/ssl-config.json` — új bejegyzés:
+`{ domain, email: contact@futdevpro.hu, aliases: [], enabled: true, environment: 'test' }`.
+Az SSL Manager **kizárólag a configból** dolgozik (`config.domains.filter(d => d.enabled)`),
+tehát ami nincs benne, arra **soha nem fut ACME**.
+⚠️ Let's Encrypt **rate-limit: 50 cert / 7 nap**.
+
+### 8.6 ⛔ Amit NEM szabad
+
+- ⛔ **NE SSH-zz a hostra** — a webhook-végpontokat kell hívni
+  *(memória: `reference_no_ssh_use_webhook`)*.
+- ⛔ Ne találj ki portot, nevet, folyamatot — mind adott; ha nem találod, **kérdezd**.
+
+---
+
+## 9. ❓ AMI TÉNYLEG NYITOTT (és amit NEM tippelek meg)
+
+| # | Kérdés | Miért nem döntöm el magam |
+|---|---|---|
+| 1 | ⚠️ **A domain-név elgépelés?** Az üzenetben `test.my-assisstant-relay.futdevpro.hu` — **két `s`** az „assisstant"-ban. Szándékos, vagy `test.my-assistant-relay.futdevpro.hu` a helyes? | Egy domain **karakter-pontos**; a rossz név DNS-t, certet és configot visz — és a cert **rate-limitet** éget |
+| 2 | **Saját repó legyen?** (pl. `futdevpro/my-assistant-relay`) vagy a meglévőn belül? | A CI/CD-bekötés és az Overseer-regisztráció ezen múlik |
+| 3 | **Melyik port** a test-serveren? | A portok kiosztottak — ⛔ nem találok ki egyet |
+| 4 | **Ki írja meg?** A relay `fdp-devops`/új repó ⇒ **a my-assistant projekten kívül** | `assistant-identity`: projekten kívüli fejlesztés csak külön kérésre |
