@@ -815,3 +815,35 @@ pedig futásidőben **igazolt** *(10/10 bájt megérkezett)*.
 **T-22 / 5. szakasz:** bekötés a hang-csatornára *(`1489036734632034496`)*, **kétirányú
 tükör-szöveg**, élő próba.
 ⚠️ Owner-kapuk: `L1/L2` *(saját app vs. OwnTracks)* · `T-44` *(a 8-i program megjelenése)*.
+
+---
+
+## ✅ 2026-09-07 16:00–16:15 — T-22: a KÖTEG-BEKÖTÉS és a kétirányú tükör kész
+
+**`cli/src/voice/voice-channel-bridge.ts`** — a hang-csatorna hídja, 9 új teszttel.
+
+⭐ **A hang-csatorna NEM külön út:** ugyanabba a Discord-kötegbe folyik, mint a hangüzenetek.
+⇒ Ingyen örökli a duplikáció-védelmet, a válasz-kötelezettséget, a visszanézhetőséget és a
+kézbesítési szerződést. Egy külön út mindezt **újra** megkövetelné.
+
+**Kétirányú tükör:** amit ő mond → *„hallottam"*; amit én mondok → *„mondtam"*.
+🔴 A saját oldalam külön indok: a rossz kiejtést/csonka szöveget **csak a leírt változat**
+buktatja le.
+
+**Négy döntés, amit a tesztek rögzítenek:** duplikátumnál ⛔ nincs tükör · a saját beszédem
+⛔ nem kerül a kötegbe *(különben owner-üzenetként jönne vissza)* · sorrend: köteg → tükör ·
+azonosító hiányában **tartalom-lenyomat**, hogy újraindítás után se duplikáljon.
+
+### 🔎 A summit nap 2 programja — ÚJRA megnézve, és ÚJRA nem hihető
+
+A `?day=2` nélküli lekérés most azt állította, hogy **van** nap-2 robotika — de **13:25-től**,
+és a *„kaotikus és kritikus környezetben"* előadást idézte. ⚠️ **Az pontosan a 7-i tartalom.**
+⇒ A két lekérés **ellentmond egymásnak**, és a második nap-1 anyagot idéz.
+
+🔴 **Nem fogadtam el.** A programot holnap az **appból** vesszük — ahogy az owner tanulsága is
+mondja. ⛔ Nem kaparom tovább: két ellentmondó válasz után a forrás megbízhatatlan.
+
+### A következő konkrét lépés
+
+**T-22 utolsó darabja:** belépés a hang-csatornába (`1489036734632034496`) + élő próba.
+⚠️ Ehhez a bot **hang-jogosultsága** és a felvevő oldal indítása kell.

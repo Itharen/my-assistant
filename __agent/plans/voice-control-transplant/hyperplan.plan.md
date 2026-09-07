@@ -11,15 +11,37 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 15:49
+## 📊 STATUS — 2026-09-07 16:06
 
 | | |
 |---|---|
-| **Fázis** | 🟠 **4. szakasz KÉSZ** — mind a 70 fájl bent; a maradék 2 típushiba **oka feltárva és nem blokkoló** |
-| **Haladás** | 4/5 szakasz |
-| **Teszt** | CLI 481/481 zöld; a fő build **érintetlen** |
-| **Következő lépés** | **5. szakasz**: bekötés a hang-csatornára + kétirányú tükör-szöveg + élő próba |
+| **Fázis** | 🟠 **5. szakasz FÉLIG** — a köteg-bekötés és a kétirányú tükör KÉSZ; hátra: a hang-csatornába belépés |
+| **Haladás** | 4,5/5 szakasz |
+| **Teszt** | CLI **490/490** zöld *(9 új a hang-hídra)*; a fő build **érintetlen** |
+| **Következő lépés** | belépés a hang-csatornába *(`1489036734632034496`)* + **élő próba** |
 | **Blokkoló** | nincs *(a `tsc` hiba mellett is emittál; a minta futásidőben igazolt)* |
+
+### Az 5. szakasz — a KÖTEG-BEKÖTÉS kész (`voice-channel-bridge.ts`)
+
+⭐ **A kulcs-döntés érvényre jutott:** a hang-csatorna **nem külön út**. Ami ott elhangzik,
+ugyanabba a Discord-kötegbe kerül, mint a hangüzenetek — és ezzel **ingyen örökli**, amit
+azon az úton már megépítettünk **és mértünk**: duplikáció-védelem · válasz-kötelezettség ·
+visszanézhetőség · kézbesítési szerződés.
+
+**Kétirányú tükör-szöveg** *(owner 14:13)*: amit ő mond → *„hallottam"*, amit én mondok →
+*„mondtam"*. 🔴 A saját oldalam külön indok: ha a beszédszintézis **mást** mond, mint amit
+szántam, azt **csak a leírt változat** buktatja le.
+
+**A döntések, amiket a tesztek is rögzítenek:**
+
+| Döntés | Miért |
+|---|---|
+| ⛔ duplikátumnál **nem** tükröz | az owner másodszor látná, és azt hinné, kétszer mondta |
+| 🔴 a **saját** beszédem nem kerül a kötegbe | az a **bejövő** üzenetek tára — különben owner-üzenetként jönne vissza |
+| sorrend: **köteg, aztán tükör** | fordítva egy köteg-hiba után a tükör már kiment volna |
+| tükör-bukásnál a köteg **akkor is** megvan | a tartalom eljut hozzám; a tükör hiánya külön látszik |
+| külön jelölés (`🔊 HANGCSATORNA`) | más bizonytalanság: befejezett felvétel vs. **élő** beszéd |
+| azonosító hiányában **tartalom-lenyomat** | így újraindítás után sem kerül be másodszor |
 
 ### A 4. szakasz igazolása
 
