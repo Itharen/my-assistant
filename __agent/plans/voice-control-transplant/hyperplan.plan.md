@@ -11,7 +11,7 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 23:25
+## 📊 STATUS — 2026-09-08 00:10
 
 > ⛔ **A KORÁBBI, 18:05-ös STATUS TÚLÁLLÍTOTT.** „6/6 szakasz megépítve" ⇒ a lánc **össze van
 > kötve**, de az **átviteli arány ~1%** volt: az owner végigbeszélt egy beszélgetést, és
@@ -24,7 +24,7 @@
 | **Az 1. owner-követelmény** *(mérd ki, hol vész el)* | ✅ **MEGÉPÍTVE + KIOLVASHATÓ** — `voice-drop-probe.ts` + **`ma comm voice-funnel`** (átviteli arány, kevés-minta jelzéssel) |
 | **A 2. owner-követelmény** *(MINDEN átirat a hang-csatornába)* | ✅ **MEGÉPÍTVE** — a sikertelen/gyanús/eldobott megszólalás is **látható nyomot** hagy, összevont jelentéssel (`voice-missed-speech.ts`) |
 | **A 3. owner-követelmény** *(🔊 hangjelzések, mint a CCAP-ban)* | ✅ **MEGÉPÍTVE** — 5 jelzés, a CCAP **eredeti hangjaival**; futásidőben igazolva (útvonal + ffmpeg-dekódolás). 🔇 `MA_VOICE_CUES=off` kikapcsoló |
-| **Teszt** | CLI **595/595** zöld; fő `tsc` zöld; szerver `tsc` zöld; a transzplantált build emittál; a hangjelzés-lánc **futásidőben** igazolva (útvonal + ffmpeg) |
+| **Teszt** | CLI **607/607** zöld — unit + 🧭 **3 user-journey** *(teljes út · veszteség-variáns · megszakítás-variáns)*, **pozitív kontrollal** igazolva; fő `tsc` zöld; a transzplantált build emittál |
 | **Következő lépés** | ⏳ az owner beszél a `honnie-place`-ben → **`ma comm voice-funnel`** megmondja az átviteli arányt. ⛔ A szűrő-küszöbökhöz addig NEM nyúlunk (`core-no-guessing`) |
 
 ### 🔍 A MÉRŐESZKÖZ, ami 22:44-kor megépült — és MIÉRT nem volt elég a régi számláló
