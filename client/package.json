@@ -1,6 +1,6 @@
 {
   "name": "@my-assistant/client",
-  "version": "0.1.345",
+  "version": "0.1.346",
   "private": true,
   "description": "my-assistant Angular client — Dynamo NGX + FDP NGX templates + Material + Tailwind.",
   "DyBu_settings": {
@@ -15,7 +15,7 @@
     "build-base": "ng build --configuration production --base-href /",
     "build": "npm run build-base && npm test",
     "build-clean": "npm run clean && npm run build-base",
-    "start": "ng serve --port=4224 --host=127.0.0.1",
+    "start": "ng serve --port=4233 --host=127.0.0.1",
     "test": "ng test --watch=false --browsers=ChromeHeadless",
     "test:coverage": "ng test --watch=false --browsers=ChromeHeadless --code-coverage",
     "lint": "eslint src",

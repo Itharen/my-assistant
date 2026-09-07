@@ -1,4 +1,4 @@
-// Pre-kill helper: kill any process listening on `MA_SERVER_PORT` (default 39245)
+// Pre-kill helper: kill any process listening on `MA_SERVER_PORT` (default 39335)
 // before the server boots. Megoldja az LDP `EADDRINUSE` cycle-eit, amikor egy
 // orphan szerver-process tartja a portot (előző LDP run kill-je nem
 // propagált a npm → tsx → node láncon).
@@ -10,7 +10,7 @@
 import { execSync } from 'node:child_process';
 import { platform } from 'node:os';
 
-const PORT = Number(process.env.MA_SERVER_PORT ?? 39245);
+const PORT = Number(process.env.MA_SERVER_PORT ?? 39335);
 
 function killWindows() {
   let out = '';

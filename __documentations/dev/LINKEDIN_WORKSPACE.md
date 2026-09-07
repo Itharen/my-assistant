@@ -2,7 +2,7 @@
 
 ## What this capability does
 
-`npm start` brings up My Assistant and opens `http://127.0.0.1:39245/linkedin`. The page reads the same local
+`npm start` brings up My Assistant and opens `http://127.0.0.1:39335/linkedin`. The page reads the same local
 LinkedIn cache and drafts as `ma linkedin`, so every agent and the human UI see one consistent state. The optional
 `My Assistant Companion` Chrome extension opens that page in Chrome's Side Panel while the real
 `https://www.linkedin.com/messaging/` remains a normal top-level LinkedIn tab.
@@ -30,7 +30,7 @@ My Assistant localhost click ── loopback-only content script ── service 
 ```
 
 Manifest permissions are deliberately limited to `sidePanel`, `tabs`, and the two exact loopback origins on port
-39245. There is no LinkedIn host permission and no LinkedIn content script. A manifest `key` pins the unpacked
+39335. There is no LinkedIn host permission and no LinkedIn content script. A manifest `key` pins the unpacked
 extension ID to `amdkdmdajbhlhfgacbodpnlkjjfioclm`; only that exact extension origin may frame the dedicated
 `/linkedin?surface=sidepanel` response. Ordinary My Assistant routes retain `X-Frame-Options: SAMEORIGIN`.
 
@@ -83,17 +83,23 @@ npm run start:dashboard
    ma linkedin inbox sync --pretty
    ```
 
-2. Open My Assistant and choose the default **Válaszra vár / 3 hónap** view. Pagination is explicit; use
-   **Következő** until the control is disabled if the full result set is needed.
-3. Select a conversation and review the complete cached thread.
-4. Prepare or adjust the draft and choose **Mentés és másolás**. Clipboard denial is non-destructive: the text
+2. The agent first processes **Agenti értékelésre vár / 3 hónap** in complete pages. It reads each full thread,
+   groups duplicates, and persists one explainable semantic batch tied to the current latest messages.
+3. Open My Assistant and choose **Válaszra vár / 3 hónap**. This now contains only fresh semantic
+   `priority-direct-project`, `actionable`, and `clarification-needed` reviews—not every inbound-last thread.
+   Pagination is explicit; use **Következő** until the control is disabled if the full result set is needed.
+4. Select a conversation and review the complete cached thread. The classification reason and confidence are
+   visible beside the exchange.
+5. Prepare or adjust the current draft and choose **Mentés és másolás**. Agent drafts are bound to the reviewed
+   latest message; after new activity the old draft remains visible only as **ELAVULT** history. Clipboard denial
+   is non-destructive: the text
    remains visible and persisted for manual selection/copy.
-5. Open the real LinkedIn tab. Pick the matching conversation, paste and verify the message.
-6. For an opportunity, choose the current CV file and attach it. The profile is not treated as a downloadable CV.
-7. Click LinkedIn's native Send button yourself.
-8. Back in My Assistant, explicitly choose either **CV attached** or **CV not required**, then use
+6. Open the real LinkedIn tab. Pick the matching conversation, paste and verify the message.
+7. For an opportunity, choose the current CV file and attach it. The profile is not treated as a downloadable CV.
+8. Click LinkedIn's native Send button yourself.
+9. Back in My Assistant, explicitly choose either **CV attached** or **CV not required**, then use
    **Kézzel elküldtem…** and the second confirmation. This records an owner report, not delivery proof.
-9. A later official inbox sync can independently show a matching outbound message; until then the local status
+10. A later official inbox sync can independently show a matching outbound message; until then the local status
    must remain described as self-reported.
 
 ## UI/API contract
@@ -103,7 +109,8 @@ opens a specific thread. Forwarded headers cannot turn a LAN request into a loca
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| GET | `/api/linkedin/inbox?filter=needs-reply&sinceDays=90&offset=0&limit=12` | paged summaries, no bodies |
+| GET | `/api/linkedin/inbox?filter=review-needed&sinceDays=90&offset=0&limit=12` | unreviewed/stale inbound candidates |
+| GET | `/api/linkedin/inbox?filter=needs-reply&sinceDays=90&offset=0&limit=12` | fresh semantic reply queue, paged, no bodies |
 | GET | `/api/linkedin/thread?threadId=...` | explicit thread bodies + drafts |
 | POST | `/api/linkedin/draft` | create a local draft |
 | POST | `/api/linkedin/draft/status` | `copied`, `discarded`, or `manual-send-reported` |
@@ -124,8 +131,11 @@ The launcher never loops HTTP health checks. It checks once before launch, waits
 log change events, then verifies health once after the HTTP server reports its listening state.
 
 If the side panel says My Assistant is offline, start the app and click **Újrapróbálás**. The panel does not poll in
-the background. If the page says the companion is absent, rebuild the extension and press **Reload** on
-`chrome://extensions`; the normal LinkedIn-tab fallback remains available.
+the background. Chrome's Side Panel API exists only in Chrome with the installed companion extension. An in-app
+or other browser therefore truthfully offers **LinkedIn megnyitása külön lapon**, not a side-panel promise. If
+Chrome says the companion is absent, rebuild the extension and press **Reload** on `chrome://extensions`; then the
+button becomes **LinkedIn + Chrome-oldalsáv megnyitása**. The extension starts both requests in the same explicit
+click; a rejected panel request cannot prevent the normal LinkedIn tab from opening.
 
 ## Verification
 
@@ -142,7 +152,9 @@ pnpm test
 
 The LI-J07 journey carries an actual temporary cached thread through inbox selection, thread read, draft creation,
 extension handoff, copied status, manual owner report, restart/resume readback and cleanup. Its restricted-side-
-panel variant proves the local draft survives a failed browser handoff.
+panel variant proves the local draft survives a failed browser handoff. LI-J08 carries an unreviewed inbound
+candidate through semantic review, reply-queue admission and current agent draft, then proves that a newer message
+invalidates both the review and the draft recommendation before cleanup.
 
 ## Change safety checklist
 
@@ -154,6 +166,8 @@ Any later extension/workspace change must retain all of these gates:
 - no automated paste, attachment or Send interaction;
 - no message body/thread identifier in action logs;
 - no first-page-only assumption: `nextOffset` is followed to `null`;
+- no direction-only reply decision: the default queue requires a fresh message-bound semantic review;
+- stale or missing reviews go to `review-needed`, and stale drafts are never presented as current;
 - no “sent” claim for `copied` or `manual-send-reported`;
 - extension-absent and app-offline recovery remain usable;
-- `browser-extension` build/test and LI-J07 stay in the normal root/LDP gates.
+- `browser-extension` build/test plus LI-J07 and LI-J08 stay in the normal root/LDP gates.

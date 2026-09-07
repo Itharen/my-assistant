@@ -110,7 +110,7 @@ export async function runActionLogEmitCommand(args: string[]): Promise<void> {
     process.exit(1);
   }
 
-  // Phase 3+: POST http://127.0.0.1:39245/actions (best-effort, 500ms timeout).
+  // Phase 3+: POST http://127.0.0.1:39335/actions (best-effort, 500ms timeout).
   // Most stub — server endpoint még nem létezik.
   const dbSynced: boolean = false;
 

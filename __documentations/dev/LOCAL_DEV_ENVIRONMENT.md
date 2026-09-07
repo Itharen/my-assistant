@@ -69,7 +69,7 @@ Ez elindítja a Live Development Pipeline-t a `pipeline.config.json` alapján:
 
 1. Watch-olja `cli/src`, `server/src`, `client/src`
 2. File-change → 30s debounce → 8-step build+test loop fut: rimraf-cli-dist → tsc-cli → cli-test → rimraf-server-dist → tsc-server → server-test → client-build → client-test
-3. Sikeres lefutás → `node server/dist/index.js` (re)start a 39245 porton
+3. Sikeres lefutás → `node server/dist/index.js` (re)start a 39335 porton
 4. Stdout: server logja; minden építési step külön log-fájl `logs/live-dev-pipeline/` alatt
 
 Egy flow, egyetlen process-fa, strukturált step-tracking — pontosan amit az LDP-től várunk.
@@ -81,7 +81,7 @@ Egy flow, egyetlen process-fa, strukturált step-tracking — pontosan amit az L
 ```bash
 pnpm run start-server         # tsx watch src/index.ts (server)
 pnpm run start-server-prod    # build + node dist/index.js (production-szerű)
-pnpm run start-client         # ng serve --port=4224
+pnpm run start-client         # ng serve --port=4233
 pnpm run start-cli            # build + ma --help
 ```
 

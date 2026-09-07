@@ -77,7 +77,7 @@ Ez a fájl a projektben **ténylegesen használt** CLI-ket és eszközöket írj
 | `pnpm run lint` | `eslint src` |
 | `pnpm run lint:fix` | `eslint src --fix` |
 | `pnpm run prep` | `npm i -g pnpm rimraf @angular/cli && pnpm i` |
-| `pnpm run start` | `ng serve --port=4224 --host=127.0.0.1` |
+| `pnpm run start` | `ng serve --port=4233 --host=127.0.0.1` |
 | `pnpm run test` | `ng test --watch=false --browsers=ChromeHeadless` |
 | `pnpm run test:coverage` | `ng test --watch=false --browsers=ChromeHeadless --code-coverage` |
 | `pnpm run validate:imports` | `dynamo-validate-imports` |

@@ -178,6 +178,6 @@ export class A_Socket_ControlService extends DyFM_SocketClient_ServiceBase<A_Soc
       return window.location.origin;
     }
 
-    return 'http://localhost:39245';
+    return 'http://localhost:39335';
   }
 }

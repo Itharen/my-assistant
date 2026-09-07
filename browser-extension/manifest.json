@@ -7,8 +7,8 @@
   "minimum_chrome_version": "116",
   "permissions": ["sidePanel", "tabs"],
   "host_permissions": [
-    "http://127.0.0.1:39245/*",
-    "http://localhost:39245/*"
+    "http://127.0.0.1:39335/*",
+    "http://localhost:39335/*"
   ],
   "background": {
     "service_worker": "dist/background.js",
@@ -23,14 +23,14 @@
   "content_scripts": [
     {
       "matches": [
-        "http://127.0.0.1:39245/*",
-        "http://localhost:39245/*"
+        "http://127.0.0.1:39335/*",
+        "http://localhost:39335/*"
       ],
       "js": ["dist/app-bridge.js"],
       "run_at": "document_start"
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; frame-src http://127.0.0.1:39245 http://localhost:39245"
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src http://127.0.0.1:39335 http://localhost:39335"
   }
 }

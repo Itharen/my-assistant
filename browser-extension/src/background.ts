@@ -17,7 +17,7 @@ export function isTrustedMyAssistantUrl(value: string | undefined): boolean {
   try {
     const url: URL = new URL(value);
     return url.protocol === 'http:'
-      && url.port === '39245'
+      && url.port === '39335'
       && (url.hostname === '127.0.0.1' || url.hostname === 'localhost');
   } catch {
     return false;
@@ -39,14 +39,23 @@ export async function openLinkedInWorkspace(
   windowId: number,
   requestId: string,
 ): Promise<LinkedInWorkspaceBridgeResponse> {
-  try {
-    await api.openSidePanel(windowId);
-    await api.createTab(LINKEDIN_MESSAGING_URL, windowId);
-    return { requestId, ok: true, code: 'OPENED', message: 'LinkedIn workspace opened.' };
-  } catch (error: unknown) {
-    const message: string = error instanceof Error ? error.message : String(error);
-    return { requestId, ok: false, code: 'OPEN_FAILED', message };
+  const panelPromise: Promise<unknown> = api.openSidePanel(windowId);
+  const tabPromise: Promise<unknown> = api.createTab(LINKEDIN_MESSAGING_URL, windowId);
+  const [panelResult, tabResult]: PromiseSettledResult<unknown>[] = await Promise.allSettled([panelPromise, tabPromise]);
+  if (tabResult?.status === 'rejected') {
+    const message: string = tabResult.reason instanceof Error ? tabResult.reason.message : String(tabResult.reason);
+    return { requestId, ok: false, code: 'OPEN_FAILED', message: `LinkedIn tab could not be opened: ${message}` };
   }
+  if (panelResult?.status === 'rejected') {
+    const message: string = panelResult.reason instanceof Error ? panelResult.reason.message : String(panelResult.reason);
+    return {
+      requestId,
+      ok: false,
+      code: 'PANEL_UNAVAILABLE',
+      message: `LinkedIn opened, but Chrome rejected the Side Panel: ${message}`,
+    };
+  }
+  return { requestId, ok: true, code: 'OPENED', message: 'LinkedIn workspace opened.' };
 }
 
 const browserApi: LinkedInWorkspaceChromeApi | null = typeof chrome === 'undefined' ? null : {
@@ -62,7 +71,8 @@ if (browserApi) {
       sendResponse({ requestId: '', ok: false, code: 'INVALID_REQUEST', message: 'Invalid workspace request.' });
       return false;
     }
-    if (!isTrustedMyAssistantUrl(sender.url) || sender.tab?.windowId === undefined) {
+    const senderUrl: string | undefined = sender.url ?? sender.tab?.url;
+    if (!isTrustedMyAssistantUrl(senderUrl) || sender.tab?.windowId === undefined) {
       sendResponse({ requestId: message.requestId, ok: false, code: 'UNTRUSTED_ORIGIN', message: 'Request origin rejected.' });
       return false;
     }

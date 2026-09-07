@@ -45,7 +45,7 @@ export class Spotify_Controller extends DyNTS_Controller {
         preProcesses: [],
         tasks: [
           async (_req: Request, res: Response): Promise<void> => {
-            const serverPort = Number(process.env.MA_SERVER_PORT ?? 39245);
+            const serverPort = Number(process.env.MA_SERVER_PORT ?? 39335);
             res.send(await this.dataService.startAuth(serverPort));
           },
         ],
@@ -69,7 +69,7 @@ export class Spotify_Controller extends DyNTS_Controller {
               res.status(400).send({ ok: false, error: 'missing code/state' });
               return;
             }
-            const serverPort = Number(process.env.MA_SERVER_PORT ?? 39245);
+            const serverPort = Number(process.env.MA_SERVER_PORT ?? 39335);
             const result = await this.dataService.completeAuth({ code, state, serverPort });
             res.set('Content-Type', 'text/html; charset=utf-8').send(
               `<html><body><h2>${'ok' in result && result.ok ? '✅ Spotify OAuth complete' : '❌ Failed'}</h2>`

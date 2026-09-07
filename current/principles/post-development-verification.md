@@ -40,7 +40,7 @@ Az LDP **már pontosan úgy működik**, ahogy az owner elvárja. Mérve, futó 
 ```
 status.json  →  "serverRunning": false ,  "restartPending": true
 DE:
-  szerver-port 39245        →  ÉL
+  szerver-port 39335        →  ÉL
   Discord-figyelő életjel   →  07:02:31   (friss)
   jelenlét-minta            →  07:02:36   (friss)
 ```

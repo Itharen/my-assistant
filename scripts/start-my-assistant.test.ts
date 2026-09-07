@@ -39,7 +39,7 @@ describe('My Assistant startup launcher', (): void => {
 
   it('waits for the event-driven HTTP listening marker instead of trusting the early LDP flag', (): void => {
     assert.equal(runtimeLogShowsReady('[ldp] server start (PID: 1)'), false);
-    assert.equal(runtimeLogShowsReady('HTTP (open) server is listening on port: 0.0.0.0:39245'), true);
+    assert.equal(runtimeLogShowsReady('HTTP (open) server is listening on port: 0.0.0.0:39335'), true);
   });
 
   it('requires a successful health response', async (): Promise<void> => {

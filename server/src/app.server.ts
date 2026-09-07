@@ -98,7 +98,7 @@ export class App extends DyNTS_AppExtended {
   /** HTTP port beállítások — env override-olható `MA_SERVER_PORT`-tal. */
   getPortSettings(): DyNTS_Http_Settings {
     return {
-      httpPort: Number(process.env.MA_SERVER_PORT ?? 39245),
+      httpPort: Number(process.env.MA_SERVER_PORT ?? 39335),
     };
   }
 

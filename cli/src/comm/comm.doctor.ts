@@ -339,7 +339,7 @@ async function checkPresenceMonitor(projectRoot: string, checks: CommCheck[]): P
 }
 
 async function checkAwakeSource(checks: CommCheck[]): Promise<void> {
-  const serverUrl: string = process.env.MA_SERVER_URL ?? 'http://localhost:39245';
+  const serverUrl: string = process.env.MA_SERVER_URL ?? 'http://localhost:39335';
 
   try {
     const response: Response = await fetch(`${serverUrl}/api/sleep-state`, {

@@ -100,7 +100,7 @@ cli/src/
 
 | | |
 |---|---|
-| **Port** | `39245` (default, configurable via `MA_SERVER_PORT`) |
+| **Port** | `39335` (default, configurable via `MA_SERVER_PORT`) |
 | **Bind** | `127.0.0.1` (loopback-only by default; non-loopback requires `MA_AUTH_TOKEN`) |
 | **DB** | SQLite via `better-sqlite3` — file at `server/data/my-assistant.db` (gitignored) |
 | **Schema** | Auto-migrating; version tracked in `schema_meta` table |
@@ -161,7 +161,7 @@ See `current/feature-requests/server-app-architecture.md`.
 
 | | |
 |---|---|
-| **Port (dev)** | `4224` (`ng serve`) |
+| **Port (dev)** | `4233` (`ng serve`) |
 | **Stack** | Angular 18.2, NgModule mode, Karma + Jasmine |
 | **Pattern partner** | `LIVE-projects/organizer/client/` |
 | **Tests** | karma + jasmine + headless Chrome (60 specs as of cycle 68; +47 in cycle 62-65 for FR #3b-WAVE-UI + FR #3f new client components) |
@@ -206,12 +206,12 @@ client/src/app/
 ```
                     ┌──────────────────┐
                     │   client (UI)    │
-                    │  Angular @ 4224  │
+                    │  Angular @ 4233  │
                     └─────────┬────────┘
                               │ HTTP (envelope)
                     ┌─────────▼────────┐
        ┌─────HTTP──▶│   server (API)   │◀──HTTP──┐
-       │           │  Express @ 39245 │         │
+       │           │  Express @ 39335 │         │
        │           │   SQLite DB      │         │
        │           └─────────┬────────┘         │
        │                     │                  │
@@ -245,13 +245,13 @@ cd ../server
 cp .env.sample .env                 # optional — defaults work for loopback dev
 pnpm install
 pnpm run build-base
-pnpm start &                        # listens on 127.0.0.1:39245
+pnpm start &                        # listens on 127.0.0.1:39335
 
 # 3. Client
 cd ../client
 pnpm install
 pnpm run build-base
-pnpm start                          # browser at http://127.0.0.1:4224
+pnpm start                          # browser at http://127.0.0.1:4233
 ```
 
 All three run independently. Lokál dev: server runs in background, cli writes to action-log directly, client polls server.

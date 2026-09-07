@@ -24,7 +24,7 @@
 | Beállítás | Érték |
 |---|---|
 | **Mode** | `HTTP` *(⛔ nem MQTT — nincs saját brókerünk, és nem is kell)* |
-| **URL** | `http://<a-szerver-cime>:39245/api/location/owntracks?token=<A_TITOK>` |
+| **URL** | `http://<a-szerver-cime>:39335/api/location/owntracks?token=<A_TITOK>` |
 | **Device ID / Tracker ID** | tetszőleges *(nálunk nem azonosít semmit)* |
 | **Locator interval** | ⭐ **ÁLLÍTHATÓ** — owner: *„Legyen állítható és majd finomhangoljuk."* |
 
@@ -74,7 +74,7 @@ A végpont **megosztott titokkal** védett: `MA_LOCATION_TOKEN` a `.env`-ben.
 
 ## 5. ⏳ Ami még nyitott
 
-- **Elérhetőség kívülről:** a szerver `39245`-ön a gépen figyel. Ahhoz, hogy a telefon
+- **Elérhetőség kívülről:** a szerver `39335`-ön a gépen figyel. Ahhoz, hogy a telefon
   útközben is elérje, kell egy út kívülről (port-forward / VPN / alagút).
   ⚠️ **Ezt még nem mértük fel** — owner-döntés lesz, biztonsági következményekkel.
 - **„Otthon" sugara:** az appban állítható; a jó érték **mérendő**, nem tippelendő.

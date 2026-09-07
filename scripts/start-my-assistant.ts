@@ -4,7 +4,7 @@ import { mkdirSync, readFile, watch, type FSWatcher } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const SERVER_ORIGIN = 'http://127.0.0.1:39245';
+const SERVER_ORIGIN = 'http://127.0.0.1:39335';
 const DEFAULT_TIMEOUT_MS = 12 * 60 * 1000;
 const SERVER_LISTENING_MARKER = 'HTTP (open) server is listening on port:';
 const FATAL_PIPELINE_STEPS = new Set([

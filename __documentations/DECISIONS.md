@@ -499,7 +499,26 @@ visszaállás tudatos biztonsági regresszió lenne, ezért az LI-J08 release-ga
 
 **Dátum:** 2026-09-07
 **Forrás:** owner — *„Fdp templates ben lévő minták alapján vegyünk fel portokat."*
-**Státusz:** ⏳ **owner-döntésre vár** (a relay-részre javaslat, a my-assistant-részre kérdés)
+**Státusz:** ✅ **ELDÖNTVE ÉS VÉGREHAJTVA (2026-09-07 11:12)**
+
+> **Owner:** *„Kövessük a port mintát a sorrendet és a következő szabad számot. Legyen felvéve
+> az fdp template-be. (Költöztetjük a portot)"*
+
+| | |
+|---|---|
+| **my-assistant** | XY **24 → 33** — `39335` http · `4233` kliens · `39337` notif |
+| **my-assistant-relay** | XY **34** — `39345` http *(kliense nincs)* |
+| **Regisztrálva** | ✅ `fdp-templates` — az **interfész ÉS** a const *(az interfésznek nincs index-signature-je, tehát mindkettő kellett)*; a fejléc-komment kiegészítve **29–34**-gyel *(a 29–32 addig hiányzott belőle)* |
+
+**Végrehajtva:** 15 élő kód-/config-fájl *(szerver, kliens, CLI, böngésző-kiegészítő, indító
+szkriptek, `.env.sample`)* + 6 aktuális dokumentum.
+
+⛔ **A történeti napló és a régi ciklus-riportok NEM lettek átírva** — azok azt rögzítik, ami
+**akkor** volt igaz. A múltat nem hamisítjuk meg.
+
+⚠️ **OWNER-TEENDŐ:** a **böngésző-kiegészítőt újra kell tölteni** — a `manifest.json`
+host-engedélye a régi portra szólt *(6 előfordulás)*, enélkül a LinkedIn-munkafelület nem éri
+el a szervert.
 
 ### 🔴 A LELET: a DEC-MA-009 feltevése MA MÁR NEM IGAZ
 
