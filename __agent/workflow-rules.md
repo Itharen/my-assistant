@@ -76,10 +76,21 @@ Ha a user menet közben mond szabályt / szokást / preferenciát → **ugyanabb
 `current/principles/` alá, **szó szerint**, és visszajelzés, hova került.
 ⛔ Chatben hagyni = elveszett.
 
-### ⑦ A kimenet a userhez szól, nem hozzám
+### ⑦ A kimenet a userhez szól — és ⭐ DISCORDRA megy
 **Rövid, tömör, emoji-val, listákban.** Hosszú paragrafus TILTOTT.
-Amit a user LÁT, arra naiv-felhasználó szemmel is ránézünk. Discordra érkezett kérdésre
-**Discordon is** válaszolunk. *(`current/principles/working-style.md`.)*
+Amit a user LÁT, arra naiv-felhasználó szemmel is ránézünk.
+
+🔴 **DISCORD-FIRST (owner, 2026-09-07):** ami **érdemi**, az **Discordra megy** — nem csak a
+sessionbe. **Több üzenet egy körben SZABAD.**
+
+> **Ellenőrző kérdés minden kör végén:** *„Ha a user ebben a pillanatban elindulna otthonról,
+> elveszne bármi abból, amit most leírtam?"* — ha igen, az **Discordra való**.
+
+⚠️ **A mért hiba, amiből ez lett:** a session-választ kezeltem fő válasznak, a Discordot
+kivonatnak. Amíg a user a gépnél ült, ez **működni látszott** — de ahogy elindul otthonról,
+a session-válasz **láthatatlan**, tehát az ott hagyott info **elveszett**.
+
+*(`current/principles/discord-first-output.md` · `working-style.md`.)*
 
 ### ⑧ Lezáráskor: mi maradt nyitva
 A flow **te mondod ki, hogy kész** — és megmondod, **mi maradt nyitva**, és mi a

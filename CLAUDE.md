@@ -690,6 +690,7 @@ megfogalmazása lesz a referencia.
 | `current/principles/workflow-system.md` | **Hogyan épülnek a workflow-k** — a lokális szabályok védelme a generált blokk mellett, FAM projekt vs. flotta, a kötelező fejléc-blokk, a belépési pont, és a preferenciák visszacsatornázása |
 | `current/principles/proactive-lookup.md` | **Egy kérés → tartós alapértelmezés**: ha egyszer kérte, hogy nézzek utána, legközelebb **magamtól** megteszem (program, helyszín, megközelítés). Az utánanézés automatikus, a **cselekvés nem** |
 | `current/principles/message-delivery-reliability.md` | **A „sent: true" ≠ „megkapta"** — az üzenetek elúszhatnak. Discord az elsődleges, amíg nincs saját megoldás; irány: nyugta-követés + perzisztens postaláda |
+| `current/principles/discord-first-output.md` | ⭐ **DISCORD-FIRST**: ami érdemi, az **Discordra** megy, nem csak a sessionbe — mert amint elindul otthonról, a session-válasz láthatatlan. Több üzenet egy körben szabad |
 | `current/principles/thought-storm-inputs.md` | **Gondolat-orkán inputok**: egy üzenetben több téma. Szétbontás → besorolás → routing → visszajelzés. ⚠️ A **zárójeles félmondat** gyakran tartós szabály |
 
 **Új alapelv kezelése:** ha a user új szabály-szerű dolgot mond, **soha ne csak

@@ -460,6 +460,8 @@
 | `Q-2026-09-07-L2` | **Ha több CC session fut, melyik „az" asszisztens?** A címke dönt — de mi legyen, ha kettőnek is ugyanaz a címkéje? | ütközés-feloldás kell, különben véletlenszerű, melyikbe megy az üzenet | **m** | open |
 | `Q-2026-09-07-L3` | **Codex is írhat Discordra?** *(`ma comm say`-jel technikailag tud)* Ha igen, jelölje-e meg magát, hogy tudd, melyikünk írt? | különben nem tudod, kivel beszélsz | **m** | open |
 | `Q-2026-09-07-L4` | **Kell-e zárolás a közös állapot-fájlokra?** *(`STATUS.md`, `CONTINUATION.md`)* Vagy elég a „egyszerre egy agent írjon" megállapodás? | párhuzamos írásnál csendes felülírás a kockázat | **m** | open |
+| `Q-2026-09-07-L6` | **Megépítsem a `ma brief`-et?** *(egyetlen generált állapot-kép minden sessionnek: mi történt, mi nyitott, mi a csatorna-állapot, ki dolgozik)* | Ez az owner „SSOT infótár" kérése — de **generált nézetként**, nem új kézi fájlként, hogy ne legyen negyedik igazság. Terv: `__documentations/dev/SSOT_STATE_SYNC.md` | **h** | open |
+| `Q-2026-09-07-L7` | **Megépítsem a session-regisztert?** *(ki aktív most: CC / Codex / cron)* | Enélkül a `brief` nem tudja megmondani, dolgozik-e más agent — és két agent egymásra ír | **h** | open |
 | `Q-2026-09-07-L5` | **Ébredés-küszöb:** hány óra tétlenség után számítson „aludtam"-nak? *(az én javaslatom 3 óra — nem a te adatod)* | ez indítja a napindítást; rossz küszöbnél vagy elmarad, vagy fölöslegesen fut | **m** | open |
 
 ---

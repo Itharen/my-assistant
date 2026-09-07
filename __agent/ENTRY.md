@@ -206,6 +206,8 @@ STATUS-blokkja nem — és a következő session **újra elvégzi a kész munká
 - 🚫 **Nem rövidíted a szabályokat.** `core-rule-integrity` — teljes szöveg vagy pointer.
 - ✅ **FAM először, projekt-hatókörrel** (`scopeFilter: project=my-assistant`).
 - ✅ **Rövid, tömör, emoji-s** kimenet a usernek.
+- ⭐ **DISCORD-FIRST:** ami érdemi, az **Discordra** megy, nem csak a sessionbe. Több üzenet
+  egy körben szabad. Ellenőrző kérdés: *„ha most elindulna otthonról, elveszne bármi?”*
 
 ---
 
