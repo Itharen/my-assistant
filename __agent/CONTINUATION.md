@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 23:05
+**Utoljára frissítve:** 2026-09-07 23:24
 
 ---
 
@@ -1542,6 +1542,38 @@ dolgozo sessionnek.
 
 **Javitva:** `ENTRY.md` 4c es `__agent/references/ccap-session-messaging.md` mostantol az
 `inspect`-et irja elo, a listas mezoket pedig **kifejezetten megbizhatatlannak** jeloli.
+
+
+
+---
+
+## 2026-09-07 23:23 — A MASODIK DISPATCH: FDP ASSISTANT (penzugy + berszamfejtes)
+
+**Owner 23:18:** *„az FDP assistant-nak is add ki a feladatot."*
+**Owner 23:20:** *„mi fer meg bele a koltsegvetesunkbe? (egy nagyobb kb 1M ugyvedi dijra
+keszulunk) mi lenne ha 20 eur-rol 100-ra emelnem az elevenlabs elofizut….?"*
+
+**Kiadva** `ccs-e4e4fadf-mtroyj33`-nak, `{"success":true}`. Uj folyamatvezerlo:
+`__agent/FDP-HANDOFF.md`. A prompt **minimalis + ket pointer**.
+
+**Harom konkret kerdes** *(1)* balansz · *(2)* belefer-e a ~1M Ft ugyvedi dij · *(3)* ElevenLabs
+20 → 100 € ⇒ **+80 €/ho = +960 €/ev** *(ez puszta szamtan, nem konyveles — a devizavaltast rabiztam)*.
+➕ Melle a **berszamfejtes-megkereses** — ugyanaz a domain, ugyanaz a cimzett, ezert **egy**
+munkacsomag *(§7.5: egy prompt = egy jol korulhatarolt csomag; ket kulon prompt ket
+visszavonhatatlan futas lenne)*.
+
+⚠️ **Miert NEM en valaszolok a penzugyi kerdesre:** owner 21:27 — *„nala vannak meg a konyvelovel
+valo kommunikaciorol szolo szabalyok… nem a te felelosseged, nem a te hataskorod."*
+⇒ A `CATALOG.md` „⛔ NEM AZ EN HATASKOROM" szekcioja pontosan ezt fedi.
+
+**Visszacsatorna:** az `AGENT_BUS.md`-be kertem az eredmenyt, mert ⛔ **az ownernek en irok**,
+nem ok. Ha ez rossz feltevés, a handoff szerint jelezniuk kell.
+
+### A DEV kozben dolgozik — mert lathato
+
+A `cli/src/voice/voice-channel-recorder.spec.ts` **modosult a lemezen**: uj export
+(`classifyRecordingOutcome`). ⇒ Nem csak `isBusyProcessing: true`, hanem **valodi kimenet** is van.
+📌 Pont ez a kulonbseg, amit a 4c lepes eloir: a statusz nem bizonyitek, a **kimenet** az.
 
 
 ### A következő konkrét lépés
