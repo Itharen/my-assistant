@@ -87,6 +87,56 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-09-08-02 — 🛑 A wakeup-hurkot LEZÁRTAM (szabály szerint) — 1 „mehet" kell az ownertől
+**From:** fdp-assistant
+**To:** chat
+**Kind:** block
+**Created:** 2026-09-08T01:45+02:00
+
+**A lényeg egy mondatban:** a munka kész, **egyetlen owner-jóváhagyás hiányzik**, és a hurkot **szabály
+kötelez** leállítani — de **kimondottan**, nem némán, ezért ez a bejegyzés.
+
+### Miért állt le a hurok
+
+A FAM-frissítés előhozott egy szabályt, ami **2026-09-07-én frissült**, és pont rám vonatkozik:
+`core-wakeup-state-file` → **„🔴 A HUROK CSAK ADDIG FUT, AMÍG VAN MUNKA"** *(owner-direktíva 2026-09-05)*:
+
+> *„Ne ütemezz újat, ha… a maradék **kizárólag owner-döntésen / külső kapun** áll (CI-verdikt, külső fél,
+> jóváhagyás), amit a következő ébredés **sem** tudna előrébb vinni."*
+
+⭐ Ez egybevág a handoff §0-val is: *„amíg **van mit csinálni**"*. Most **nincs** — a maradék két külső kapun
+áll, és **egyik sem mozdul attól, hogy én félóránként felébredek**. A 30 perces ébresztgetés innentől
+**polling** lenne, amit a `core-no-polling` tilt.
+
+### Amit ebben a körben MÉRTEM (mind a kettő negatív)
+
+| Kapu | Állapot 2026-09-08 01:40-kor |
+|---|---|
+| **Owner-jóváhagyás** a levélre | ⛔ nincs — `USER_INPUT.md` **2026-06-01 óta érintetlen**; mindkét bejegyzésem `[OPEN]`, válasz nélkül |
+| **Bérszámfejtés beérkezése** (GEOK) | ⛔ nincs `bérszámfejtés/2026/2026-08/`; **0 bejövő levél a GEOK-tól** 2026-09-01 óta **egyik postafiókban sem** (default + ttb, külön ellenőrizve) |
+
+### 🔴 MI INDÍTANÁ ÚJRA — bármelyik elég, szólj és folytatom
+
+1. ✅ **„mehet" az ownertől** → **azonnal kiküldöm** a levelet (a kész szöveg + a kész `send-email` parancs:
+   `fdp-assistant/__documentations/payroll-communication.md` → „Levél-TERVEZET").
+2. ✅ **„ne így" / szöveg-módosítás** → átírom, és újra jóváhagyásra teszem.
+3. ✅ **Megjön a bérszámfejtés** → a levél tárgytalan, a hónap zárható.
+4. ⏰ **Ha 2026-09-10-ig egyik sem** → az a mért ritmus **leghosszabb** átfutása is (2026-01: 10-e);
+   onnantól a csúszás **rendkívüli**, és owner elé viendő akkor is, ha a levél még nem ment ki.
+
+### Állapot — változatlan az előző körhöz képest
+
+| Feladat | Állapot |
+|---|---|
+| Pénzügyi helyzetkép | ✅ **KÉSZ** *(`kimutatások/2026-09-07_pénzügyi-helyzetkép.md`)* |
+| Bérszámfejtés — feltárás, nyilvántartás, levél-tervezet | ✅ **KÉSZ** |
+| Bérszámfejtés — a levél **kiküldése** | 🔴 **BLOKKOLT — owner-jóváhagyás** |
+
+⛔ **Nem adat-, nem hozzáférés- és nem képesség-hiány.** A banki, számla- és postafiók-adatokhoz hozzáfértem,
+a levél meg van írva. **Egy szó kell hozzá.**
+
+---
+
 ## [OPEN] AGB-2026-09-08-01 — STÁTUSZ: 1 kész / 1 blokkolt — és MEGVAN, miért nem láttad az előzőt
 **From:** fdp-assistant
 **To:** chat
