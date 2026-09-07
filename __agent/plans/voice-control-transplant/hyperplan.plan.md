@@ -11,14 +11,14 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 14:06
+## 📊 STATUS — 2026-09-07 14:09
 
 | | |
 |---|---|
 | **Fázis** | 🟠 **1–2. szakasz KÉSZ** — a levél-fájlok bent, a hang-lánc IGAZOLTAN működik |
 | **Haladás** | 2/5 szakasz |
 | **Teszt** | CLI 477/477 zöld; a fő build **érintetlen** *(az átemelt kód kizárva)* |
-| **Következő lépés** | 3. szakasz: az illesztő réteg — ⭐ **mérve: mindössze 5 tulajdonság** + egy 95 soros ősosztály |
+| **Következő lépés** | 3. szakasz **MEGÍRÁSA** — a specifikáció kész, ⭐ **nincs több ismeretlen** |
 | **Blokkoló** | nincs. ✅ V-1…V-3 megválaszolva · ✅ az `llmChat_CS` kérdése is megoldva |
 
 ### Az 1. szakasz igazolása — mért, nem állított
@@ -226,6 +226,36 @@ megvan az egész beszélgetés, a feladatok és a szabályok. Egy köztes modell
 mégis számítana.
 
 ⭐ **A kód így BÁJTRA VÁLTOZATLAN marad:** ugyanazt a felületet hívja, csak alatta más van.
+
+#### ✅ AZ ILLESZTŐ TELJES SPECIFIKÁCIÓJA — mérve, nincs több ismeretlen
+
+**Az öt tulajdonság my-assistant-megfelelője:**
+
+| CCAP-tulajdonság | Típus | Mi lesz belőle nálunk |
+|---|---|---|
+| `discordServer` | `Guild` | a figyelő Discord-kliensétől |
+| `voiceChannel` | `Channel` | a `V-1` szerint: `1489036734632034496` |
+| `defaultMessagingProvider` | `DyNTS_Bot_MessagingProvider_ServiceBase` | a meglévő küldőnk |
+| `llmChat_CS` | `DyNTS_AI_LLMChat_ServiceBase` | ⭐ **átereszt** — a felülvizsgálat hozzám tartozik |
+| `io_CS` | `CCAP_BotIO_ControlService` | ⭐ **a Discord-köteg** — l. lentebb |
+
+#### ⭐ A LEGSZEBB LEKÉPEZÉS: `io_CS` → a meglévő köteg
+
+Az `io_CS`-ből a voice **egyetlen** dolgot hív:
+`handleMessageWithOptionalPreFlag({ …, addPreFlag: '[VOICE|CCAP] 🔊' })`.
+
+Ez az a pont, ahol a felismert szöveg **átadódik az asszisztensnek** — egy előtaggal megjelölve,
+hogy hangból jött.
+
+🔴 **Nálunk pontosan ez már létezik:** a `DiscordBatchStore` + a `🎙️ HANGÜZENET` jelölés.
+⇒ Az adapter a hang-csatornából jövő átiratot **ugyanabba a kötegbe** teszi, amiben a
+Discord-hangüzenetek is érkeznek. Így a hang-csatorna **nem külön csatorna**, hanem
+ugyanaz az út — ugyanazzal a duplikáció-védelemmel, ugyanazzal a válasz-kötelezettséggel,
+és ugyanazzal a visszanézhetőséggel (`ma comm history`).
+
+⚠️ **Ami ebből következik és mérendő lesz:** a hang-csatorna **folyamatosan** termel átiratot
+*(V-2: „mindig ülj bent")*, a köteg viszont a gyűjtő-ablak szerint ürül. Élő próbánál meg kell
+nézni, hogy a **beszéd-tempó** és a **köteg-ütem** összeér-e — ez nem tervezhető, csak mérhető.
 
 **Kész, ha:** a `voice/` fordul, és a CCAP-ra semmi nem hivatkozik.
 
