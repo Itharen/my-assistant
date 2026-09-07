@@ -122,6 +122,7 @@ KEZDETÉN megy ki**, nem induláskor (`current/inventory/personal-items.md`).
 | 4 | **Tartozom válasszal?** | `ma comm doctor` válasz-kötelezettség sora |
 | 4b | 🔴 **TETT-E FÁJLT AZ INBOXBA?** | `ls __agent/inbox/` — ⚠️ **MÉRT MULASZTÁS 2026-09-07:** a summit-programot **21:05-kor** tette be, és **21:50-ig** nem vettem észre, mert az inbox-ellenőrzés nem volt a rutinban. A fájl **nem jelez magától** |
 | 5 | **Félbehagytam valamit?** | `__agent/STATUS.md` · `__agent/CONTINUATION.md` |
+| 4c | 🔴 **HOGY ÁLLNAK, AKIKNEK KIADTAM?** | **Owner 2026-09-07 22:42:** *„időnként ellenőrizned is kell őket"*. ⚠️ **A `status` ÖNMAGÁBAN NEM ELÉG** — egy session lehet `running` úgy is, hogy semmi hasznos nem születik. A **KIMENETET** kell nézni: `git log --since=...` · a hyperplan **STATUS-blokkja** · az action-log. Azonosítók: `__agent/references/ccap-session-messaging.md` |
 | 6 | **Mi esedékes?** | `ma status digest` (organizer + lokál, hiteles kivonat) |
 
 > 🔴 **AZ LDP-ELLENŐRZÉS OWNER-SZABÁLY (2026-09-07):** *„a workflow triggerekkor ellenőrizned
