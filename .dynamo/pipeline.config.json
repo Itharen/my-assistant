@@ -144,6 +144,32 @@
       "label": "lint-client",
       "command": "cd client && node_modules\\.bin\\eslint.cmd src",
       "fatal": false
+    },
+    {
+      "_comment": "🔍 A flotta review-eszkoze (`dc rev`, 87 aktiv szabaly). Owner-kerdes 2026-09-07: 'Rafut a CICD-ben az egyes reszekre?' — merve: NEM futott sehol. A CICD csak a relayt epiti, ezert a cli/server/client/browser-extension reviewja CSAK itt, az LDP-ben tud lefutni. ⚠️ Mind `fatal: false`: merve 2026-09-07 osszesen 2110 talalat (cli 1429 / server 364 / client 252 / relay 38 / ext 27) — egy blokkolo kapu ma minden LDP-kort megallitana. Futasido: reszenkent 10-15 s.",
+      "label": "dc-review-cli",
+      "command": "cd cli && dc rev",
+      "fatal": false
+    },
+    {
+      "label": "dc-review-server",
+      "command": "cd server && dc rev",
+      "fatal": false
+    },
+    {
+      "label": "dc-review-client",
+      "command": "cd client && dc rev",
+      "fatal": false
+    },
+    {
+      "label": "dc-review-relay",
+      "command": "cd relay && dc rev",
+      "fatal": false
+    },
+    {
+      "label": "dc-review-browser-extension",
+      "command": "cd browser-extension && dc rev",
+      "fatal": false
     }
   ]
 }

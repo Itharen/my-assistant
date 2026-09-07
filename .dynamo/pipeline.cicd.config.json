@@ -96,6 +96,17 @@
       }
     },
     {
+      "_comment": "🔍 A FLOTTA REVIEW-ESZKOZE (`dc rev`, 87 aktiv szabaly) — owner-kerdes 2026-09-07: 'Rafut a CICD-ben az egyes reszekre?'. Merve: NEM futott, sem itt, sem az LDP-ben. ⚠️ A `fatal: false` SZANDEKOS: a relayn 38 talalat van (merve 2026-09-07), es egy azonnal blokkolova tett kapu nem a kodot javitana, hanem a deployt allitana meg. Elobb a talalatokat visszuk le — a fatal-la tetel kulon owner-dontes.",
+      "label": "dc-review-relay",
+      "command": "cd relay && dc rev",
+      "fatal": false,
+      "discord": {
+        "emoji": "🔍",
+        "name": "Relay Review",
+        "group": "relay-build-test"
+      }
+    },
+    {
       "_comment": "🔴 EZ A LEPES TESZI LEHETOVE, HOGY A DOCKERFILE NE TELEPITSEN. A `.npmrc` letrehozasa globalis HARD RULE szerint TILOS (`core-no-npmrc`) — egy build-stage-ben irt /root/.npmrc a tokent egy image-retegbe sutne. Ezert a privat csomagokat a CI-HOSZT szedi le (ahol a jogosultsag amugy is el), itt metszunk prod-ra, es a kepbe mar csak a KESZ node_modules kerul. ⚠️ A metszes a tesztek UTAN all: elotte a dev-fuggosegek (jasmine, typescript) meg kellenek.",
       "label": "prune-prod",
       "command": "cd relay && pnpm prune --prod",

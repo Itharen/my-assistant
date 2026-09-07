@@ -1,10 +1,10 @@
-# scripts/action-log/hook.ps1
+﻿# scripts/action-log/hook.ps1
 #
 # Claude Code hook handler. Reads the hook payload (JSON) from stdin,
 # converts it to an action-log entry, and delegates the write to the
 # canonical CLI command:
 #
-#     node $projectRoot\cli\build\main.js action-log emit ...
+#     node $projectRoot\cli\bin\ma.js action-log emit ...
 #
 # Wired in .claude/settings.json for: SessionStart, UserPromptSubmit,
 # PostToolUse, Stop. The hook event name comes from the payload itself.
@@ -34,7 +34,7 @@ try {
     # Project root - the script lives at <root>\cli\scripts\action-log\hook.ps1
     # so we walk up THREE levels: action-log -> scripts -> cli -> <root>.
     $projectRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
-    $maMainJs = Join-Path $projectRoot 'cli\build\main.js'
+    $maMainJs = Join-Path $projectRoot 'cli\dist\cli\src\main.js'
 
     # Build kind + summary + optional ref/extra per event type
     $kind = $null
@@ -143,7 +143,7 @@ try {
     if ($sessionId) { $cliArgs += @('--session', $sessionId) }
     if ($extraJson) { $cliArgs += @('--extra', $extraJson) }
 
-    & node $maMainJs @cliArgs 1> $null
+    & node (Join-Path $projectRoot 'cli\bin\ma.js') @cliArgs 1> $null
     if ($LASTEXITCODE -ne 0) {
         [System.Console]::Error.WriteLine("[hook.ps1] MA-HOOK-EMIT-FAIL: exit=$LASTEXITCODE (kind=$kind, summary='$summary')")
     }

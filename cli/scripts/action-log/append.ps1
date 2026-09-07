@@ -1,8 +1,8 @@
-# scripts/action-log/append.ps1
+﻿# scripts/action-log/append.ps1
 #
 # Universal action-log appender. Delegates the write to the canonical CLI:
 #
-#     node $projectRoot\cli\build\main.js action-log emit ...
+#     node $projectRoot\cli\bin\ma.js action-log emit ...
 #
 # Usage (named params):
 #   pwsh scripts/action-log/append.ps1 `
@@ -49,7 +49,7 @@ if (-not $Actor -or -not $Kind -or -not $Summary) {
 # Project root - the script lives at <root>\cli\scripts\action-log\append.ps1
 # so we walk up THREE levels: action-log -> scripts -> cli -> <root>.
 $projectRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
-$maMainJs = Join-Path $projectRoot 'cli\build\main.js'
+$maMainJs = Join-Path $projectRoot 'cli\dist\cli\src\main.js'
 
 if (-not (Test-Path $maMainJs)) {
     [System.Console]::Error.WriteLine("[append.ps1] MA-APPEND-BUILD-MISSING: $maMainJs — run LDP or 'pnpm run build-base' in cli/")
@@ -69,5 +69,5 @@ if ($Ts)        { $cliArgs += @('--ts', $Ts) }
 
 # Delegate. Forward exit code, suppress stdout (envelope nem érdekel append-callert),
 # **átfolyik a stderr** hogy a logAction structured error látható legyen.
-& node $maMainJs @cliArgs 1> $null
+& node (Join-Path $projectRoot 'cli\bin\ma.js') @cliArgs 1> $null
 exit $LASTEXITCODE
