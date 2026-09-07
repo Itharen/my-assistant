@@ -187,6 +187,7 @@ const COMMAND_TREE: Record<string, Record<string, CommandHandler>> = {
     listen: (args: string[]) => runCommSubcommand('listen', args),
     say: (args: string[]) => runCommSubcommand('say', args),
     history: (args: string[]) => runCommSubcommand('history', args),
+    audit: (args: string[]) => runCommSubcommand('audit', args),
   },
   status: {
     digest: (args: string[]) => runStatusSubcommand('digest', args),

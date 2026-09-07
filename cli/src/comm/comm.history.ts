@@ -59,7 +59,7 @@ export async function readCommHistory(limit: number = 30): Promise<CommHistoryRe
   const paths = resolveDiscordBatchPaths();
   const entries: CommHistoryEntry[] = [];
 
-  for (const entry of await readJsonl(paths.archiveFile)) {
+  for (const entry of await readJsonlSafe(paths.archiveFile)) {
     const text: string = typeof entry['content'] === 'string' ? entry['content'] : '';
 
     entries.push({
@@ -70,7 +70,7 @@ export async function readCommHistory(limit: number = 30): Promise<CommHistoryRe
     });
   }
 
-  for (const entry of await readJsonl(paths.pendingFile)) {
+  for (const entry of await readJsonlSafe(paths.pendingFile)) {
     const text: string = typeof entry['content'] === 'string' ? entry['content'] : '';
 
     entries.push({
@@ -83,7 +83,7 @@ export async function readCommHistory(limit: number = 30): Promise<CommHistoryRe
 
   let outboundWithoutText: number = 0;
 
-  for (const entry of await readJsonl(resolveOutboundLogPath())) {
+  for (const entry of await readJsonlSafe(resolveOutboundLogPath())) {
     const text: unknown = entry['text'];
 
     if (typeof text !== 'string' || !text) outboundWithoutText += 1;
@@ -169,8 +169,8 @@ function formatClock(iso: string): string {
     + `${pad(parsed.getHours())}:${pad(parsed.getMinutes())}`;
 }
 
-/** JSONL beolvasás, ami sérült soron NEM áll meg. */
-async function readJsonl(path: string): Promise<Record<string, unknown>[]> {
+/** JSONL beolvasás, ami sérült soron NEM áll meg. A csatorna-ellenőrzés is ezt használja. */
+export async function readJsonlSafe(path: string): Promise<Record<string, unknown>[]> {
   if (!existsSync(path)) return [];
 
   try {

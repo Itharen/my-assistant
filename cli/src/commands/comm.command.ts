@@ -20,6 +20,7 @@ import { DiscordBridge } from '../discord/discord.bridge.js';
 import { DiscordListener } from '../discord/discord.listener.js';
 import { sendDiscordMessage } from '../discord/discord.sender.js';
 import { formatCommHistory, readCommHistory } from '../comm/comm.history.js';
+import { AUDIT_LIMIT, auditDiscordChannel, formatChannelAudit } from '../comm/comm.channel-audit.js';
 import { CcapError } from '../ccap/ccap.error.js';
 import { fail, makeRequestId, ok, writeEnvelope } from '../output/envelope.js';
 
@@ -147,6 +148,27 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
         process.stdout.write(`${formatCommHistory(report)}
 `);
       }
+
+      return;
+    }
+
+    if (subcommand === 'audit') {
+      const limitRaw: unknown = parsed.values['limit'];
+      const limit: number = typeof limitRaw === 'string' && Number.isFinite(Number(limitRaw))
+        ? Number(limitRaw)
+        : AUDIT_LIMIT;
+      const report = await auditDiscordChannel(limit);
+
+      if (asJson) {
+        writeEnvelope(ok(action, requestId, startedAt, report), pretty);
+      } else {
+        process.stdout.write(`${formatChannelAudit(report)}
+`);
+      }
+
+      // ⛔ Nem-nulla kilepesi kod, ha HIANY van VAGY ha nem tudtuk megnezni — mindketto
+      // figyelmet erdemel, es a script csak igy veszi eszre.
+      if (!report.ok || report.missing.length > 0) process.exitCode = 1;
 
       return;
     }

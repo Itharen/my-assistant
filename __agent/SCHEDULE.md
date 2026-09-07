@@ -10,7 +10,7 @@
 
 ## 📋 A JAVASLAT — másold ki
 
-### 1️⃣ Fő ütemezés — **60 percenként**
+### 1️⃣ Fő ütemezés — **20 percenként** *(owner állította, 2026-09-07)*
 
 **Üzenet (ez a kanonikus szöveg):**
 
@@ -42,7 +42,7 @@ amit karban kellene tartani — és a napindítás **akkor** fut, amikor tényle
 
 ---
 
-## Miért 60 perc — és miért NEM sűrűbb
+## ⛔ ELAVULT SZAKASZ-CÍM: „Miért 60 perc" — az ütemezés MOST **20 perc**
 
 | Érv | Mérés / indok |
 |---|---|
@@ -51,7 +51,18 @@ amit karban kellene tartani — és a napindítás **akkor** fut, amikor tényle
 | Egy trigger = egy teljes futás | *(a te szavaddal: „minden egyes prompt egy hosszabb futást eredményez")* — a sűrűbb ütemezés nem ad több információt, csak több futást éget |
 | Az esemény-riasztás pontossága | 60 perc **elég** a készülődés-kezdéshez, mert azt **órákkal előre** ki tudom számolni — nem a tick pillanatában derül ki |
 
-⛔ **Sűrűbbre (15–30 perc) NE állítsd**, amíg nincs olyan képesség, ami ezt indokolja.
+> ⛔ **KORÁBBAN ITT AZ ÁLLT:** *„Sűrűbbre (15–30 perc) NE állítsd, amíg nincs olyan
+> képesség, ami ezt indokolja."* — **ELAVULT.** Az owner 2026-09-07-én **60 → 30 → 20 percre**
+> vitte le, a saját döntése alapján.
+>
+> ⭐ **És közben lett is az az „olyan képesség", ami indokolja:** a **Discord-visszaolvasás**
+> *(`ma comm history` + `ma comm audit`)*. Amíg a kézbesítés nem megbízható, **a kör MAGA a
+> biztonsági háló** — minél sűrűbb, annál rövidebb ideig marad észrevétlen egy elakadt üzenet.
+> Owner: *„vissza kéne olvasd a discord üzeneteket időnként amíg nem százas az eszközünk"*.
+>
+> ⚠️ **Ami emiatt mérendő:** sűrűbb kör = több futás = több terhelés azon a gépen, ahol a RAM
+> már ma is szűkös *(93%-nál az FDP AI várakozik)*. Ha ez gondot okoz, az **mérhető** lesz —
+> nem tippelni kell rá.
 Az éjszakai órák amúgy is csendesek: a tick **gyűjt, nem értesít** *(kivéve a valóban nem
 halasztható dolgot — `Q-2026-09-06-07`)*.
 

@@ -118,7 +118,7 @@ KEZDETÉN megy ki**, nem induláskor (`current/inventory/personal-items.md`).
 | **0** | 🔴 **FUT-E AZ LDP?** — MINDEN trigger legelső lépése | `ma comm doctor` **első sora**. ⚠️ Ha nem fut: **alatta SEMMI nem fut** (szerver, figyelők, csatorna) ⇒ `dc ldp`, és csak utána bármi más |
 | 1 | **Mennyi az idő, milyen nap?** ⏰ **ÉS MINDEN további időpont-állítás előtt ÚJRA** | `date "+%Y-%m-%d %H:%M %A"` — ⛔ tilos korábbi mérésből extrapolálni (`time-must-be-measured.md`) |
 | 2 | **Itthon van? Ébren van?** | `ma comm doctor` (jelenlét + ébrenlét sor) |
-| 3 | **Írt valamit?** | `__agent/USER_INPUT.md` `[NEW]` · Discord-köteg |
+| 3 | 🔴 **ÍRT VALAMIT? — KÉT LÉPÉS, mindkettő kötelező** | **(a)** `ma comm history` — a saját tárunk *(🔴 = megérkezett a Discordra, de HOZZÁM MÉG NEM)* · **(b)** `ma comm audit` — **magát a Discord-csatornát** kérdezi le, és összeveti. Nem-nulla kilépési kód = van hiány VAGY nem tudtuk megnézni |
 | 4 | **Tartozom válasszal?** | `ma comm doctor` válasz-kötelezettség sora |
 | 5 | **Félbehagytam valamit?** | `__agent/STATUS.md` · `__agent/CONTINUATION.md` |
 | 6 | **Mi esedékes?** | `ma status digest` (organizer + lokál, hiteles kivonat) |
@@ -134,6 +134,22 @@ KEZDETÉN megy ki**, nem induláskor (`current/inventory/personal-items.md`).
 > ⚠️ A `status.json` **megléte nem bizonyíték** — a fájl a lemezen marad akkor is, ha a
 > folyamat rég meghalt. A `comm doctor` ezért a benne lévő **PID-et is megnézi**.
 > *(Ugyanaz a hibaosztály, ami a jelenlét-figyelőt 112 napig halottan tartotta.)*
+
+> 🔴 **A DISCORD-VISSZAOLVASÁS OWNER-SZABÁLY (2026-09-07):** *„vissza kéne olvasd a discord
+> üzeneteket időnként amíg nem százas az eszközünk ami neked küldi."*
+>
+> ⭐ **MIÉRT KÉT LÉPÉS, és miért nem elég az (a):** a saját nyilvántartásunk visszaolvasása
+> **nem bizonyít semmit**, ha maga a rögzítés hibás. Ha a figyelő állt, vagy a szűrő
+> félredobott, akkor a mi tárunkban **ugyanaz a hiány** lesz, mint a valóságban — csak épp
+> nem tűnik fel. Az egyetlen **független** forrás a csatorna: ezt kérdezi a **(b)**.
+>
+> ⚠️ **A „nem találtam hiányt" és a „nem tudtam megnézni" NEM ugyanaz.** A `comm audit`
+> mindkettőt megkülönbözteti, és mindkettőnél nem-nulla kilépési kódot ad.
+>
+> ⏸️ **Meddig kell csinálni:** amíg a kézbesítés nem megbízható. **Mérve 2026-09-07:** a
+> *rögzítés* rendben volt *(36/36 owner-üzenet megvolt)* — a hiba a **kézbesítésnél** volt
+> *(foglalt sessionbe küldött köteg a CCAP sorába állt)*. A visszaolvasás tehát nem
+> paranoia: pontosan azt a rést fedi le, ami MÉRHETŐEN létezett.
 
 ⚠️ **Az interakciók között eltelhet 1-2 nap.** Ne feltételezd, hogy folyamatos a session —
 a 1. lépés ezért nem formalitás.
