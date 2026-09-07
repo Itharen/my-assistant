@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 16:28
+**Utoljára frissítve:** 2026-09-07 16:43
 
 ---
 
@@ -72,8 +72,9 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 | # | Ki | Feladat | Hol tart | Következő lépés |
 |---|---|---|---|---|
 | T-43 | 🤝 | 📍 **Saját mobil-app a helyzet-küldéshez** *(OwnTracks helyett)* | owner 15:03: *„Jobban preferálom a saját fejlesztéseket... mobil app fejlesztési patternjeink is vannak"* — ⚠️ ő maga sorolta fel az árát: telepítés, auto-update, location sharing | **L1/L2 owner-döntés** nyitva: OwnTracks most + saját app később, vagy egyből saját? ⭐ A relay **kész**, és a szerződése azonos marad, akárki küld rá |
-| T-44 | 🤝 | 📅 **AI Summit nap 2 terve** | owner 14:44 átadta a nap 1 eredményét egy másik sessionből | ⏸️ **a 8-i részletes program NINCS publikálva** (3 forrás). Ami publikált (AI Trends), az **egy Expert tétel kivételével** mind alacsony prioritás ⇒ a reggeli kimaradás igazolt. A besorolási kritériumok készen állnak: `current/events/2026-09-07-ai-summit-budapest.md` |
+| T-44 | 🤝 | 📅 **AI Summit nap 2 terve** | owner 14:44 átadta a nap 1 eredményét egy másik sessionből | ⭐ **AZ OWNER LETÖLTÖTTE** (16:13) — a beküldési út most készült el (Discord-csatolmány VAGY `__agent/inbox/`). ⏸️ A 8-i program magától **nincs publikálva** (3 forrás mérve). Ami publikált (AI Trends), az **egy Expert tétel kivételével** mind alacsony prioritás ⇒ a reggeli kimaradás igazolt. A besorolási kritériumok készen állnak: `current/events/2026-09-07-ai-summit-budapest.md` |
 | T-45 | 🤖 | 🔍 **A review-eszköz (`dc rev`) bekötve — a találatok levitele** | **Bekötve ma**: CI/CD 12→13 lépés (`dc-review-relay`), LDP 17→22 (cli/server/client/relay/ext), mind `fatal: false`. ⚠️ **Eddig SEHOL nem futott.** Mérve: **2110 találat** (cli 1429 / server 364 / client 252 / relay 38 / ext 27), ~56 s. Mérés: `__documentations/developments/2026-09-07-review-tool-cicd-wiring.md` | a **relay 38** találatával kezdeni *(ez a legkisebb, és ez fut a CI/CD-ben)*. ⛔ Az átemelt CCAP-kód 280 találata **nem munkalista** (`transplant-not-rewrite`). A `fatal: true`-vá tétel **külön owner-döntés** |
+| T-46 | 🤖 | 📥 **Discord-csatolmány fogadása** | **Megépítve**, 503/503 — `cli/src/discord/discord.file-intake.ts`. Eddig a fájl **némán elveszett** (szöveg nélkül elutasítva, szöveggel leesett az üzenetről). Most `__agent/inbox/`-ba mentődik | ⚠️ **élő próbára vár**: az owner holnapi summit-programja lesz az első valódi csatolmány. Addig NEM ✅ |
 | T-41 | 🤖 | **Agent a támogatásokra / pályázatokra / sales-lehetőségekre** | owner 2026-09-07 13:30: *„van egy csomó támogatás meg pályázat meg sales lehetőség amire rá kéne állítani egy agent-et"* — ⚠️ illeszkedik az **MVP = pénzkeresés** fókuszhoz | felderítés: milyen forrásokat figyeljen, és mi a kimenet |
 | T-22 | 🤖 | 🔴 **Voice control ÁTEMELÉSE a régi CCAP-ból** *(nagy)* — **ELŐREVÉVE** | **4,5/5 szakasz**: 70 fájl bent · illesztő bekötve · **köteg-bekötés + kétirányú tükör KÉSZ** (490/490). Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md` | **belépés a hang-csatornába** (`1489036734632034496`) + **élő próba**. ⚠️ Ehhez a bot hang-jogosultsága és a felvevő oldal indítása kell |
 | T-10 | 🤖 | 🔴 **Sikertelen STT újrapróbálása** | **megépítve**, 474/474 teszt — `cli/src/stt/stt.retry-queue.ts` | ⚠️ **élő próbára vár**: a következő sikertelen felismerésnél derül ki. Addig NEM ✅ |

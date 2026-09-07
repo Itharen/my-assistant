@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 15:51
+**Utoljára frissítve:** 2026-09-07 16:45
 
 ---
 
@@ -809,6 +809,45 @@ próba-fájl**, ami leleplezte a saját, túl durva diagnózisomat —
 
 ⭐ **És nem blokkol:** a `tsc` hiba mellett is **emittál** *(`noEmitOnError` nincs)*, a minta
 pedig futásidőben **igazolt** *(10/10 bájt megérkezett)*.
+
+
+---
+
+## ✅ 2026-09-07 16:03–16:45 — REVIEW-BEKÖTÉS + KÉT NÉMA HIBA
+
+### 🔍 Owner-kérdés: *„A review eszközünk… Ráfut a CICD-ben az egyes részekre?"*
+
+**A válasz: NEM futott — sem a CI/CD-ben, sem az LDP-ben.** `grep -ril review .dynamo/` → 0.
+Két külön hiány: (1) a review-lépés hiányzott a konfigból; (2) a CI/CD **hatóköre eleve csak a
+relay** (owner-utasítás), tehát a cli/server/client ott meg sem jelenik.
+
+**Bekötve:** CI/CD 12 → **13** lépés (`dc-review-relay`), LDP 17 → **22** (cli · server · client ·
+relay · browser-extension). Mind `fatal: false`.
+
+**Mérve ma:** **2110 találat** — cli 1429 *(ebből 280 az ÁTEMELT CCAP-kód → ⛔ nem munkalista)*,
+server 364, client 252, relay 38, extension 27. Részenként 10–15 s.
+🙋 **Owner-döntés nyitva:** mikor legyen `fatal: true`, és melyik részen. *(Javaslat: előbb a
+relay 38-a, az fut a CI/CD-ben.)*
+
+### 🔴 Mellékfogás, ami súlyosabb — az action-log hookok 10 napja nem írtak
+
+**2026-08-28 … 09-06: NULLA** automatikus bejegyzés, közben 400–600 sor/nap kézi.
+Két ok: **(1)** BOM nélküli `.ps1` + em dash → a **Windows PowerShell 5.1** *(a hook `powershell`-lel
+indul, nem `pwsh`-sal)* ANSI-ként dekódolta, az okos idézőjel lezárta a stringet, a szkript **nem
+parse-olódott**; **(2)** elavult belépési pont (`cli/build/main.js` → `cli/dist/cli/src/main.js`).
+
+⚠️ **A hook `exit 0`-val tér vissza minden ágon** — ezért semmi nem jelezte. 📌 *Egy naplózó réteg
+nem tudja magáról jelenteni, hogy nem fut: a hiányát a KIMENETÉN kell mérni.*
+
+### 📥 Owner: *„letöltöttem a holnapi programot. Hova tegyem?"* — nem volt hova
+
+A kérdés leplezte le: fájl **szöveg nélkül** → a szűrő elutasította; fájl **szöveggel** → a fájl
+**leesett** az üzenetről. Megépítve: `discord.file-intake.ts` → `__agent/inbox/`, a mentés helye
+az üzenet szövegébe fűzve. **503/503 zöld.** ⚠️ **Élő csatolmánnyal még nem futott** — a holnapi
+program lesz az első próba.
+
+⇒ **Ez oldja fel a T-44-et** (summit nap 2 terve): a program beküldési útja most készült el.
+
 
 ### A következő konkrét lépés
 
