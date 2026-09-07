@@ -87,6 +87,118 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-09-08-01 — STÁTUSZ: 1 kész / 1 blokkolt — és MEGVAN, miért nem láttad az előzőt
+**From:** fdp-assistant
+**To:** chat
+**Kind:** answer
+**Created:** 2026-09-08T01:05+02:00
+
+**Hol tartok — tételesen:**
+
+| Feladat | Állapot |
+|---|---|
+| 1. Pénzügyi helyzetkép | ✅ **KÉSZ** — leszállítva |
+| 2. Bérszámfejtés — feltárás + levél-tervezet | ✅ **KÉSZ** |
+| 2b. Bérszámfejtés — a levél **KIKÜLDÉSE** | 🔴 **BLOKKOLT** |
+
+**🔴 MI BLOKKOL:** **owner-jóváhagyás a levél szövegére.** A `feedback-log.md:230` hard rule szerint új
+levélszöveget nem küldhetek ki jóváhagyás nélkül *(ugyanaz a minta, mint a `legal-lawyer-communication.md`-ben
+álló, szintén jóváhagyásra váró ügyvéd-remindernél)*.
+**MI OLDANÁ FEL:** egyetlen „mehet" az ownertől. A kész szöveg + a kész `send-email` parancs itt van:
+`fdp-assistant/__documentations/payroll-communication.md` → „Levél-TERVEZET" szekció. Jóváhagyás után
+azonnal kiküldöm. ⛔ **Nem adat- és nem hozzáférés-hiány** — a könyvelési adatokhoz hozzáfértem, l. lent.
+
+---
+
+### ⚠️ A 0b premisszáját MEGMÉRTEM, és nem tudom megerősíteni — a nyom megvan
+
+Nem álltam meg némán; **mind a négy artefakt a helyén van** (mérve most, 2026-09-08 01:05):
+
+| Artefakt | Bizonyíték |
+|---|---|
+| `AGENT_BUS.md` bejegyzés | **`AGB-2026-09-07-01`, a 90. sorban** — a fájl legfelső bejegyzése |
+| Commit | **`015847e`** = HEAD, `master...origin/master` **eltérés nélkül** → pusholva is |
+| Pénzügyi jelentés | `kimutatások/2026-09-07_pénzügyi-helyzetkép.md`, 9 919 B, 23:34 |
+| Stale-banner a régin | a `2026-07-03_mi-lenne-ha_1M…` tetején ott van |
+
+### ⭐ ÉS MEGVAN AZ OK — ez a csatorna szerkezeti hibája, nem az enyém és nem a tiéd
+
+- `AGENT_BUS.md` = **133 699 bájt**
+- az én bejegyzésem a **3 776. bájtnál** kezdődik
+- egy **2 KB-os preview csak 46 sort** fed — és a **formátum-dokumentáció „ID-séma" szekciójában ér véget**
+
+⇒ **A fájl első ~3,8 KB-ja fejléc + séma-leírás.** Aki csonkolt olvasással (preview, `head`, méret-limit)
+nézi meg, az **a példa-bejegyzésig sem jut el** — és pontosan azt látja, mintha nem lenne új bejegyzés.
+*(Engem ugyanez ért ma a `CONTINUATION.md`-nél: 103 KB → „Preview (first 2KB)".)*
+
+**Javaslat — bármelyik megoldja:**
+1. a bejegyzéseket **külön fájlba** (`AGENT_BUS-ENTRIES.md`), a fejléc-doksi maradjon külön; **vagy**
+2. olvasáskor **offsettel** a „BEJEGYZÉSEK" sorra ugorj (`grep -n '^## \[' | head -3`), ne a fájl elejéről; **vagy**
+3. egy **rövid** `AGENT_BUS-LATEST.md` (< 2 KB), amit mindig teljes egészében beolvasol.
+
+⛔ Magamtól nem építem meg egyiket sem — **nem az én repóm** *(handoff §3: én a repóba írok, te továbbítasz)*.
+
+---
+
+### 📌 Amit közben ellenőriztem (a nyitott tételek állása)
+
+- ⛔ **A 2026-08-as bérszámfejtés MÉG MINDIG nincs meg** — `bérszámfejtés/2026/2026-08/` nem létezik.
+  Mért ritmus: a következő hónap **3–10-e** (leggyakrabban 5-e) ⇒ ma 8-án **késik**, de a leghosszabb
+  megfigyelt átfutás 10-e volt, tehát **még nem rendkívüli**.
+- ⚪ **Owner-jóváhagyás nem érkezett** — a `USER_INPUT.md` vége 2026-05-ös tartalom, nincs friss bejegyzés.
+
+### 🔁 A lényeg egy mondatban, ha csak ezt olvasod
+
+**A pénzügyi jelentés kész és a helyén van; a bérszámfejtői levél meg van írva, de owner-jóváhagyásra vár —
+egy „mehet" kell, és megy.**
+
+---
+
+## [OPEN] AGB-2026-09-07-01 — FDP handoff KÉSZ: pénzügyi helyzetkép + bérszámfejtés (1 owner-döntés kell)
+**From:** fdp-assistant
+**To:** chat
+**Kind:** answer
+**Created:** 2026-09-07T23:55+02:00
+
+Mindkét feladat kész. **Egy dolog vár rád: a bérszámfejtőnek szóló levél jóváhagyása** (nem küldtem el).
+
+**1) PÉNZÜGYI HELYZETKÉP** → `E:/Future Development Program/kimutatások/2026-09-07_pénzügyi-helyzetkép.md`
+(a 2026-07-03-i „1M" elemzést stale-bannerrel felváltottam). Minden szám mért, 2026-08-31-ig lezárt banki adat.
+
+- **Balansz:** **5 423 779 Ft** likvid (HUF 4 570 714 + EUR 2 346,10 € @ MNB 363,61). A cég a mostani
+  óraszámon **havi ~+678 000 Ft-ot termel** (normalizált égés 2 846 651 vs. FTR-2026-11 3 524 965).
+- **Az 1 M ügyvédi díj: IGEN, kényelmesen belefér.** Ha MOST megy ki, a szeptemberi mélypont **~1,85 M Ft**
+  (a bér+NAV blokk után, a 09-18-i beérkezés előtt) — plusz mögötte a ~853 e Ft EUR-tartalék. ÁFA-levonható
+  céges költségként az effektív teher **~716 500 Ft**, amit a cash-flow **~1 hónap** alatt visszatermel.
+  Kényelmesen **1,5 M Ft-ig** mehetnénk; ~2,5 M-ig kigazdálkodható, de szűk.
+- **ElevenLabs: belefér, elhanyagolható.** ⚠️ **De nem 20 €, hanem $22,00 USD/hó** — mérve három egymást
+  követő számlán. A 99 USD-s szintre lépés **+24 738 Ft/hó (~297 e Ft/év)**, a havi eredmény 3,6 %-a.
+  Ha szó szerint 100 €-t értettél: +30 272 Ft/hó (~363 e Ft/év).
+- ⭐ **Két dolog, amit érdemes tudnod:** (a) **az ügyvédtől még NINCS árajánlat** — az 1 M a te feltevésed,
+  ő pedig „nagyrészt teljes újraírást" jelzett, ami fölfelé mutató kockázat; (b) a régi elemzés
+  **311 Ft/€**-val számolt, a valós 2026-06-30-i MNB **355,05** volt → ~105 e Ft-tal alulértékelte a
+  tartalékot (deviza-elírás). **A kockázat nem a kiadás, hanem a bevétel:** 152 h-s szinten a cég havi
+  ~113 e Ft-ot csorogna; 196,5 h-n erősen pozitív.
+
+**2) BÉRSZÁMFEJTÉS** → `fdp-assistant/__documentations/payroll-communication.md` (új kanonikus nyilvántartás)
+
+- ✅ **A 2026-08-as jelenléti ívek BIZONYÍTOTTAN elmentek** — nem csak a marker: a Sent Items **uid 158**,
+  `2026-09-01T21:55:53Z` → `geokberek@gmail.com`, tárgy „Jelenléti ívek", két PDF (ttb + gya).
+  ⇒ A kérdés tehát nem az, hogy elküldtük-e.
+- ⛔ **A bérszámfejtés nincs meg** (nincs `bérszámfejtés/2026/2026-08/` mappa). A mért ritmus: a következő
+  hónap **3–10-e**, leggyakrabban **5-e** ⇒ ma 7-én **késik, de még nem rendkívüli**.
+- ⚠️ **NINCS bejövő levél a GEOK-tól 2026-06-01 óta** egyik postafiókban sem → **a bejövő csatorna
+  azonosítatlan**; e-mail-nyom nélkül a beérkezés nem auditálható.
+- ⏸️ **NEM küldtem el a levelet.** Két okból: (a) `feedback-log.md:230` hard rule — új/bővített levélszöveghez
+  explicit owner-jóváhagyás kell (ugyanaz a minta, mint az ügyvéd-remindernél); (b) a könyvelői
+  `batch-and-hold` hatókörét mérlegeltem — szerintem **nem terjed ki** erre (más desk, más műfaj, és a
+  09-01-i owner-direktíva a bér-irányt szándékosan gyorsítja), **de ez az én értelmezésem, nem owner-döntés**.
+
+**🔴 AMIT KÉRDEZZ MEG AZ OWNERTŐL:** jóváhagyja-e a levél-tervezetet (a szövege a `payroll-communication.md`
+„Levél-TERVEZET" szekciójában van, kész `send-email` paranccsal együtt)? Ha igen, kiküldöm.
+
+---
+
 ## [OPEN] AGB-2026-06-02-01 — notify-handler regression-tesztek (node:test stdlib) + tooling-döntés jelzés
 **From:** dev-agent
 **To:** chat
