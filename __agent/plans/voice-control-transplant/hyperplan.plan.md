@@ -11,15 +11,15 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 13:29
+## 📊 STATUS — 2026-09-07 13:52
 
 | | |
 |---|---|
-| **Fázis** | 🟠 **1. szakasz KÉSZ** — a levél-fájlok bent vannak |
-| **Haladás** | 1/5 szakasz |
+| **Fázis** | 🟠 **1–2. szakasz KÉSZ** — a levél-fájlok bent, a hang-lánc IGAZOLTAN működik |
+| **Haladás** | 2/5 szakasz |
 | **Teszt** | CLI 477/477 zöld; a fő build **érintetlen** *(az átemelt kód kizárva)* |
-| **Következő lépés** | 2. szakasz: `@futdevpro/fsm-dynamo` + a hang-függőségek telepítése |
-| **Blokkoló** | nincs — de **V-3** *(kell-e most a `voice-output`)* ~2 600 sorral szűkíthetné |
+| **Következő lépés** | 3. szakasz: a CCAP-csatolás leszakítása *(6 hivatkozás)* — ez a legnehezebb |
+| **Blokkoló** | nincs. ✅ V-1…V-3 megválaszolva |
 
 ### Az 1. szakasz igazolása — mért, nem állított
 
@@ -30,6 +30,29 @@
 | Változatlan | **a maradék 17 fájl teljesen**, és a 4 érintettben **minden más sor** |
 | Szigor-hibák | 33 → **0**, a modul saját, lazább `tsconfig.json`-jával — ⛔ **kód-változtatás nélkül** |
 | Maradék hiba | 4 db `Cannot find module '@futdevpro/fsm-dynamo'` → **2. szakasz** |
+
+### A 2. szakasz igazolása — a legnagyobb kockázat MÉRVE elhárult
+
+⚠️ **Amitől tartani lehetett:** a régi bot **négy** opus-implementációt vitt, mind **natív**
+modul — Windowson ez a leggyakoribb bukási pont *(node-gyp, MSVC build-lánc)*.
+
+⭐ **Amit a mérés mutatott:** a kód **egyetlen opus-csomagot sem importál közvetlenül** — azok
+a `@discordjs/voice` futásidejű választásai. ⇒ Elég **EGY, TISZTA JS** implementáció.
+
+**Telepítve:** `@discordjs/voice` 0.19.2 · `prism-media` 1.3.5 · `wav` 1.0.2 ·
+`formdata-node` 6.0.3 · `opusscript` 0.1.1 · `@noble/ciphers` 2.4.0
+
+**Élő próba — nem puszta betöltés-ellenőrzés, hanem VALÓDI hang-kör:**
+
+```
+opus:  3840 B PCM  ->  486 B opus  ->  3840 B PCM     OK (oda-vissza)
+@noble/ciphers (xchacha20poly1305)                    OK
+@discordjs/voice  (joinVoiceChannel)                  OK
+prism opus.Decoder  /  wav.Writer                     OK
+```
+
+🔴 **NINCS natív fordítás.** Ez nem kényelmi kérdés: egy natív lánc a telepítést **és** a
+jövőbeli Node-frissítéseket is törékennyé tenné — pont azon a gépen, ahol az egész fut.
 
 ---
 
@@ -53,7 +76,7 @@
 |---|---|---|
 | `@futdevpro/fsm-dynamo` / `nts-dynamo` | 29 | ✅ **megvan** a my-assistantban |
 | `discord.js` | 5 | ✅ megvan (`^14.27.0`) |
-| `@discordjs/voice`, `prism-media`, `wav`, `formdata-node`, opus-kódolók | — | 🔴 **HIÁNYZIK** — telepítendő |
+| `@discordjs/voice`, `prism-media`, `wav`, `formdata-node`, opus-kódoló | — | ✅ **TELEPÍTVE és élő próbán igazolva** *(2. szakasz)* |
 | `_collections/consts/settings.const` | 9 | illesztés: my-assistant konfiguráció |
 | `_collections/consts/env-keys.const` | 4 | illesztés: `.env` kulcsnevek |
 | `_services/ccap.master-service` + `ccap.control-service` + `ccap.service-base` | 6 | 🔴 **a legnehezebb pont** — a CCAP magjához köt |
@@ -172,15 +195,26 @@ Discord-kötegbe.
 
 ---
 
-## 3. AMI NYITOTT — owner-döntést igényel
+## 3. ✅ MEGVÁLASZOLVA — owner, 2026-09-07 13:43
 
-| # | Kérdés | Miért számít |
+> *„A voice-hoz: server: 1467012131378434151 channel: 1489036734632034496 mindig ülj bent
+> amikor megy a my assistant. Jó lenne a beszédes rész is beemelni de másik voice id val kell
+> majd menj és ha hazaértem tudok elevenlabs kulcsot adni."*
+
+| # | Kérdés | Válasz |
 |---|---|---|
-| V-1 | **Melyik hang-csatorna** legyen a Honnie „füle"? | belépési pont kell |
-| V-2 | **Mindig bent üljön**, vagy hívásra csatlakozzon? | a folyamatos jelenlét sávszélességet és CPU-t eszik |
-| V-3 | A `voice-output` (beszéd **kifelé**) is kell most, vagy előbb csak a **hallás**? | ez ~2 600 sorral csökkentheti az első szállítmányt |
+| V-1 | melyik hang-csatorna | **szerver** `1467012131378434151` · **csatorna** `1489036734632034496` |
+| V-2 | mindig bent üljön? | ✅ **igen**, amíg a my-assistant fut |
+| V-3 | kell-e a `voice-output` | ✅ **IGEN** ⇒ 🔴 **a szállítmány NEM szűkíthető: a teljes 11 251 sor** |
 
-⚠️ **Egyik sem blokkolja az 1–2. szakaszt** — azok a válaszoktól függetlenül elvégezhetők.
+**Ami ebből ÚJ követelmény:**
+- 🔑 **Külön voice id** a kimenő beszédhez — *„másik voice id val kell majd menj"*
+- 🙋 **ElevenLabs-kulcs**: az owner adja, ha hazaért. ⛔ Én **nem javasoltam** fizetőst
+  *(`no-paid-solutions`)* — ez **owner-döntés**, és csak a **kimenő beszédet** érinti.
+  A **felismerés** marad a helyi FDP AI-n, kulcs nélkül.
+- ⚠️ **A „mindig bent ülök" mérendő terhelés:** folyamatos hang-csatorna-kapcsolat CPU-t és
+  sávszélességet eszik, a RAM pedig már ma is szűkös *(mérve: 93%-nál az FDP AI várakozik)*.
+  Az 5. szakasz élő próbájánál ezt **meg kell mérni**, nem feltételezni.
 
 ---
 
