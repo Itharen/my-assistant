@@ -4,6 +4,47 @@
 
 ---
 
+## Atveteli nyugta: „megvan, dolgozom" — 2026-09-07
+
+> **Owner:** *„Nah most csak nem jelez a discord »typing« (lejart) vagy nem jutotttak el ezek
+> az uzenetek hozzad?"*
+
+### A meres, ami a valaszt adta — es a hianyt is megmutatta
+
+A koteg **URES** volt, az utolso harom uzenet **kezbesitve 10:10-kor**. Vagyis **minden
+megerkezett**. Az ownernek megis **meg kellett kerdeznie** — a rendszer mukodott, a
+**visszajelzese** nem.
+
+**Ket oka volt:**
+1. a „gepel…" jelzes **15 perc utan lejar** (biztonsagi szelep) — utana nema a csatorna;
+2. a koteg **percekig-tizpercekig var**, amig a session dolgozik, es addig **SEMMI** nem
+   mondta meg, hogy az uzenetek egyaltalan megerkeztek.
+
+### A nyugta
+
+- 90 mp varakozas utan **egy rovid sor**: `📥 Megvan mind a 3 uzeneted — epp dolgozom…`
+- ⛔ **Hataridot nem iger** — azt az egy dolgot mondja meg, ami hianyzott: hogy MEGERKEZETT.
+- ⛔ **Kotegenkent legfeljebb egyszer** (a kor 15 mp-enkent fut; ismetles nelkul spam lenne).
+
+### 🔴 A finomsag, ami konnyen elromlott volna
+
+A nyugta **kimeno uzenet**, de **NEM valasz**. Ha ugyanugy szamitana, **letorolne a
+valasz-kotelezettseget** — vagyis pont az az ellenorzes vakulna meg, ami azt fogja meg, hogy
+csak a sessionben valaszoltam. Ezert a kimeno naplo mostantol `kind`-ot is rogzit
+(`reply` / `ack`), es a kotelezettseg-ellenorzes az `ack`-eket **kihagyja**.
+*(A regi, `kind` nelkuli bejegyzesek valasznak szamitanak — ez a helyes visszamenoleges
+ertelmezes, es teszt is orzi.)*
+
+### Es egy, amit a review fogott meg
+
+A jelolo eloszor **memoriaban** volt. De a figyelot a szerver felugyeli, a szerver pedig
+**minden LDP-korben ujraindul** — a jelolo elveszett volna, es a meg mindig varo kotegre
+**ujabb nyugta** ment volna ki, fejlesztes kozben akar percenkent. Ezert **fajlban** van.
+
+Teszt: CLI **447/447** (15 uj).
+
+---
+
 ## A tavvezerles mar nem hazudik jelenletet — 2026-09-07
 
 > **Owner:** *„Oh.... Most jovok ra h lehet megzavartam a jelenlet figyelest tavvezerlessel...

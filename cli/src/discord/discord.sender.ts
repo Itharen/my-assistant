@@ -10,7 +10,7 @@
 import { Client, GatewayIntentBits, type TextBasedChannel } from 'discord.js';
 
 import { verifyDelivery, type DeliveredMessage } from './discord.delivery-check.js';
-import { recordOutbound } from './discord.reply-tracker.js';
+import { recordOutbound, type OutboundKind } from './discord.reply-tracker.js';
 
 /** A Discord üzenet-hossz korlátja. E fölött darabolunk. */
 const DISCORD_MAX_MESSAGE_CHARS: number = 2000;
@@ -39,7 +39,15 @@ export interface DiscordSendResult {
  * 🔴 Hiba esetén NEM dob kivételt, hanem leíró eredményt ad — a hívónak (és az ownernek)
  * az a hasznos, hogy MI hiányzik, nem egy verem-nyom.
  */
-export async function sendDiscordMessage(text: string): Promise<DiscordSendResult> {
+export async function sendDiscordMessage(
+  text: string,
+  /**
+   * `reply` (alap) = valodi valasz · `ack` = atveteli nyugta.
+   *
+   * ⛔ A nyugta NEM torli a valasz-kotelezettseget — lasd `OutboundKind`.
+   */
+  kind: OutboundKind = 'reply',
+): Promise<DiscordSendResult> {
   const token: string = (process.env['MA_DISCORD_BOT_TOKEN'] ?? '').trim();
   const channelId: string = (process.env['MA_DISCORD_CHANNEL_ID'] ?? '').trim();
   const trimmed: string = text.trim();
@@ -80,8 +88,9 @@ export async function sendDiscordMessage(text: string): Promise<DiscordSendResul
       await (channel as TextBasedChannel & { send: (content: string) => Promise<unknown> }).send(part);
     }
 
-    // G-1: a valasz-kotelezettseg kovetesehez rogzitjuk, hogy valaszoltunk.
-    await recordOutbound();
+    // G-1: a valasz-kotelezettseg kovetesehez rogzitjuk a kimeno uzenetet.
+    // A `kind` donti el, hogy ez VALASZNAK szamit-e, vagy csak nyugta volt.
+    await recordOutbound(new Date().toISOString(), kind);
 
     // ⭐ KÜLDÉS UTÁNI VISSZAOLVASÁS (owner-javaslat, 2026-09-07). A `send()` visszatérése
     // csak azt mondja meg, hogy ELINDULT — azt nem, hogy TELJES EGÉSZÉBEN megérkezett.

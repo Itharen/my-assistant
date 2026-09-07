@@ -338,6 +338,27 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
   RAM mellett 5 perc alatt sem futott le; közvetlenül utána ugyanaz a fájl **77,6 mp**.
   Owner: *„90% usage felett várakozik"*.
 
+### Atveteli nyugta — „megvan, dolgozom" (`discord.receipt.ts`)
+
+> **Owner (2026-09-07):** *„Nah most csak nem jelez a discord »typing« (lejart) vagy nem
+> jutotttak el ezek az uzenetek hozzad?"*
+
+- 🔴 **A mert helyzet:** az uzenetei **hianytalanul megerkeztek** (a koteg ures volt, a
+  kezbesites megtortent) — megis meg kellett kerdeznie. A rendszer mukodott, a
+  **visszajelzese** nem.
+- **Ket oka volt:** a „gepel…" jelzes **15 perc utan lejar**; a koteg viszont ennel tovabb is
+  varhat, es addig **SEMMI** nem mondta meg, hogy az uzenetek megvannak.
+- **A nyugta:** 90 mp varakozas utan **EGY rovid sor** — `📥 Megvan mind a 3 uzeneted — epp
+  dolgozom…`. ⛔ Hataridot NEM iger.
+- 🔴 **A nyugta NEM valasz.** A kimeno naploban `kind: 'ack'`, es a valasz-kotelezettseg
+  ellenorzese **kihagyja** — kulonben a nyugta letorolne a kotelezettseget, es a mulasztas
+  ujra lathatatlanna valna. *(A regi, `kind` nelkuli bejegyzesek valasznak szamitanak — ez a
+  helyes visszamenoleges ertelmezes.)*
+- ⛔ **Kotegenkent LEGFELJEBB EGYSZER.** A kikuldesi kor 15 mp-enkent fut; ismetles nelkul ez
+  percenkent negy „megvan" uzenet lenne — nem megnyugtatas, hanem spam.
+- **A jelolo FAJLBAN van** (`receipt-marker.json`), nem memoriaban: a szerver **minden
+  LDP-korben ujraindul**, es memoriaban tartva a jelolo elveszne.
+
 ### Tavvezerles-szuro a jelenletben (`presence.remote-session.ts`)
 
 > **Owner (2026-09-07):** *„lehet megzavartam a jelenlet figyelest tavvezerlessel..."*

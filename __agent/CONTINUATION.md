@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 10:15
+**Utoljára frissítve:** 2026-09-07 10:25
 
 ---
 
@@ -14,7 +14,7 @@
 active_plan: __agent/plans/discord-two-way-hyperplan/hyperplan.plan.md
 state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
-tests: "CLI 432/432 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
+tests: "CLI 447/447 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
 owner_available: false        # AI Summiton (elindult 07:45); Discordon ir
 blocked_on_owner: "Nyitott kerdesek H/I/J/K/L/M - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak), M3 (az idegen interfood-osszefesules commitolhato-e). [M1 LEZARVA: megjavitva.]"
 ```
@@ -214,6 +214,26 @@ sajat review-korom nem talal meg; az owner elesben igen.
 ⭐ **Ajanlasom: OwnTracks (FOSS) -> a MI vegpontunk.** Nincs harmadik fel, nincs fiok, nincs
 koltseg, es valodi helyzetet ad. Opciok, pontossag/akku, es az **adatvedelmi hatar**:
 `current/open-questions.md` **N)** szekcio (N1-N5). Kepesseg: **C-47**.
+
+---
+
+## ✅ 2026-09-07 10:25 — ATVETELI NYUGTA: „megvan, dolgozom" (C-48)
+
+> Owner: *„Nah most csak nem jelez a discord »typing« (lejart) vagy nem jutotttak el ezek az
+> uzenetek hozzad?"*
+
+**A meres adta a valaszt ES a hianyt is:** a koteg **URES** volt, az utolso harom uzenet
+**kezbesitve 10:10-kor** — vagyis **minden megerkezett**. Megis meg kellett kerdeznie.
+A rendszer mukodott, a **visszajelzese** nem.
+
+| Mit | Allapot |
+|---|---|
+| **Ket ok** | a „gepel…" jelzes **15 perc utan lejar**; a koteg viszont ennel tovabb is varhat, es addig SEMMI nem mondta meg, hogy megvannak. |
+| **A nyugta** | 90 mp utan **egy rovid sor** — `📥 Megvan mind a 3 uzeneted…`. ⛔ Hataridot nem iger. ⛔ Kotegenkent egyszer. |
+| **🔴 A finomsag** | a nyugta **NEM valasz**: a kimeno naplo mostantol `kind`-ot rogzit (`reply`/`ack`), es a valasz-kotelezettseg az `ack`-eket **kihagyja**. Kulonben a nyugta **letorolte volna a kotelezettseget**, es a mulasztas ujra lathatatlanna valt volna. |
+| **Visszamenoleges helyesseg** | a regi, `kind` nelkuli bejegyzesek **valasznak** szamitanak — ez a helyes ertelmezes, teszt orzi. |
+| **Review-talalat** | a jelolo eloszor **memoriaban** volt — de a szerver **minden LDP-korben ujraindul**, tehat elveszett volna, es ujabb nyugta ment volna ki. Most **fajlban** van. |
+| **Teszt** | **CLI 447/447** (15 uj). |
 
 ---
 

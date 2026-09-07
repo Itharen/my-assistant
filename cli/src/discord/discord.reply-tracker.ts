@@ -22,13 +22,26 @@ export function resolveOutboundLogPath(): string {
   return join(dirname(resolveDiscordBatchPaths().pendingFile), 'outbound-log.jsonl');
 }
 
+/**
+ * A kimenő üzenet fajtája.
+ *
+ * 🔴 MIÉRT KELL MEGKÜLÖNBÖZTETNI: az **átvételi nyugta** („megvan, dolgozom") is kimenő
+ * üzenet, de ⛔ **NEM válasz**. Ha ugyanúgy számítana, a nyugta **letörölné a
+ * válasz-kötelezettséget** — vagyis pont az az ellenőrzés vakulna meg, ami azt fogja meg,
+ * hogy csak a sessionben válaszoltam.
+ */
+export type OutboundKind = 'reply' | 'ack';
+
 /** Egy kimenő üzenet rögzítése. Hibát NEM dob — a naplózás nem akaszthatja meg a küldést. */
-export async function recordOutbound(sentAt: string = new Date().toISOString()): Promise<void> {
+export async function recordOutbound(
+  sentAt: string = new Date().toISOString(),
+  kind: OutboundKind = 'reply',
+): Promise<void> {
   const path: string = resolveOutboundLogPath();
 
   try {
     await mkdir(dirname(path), { recursive: true });
-    await appendFile(path, `${JSON.stringify({ sentAt })}\n`, 'utf-8');
+    await appendFile(path, `${JSON.stringify({ sentAt, kind })}\n`, 'utf-8');
   } catch {
     // Elnyelve: ha nem tudjuk rögzíteni, a következő ellenőrzés „tartozunk válasszal"-t
     // mond — ami az ÓVATOS irány. A hamis „rendben" lenne a veszélyes.
@@ -60,9 +73,12 @@ export async function checkReplyObligation(now: Date = new Date()): Promise<Repl
 
   if (!lastInboundAt) return { owesReply: false };
 
+  // A NYUGTAKAT KIHAGYJUK: a "megvan, dolgozom" nem valasz. Enelkul egy nyugta letorolne
+  // a valasz-kotelezettseget, es a mulasztas ujra lathatatlanna valna.
   const lastOutboundAt: string | undefined = await readLastTimestamp(
     resolveOutboundLogPath(),
     ['sentAt'],
+    (entry) => entry['kind'] !== 'ack',
   );
 
   const inboundMs: number = new Date(lastInboundAt).getTime();
@@ -81,7 +97,11 @@ export async function checkReplyObligation(now: Date = new Date()): Promise<Repl
 }
 
 /** A fájl UTOLSÓ sorából az első megtalált időbélyeg-mező. */
-async function readLastTimestamp(path: string, fields: string[]): Promise<string | undefined> {
+async function readLastTimestamp(
+  path: string,
+  fields: string[],
+  accept: (entry: Record<string, unknown>) => boolean = () => true,
+): Promise<string | undefined> {
   if (!existsSync(path)) return undefined;
 
   try {
@@ -92,6 +112,8 @@ async function readLastTimestamp(path: string, fields: string[]): Promise<string
     for (let index = lines.length - 1; index >= 0; index -= 1) {
       try {
         const parsed = JSON.parse(lines[index]!) as Record<string, unknown>;
+
+        if (!accept(parsed)) continue;
 
         for (const field of fields) {
           const value: unknown = parsed[field];

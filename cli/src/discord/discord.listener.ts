@@ -29,6 +29,12 @@ import {
   refreshBatchEntries,
   type CurrentMessageState,
 } from './discord.batch-refresh.js';
+import {
+  composeReceiptMessage,
+  decideReceipt,
+  readAcknowledgedOldestId,
+  writeAcknowledgedOldestId,
+} from './discord.receipt.js';
 import { sendDiscordMessage } from './discord.sender.js';
 import {
   composeTranscriptForBatch,
@@ -154,6 +160,8 @@ export class DiscordListener {
    * addigra már MEGTÖRTÉNT volna. Ezért itt, a drága lépés ELŐTT szűrünk.
    */
   private readonly transcribedMessageIds: Set<string> = new Set();
+
+
 
   constructor(private readonly bridge: DiscordBridge = new DiscordBridge()) {}
 
@@ -432,6 +440,64 @@ export class DiscordListener {
     });
   }
 
+  /**
+   * Atveteli nyugta, ha a koteg mar rege var.
+   *
+   * > **Owner (2026-09-07):** *„Nah most csak nem jelez a discord »typing« (lejart) vagy nem
+   * > jutotttak el ezek az uzenetek hozzad?"*
+   *
+   * 🔴 A MERT HELYZET, AMI EZT KIVALTOTTA: az uzenetek **hianytalanul megerkeztek** — megis
+   * meg kellett kerdeznie. A „gepel…" jelzes 15 perc utan lejar, a koteg viszont ennel
+   * tovabb is varhat. Ilyenkor eddig **semmi** nem mondta meg, hogy az uzenetek megvannak.
+   *
+   * Hibat SOHA nem dob: egy nyugta elmaradasa nem allithatja meg a kikuldesi kort.
+   */
+  private async maybeAcknowledgeReceipt(): Promise<void> {
+    try {
+      const pending = await this.bridge.getStore().readPending();
+      const oldest = pending[0];
+
+      if (!oldest) {
+        await writeAcknowledgedOldestId(null);
+
+        return;
+      }
+
+      const oldestAgeMs: number = Date.now() - new Date(oldest.receivedAt).getTime();
+      const decision = decideReceipt({
+        pendingCount: pending.length,
+        oldestAgeMs: Number.isNaN(oldestAgeMs) ? 0 : oldestAgeMs,
+        alreadyAcknowledged: (await readAcknowledgedOldestId()) === oldest.messageId,
+      });
+
+      if (!decision.shouldSend) return;
+
+      // ELOBB jeloljuk megkuldottnek: ha a kuldes bukik, akkor sem probaljuk 15 mp-enkent
+      // ujra — egy elmaradt nyugta olcsobb, mint egy ismetlodo.
+      await writeAcknowledgedOldestId(oldest.messageId);
+
+      const sent = await sendDiscordMessage(composeReceiptMessage(pending.length), 'ack');
+
+      await this.safeLog({
+        kind: 'note',
+        summary: sent.sent
+          ? `[discord/listener] Atveteli nyugta elkuldve — ${decision.reason}`
+          : `[discord/listener] MA-DISCORD-RECEIPT-FAILED: a nyugta nem ment ki — ${sent.detail}`,
+        extra: {
+          code: sent.sent ? 'MA-DISCORD-RECEIPT-SENT' : 'MA-DISCORD-RECEIPT-FAILED',
+          pendingCount: pending.length,
+        },
+      });
+    } catch (err: unknown) {
+      await this.safeLog({
+        kind: 'error',
+        summary: '[discord/listener] MA-DISCORD-RECEIPT-FAILED: a nyugta kozben hiba tortent — '
+          + `${err instanceof Error ? err.message : String(err)}`,
+        extra: { code: 'MA-DISCORD-RECEIPT-FAILED' },
+      });
+    }
+  }
+
   /** A duplikatum-halmaz felso hatarnak tartasa — a `Set` beszurasi sorrendet tart. */
   private forgetOldestTranscribedIds(): void {
     while (this.transcribedMessageIds.size > TRANSCRIBED_MEMORY_LIMIT) {
@@ -689,7 +755,15 @@ ${spoken}`
         beforeSend: (pending) => this.refreshPendingFromDiscord(pending),
       });
 
-      if (!result) return;
+      if (!result) {
+        // A koteg VAR. Ha mar rege, jelezzuk, hogy legalabb MEGERKEZETT.
+        await this.maybeAcknowledgeReceipt();
+
+        return;
+      }
+
+      // Kikuldve -> a kovetkezo koteg ujra kaphat nyugtat.
+      await writeAcknowledgedOldestId(null);
 
       // Sikeres átadás után nullázzuk a hiba-fékét: a következő zavart azonnal lássuk.
       this.lastFlushErrorLoggedAt = 0;
