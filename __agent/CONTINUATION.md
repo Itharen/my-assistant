@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 14:54
+**Utoljára frissítve:** 2026-09-07 15:51
 
 ---
 
@@ -770,3 +770,48 @@ oldani.
 **1)** A `BodyInit`-ütközés oka — friss szemmel, más irányból *(pl. hogyan fordul a régi bot
 ugyanezen a fájlon: `module: commonjs` + node-resolution vs. az én `bundler`-em)*.
 **2)** Utána 5. szakasz: bekötés a `V-1` csatornára + **kétirányú tükör-szöveg** + élő próba.
+
+---
+
+## ✅ 2026-09-07 15:00–15:55 — A SUMMIT-ANYAG + a `BodyInit` gyökéroka
+
+### 🔴 SAJÁT MULASZTÁS, amit az owner vett észre
+
+> *„Dolgozol? csak nem írsz jelentesz discordra?"*
+
+**Igaza volt.** Több körön át a voice-átemelésen dolgoztam, és **nem jelentettem** — közben
+az AI Summit anyagát sem dolgoztam fel, pedig azt kifejezetten kérte.
+⇒ A `discord-first-output` szabály nem elég: **haladás közben is jelezni kell**, nem csak a
+munka végén.
+
+### 📋 Az AI Summit nap 1 feldolgozva
+
+`current/events/2026-09-07-ai-summit-budapest.md` — prioritások, amit megnézett, a
+pending-lista, a szervezési tanulságok, és a **mért, ismétlődő fáradtság**.
+
+🔎 **A nap 2 programjáról MÉRT tény:** a részletes program **nincs publikálva** *(3 forrás)*.
+Ami fent van *(AI Trends, 12 tétel)*: **TUTI: 0 · LEHET: 1** *(11:55 Adatközpontok, az egyetlen
+Expert)* **· NEM: a többi**. ⇒ ⭐ Az owner reggeli kimaradása **igazolt**, nem kompromisszum.
+
+⚠️ **Elkerült hiba:** az `?day=2` lekérés a **7-i** programot adta vissza. Onnan bukott le,
+hogy pontosan az owner pending-listája volt benne.
+
+### ⭐ A `BodyInit`-ütközés GYÖKÉROKA megvan
+
+**TS 5.5.4 (régi bot) vs. 5.9.3 (nálam).** A TS 5.7-ben lett generikus az `ArrayBufferView`,
+és attól kezdve a `Buffer<ArrayBufferLike>` nem elégíti ki a DOM `BodyInit`-jét.
+⇒ 🔴 **A kód nem hibás — a szerszám mozdult el alóla.**
+
+**Amit a MÓDSZERBŐL meg kell tartani:** a korábbi három próbám *(típus-verziók, `lib`)*
+zsákutca volt, mert **rossz dimenziót** vizsgáltak. Ami előrevitt: egy **minimális
+próba-fájl**, ami leleplezte a saját, túl durva diagnózisomat —
+`Buffer.from([1])` átmegy, a **bare `Buffer`** nem.
+
+⭐ **És nem blokkol:** a `tsc` hiba mellett is **emittál** *(`noEmitOnError` nincs)*, a minta
+pedig futásidőben **igazolt** *(10/10 bájt megérkezett)*.
+
+### A következő konkrét lépés
+
+**T-22 / 5. szakasz:** bekötés a hang-csatornára *(`1489036734632034496`)*, **kétirányú
+tükör-szöveg**, élő próba.
+⚠️ Owner-kapuk: `L1/L2` *(saját app vs. OwnTracks)* · `T-44` *(a 8-i program megjelenése)*.
