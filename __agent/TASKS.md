@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 21:12
+**Utoljára frissítve:** 2026-09-07 21:16
 
 ---
 
@@ -73,7 +73,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 |---|---|---|---|---|
 | T-47 | 🙋 | 💼 **Bérszámfejtés — rákérdezni a jelenléti ívekre** | Felírva az organizerbe (`org:task:6a9f04ab482367e7f6420c8f`, prio **112**). Owner 20:32: a bérszámfejtés **csúszik** a szokásoshoz képest | **az owner dolga** — neki kell írnia a bérszámfejtésnek |
 | T-43 | 🤝 | 📍 **Saját mobil-app a helyzet-küldéshez** | 🟢 **MEGVÁLASZOLVA** (`current/feature-requests/own-location-app.md`) — 🔴 korábban visszakérdeztem ahelyett, hogy állást foglaltam volna. **Javaslat: csináljuk sajátban, Capacitorral.** Mérve: az organizernek **kész APK-futószalagja** van; a háttér-hely **PWA-ban NEM megy** (platform-korlát); a plugin **nem fizetős** (MIT-es alternatívák) | 🙋 **EGY döntés:** belevágjunk a v1-be? *(egy kapcsoló + státusz-sor, semmi más)* |
-| T-44 | 🤝 | 📅 **AI Summit nap 2 terve** | 🟢 **AZ IDŐBEOSZTÁS KÉSZ — program NÉLKÜL is.** Megvan a hiányzó horgony: a rendezvény **18:00-kor zár** ⇒ visszaszámolva indulás + készülődés-kezdés *(`current/events/2026-09-07-ai-summit-budapest.md`)*. ⚠️ A zárás **aggregátorból**, nem hivatalos. ⏸️ A részletes program továbbra sem publikált | 🙋 **EGY bemenet kell:** hánykor akar ott lenni → időzített emlékeztető a készülődés kezdetére |
+| T-44 | 🤝 | 📅 **AI Summit nap 2 — LOGISZTIKA** *(⚠️ nem programtervezés)* | 🟢 **A logisztika kész**: zárás 18:00 ⇒ visszaszámolt indulás + készülődés-kezdés + viendő lista (`current/events/2026-09-07-ai-summit-budapest.md`). ⛔ **Melyik előadásra menjen — az NINCS tervezve**, ahhoz a program kell, ami nem publikált | 🙋 **EGY bemenet:** hánykor akar ott lenni |
 | T-45 | 🤖 | 🔍 **A review-eszköz (`dc rev`) bekötve — a találatok levitele** | **Bekötve ma**: CI/CD 12→13 lépés (`dc-review-relay`), LDP 17→22 (cli/server/client/relay/ext), mind `fatal: false`. ⚠️ **Eddig SEHOL nem futott.** Mérve: **2110 találat** (cli 1429 / server 364 / client 252 / relay 38 / ext 27), ~56 s. Mérés: `__documentations/developments/2026-09-07-review-tool-cicd-wiring.md` | a **relay 38** találatával kezdeni *(ez a legkisebb, és ez fut a CI/CD-ben)*. ⛔ Az átemelt CCAP-kód 280 találata **nem munkalista** (`transplant-not-rewrite`). A `fatal: true`-vá tétel **külön owner-döntés** |
 | T-46 | 🤖 | 📥 **Discord-csatolmány fogadása** | **Megépítve**, 503/503 — `cli/src/discord/discord.file-intake.ts`. Eddig a fájl **némán elveszett** (szöveg nélkül elutasítva, szöveggel leesett az üzenetről). Most `__agent/inbox/`-ba mentődik | ⚠️ **élő próbára vár**: az owner holnapi summit-programja lesz az első valódi csatolmány. Addig NEM ✅ |
 | T-41 | 🙋 | **Agent a támogatásokra / pályázatokra / mikromunkára** | ⭐ **HATÓKÖR-KORREKCIÓ (owner 2026-09-07 20:49):** *„ez nem a te feladatod lesz, az arra majd egy agentet kell összeállítsunk és elindítsunk"* ⇒ ⛔ **NEM én csinálom.** A mai feltárás (`current/leads/2026-09-07-exploration.md`) az agent **kiindulása** marad, nem kidobott munka | ⏸️ **owner-vezérelt**: az agent összeállítása. ⛔ Magamtól nem indítok agentet (nincs jóváhagyva) |

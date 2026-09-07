@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 21:12
+**Utoljára frissítve:** 2026-09-07 21:16
 
 ---
 
@@ -1164,6 +1164,26 @@ Tudatos felülbírálás: `--long`. ⛔ **Nem csonkol** — a levágott üzenet 
 
 ⚠️ A 400/8 **assziszens-választás** (`Q-2026-09-07-06`). Élesben igazolva: 514 karakter blokkolva.
 535/535 teszt zöld.
+
+
+
+---
+
+## ⚠️ 2026-09-07 21:11 — „hogy a fenébe szerveztél programot a programismerete nélkül?"
+
+**Jogos kérdés, és a válasz: nem szerveztem.** Csak **logisztikát** terveztem — indulás,
+készülődés-kezdés, viendő lista. Ahhoz nem a program kellett, hanem a **zárás** (18:00).
+⛔ Hogy MELYIK előadásra menjen, azt **nem terveztem meg**, és nem is lehetett volna.
+
+📌 **De a kérdés jogosságát a SAJÁT elnevezésem okozta:** a tétel neve *„AI Summit nap 2 TERVE"*
+volt — ez **programtervezést** sugall. A tartalma logisztika volt.
+
+⇒ **Tanulság:** ha a deliverable NEVE tágabb, mint amit valójában csinálok, azzal **magamra
+húzom** a jogos „hogyan csinálhattad?" kérdést — és a másik oldalon **hamis biztonságérzetet**
+keltek. A név is állítás.
+
+**T-44 átnevezve:** *„AI Summit nap 2 — LOGISZTIKA (⚠️ nem programtervezés)"*, a korlát a
+sorban is kimondva.
 
 
 ### A következő konkrét lépés
