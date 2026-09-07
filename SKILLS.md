@@ -337,6 +337,40 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
 - 🔴 **Időtúllépésnél ELŐSZÖR A RENDSZER-RAM-OT nézd, ne a GPU-t.** Mérve 2026-09-07: 93%-os
   RAM mellett 5 perc alatt sem futott le; közvetlenül utána ugyanaz a fájl **77,6 mp**.
   Owner: *„90% usage felett várakozik"*.
+- ⛔ **Az FDP AI-hoz SOHA nem nyúlunk** — nincs újraindítás, leállítás, modell-unload.
+  Owner: *„Ahhoz soha ne nyúlj!"* → `current/principles/fdp-ai-never-restart.md`.
+
+#### 🎙️ `SttRetryQueue` — a fel nem ismert hang NEM vész el (`stt.retry-queue.ts`)
+
+**Mért hiány 2026-09-07:** 16 sikeres felismerés mellett **2 hangüzenet teljesen elveszett**
+(5 perces időtúllépés), mert nem volt újrapróbálás.
+
+- 🔴 **A BÁJTOKAT teszi el, NEM az URL-t** — a Discord letöltési linkje aláírt és **lejár**.
+- ⏳ **2 → 5 → 15 → 45 perc**, összesen **5 próba**. A lépcsők **növekvők**: a sűrű
+  újrapróbálás nem ügyesebb, csak többször fut ugyanabba a RAM-falba.
+- ⭐ **SOHA nem fut két felismerés egyszerre** (`sttInFlight` a figyelőben). Ez maga az
+  alkalmazkodás: az újrapróbáló nem tetézheti azt a RAM-csúcsot, ami ellen létezik.
+  Owner: *„Ezt nem kell megoldani, csak azt ahogy alkalmazkodunk ehhez."*
+- ✅ A **később** felismert szöveg ugyanúgy a **kötegbe** kerül — a tükör önmagában kevés
+  volna: a tartalom attól még nem jutna el hozzám.
+- 🔴 **5 próba után az owner MEGKAPJA**, hogy elveszett. A néma eldobás pontosan úgy néz ki,
+  mintha meg sem érkezett volna az üzenet.
+- ⚠️ A **gyanús átirat NEM kerül a sorra**: az nem múló zavar, hanem maga az eredmény.
+- 👀 **Láthatóság:** a konzol-pulzus kiírja (`🎙️ N hang újrapróbálásra vár`) — de csak ha van.
+- Tárhely: `~/.config/my-assistant/stt-retry/` *(⛔ nem a repóban — nyers hangfelvételek)*.
+
+#### 👂 Fül-reakció + válasz-lánc (`discord.voice-acknowledge.ts`)
+
+> **Owner (2026-09-07):** *„nem typing kell, amikor hangüzenetfeldolgozás van, hanem tudsz-e
+> dobni egy fül emojit a hangüzenetekre, és tudsz-e riplájolni a hangüzenetekre"*
+
+- 👂 A **fül-reakció a felismerés ELÉ** kerül — RAM-terhelésnél percekig tart, addig ez az
+  egyetlen jel arról, **melyik** üzeneten dolgozom. *(A „gépel…" csatorna-szintű, ezt nem tudta.)*
+- ↩ Az átirat **válaszként** megy a hangüzenetre → a Discordon **tartósan összekötve** marad.
+- 🔴 A válasz-út **ugyanazt a szerződést** teljesíti, mint a küldő: `splitForDiscord` +
+  `recordOutbound('ack')`. Egy gyorsabb út, ami közben kikapcsol egy őrt, rosszabb a lassúnál.
+- Bukásnál **visszaesik** a csatorna-küldésre; részleges bukásnál külön jelzi, hogy az átirat
+  **csonkán** látszik.
 
 ### Kezbesitesi ertesito — „most ment el neked X uzenet" (`discord.receipt.ts`)
 
@@ -345,6 +379,8 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
 > valaszt, hogy na most ment el neked x uzenet"*
 
 - ⛔ **A VARAKOZASROL NEM szolunk** kulon uzenetben — arrol a **„gepel…"** jelzes beszel.
+  ⚠️ **HANGUZENETNEL MAS:** ott a **👂 ful-reakcio** a varakozas jelzese, nem a typing — mert
+  az megmondja, **MELYIK** uzeneten dolgozom *(owner-korrekcio 2026-09-07 12:26)*.
   *(Elobb „megerkezett, dolgozom" nyugtat kuldtem; az owner szerint ez sok volt, es igaza
   van: ugyanazt mondta el meg egyszer, szavakkal.)*
 - ✅ **A KULDES pillanataban** megy egy **tomondat**: `📨 Átment 3 üzeneted.`
@@ -455,8 +491,11 @@ Ez most jott.
 ### Hangüzenet Discordon — a teljes út (`discord.voice-message.ts`)
 
 ```
-Discord hanguzenet  ->  szuro (hangot is elfogad)  ->  letoltes  ->  FDP AI STT
-                    ->  ⭐ TUKOR-UZENET a Discordra  ->  megjelolt atirat a kotegbe
+Discord hanguzenet  ->  szuro (hangot is elfogad)  ->  👂 FUL-REAKCIO  ->  letoltes
+                    ->  FDP AI STT  ->  ⭐ TUKOR VALASZKENT a hanguzenetre
+                    ->  megjelolt atirat a kotegbe
+
+                        bukas eseten:  🎙️ ujraprobalo sor (2/5/15/45 perc, 5 proba)
 ```
 
 - 🔴 **MERT BLOKKOLO, ezert keszult:** a Discord-hanguzenet **ures szoveggel** erkezik, a hang

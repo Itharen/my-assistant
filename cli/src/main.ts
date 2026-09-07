@@ -572,10 +572,11 @@ function printGroupHelp(group: string): void {
     process.stdout.write(
       [
         '',
-        'ma comm — Communication channel diagnostics + Discord batch flush',
+        'ma comm — Communication channel diagnostics + Discord messaging',
         '',
         'Subcommands:',
         '  doctor   Itemised report: what works, what is missing, and WHAT TO DO about it',
+        '  say      Send a message to the owner on Discord (--text or --file)',
         '  flush    Send the pending Discord batch as ONE prompt through CCAP',
         '  listen   Run the Discord listener (long-running; only the owner\'s messages are queued)',
         '',
@@ -583,6 +584,8 @@ function printGroupHelp(group: string): void {
         '  --json     Machine-readable envelope (doctor prints a human report by default)',
         '  --pretty   Pretty-print JSON',
         '  --force    flush only: skip the batching decision and send now',
+        '  --text     say only: the message text',
+        '  --file     say only: read the message from a file (better for long/multiline text)',
         '',
         'doctor exits non-zero when something is broken or degraded, so scripts notice.',
         'An unmeasurable check is reported as UNKNOWN — never as OK.',
