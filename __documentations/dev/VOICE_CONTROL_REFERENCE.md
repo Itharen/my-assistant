@@ -40,7 +40,7 @@ cv-result-review.control-service.ts           ← ⭐ reviewResult() — a KILÉ
 cv-unified-speech-recognition.control-service.ts
 cv-local-speech-recognition.api-service.ts    ← helyi STT  ← ⭐ ez lehet az FDP AI-ra kötés helye
 cv-whisper.api-service.ts
-cv-elevenlabs-speech-recognition.api-service.ts   ← ⚠️ FIZETŐS, kihagyandó
+cv-elevenlabs-speech-recognition.api-service.ts   ← ⚠️ most nincs keret (lásd §6)
 cv-file.service-control.ts
 cv.service-base.ts
 ```
@@ -79,11 +79,27 @@ kell**, hogy hol tart.
 | ⛔ **NEM darabolva** | owner: *„teljes egészében nullában"* — a teljes modul jön át, nem szemezgetve |
 | ⛔ **NEM a `ccap-revisioned`** | az owner külön kiemelte: a **régi** `ccap` a forrás |
 | ✅ **Alapos átnézés** | owner: *„itt az egész kezelést kéne majd alaposan átnézni"* — nem vak másolás |
-| ⚠️ **ElevenLabs kihagyandó** | fizetős → `current/principles/no-paid-solutions.md`. A helyi STT-t a **saját FDP AI**-ra kötjük *(port 38321)* |
+| ⚠️ **ElevenLabs — NEM kihagyandó, de MOST nem működik** | 🔴 **KORREKCIÓ (owner, 2026-09-07 07:44):** *„a TTS részhez kelleni fog az Eleven Labs, csak most éppen ki van fogyva a keret és valószínűleg a kulcs sem jó amibe van állítva."* ⇒ **megtartjuk a kódban**, de a mai állapotban **nem használható**. |
+| ✅ **A helyi út az elsődleges** | STT **és** TTS: a **saját FDP AI** *(port 38321)* — `/v1/audio/transcriptions` és `/api/v1/audio/speech`. Ez ingyenes, helyi, és **most is fut**. |
 
 ---
 
-## 5. Kapcsolódó
+## 6. ⚠️ ElevenLabs — a pontos állapot
+
+| | |
+|---|---|
+| **Kell-e?** | ✅ **Igen, a TTS-hez** — owner-döntés, nem az én javaslatom |
+| **Használható most?** | ❌ **Nem** — kifogyott a keret, és *„valószínűleg a kulcs sem jó, amibe van állítva"* |
+| **Mit teszek?** | a kódot **megtartom**, de a működés **nem függhet tőle**: az elsődleges út a helyi FDP AI TTS |
+| ⚠️ Kulcs | ⛔ **hozzá NEM nyúlok** — a kulcs-csere/rotáció **kizárólag ownerrel** (`core-secret-rotation-owner-only`) |
+
+📌 A `no-paid-solutions.md` arról szól, hogy **én** ne javasoljak fizetőset. Ha az **owner**
+választ egy eszközt, az az ő döntése — de a rendszer **ne álljon meg** attól, hogy épp nincs
+keret rajta.
+
+---
+
+## 7. Kapcsolódó
 
 - `__documentations/dev/FDP_AI_STT.md` — a saját STT/TTS szolgáltatás *(ide kötjük)*
 - `__agent/capabilities/CATALOG.md` — **C-34** (voice channel), **C-33** (voice üzenet),
