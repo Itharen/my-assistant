@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 18:22
+**Utoljára frissítve:** 2026-09-07 18:41
 
 ---
 
@@ -1026,6 +1026,32 @@ nem a hivatalos kiírásból. ⛔ Cselekvés előtt `palyazat.gov.hu`.
 céged)* · `-04` *(hackathon: pénzdíj vagy láthatóság)*.
 
 
+
+---
+
+## ✅ 2026-09-07 18:40–18:41 — ⏰ A NAP 2 IDŐBEOSZTÁSA KÉSZ (a program NÉLKÜL)
+
+⭐ **A felismerés, ami feloldotta a blokkot:** a T-44 azért állt, mert a **részletes program**
+nem publikált. De az **időbeosztáshoz** — ami az owner **első számú területe** — nem a program
+kell, hanem a **zárás időpontja**. Az megvan: **18:00** *(⚠️ AllEvents-összesítő, nem a
+hivatalos oldal — ha kritikus, megerősítendő)*.
+
+⇒ Ebből visszaszámolva kész a döntési tábla: *ott vagy → indulj → készülődés kezdete → hasznos
+idő 18:00-ig*, az odajutás mért **≈45 percével** és a saját **0,5–1 órás** készülődésével.
+
+**A gyakorlati határ ~16:15-ös indulás** — utána kevesebb idő marad ott, mint az oda-vissza út.
+
+⭐ **És a késői indulás NEM kompromisszum:** a saját nap-1 tapasztalata szerint a reggeli,
+agentic előadások keveset adtak, az ő prioritásai (Physical AI / robotika) **délután** voltak.
+⇒ Ugyanoda érkezik, ahol az érték volt, és közben a **mért, ismétlődő fáradtságot** is kezeli.
+
+Helye: `current/events/2026-09-07-ai-summit-budapest.md` — új „NAP 2" szekció *(SSOT: egy
+esemény = egy fájl; nem nyitottam újat)*.
+
+🙋 **EGY bemenet hiányzik:** hánykor akar ott lenni. Abból időzített emlékeztetőt adok a
+készülődés kezdetére — a telefontöltéssel együtt, ami a készülődés ELEJÉN indul.
+
+
 ### A következő konkrét lépés
 
 **T-22 / 5. szakasz:** bekötés a hang-csatornára *(`1489036734632034496`)*, **kétirányú
@@ -1061,7 +1087,10 @@ mondja. ⛔ Nem kaparom tovább: két ellentmondó válasz után a forrás megb�
 
 ### A következő konkrét lépés
 
-⏳ **KÉT DOLOG VÁR AZ OWNERRE, addig egyikkel sem tudok haladni:**
+⏳ **HÁROM DOLOG VÁR AZ OWNERRE, addig egyikkel sem tudok haladni:**
+
+0. **T-44 / holnap** — ⭐ **a legidőérzékenyebb**: hánykor akar ott lenni a summiton?
+   Egyetlen szám, és abból megy az időzített készülődés-emlékeztető.
 
 1. **T-22 élő próba** — megszólal a `honnie-place`-ben. A lánc a felvétel-indításig igazolt
    (`MA-VOICE-RECORDING-STARTED` 18:13:21); a következő várt nyom

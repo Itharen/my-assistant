@@ -245,3 +245,66 @@ program a te szűrőd szerint gyakorlatilag üres.
 
 ⚠️ **Az app az elsődleges forrás** — ezt te magad mondtad ki tanulságként, és a mai mérés
 igazolta: a webes agenda nap 2-re hiányos.
+
+---
+
+## ⏰ NAP 2 (szeptember 8., kedd) — IDŐBEOSZTÁS, program NÉLKÜL is használható
+
+*(Felvéve 2026-09-07 18:41. ⭐ Ez **nem** a nap-1 táblázat: az reggeli indulásra készült,
+te viszont **kimondottan nem reggel** mész.)*
+
+### A horgony, ami eddig hiányzott
+
+| | |
+|---|---|
+| **A rendezvény vége** | **18:00** *(szeptember 8., kedd)* |
+| Forrás | AllEvents-összesítő ⚠️ **nem a hivatalos oldal** — ha számít, erősítsd meg |
+| Odajutás | **≈45 perc** *(a nap-1-nél kimért útvonal felső értéke)* |
+| Készülődés | **0,5–1 óra** *(a te adatod: „attól függ, mennyire kapkodok")* |
+
+⭐ **Ez a 18:00 az, ami eddig hiányzott a döntéshez.** Enélkül a „mikor induljak" kérdésre
+nem lehetett válaszolni — csak azt tudtuk, mikor NEM mész.
+
+### Visszafelé számolva — válaszd ki a sort, a többi adódik
+
+| Ott vagy | Indulj | Készülődés kezdete *(nyugodt / kapkodós)* | Hasznos idő 18:00-ig |
+|---|---|---|---|
+| **12:00** | 11:15 | **10:15** / 10:45 | **6 óra** |
+| **13:00** | 12:15 | **11:15** / 11:45 | **5 óra** |
+| **14:00** | 13:15 | **12:15** / 12:45 | **4 óra** |
+| **15:00** | 14:15 | **13:15** / 13:45 | **3 óra** |
+| **16:00** | 15:15 | **14:15** / 14:45 | **2 óra** |
+
+⚠️ **A gyakorlati határ ~16:15-ös indulás.** Utána 1,5 óránál kevesebb marad — az oda-vissza
+út (~1,5 óra) hosszabb, mint amit ott töltenél. ⇒ Ilyenkor csak akkor éri meg, ha **egy
+konkrét előadásért** mész.
+
+### ⭐ Miért NEM kompromisszum a késői indulás
+
+A nap-1 saját tapasztalatod szerint *(l. „A NAP 1 LEGFONTOSABB TAPASZTALATA")* a **reggeli,
+agentic témájú előadások keveset adtak** — az érdemi rész, ami a te prioritásaidhoz
+(Physical AI / robotika) illeszkedett, **délután** volt.
+
+⇒ A késői indulás **nem lemaradás, hanem illeszkedés**: ugyanoda érkezel, ahol tegnap az
+érték volt, és közben a **mért, ismétlődő fáradtságot** is kezeled — ami tegnap is
+kimaradást okozott.
+
+### 🎒 Amit visz — a nap 1 tanulságaiból, nem újra kitalálva
+
+- 🔋 **Powerbank** *(egész napos rendezvény, az app és a telefon merít)*
+- 🔋 **Telefon feltöltése a KÉSZÜLŐDÉS ELEJÉN** — ⛔ nem induláskor
+- 💧 víz · 🍎 valami ennivaló *(a jegyben van foodtruck-kupon, de az időzítés a tiéd)*
+- 😴 **beépített pihenő** — a fáradtság mért, ismétlődő jelenség
+- 💳 névjegy, ha van *(networking zónák)*
+- 🦶 láb bekenése körömvirágkrémmel *(a nap-1 listáról)*
+
+### ❓ Amit ehhez sem tudok
+
+| # | Kérdés | Hatás |
+|---|---|---|
+| 1 | **Hánykor akarsz ott lenni?** | ez az EGYETLEN bemenet, ami hiányzik — a többit a táblázat adja |
+| 2 | A 18:00-s zárás **hivatalosan** is stimmel? | ha korábban zár, minden sor csúszik |
+| 3 | A nap-2 **részletes program** | ⏸️ továbbra sem publikált; ha megküldöd, konkrét előadásokra tervezek |
+
+📌 **Ha megmondod, hánykor akarsz ott lenni, a készülődés-kezdésre időzített emlékeztetőt
+adok** — a telefontöltéssel együtt, ami a készülődés ELEJÉN indul.
