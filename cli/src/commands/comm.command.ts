@@ -131,7 +131,7 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
       // ✂️ A `--long` TUDATOS felülbírálás. Alapból a rövidség-őr dönt: az owner 2026-09-07-én
       // EL SEM OLVASTA a hosszú üzeneteimet, tehát a hosszú üzenet nem „több infó", hanem
       // gyakorlatilag NULLA infó.
-      const result = await sendDiscordMessage(source.text, 'reply', Boolean(parsed.values.long));
+      const result = await sendDiscordMessage(source.text);
 
       writeEnvelope(ok(action, requestId, startedAt, result), pretty || !asJson);
 

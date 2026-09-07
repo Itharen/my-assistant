@@ -48,11 +48,18 @@ export async function sendDiscordMessage(
    * ⛔ A nyugta NEM torli a valasz-kotelezettseget — lasd `OutboundKind`.
    */
   kind: OutboundKind = 'reply',
-  /** ⚠️ Megtartva a hívók kedvéért — a rövidség MÁR NEM kapu, tehát nincs hatása. */
-  allowLong: boolean = false,
+  /**
+   * 🔊 Hova menjen — ha üres, a fő szöveges csatorna.
+   *
+   * 🔴 MÉRT HIBA (2026-09-07 21:47): a hang-csatornai tükör-szöveg a **fő szöveges csatornába**
+   * ment, nem oda, ahol az owner beszélt. Ő a hang-csatornát nézte, és **semmilyen reakciót nem
+   * látott** — pedig a tükör kiment. Az ő eredeti kérése egyértelmű volt: *„oda is kell majd
+   * mirror text formában mindkettőnknek"* — **ODA**, nem máshova.
+   */
+  targetChannelId: string = '',
 ): Promise<DiscordSendResult> {
   const token: string = (process.env['MA_DISCORD_BOT_TOKEN'] ?? '').trim();
-  const channelId: string = (process.env['MA_DISCORD_CHANNEL_ID'] ?? '').trim();
+  const channelId: string = targetChannelId.trim() || (process.env['MA_DISCORD_CHANNEL_ID'] ?? '').trim();
   const trimmed: string = text.trim();
 
   if (!trimmed) {
@@ -77,7 +84,7 @@ export async function sendDiscordMessage(
   // ⛔ SOHA nem blokkol — a döntés a fogalmazásé, nem a számlálóé.
   const brevity = inspectBrevity(trimmed);
 
-  void allowLong;
+  void brevity;
 
   if (!token || !channelId) {
     return {

@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 21:52
+**Utoljára frissítve:** 2026-09-07 22:00
 
 ---
 
@@ -1341,6 +1341,41 @@ holnap alig van jelen** — ezt elore tudnia kell.
 ⏰ **14:30-ra erkezeshez:** indulas **13:45**, keszulodes **12:45**-tol.
 🔀 Alternativa: MKIK Prompt Arena elo vibecoding (14:00 / 15:00 / 16:00 Prompt Battle) — ⚠️ **masik
 epulet**, utkozik a robotikassal es a blokk-elvvel.
+
+
+
+---
+
+## ⭐ 2026-09-07 21:49 — A HANG-LANC ELOBEN ATMENT (T-22 igazolva)
+
+**Az owner beszede a hang-csatornabol ELJUTOTT hozzam** — `MA-VOICE-SPEECH-QUEUED`,
+`fromOwner: true, transcribed: true`. A lanc *(felvevo → WAV → a mi STT-nk → hid → koteg)*
+**mukodik**. Ez volt az utolso igazolatlan darab.
+
+### De harom valos hiba is kibukott — mind merve
+
+**1. ✅ A TUKOR ROSSZ HELYRE MENT.** A visszaigazolas a **fo szoveges csatornaba** ment, nem oda,
+ahol beszelt ⇒ az owner *„nem lattam semmilyen reakciot"*. **Pedig kiment.**
+🩹 Javitva: a `sendDiscordMessage` kap `targetChannelId`-t, a hid a **hang-csatorna** azonositojat
+adja at. 📌 Az eredeti keres egyertelmu volt: *„oda is kell majd mirror text formaban"* — **ODA**.
+
+**2. 🔴 NYITOTT: sok beszedbol EGY mondat jutott at.** Egesz beszelgetest folytatott, es
+**1 db** `MA-VOICE-SPEECH-QUEUED` van. Az atemelt `setupSpeechDetection` hangero/ZCR-validacioja
+dobja el a tobbit. ⛔ **Vakon nem nyulok hozza** (`transplant-not-rewrite`) — elobb **merni** kell,
+mit dob el es miert.
+⚠️ Az atjutott atirat is **csonka** volt *(„dolgot, ami jelezne nekem…")* ⇒ a szegmentalas is vag.
+
+**3. 🔵 NINCS KONZOL-VISSZAJELZES.** Owner: *„a konzolban nem latom azokat a visszajelzeseket,
+amiket anno a CCAP-ban"*. **Jogos — ilyet nem epitettem.** Az action-logba irok, ami neki nem
+latszik. → T-52.
+
+### 🆔 SAJAT MULASZTAS: „megvan" ≠ megadtam
+
+Azt irtam Discordon, hogy *„FDP Assistant azonositoja megvan"* — de **magat az ID-t nem kuldtem
+el**, csak egy fajlra mutattam. ⚠️ **Telefonrol nem lat fajlt.**
+📌 **Tanulsag:** a *keszultseg jelentese* nem helyettesiti a **hasznos hasznos payloadot**. Ha egy
+ertek erdekli, az erteket kell elkuldeni, nem a lelohelyet.
+**`ccs-eb7533f2-msf45rno`** — elkuldve.
 
 
 ### A következő konkrét lépés

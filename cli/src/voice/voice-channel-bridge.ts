@@ -128,9 +128,14 @@ export class VoiceChannelBridge {
       return { queued: false, mirrored: false, detail: 'Ezt a szegmenst már feldolgoztuk.' };
     }
 
+    // 🔊 A TÜKÖR ODA MEGY, AHOL ELHANGZOTT — a hang-csatorna szöveges sávjába.
+    // 🔴 Mérve 2026-09-07 21:47: eddig a fő szöveges csatornába ment, és az owner a
+    // hang-csatornát nézve **semmilyen reakciót nem látott**. A tükör értelme épp az, hogy
+    // ott legyen, ahol beszél.
     const mirror = await this.send(
       composeVoiceMirror({ speaker: 'owner', speakerName: params.speakerName, text: trimmed }),
       'ack',
+      params.channelId,
     );
 
     return {
