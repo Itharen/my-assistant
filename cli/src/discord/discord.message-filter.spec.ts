@@ -125,7 +125,10 @@ describe('filterIncomingMessage — HANGUZENET (regresszio)', () => {
     expect(verdict.accepted).toBe(false);
   });
 
-  it('a csak-kep uzenetet tovabbra is elutasitja, de MASKENT indokolja', () => {
+  it('📥 a csak-fajl uzenetet MOSTMAR ELFOGADJA (2026-09-07 valtozas)', () => {
+    // 🔴 EZ VOLT A HIBA: az owner ratett egy fajlt a csatornara ("Hova tegyem?"), es a szuro
+    // elutasitotta volna — a fajl NEMAN elveszett volna. Mostantol atjon, es a figyelo
+    // lementi az `__agent/inbox/`-ba (`discord.file-intake.ts`).
     const verdict = filterIncomingMessage(
       message({ content: '', attachments: [{
         id: 'i1', url: 'https://x/y.png', name: 'kep.png', contentType: 'image/png', size: 10,
@@ -133,8 +136,31 @@ describe('filterIncomingMessage — HANGUZENET (regresszio)', () => {
       CONFIG,
     );
 
+    expect(verdict.accepted).toBe(true);
+    expect(verdict.hasFiles).toBe(true);
+  });
+
+  it('kiseroszoveges fajl-uzenetnel is jelzi a csatolmanyt', () => {
+    const verdict = filterIncomingMessage(
+      message({ content: 'itt a holnapi program', attachments: [{
+        id: 'i2', url: 'https://x/y.pdf', name: 'program.pdf', contentType: 'application/pdf', size: 10,
+      }] }),
+      CONFIG,
+    );
+
+    expect(verdict.accepted).toBe(true);
+    expect(verdict.hasFiles).toBe(true);
+  });
+
+  it('🔴 a fajl SEM keruli meg a biztonsagi hatart — idegen kuldo elutasitva', () => {
+    const verdict = filterIncomingMessage(
+      message({ content: '', authorId: 'valaki-mas', attachments: [{
+        id: 'i3', url: 'https://x/y.pdf', name: 'program.pdf', contentType: 'application/pdf', size: 10,
+      }] }),
+      CONFIG,
+    );
+
     expect(verdict.accepted).toBe(false);
-    expect(verdict.reason).toContain('nem-hang');
   });
 
   it('a valoban ures uzenet indoka nem emliti a csatolmanyt', () => {

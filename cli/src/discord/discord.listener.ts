@@ -10,10 +10,13 @@
 // ⚠️ A tényleges gateway-kapcsolat CSAK élő bot-tokennel próbálható ki. Ami token nélkül is
 // ellenőrizhető — a szűrés és a hiányzó konfiguráció kezelése —, az egységtesztelt.
 
+import { join } from 'node:path';
+
 import { Client, Events, GatewayIntentBits, Partials, type Message } from 'discord.js';
 
 import { logAction } from '../action-log/action-log.client.js';
 import { DiscordBridge } from './discord.bridge.js';
+import { saveInboxAttachments } from './discord.file-intake.js';
 import type { DiscordInboundMessage } from './discord.models.js';
 import { HEARTBEAT_INTERVAL_MS, writeHeartbeat } from './discord.heartbeat.js';
 import { checkReplyObligation, recordOutbound } from './discord.reply-tracker.js';
@@ -39,9 +42,11 @@ import { sendDiscordMessage, splitForDiscord } from './discord.sender.js';
 import {
   composeTranscriptForBatch,
   downloadVoiceAttachment,
+  isAudioAttachment,
   selectVoiceAttachment,
   type DiscordAttachment,
 } from './discord.voice-message.js';
+import { resolveProjectRoot } from '../utils/project-root.js';
 import { transcribeAudio } from '../stt/stt.client.js';
 import { composeMirrorMessage } from '../stt/stt.mirror.js';
 import {
@@ -349,6 +354,19 @@ export class DiscordListener {
         : spoken;
     }
 
+    // 📥 CSATOLMÁNY: azonnal lementjük, mert a Discord linkje LEJÁR. A hivatkozás a szövegbe
+    // kerül — ⚠️ ez az EGYETLEN nyoma, hogy fájl érkezett (a `toBatchEntry` a csatolmányokat
+    // szándékosan eldobja). Enélkül az owner fájlja némán elveszne (mérve 2026-09-07).
+    if (verdict.hasFiles) {
+      const intake: string = await this.saveAttachmentsToInbox(incoming);
+
+      if (intake) {
+        incoming.content = incoming.content.trim()
+          ? `${incoming.content.trim()}\n\n${intake}`
+          : intake;
+      }
+    }
+
     try {
       const isNew: boolean = await this.bridge.enqueue({
         messageId: incoming.messageId,
@@ -376,6 +394,58 @@ export class DiscordListener {
           + `${err instanceof Error ? err.message : String(err)}`,
         extra: { code: 'MA-DISCORD-ENQUEUE-FAILED', messageId: incoming.messageId },
       });
+    }
+  }
+
+  /**
+   * A nem-hang csatolmányok lementése az inboxba.
+   *
+   * ⭐ MIÉRT A REPÓBA, és nem a futásidejű `~/.config` alá: az inbox **munka-bemenet**, amit a
+   * következő körben kézzel dolgozok fel — ott kell lennie, ahol dolgozom, és látszania kell a
+   * `git status`-ban. *(A hangfájlokkal ellentétben, amik átmeneti nyersanyagok.)*
+   *
+   * Hibát SOHA nem dob: egy le nem tölthető fájl nem döntheti meg a figyelőt — a bukás a
+   * visszaadott szövegben látszik, és naplóba is kerül.
+   *
+   * @returns a kötegbe fűzendő megjegyzés, vagy üres sztring, ha nincs mit közölni.
+   */
+  private async saveAttachmentsToInbox(incoming: IncomingDiscordMessage): Promise<string> {
+    const files = (incoming.attachments ?? []).filter((a): boolean => !isAudioAttachment(a));
+
+    if (!files.length) return '';
+
+    try {
+      const result = await saveInboxAttachments({
+        attachments: files,
+        inboxDir: join(resolveProjectRoot(), '__agent', 'inbox'),
+      });
+
+      await this.safeLog({
+        kind: result.failed.length ? 'error' : 'note',
+        summary: result.failed.length
+          ? `[discord/listener] MA-DISCORD-INBOX-PARTIAL: ${result.saved.length} fájl lementve, `
+            + `${result.failed.length} NEM — ${result.failed.map((f): string => f.originalName).join(', ')}`
+          : `[discord/listener] ${result.saved.length} csatolmány az inboxba mentve.`,
+        extra: {
+          code: result.failed.length ? 'MA-DISCORD-INBOX-PARTIAL' : 'MA-DISCORD-INBOX-SAVED',
+          messageId: incoming.messageId,
+          saved: result.saved.map((f): string => f.storedName),
+          failed: result.failed,
+        },
+      });
+
+      return result.note;
+    } catch (err: unknown) {
+      const detail: string = err instanceof Error ? err.message : String(err);
+
+      await this.safeLog({
+        kind: 'error',
+        summary: `[discord/listener] MA-DISCORD-INBOX-FAILED: a csatolmányok NEM lettek lementve — ${detail}`,
+        extra: { code: 'MA-DISCORD-INBOX-FAILED', messageId: incoming.messageId },
+      });
+
+      // 🔴 A hiba a SZÖVEGBE is bekerül: így az üzenettel EGYÜTT látom, hogy fájl jött és elveszett.
+      return `📥 CSATOLMÁNY érkezett, de a lementése ELBUKOTT: ${detail}`;
     }
   }
 

@@ -40,6 +40,8 @@ export interface MessageFilterVerdict {
   reason: string;
   /** Igaz, ha az üzenet HANGOT tartalmaz — ilyenkor STT + tükör-üzenet következik. */
   hasAudio?: boolean;
+  /** Igaz, ha NEM-hang csatolmány érkezett — ilyenkor az inboxba mentés következik. */
+  hasFiles?: boolean;
 }
 
 /**
@@ -94,13 +96,25 @@ export function filterIncomingMessage(
     };
   }
 
-  if (!hasText) {
+  // 📥 CSATOLMÁNY szöveg nélkül. ⭐ 2026-09-07-ig ELUTASÍTOTTUK — az owner rádobott egy fájlt,
+  // és az némán elveszett volna. A fájlt LEMENTJÜK (`discord.file-intake.ts`), a hivatkozását
+  // pedig a figyelő fűzi az üzenethez; a szűrőnek innentől csak át kell engednie.
+  const hasFiles: boolean = (message.attachments ?? []).length > 0;
+
+  if (!hasText && hasFiles) {
     return {
-      accepted: false,
-      reason: (message.attachments ?? []).length > 0
-        ? 'Csak nem-hang csatolmány érkezett, szöveg nélkül — ezt még nem tudjuk feldolgozni.'
-        : 'Üres üzenet — nincs mit átadni.',
+      accepted: true,
+      reason: 'Owner csatolmánya szöveg nélkül — az inboxba mentjük.',
+      hasFiles: true,
     };
+  }
+
+  if (!hasText) {
+    return { accepted: false, reason: 'Üres üzenet — nincs mit átadni.' };
+  }
+
+  if (hasFiles) {
+    return { accepted: true, reason: 'Owner üzenete csatolmánnyal.', hasFiles: true };
   }
 
   return { accepted: true, reason: 'Owner üzenete a dedikált csatornából.' };
