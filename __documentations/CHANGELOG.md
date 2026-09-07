@@ -4,6 +4,35 @@
 
 ---
 
+## HELYZET-RELAY: a lánc lezárva + 👂 hangüzenet-nyugtázás — 2026-09-07
+
+**Relay-lánc (T-01…T-04)** — gateway-conf, SSL-domain, CI/CD-config + Dockerfile, és a
+**lehúzó oldal** a szerverben. A my-assistant **kifelé nyúl** a relayért; bejövő kapcsolatot
+soha nem kap *(owner-direktíva)*.
+
+- ⭐ **pull, nem push:** push esetén a relaynek el kellene ÉRNIE minket ⇒ nyitott port; pull
+  esetén a relay **nem tud** kapcsolatot kezdeményezni felénk.
+- ⛔ **a lehúzás nem töröl** — csak a nyugtázás. Egy elveszett válasz nem nyelheti el az adatot.
+- **Élő próba:** betöltés → lehúzás → tárolás → nyugtázás → üres következő kör.
+  A **home** helyzet **koordináta nélkül** tárolódott.
+
+**👂 Hangüzenet-nyugtázás** — fül-reakció a felismerés ELŐTT + az átirat **válaszként** a
+hangüzenetre *(ez váltotta ki a „gépel…" tervet)*.
+
+**🎙️ STT-újrapróbáló sor** — a bájtok eltéve, 2/5/15/45 perc, 5 próba; soha nem fut két
+felismerés egyszerre. Feladás esetén az owner **megkapja**, hogy elveszett.
+
+### 🔴 Három javított hiba, amit csak az ÉLŐ próba talált meg
+
+1. rossz auth-fejléc a lehúzóban ⇒ minden kör 401 lett volna;
+2. **adatvesztés**: a helyzet-tár élesben a `build/` alá esett volna, amit minden fordítás
+   letöröl ⇒ áthelyezve `~/.config/my-assistant/location/`-be;
+3. `ma comm --help` elhallgatta a `say` alparancsot.
+
+**Teszt: CLI 474/474 · szerver 74/74.**
+
+---
+
 ---
 
 ## KORREKCIO: a jelzes a KULDES pillanatara kerult — 2026-09-07

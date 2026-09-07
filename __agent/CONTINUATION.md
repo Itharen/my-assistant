@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 10:42
+**Utoljára frissítve:** 2026-09-07 13:09
 
 ---
 
@@ -14,7 +14,7 @@
 active_plan: __agent/plans/discord-two-way-hyperplan/hyperplan.plan.md
 state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
-tests: "CLI 457/457 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
+tests: "CLI 474/474 + szerver 74/74 zold; tipusellenorzes zold; comm doctor 11 zold / 0 hibas / 1 nem-megallapithato (2026-09-07 13:09)"
 owner_available: false        # AI Summiton (elindult 07:45); Discordon ir
 blocked_on_owner: "Nyitott kerdesek H/I/J/K/L/M - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak), M3 (az idegen interfood-osszefesules commitolhato-e). [M1 LEZARVA: megjavitva.]"
 ```
@@ -576,3 +576,54 @@ ezekre mutat — egy friss session elhiheti, hogy semmi nem készült el, és **
 |---|---|
 | **Voice control átemelése** *(nagy!)* | ✅ forrás megtalálva és MÉRVE: `ccap` (a RÉGI) `/discord-bot/src/_modules/voice/` — 37 fájl, ~6681 sor. Kilépési pont: `cv-result-review.control-service.ts` → `reviewResult()`. ⛔ NEM a `ccap-revisioned`. ⚠️ **ElevenLabs: NEM kihagyandó** — owner-korrekció 2026-09-07: a TTS-hez kelleni fog, csak most nincs rajta keret és a kulcs sem jó. Az elsődleges út a saját FDP AI (38321); ⛔ a kulcshoz nem nyúlunk. Doksi: `__documentations/dev/VOICE_CONTROL_REFERENCE.md`. ⚠️ Külön tervet igényel. Organizer: `org:task:6a9e4f0a482367e7f641e628` |
 | **GoPrint — póló** | emlékeztető hazafelé (ma vagy holnap). Organizer: `org:task:6a9e4f09482367e7f641e621` |
+
+---
+
+## ✅ 2026-09-07 12:30–13:10 — HÁROM OWNER-KÉRÉS + A RELAY-LÁNC BEFEJEZÉSE
+
+> A kör bemenete három hangüzenet volt, plusz a folyamatban lévő relay-munka.
+
+### A három owner-kérés — mind teljesítve
+
+| Kérés (szó szerint) | Amit tettem |
+|---|---|
+| *„nem typing kell… hanem tudsz-e dobni egy fül emojit… és tudsz-e riplájolni"* | `discord.voice-acknowledge.ts` — 👂 a felismerés **ELÉ**, az átirat **válaszként** a hangüzenetre. A **T-11 TÖRÖLVE**, nem elhalasztva. |
+| *„az ilyen bizonytalan pontokat… ne vágjunk egyből bele… jelöljük össze"* | Új hard rule: `current/principles/uncertain-requests.md` + **🔍 FELTÁRANDÓ** állapot a TASKS-ban. A T-13 oda került, nem a nyitottak közé. |
+| *„ezt a feladat nyilvántartást… ne keverjük össze az organizerben lévő én feladataimmal"* | `TASKS.md` átdolgozva: **RENDSZER-feladat** vs. **ÉLET-feladat**, és 🤖 én / 🤝 közösen / 🙋 owner-kapu jelölés. |
+
+### Elvégzett rendszer-feladatok
+
+| # | Mit | Igazolás |
+|---|---|---|
+| **T-10** | 🎙️ **STT-újrapróbáló sor** — a fel nem ismert hang már nem vész el | 474/474; ⚠️ **élő próbára vár** |
+| **T-01** | relay gateway-conf | `nginx -t` konténerben **sikeres** a fallback-cert után |
+| **T-02** | relay SSL | `ssl-config.json` 36 → 37 domain |
+| **T-03** | relay CI/CD + Dockerfile | JSON érvényes; a belépési pont **élőben elindult**, `/api/relay/pull` → **401** token nélkül |
+| **T-04** | relay **lehúzó oldal** | 🔴 **élő, végponttól végpontig próba**: betöltés → lehúzás → tárolás → nyugtázás → a következő kör üres |
+
+### 🔴 HÁROM MÉRT HIBA — mind zöld tesztek MELLETT
+
+1. **Rossz auth-fejléc** a lehúzóban (`Authorization: Bearer` vs. a relay `x-ma-relay-token`).
+   A két oldal külön fordul, és külön-külön **helyes** volt.
+2. 🔴 **Adatvesztés lett volna**: a helyzet-tár útját a kód **saját helyéből** számoltuk, és
+   élesben a `build/` alá esett — amit minden `rimraf ./build` letöröl. Áthelyezve
+   `~/.config/my-assistant/location/`-be.
+3. **Hamis pozitív igazolás**: az `nginx -t` „syntax is ok"-ot mondott — a **saját
+   alapértelmezett** configjára, mert a csatolás nem érvényesült.
+
+⇒ A három tanulság bekerült: `current/principles/post-development-verification.md`.
+
+### Mellékesen javítva
+
+- `ma comm --help` elhallgatta a **`say`** alparancsot — emiatt építettem fölöslegesen egy
+  ad-hoc küldő szkriptet, holott a `SKILLS.md` végig az ajánlott utat írta.
+
+### A következő konkrét lépés
+
+⏸️ **A relay-lánc kód-oldala kész; ami hátra van, az owner-kapu:** kulcsok (T-30),
+Keystore (T-31), OwnTracks (T-33), és 🔴 **T-35 — a CI/CD-t semmi nem indítja el**
+*(a repo `Itharen/my-assistant`, nem a szervezetben; `gh` nincs telepítve, ezért a
+webhook léte **unverified**)*.
+
+⇒ Amíg ezek állnak: **T-12** (a várakozó STT-sor láthatósága a `doctor`-ban) és **T-20**
+(mikromunkák/hackathon) a következő, owner nélkül is elvégezhető tételek.

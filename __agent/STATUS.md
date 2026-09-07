@@ -1,5 +1,35 @@
 # STATUS
 
+## 📍 A HELYZET-LÁNC KÉSZ + a hangüzenet 👂-t kap — 2026-09-07 13:10
+
+**A relay-lánc mind a 4 kód-oldali tétele kész**, és a lehúzás **élő, végponttól végpontig
+próbán** igazolva: helyzet betöltve → lehúzva → eltárolva → nyugtázva → a következő kör üres.
+
+⭐ **Az owner szabálya élőben igazolva:** az **otthoni** helyzet **koordináta nélkül**
+tárolódik (`{at, state:"home"}`) — nem `if`-en múlik, a típus nem is engedi.
+
+👂 **A hangüzenet mostantól fül-reakciót kap** a felismerés ELŐTT, és az átirat **válaszként**
+megy rá — így a Discordon tartósan összekötve marad a hang és a szövege.
+*(Ez váltotta ki a „gépel…" tervet — owner-korrekció.)*
+
+🎙️ **A fel nem ismert hang már nem vész el:** 2/5/15/45 perces újrapróbálás, 5 próba, és
+soha nem fut két felismerés egyszerre *(ez maga az alkalmazkodás a RAM-ingadozáshoz)*.
+
+### 🔴 Három mért hiba — mind ZÖLD tesztek mellett
+
+| # | Mi volt | Miért nem fogta meg semmi |
+|---|---|---|
+| 1 | rossz auth-fejléc a lehúzóban | a két oldal külön fordul, külön-külön **helyes** volt |
+| 2 | 🔴 **adatvesztés**: a helyzet-tár a `build/` alá esett volna | forrásból futva jó, fordítva rossz |
+| 3 | hamis pozitív `nginx -t` | a parancs lefutott, csak **nem azt** vizsgálta |
+
+**Teszt: CLI 474/474 · szerver 74/74 · típusellenőrzés zöld · `comm doctor` 11 zöld.**
+
+⏸️ **Ami hátra van, az owner-kapu** — kulcsok, OwnTracks, és 🔴 **a CI/CD-t semmi nem indítja
+el** (a repo nem a szervezetben van; a webhook léte **unverified**, mert `gh` nincs telepítve).
+
+---
+
 ## 🔄 A köteg FRISSÜL kiküldés előtt — 2026-09-07 09:56
 
 > Owner: *„Jó lenne ha a discord msg kezelés frissítené küldés előtt a msg-eket. (Ha időközben
