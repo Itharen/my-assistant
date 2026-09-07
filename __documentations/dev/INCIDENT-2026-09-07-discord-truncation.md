@@ -91,6 +91,48 @@ csatorna áll — és a felfedezés pillanatában az owner **27 perccel az indul
 
 ---
 
+## 5b. 🔴 A MÁSODIK HIBA — a MEGKERÜLÉS okozta
+
+Az owner ugyanaznap **07:00 körül** jelezte:
+
+> *„jelenleg azt írja a Discord, hogy írsz valamit, de közben meg már elküldted, amit írtál,
+> meg befejezted a session futást is. Ez magától el fog ugyan tűnni, de itt egy fals
+> indikáció van."*
+
+### Az ok — mérve
+
+A „gépel…" jelzés abból dönt, hogy **van-e megválaszolatlan üzenet** *(`owesReply`)*, azt
+pedig a **kimenő naplóból** (`outbound-log.jsonl`) olvassa.
+
+```
+az utolsó naplózott kimenő üzenet:  06:44   (az utolsó `ma comm say`)
+a REST-megkerüléssel küldött 3 üzenet:  06:58, 07:00, 07:03   → NEM került a naplóba
+```
+
+⇒ `owesReply` **örökre igaz maradt** → a bot **végtelenül gépelt**.
+*(A 15 perces biztonsági szelep leállította volna — de az owner előbb vette észre.)*
+
+### ⭐ A TANULSÁG — ez általánosabb, mint az első
+
+> 🔴 **Amikor egy hibát MEGKERÜLÜNK, a megkerülés kihagyhat MELLÉKHATÁSOKAT, amiket az
+> eredeti út elvégzett.**
+> A megkerülésnek **UGYANAZT A TELJES SZERZŐDÉST** kell teljesítenie — nem csak a fő
+> funkciót.
+
+Az eredeti `ma comm say` **három** dolgot csinált: darabolt · küldött · **naplózta a kimenőt**.
+A megkerülésem az első kettőt átvette, a harmadikat **elhagyta** — és ez egy **másik**
+alrendszert rontott el.
+
+### A javítás (kész)
+
+| # | | |
+|---|---|---|
+| 1 | a kimaradt naplóbejegyzés **pótolva** | a `comm doctor` újra „nincs megválaszolatlan üzenet" |
+| 2 | a küldő **maga rögzíti** a kimenő naplót | nem felejthető el |
+| 3 | a küldő **visszaolvas + hosszt hasonlít** | `SENT kuldott=1006 megerkezett=1006 OK` |
+
+---
+
 ## 6. A TANULSÁG — általánosítható
 
 > 🔴 **Egy művelet visszajelzése csak addig ér valamit, ameddig a mérés HATÁRA ér.**

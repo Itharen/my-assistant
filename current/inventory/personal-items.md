@@ -31,6 +31,7 @@
 | 👛 **Tárca** | alap | |
 | 🎫 **Jegy / bérlet** | alap | ❓ BKK bérlet vagy alkalmi jegy? — lásd `open-questions.md` I-3 |
 | 📱 **Telefon** | alap | |
+| 🔋 **Powerbank** | ⛔ **NINCS** | Owner 2026-09-07: *„Nincsen Powerbankom, de a wishlisten kéne legyen.”* → felvéve az organizerbe (`org:task:6a9e4418482367e7f641e42c`) |
 
 ### ❓ Amit még nem tudok (nem találgatom)
 
