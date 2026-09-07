@@ -14,7 +14,7 @@
 active_plan: __agent/plans/discord-two-way-hyperplan/hyperplan.plan.md
 state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
-tests: "CLI 474/474 + szerver 74/74 zold; tipusellenorzes zold; comm doctor 11 zold / 0 hibas / 1 nem-megallapithato (2026-09-07 13:09)"
+tests: "CLI 477/477 + szerver 74/74 zold; tipusellenorzes zold; comm doctor 11 zold / 0 hibas / 1 nem-megallapithato (2026-09-07 13:09)"
 owner_available: false        # AI Summiton (elindult 07:45); Discordon ir
 blocked_on_owner: "Nyitott kerdesek H/I/J/K/L/M - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak), M3 (az idegen interfood-osszefesules commitolhato-e). [M1 LEZARVA: megjavitva.]"
 ```
@@ -627,3 +627,54 @@ webhook léte **unverified**)*.
 
 ⇒ Amíg ezek állnak: **T-12** (a várakozó STT-sor láthatósága a `doctor`-ban) és **T-20**
 (mikromunkák/hackathon) a következő, owner nélkül is elvégezhető tételek.
+
+---
+
+## ✅ 2026-09-07 13:10–13:50 — A KIMARADT ÜZENETEK + A VOICE-ÁTEMELÉS INDULÁSA
+
+### 🔴 T-40 — megvan, ami elnyelte az owner üzeneteit
+
+**Az owner jelezte** *(„félek, hogy egy kicsit elsikkadt egy pár üzenet")* — **igaza volt**,
+de az ok **nem** az LDP-újraindítás. **Mérve:** 5 üzenet `delivered`-ként elkönyvelve
+12:27–13:03 között, egyik sem érkezett meg, több futás-határon át sem.
+
+**A lánc:** a köteg **biztonsági szelepe** 15 perc után elsült, és a **foglaltság-kapuk
+ELŐTT** állt → foglalt sessionbe küldött → a CCAP **sorba tette** → a híd `delivered`-nek
+könyvelte. **Minden szint sikert jelentett rá.**
+
+**Két javítás:** a szelep többé nem írja felül a foglaltságot *(csak a gyűjtő-ablakot)* ·
+`queued: true` esetén **nem véglegesítünk** — a köteg várakozó marad.
+⚠️ **Két teszt a régi, hibás viselkedést rögzítette** — átírva.
+
+### A kimaradt üzenetekből fakadó lépések
+
+| Amit az owner írt | Mi lett belőle |
+|---|---|
+| a voice control átemelése — *„nagyon szeretném még előbb látni"* | **T-22 előrevéve** + új szabály: `transplant-not-rewrite.md` |
+| *„átraktam a repo ownert"* | ✅ igazolva, a remote átállítva `futdevpro/my-assistant`-ra ⇒ **T-35 lezárva** |
+| *„a cicd-t az overseer és a runnerei kezelik"* | ✅ így is készült |
+
+### T-22 — a voice control átemelése: 1. szakasz kész, 2. részben
+
+Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md`
+
+- **Felmérés:** a szállítmány **3 modul / 70 fájl / 11 251 sor**, nem egy modul.
+- ⭐ A `local` felismerő **ugyanaz az FDP AI**, amit már használunk ⇒ **fizetős kulcs nélkül**
+  is működhet.
+- 🔴 **A referencia nem mérhető:** a régi bot **nem fut**, a modul 2026-01-31 óta változatlan.
+- 🔴 **Döntés:** a szigorúsági különbséget **konfiguráció** oldja fel, nem kód-átírás
+  *(a régi bot `strict` nélkül fordult; már a levél-fájlokon 33 hiba)*. ⚠️ **Adósságként jelölve.**
+- **1. szakasz:** 23 fájl áthozva, a **teljes tartalmi változás 6 import-sor** `.js` kiterjesztése.
+- **2. szakasz (részben):** `fsm-dynamo` + `nts-dynamo` telepítve ⇒ az átemelt modul
+  **0 típushibával** fordul. ⛔ `.npmrc` nem készült.
+- ⭐ **Mérés, ami négy natív modult spórolt:** a kód **egyetlen opus-csomagot sem importál**
+  közvetlenül — a régi `package.json` négy implementációja a `@discordjs/voice` futásidejű
+  választása.
+
+### A következő konkrét lépés
+
+**T-22 / 2. szakasz befejezése:** `@discordjs/voice` + `prism-media` + `wav` +
+`formdata-node` + **egy** opus-kódoló telepítése, majd egy minimális felvételi próba.
+
+⚠️ **V3 owner-kérdés** *(kell-e most a `voice-output`)* **~2 600 sorral** szűkíthetné a
+szállítmányt — érdemes megvárni, mielőtt a 3–4. szakasz elindul.
