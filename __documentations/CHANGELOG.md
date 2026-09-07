@@ -4,6 +4,37 @@
 
 ---
 
+---
+
+## KORREKCIO: a jelzes a KULDES pillanatara kerult — 2026-09-07
+
+> **Owner:** *„Nem kell folyton irni, hogy megvannak az uzenetek... Eleg ha a typing
+> frissitve van es esetleg arrol kuldhetsz egy rovid 2 szavas valaszt, hogy na most ment el
+> neked x uzenet"*
+
+🔴 **Ez egy KORABBI MEGOLDASOM javitasa, ugyanazon a napon.** Nehany oraja epitettem be a
+„megerkezett, dolgozom" nyugtat, amikor a koteg VART. Az owner szerint ez **sok** — es igaza
+van: a varakozasrol a **„gepel…"** jelzes ugyis szol, tehat a nyugta **ugyanazt mondta el meg
+egyszer, szavakkal**.
+
+### Amit valtoztattunk
+
+- ⛔ A varakozasi nyugta **megszunt**.
+- ✅ A jelzes atkerult a **KULDES pillanatara**, es **tomondat** lett:
+  `📨 Átment 3 üzeneted.` — ez az egyetlen pillanat, amirol a „gepel…" **nem tud beszelni**.
+- A „gepel…" felso korlatja **15 → 45 perc**. A 15 perc rendszeresen lejart egy valodi munka
+  kozepen *(pont emiatt kerdezte meg az owner, hogy megkaptam-e az uzeneteit)*.
+  ⚠️ A **szelep megmaradt**: a reggeli `false`-„gepel…" incidens megmutatta, miert kell felso
+  korlat — egy beragadt allapot igy **magatol gyogyul**.
+
+### ⭐ A tanulsag, ami altalanosabb a funkcional
+
+**Nem eleg jelezni — a jelzesnek azt kell mondania, amit a tobbi jel NEM mond el.**
+A redundans visszajelzes nem megnyugtat, hanem **zajja valik**. Ket csatornan ugyanazt
+elmondani nem ketszer olyan jo, hanem rosszabb, mint egyszer.
+
+Teszt: CLI **457/457**.
+
 ## Helyzet-kovetes: a MAGJA kesz (OwnTracks) — 2026-09-07
 
 Az owner dontese utan (N1 = OwnTracks, N4 = allithato gyakorisag, N5 = az otthonit nem

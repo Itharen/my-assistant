@@ -18,8 +18,18 @@ export const TYPING_REFRESH_MS: number = 7_000;
  *
  * Az örökké „gépelő" bot rosszabb, mint a néma: azt sugallná, hogy mindjárt jön a válasz,
  * miközben lehet, hogy már régen elakadt valami.
+ *
+ * 🔴 **15 → 45 perc (owner, 2026-09-07):** *„Elég ha a typing frissítve van"* — vagyis a
+ * várakozás jelzése a „gépel…"-re van bízva. A 15 perc viszont **rendszeresen lejárt egy
+ * valódi munka közepén** *(mérve ugyanezen a napon: az owner emiatt kérdezte meg, hogy
+ * megkaptam-e az üzeneteit)*, és onnantól néma volt a csatorna.
+ *
+ * ⚠️ A szelepet **nem szüntettük meg**, csak tágítottuk: a `false`-„gépel…" incidens
+ * *(2026-09-07 reggel: a bot végtelenül gépelt egy megkerülés mellékhatása miatt)* pont azt
+ * mutatta meg, miért kell felső korlát. 45 perc elég egy hosszú munkához, de egy **beragadt**
+ * állapot még mindig **magától gyógyul**.
  */
-export const TYPING_MAX_MS: number = 15 * 60_000;
+export const TYPING_MAX_MS: number = 45 * 60_000;
 
 export interface TypingDecisionInput {
   /** Hány üzenet vár még átadásra (köteg). */

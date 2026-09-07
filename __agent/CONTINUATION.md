@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 10:33
+**Utoljára frissítve:** 2026-09-07 10:42
 
 ---
 
@@ -14,7 +14,7 @@
 active_plan: __agent/plans/discord-two-way-hyperplan/hyperplan.plan.md
 state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
-tests: "CLI 468/468 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
+tests: "CLI 457/457 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
 owner_available: false        # AI Summiton (elindult 07:45); Discordon ir
 blocked_on_owner: "Nyitott kerdesek H/I/J/K/L/M - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak), M3 (az idegen interfood-osszefesules commitolhato-e). [M1 LEZARVA: megjavitva.]"
 ```
@@ -237,7 +237,7 @@ A rendszer mukodott, a **visszajelzese** nem.
 
 ---
 
-## ✅ 2026-09-07 10:33 — OWNER-DONTESEK + a helyzet-kovetes MAGJA (C-47 resz)
+## ✅ 2026-09-07 10:42 — OWNER-DONTESEK + a helyzet-kovetes MAGJA (C-47 resz)
 
 ### Harom owner-dontes rogzitve
 

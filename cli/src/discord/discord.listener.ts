@@ -29,12 +29,7 @@ import {
   refreshBatchEntries,
   type CurrentMessageState,
 } from './discord.batch-refresh.js';
-import {
-  composeReceiptMessage,
-  decideReceipt,
-  readAcknowledgedOldestId,
-  writeAcknowledgedOldestId,
-} from './discord.receipt.js';
+import { composeDeliveryNotice } from './discord.receipt.js';
 import { sendDiscordMessage } from './discord.sender.js';
 import {
   composeTranscriptForBatch,
@@ -441,59 +436,35 @@ export class DiscordListener {
   }
 
   /**
-   * Atveteli nyugta, ha a koteg mar rege var.
+   * KEZBESITESI ERTESITO — „most ment el neked X uzenet".
    *
-   * > **Owner (2026-09-07):** *„Nah most csak nem jelez a discord »typing« (lejart) vagy nem
-   * > jutotttak el ezek az uzenetek hozzad?"*
+   * > **Owner-korrekcio (2026-09-07):** *„Nem kell folyton irni, hogy megvannak az
+   * > uzenetek... Eleg ha a typing frissitve van es esetleg arrol kuldhetsz egy rovid
+   * > 2 szavas valaszt, hogy na most ment el neked x uzenet"*
    *
-   * 🔴 A MERT HELYZET, AMI EZT KIVALTOTTA: az uzenetek **hianytalanul megerkeztek** — megis
-   * meg kellett kerdeznie. A „gepel…" jelzes 15 perc utan lejar, a koteg viszont ennel
-   * tovabb is varhat. Ilyenkor eddig **semmi** nem mondta meg, hogy az uzenetek megvannak.
+   * ⭐ Ez az EGYETLEN pillanat, amirol a „gepel…" jelzes NEM tud beszelni: hogy a koteg
+   * **atment**. A varakozasrol nem szolunk kulon — azt a typing lefedi.
    *
-   * Hibat SOHA nem dob: egy nyugta elmaradasa nem allithatja meg a kikuldesi kort.
+   * Hibat SOHA nem dob: egy ertesito elmaradasa nem befolyasolhatja a kikuldest, ami
+   * ekkorra mar sikeresen megtortent.
    */
-  private async maybeAcknowledgeReceipt(): Promise<void> {
+  private async notifyDelivered(deliveredCount: number): Promise<void> {
     try {
-      const pending = await this.bridge.getStore().readPending();
-      const oldest = pending[0];
+      const sent = await sendDiscordMessage(composeDeliveryNotice(deliveredCount), 'ack');
 
-      if (!oldest) {
-        await writeAcknowledgedOldestId(null);
-
-        return;
+      if (!sent.sent) {
+        await this.safeLog({
+          kind: 'error',
+          summary: `[discord/listener] MA-DISCORD-NOTICE-FAILED: a kezbesitesi ertesito nem ment ki — ${sent.detail}`,
+          extra: { code: 'MA-DISCORD-NOTICE-FAILED', deliveredCount },
+        });
       }
-
-      const oldestAgeMs: number = Date.now() - new Date(oldest.receivedAt).getTime();
-      const decision = decideReceipt({
-        pendingCount: pending.length,
-        oldestAgeMs: Number.isNaN(oldestAgeMs) ? 0 : oldestAgeMs,
-        alreadyAcknowledged: (await readAcknowledgedOldestId()) === oldest.messageId,
-      });
-
-      if (!decision.shouldSend) return;
-
-      // ELOBB jeloljuk megkuldottnek: ha a kuldes bukik, akkor sem probaljuk 15 mp-enkent
-      // ujra — egy elmaradt nyugta olcsobb, mint egy ismetlodo.
-      await writeAcknowledgedOldestId(oldest.messageId);
-
-      const sent = await sendDiscordMessage(composeReceiptMessage(pending.length), 'ack');
-
-      await this.safeLog({
-        kind: 'note',
-        summary: sent.sent
-          ? `[discord/listener] Atveteli nyugta elkuldve — ${decision.reason}`
-          : `[discord/listener] MA-DISCORD-RECEIPT-FAILED: a nyugta nem ment ki — ${sent.detail}`,
-        extra: {
-          code: sent.sent ? 'MA-DISCORD-RECEIPT-SENT' : 'MA-DISCORD-RECEIPT-FAILED',
-          pendingCount: pending.length,
-        },
-      });
     } catch (err: unknown) {
       await this.safeLog({
         kind: 'error',
-        summary: '[discord/listener] MA-DISCORD-RECEIPT-FAILED: a nyugta kozben hiba tortent — '
+        summary: '[discord/listener] MA-DISCORD-NOTICE-FAILED: a kezbesitesi ertesito kozben hiba — '
           + `${err instanceof Error ? err.message : String(err)}`,
-        extra: { code: 'MA-DISCORD-RECEIPT-FAILED' },
+        extra: { code: 'MA-DISCORD-NOTICE-FAILED', deliveredCount },
       });
     }
   }
@@ -755,18 +726,15 @@ ${spoken}`
         beforeSend: (pending) => this.refreshPendingFromDiscord(pending),
       });
 
-      if (!result) {
-        // A koteg VAR. Ha mar rege, jelezzuk, hogy legalabb MEGERKEZETT.
-        await this.maybeAcknowledgeReceipt();
-
-        return;
-      }
-
-      // Kikuldve -> a kovetkezo koteg ujra kaphat nyugtat.
-      await writeAcknowledgedOldestId(null);
+      // ⛔ A VARAKOZASROL NEM SZOLUNK (owner-korrekcio, 2026-09-07): arrol a „gepel…"
+      // jelzes ugyis beszel — egy kulon uzenet ugyanazt mondana el meg egyszer, szavakkal.
+      if (!result) return;
 
       // Sikeres átadás után nullázzuk a hiba-fékét: a következő zavart azonnal lássuk.
       this.lastFlushErrorLoggedAt = 0;
+
+      // ⭐ Az owner ERROL ker rovid jelzest — a varakozasrol nem.
+      await this.notifyDelivered(result.deliveredCount);
 
       await this.safeLog({
         kind: 'note',
