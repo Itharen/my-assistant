@@ -61,6 +61,11 @@ import {
 import type { VoiceDropObservation, VoiceDropProbe } from '../voice/voice-drop-probe.js';
 import { MissedSpeechReporter } from '../voice/voice-missed-speech.js';
 import { VoiceCuePlayer } from '../voice/voice-cues.js';
+import {
+  planFeedbackForDrop,
+  planFeedbackForOutcome,
+  type VoiceFeedbackPlan,
+} from '../voice/voice-feedback-plan.js';
 import { transcribeAudio } from '../stt/stt.client.js';
 import { composeMirrorMessage } from '../stt/stt.mirror.js';
 import {
@@ -592,15 +597,9 @@ export class DiscordListener {
           },
         });
 
-        // 🔇 ⛔ AZ URES FAJLT NEM JELENTJUK AZ OWNERNEK: ott tenyleg nem volt beszed, es a
-        // „nem jutott at" uzenet ilyenkor zaj lenne — pont a lathatosagot rontana.
-        if (observation.reason !== 'empty-file') {
-          void this.cues?.play('dropped');
-          this.missedSpeech?.note({
-            kind: 'discarded-by-recorder',
-            seconds: observation.lostAudioSeconds,
-          });
-        }
+        // 🗺️ A visszajelzes-tabla dont, nem ez a callback — igy TESZTELHETO
+        // (`voice-feedback-plan.ts`). Az ures fajlrol pl. szandekosan hallgatunk.
+        this.applyVoiceFeedback(planFeedbackForDrop(observation));
       },
       onProbeError: (detail: string): void => {
         void this.safeLog({
@@ -626,13 +625,9 @@ export class DiscordListener {
           },
         });
 
-        // 🔊 A KIMENETEL HANGJA — az owner ebbol tudja, folytathatja-e, vagy ismetelnie kell.
-        if (outcome.queued) void this.cues?.play('understood');
-        else if (outcome.missed === 'not-understood') void this.cues?.play('unsure');
-        else if (outcome.missed === 'recognition-failed') void this.cues?.play('error');
-
-        // 🔇 Ami nem jutott at, az is LATSZIK — a hang-csatornaban, osszevonva.
-        if (outcome.missed) this.missedSpeech?.note({ kind: outcome.missed });
+        // 🗺️ Ugyanaz a TESZTELT tabla dont itt is. ⭐ Duplikatumnal es idegen beszelonel
+        // CSEND a helyes valasz — ha szolnank, az owner azt hinne, elveszett valami.
+        this.applyVoiceFeedback(planFeedbackForOutcome(outcome));
       },
     });
 
@@ -651,6 +646,20 @@ export class DiscordListener {
     // újracsatlakozás különben két mintavételezőt hagyna ugyanazon a könyvtáron.
     this.dropProbe?.stop();
     this.dropProbe = result.probe ?? null;
+  }
+
+  /**
+   * A visszajelzés-terv VÉGREHAJTÁSA — hang + kiesés-jelentés.
+   *
+   * ⭐ A **döntés** a tesztelt `voice-feedback-plan.ts`-ben van; itt csak a mellékhatás
+   * történik. Így a „mi szóljon" kérdés élő Discord-kapcsolat nélkül is vizsgálható.
+   *
+   * ⚠️ Mindkét lépés `?.` mögött: ha a hang-lánc nem áll fel, az a szöveges csatornát
+   * **nem némíthatja el**.
+   */
+  private applyVoiceFeedback(plan: VoiceFeedbackPlan): void {
+    if (plan.cue) void this.cues?.play(plan.cue);
+    if (plan.missed) this.missedSpeech?.note(plan.missed);
   }
 
   /**

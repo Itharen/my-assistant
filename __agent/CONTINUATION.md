@@ -1952,3 +1952,68 @@ mondja meg, hogy **ebből még semmi nem következik**.
 Mind a három owner-követelmény megépült és **futásidőben igazolt**. ⏳ Ami hátra van, az **NEM
 fejlesztés**: az owner beszél a `honnie-place`-ben, és `ma comm voice-funnel` megmondja az
 arányt. ⛔ A szűrő-küszöbökhöz **addig nem nyúlok** — az lenne a találgatás.
+
+
+---
+
+## ✅ 2026-09-08 00:02 — DEV: a VISSZAJELZÉS-TÁBLA tesztelt modulba került
+
+### Előbb a mérés: nincs új adat
+
+`ma comm voice-funnel` → változatlanul **1 megszólalás, „KEVÉS MINTA"**. Az owner 21:49 óta
+nem beszélt a hang-csatornában.
+
+### ⭐ DE: igazoltam, hogy a lánc TÉNYLEG ÉLESÍTVE van
+
+⚠️ Ezt nem volt szabad feltételezni — az „armed" állítás enélkül üres lett volna:
+
+| Ellenőrzés | Eredmény |
+|---|---|
+| LDP fut, pipeline kész, szerver él | ✅ `pipelineComplete: true`, `serverRunning: true` |
+| a bot bent ül + felvesz | ✅ `MA-VOICE-JOINED` + `MA-VOICE-RECORDING-STARTED` **23:46** |
+| a futó folyamat tartalmazza-e az ÚJ kódot | ✅ dist **23:42**-kor épült, a node-folyamat **23:46**-kor indult ⇒ a 23:42-es modult töltötte be |
+| env-előfeltételek | ✅ `MA_DISCORD_USER_ID` / `GUILD_ID` / `VOICE_CHANNEL_ID` / `BOT_TOKEN` mind beállítva; `MA_VOICE_CUES` nincs ⇒ alapból BE |
+
+### 🔍 Két felfedezés az átemelt kód olvasásából
+
+**1. Egy HARMADIK eldobási út,** amiről nem tudtam: `processWavFileImmediately` →
+`no-green-block` → `scheduleFileDeletion`. ⭐ **A szonda ezt is elkapja**, mert nem a
+drop-utakat ismeri, hanem a **fájl eltűnését** figyeli — pont ezért volt jó a fájl-szintű
+megközelítés.
+
+**2. Egy megvizsgált, majd ELVETETT hipotézis.** Felmerült, hogy a törlés kifuthat a
+`readFile` alól *(verseny)*. ⛔ Végigolvasva: a **siker** útján a fájl **nem kerül** törlésre
+ütemezésre (`scheduleFileDeletion` csak `no-green-block` / `no-speech-activity` ágon fut), a
+takarítás pedig csak az **ütemezetteket** hajtja végre. ⇒ **Nincs verseny.** Megmértem, nem
+tippeltem — és nem szállítottam ki javítást egy nem létező hibára.
+
+### 🗺️ A munkacsomag: `voice-feedback-plan.ts`
+
+A „melyik kimenetelre melyik hang és melyik jelentés" döntés eddig **inline** volt a figyelő
+callbackjeiben — tehát **tesztelhetetlen** (élő Discord-kapcsolat kellene hozzá). 🔴 És **pont
+ott volt már két valós hiba** *(a duplikátum „veszteségnek" látszott · a „hallak" féke elnyelte
+az „eldobva" jelzést)* — mindkettőt **olvasással** találtam meg, nem teszttel.
+
+⇒ Kiemelve tiszta, mellékhatás nélküli táblába, **9 teszttel**:
+
+| Kimenetel | 🔊 hang | 🔇 jelentés |
+|---|---|---|
+| bekerült a kötegbe | `understood` | — |
+| gyanús átirat | `unsure` | `not-understood` |
+| a felismerés bukott | `error` | `recognition-failed` |
+| **duplikátum / idegen beszélő** | — | — ⭐ **CSEND a helyes válasz** |
+| a felvevő eldobta | `dropped` | `discarded-by-recorder` + **mp** |
+| üres felvétel | — | — ⛔ ott tényleg nem volt beszéd |
+
+⭐ **Viselkedés-azonosság ellenőrizve**: minden elérhető bemenetre ugyanaz jön ki, mint a régi
+inline logikából. Az egyetlen eltérés az ellentmondásos `queued + missed` esetnél van — az a
+felvevőből **nem áll elő**, és az új tábla ott a helyeset teszi.
+
+### Teszt
+
+**CLI 604/604 zöld** *(+9)* · transzplantált build változatlanul emittál.
+
+### ⏭️ Következő
+
+⏳ Továbbra is az **élő mérés** hiányzik, és az **nem fejlesztés**. Ha az owner beszél:
+`ma comm voice-funnel`.
