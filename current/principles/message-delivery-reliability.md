@@ -28,6 +28,43 @@ napló). A baj, hogy **a kiment üzenet nem biztos, hogy MEGÉRKEZIK a user FIGY
 ⇒ **A „sent: true" NEM egyenlő azzal, hogy „megkapta".** Ez ugyanaz a hibaosztály, mint a
 csendben elhalt figyelő: **kívülről sikernek látszik.**
 
+### 🔴 2026-09-07 — EZ NEM ELMÉLET VOLT: MÉRT INCIDENS
+
+> **Owner ugyanaznap:** *„tényleg ennyit akartál csak küldeni, vagy itt közben valami hibánk
+> is van, ami miatt nem kapom meg a teljes üzeneteket?"* — **volt hibánk.**
+
+**Minden kimenő üzenetem az ELSŐ SORNÁL csonkolódott** *(a Windows `npx`/`cmd` burkoló vágta
+le a többsoros argumentumot)*. A mérés:
+
+```
+a USER üzenetei:   55, 146, 319, 617, 744 karakter
+az ÉN üzeneteim:   29, 46, 62, 63, 73, 75, 78, 82, 105 karakter
+```
+
+⚠️ **És a rendszer minden szintje ŐSZINTÉN „sikert" jelentett:** `sent: true`, `partCount: 1`
+— mind IGAZ volt arra az egy sorra. A hiba **a mérésünk határán KÍVÜL** történt.
+
+⇒ Teljes elemzés: `__documentations/dev/INCIDENT-2026-09-07-discord-truncation.md`.
+
+### ⭐ A SZABÁLY, AMI EBBŐL LETT: KÜLDÉS UTÁN VISSZAOLVASNI
+
+> **Owner javaslata (2026-09-07):** *„Lehet, hogy vissza is se kéne ellenőrizni időnként,
+> hogy sikerülhet-e infókat átadni a Discordon, miután megtörtént."*
+> ⭐ **Ez a javaslat fogta meg a fenti hibát.**
+
+| Lépés | |
+|---|---|
+| 1 | elküldjük az üzenetet |
+| 2 | **visszaolvassuk a csatornát** *(Discord REST: `GET /channels/{id}/messages`)* |
+| 3 | **összevetjük a HOSSZT**: `elküldött == megérkezett`? |
+| 4 | eltérés ⇒ **HIBA**, nem siker — újraküldés + naplózás |
+
+🔴 **Ahol a kimenet elhagyja a rendszerünket, ott vissza kell olvasni.** Nem elég tudni, hogy
+elküldtük — azt kell tudni, hogy **megérkezett, és teljes egészében**.
+
+*(A bejövő irányban ez már megvan: a köteg csak IGAZOLT átadás után ürül. A kimenő irányból
+hiányzott.)*
+
 ### A jelenlegi rangsor (2026-09-07, első kör)
 
 | # | Csatorna | Státusz |
