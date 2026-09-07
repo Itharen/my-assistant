@@ -9,12 +9,12 @@ alaposan tervezd meg mindent, ami ehhez szükséges. Készíts egy Hyperplant"*
 
 ```yaml
 state: live-verified
-overall_progress: "EGY belepesi pont: dc ldp -> szerver -> Discord-figyelo + Jelenlet-figyelo + Konzol-pulzus. Mindharom felugyelve/bekotve. CLI 419/419 + szerver 42/42 zold."
+overall_progress: "EGY belepesi pont: dc ldp -> szerver -> Discord-figyelo + Jelenlet-figyelo + Konzol-pulzus. Mindharom felugyelve/bekotve. CLI 432/432 + szerver 42/42 zold."
 blocking: "NINCS technikai blokkolo. Marad: nyitott kerdesek (H, I, J, K, L, M)."
 architecture_decision: "SAJÁT bot (owner, 2026-09-06) + a CCAP hivatalos prompt-végpontja a bejuttatásra, SAJÁT oldali kötegeléssel (1 futás, nem N)"
 review_loop: "MINDKÉT szakaszra TELJESÜLT — 1. szakasz 8 kör/11 javítás, figyelő 7 kör/10 javítás; mindkettőnél az utolsó KETTŐ tiszta."
 last_updated: 2026-09-07
-outside_this_plan: "A 2026-09-07-i C-33 (Discord-hanguzenet vegig), C-44 (konzol-pulzus) es C-45 (koteg-frissites) NEM ennek a tervnek a resze - allapotuk: __agent/CONTINUATION.md + __agent/capabilities/CATALOG.md. Itt csak a teszt-szamok es a datum frissultek."
+outside_this_plan: "A 2026-09-07-i C-33 (Discord-hanguzenet vegig), C-44 (konzol-pulzus) es C-45 (koteg-frissites), C-46 (tavvezerles-szuro) es C-47 (telefon-helyzet, DONTESRE VAR) NEM ennek a tervnek a resze - allapotuk: __agent/CONTINUATION.md + __agent/capabilities/CATALOG.md. Itt csak a teszt-szamok es a datum frissultek."
 ```
 
 | Master-plan | Cím | Állapot |

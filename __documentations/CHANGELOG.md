@@ -4,6 +4,49 @@
 
 ---
 
+## A tavvezerles mar nem hazudik jelenletet — 2026-09-07
+
+> **Owner:** *„Oh.... Most jovok ra h lehet megzavartam a jelenlet figyelest tavvezerlessel...
+> Nem lenne rossz ha le tudnad kerni a telefonom location-jet..."*
+
+### A rejtely, ami ma reggel megoldodott
+
+A jelenlet-meres **09:15:33-kor „aktiv"-ot** mutatott, pedig az owner az AI Summiton volt.
+A RustDesk-naplo szerint ekkor **09:15:27 -> 09:23:10** kozott **tavoli munkamenet** allt fenn.
+
+### Miert nem lehetett ezt korabban eszrevenni
+
+A RustDesk a **KONZOL-munkamenetbe injektalja a bevitelt** (`query session` -> `console`,
+nem `rdp-tcp`). A tavoli kattintas tehat **bajtra ugyanugy nez ki**, mint a helyi —
+a `GetLastInputInfo` uresjarati idejebol ez **elvileg sem** volt megkulonboztetheto.
+
+### A megoldas: nem az inputot nezzuk, hanem a MUNKAMENETET
+
+- `presence.remote-session.ts` (uj): a RustDesk `cm`-naplojabol kiolvassa a
+  munkamenet-idoszakokat (`Got new connection` / `connection closed`).
+- A jelenlet-olvaso: ha az „aktiv" minta **tavoli munkamenetbe esik**, az eredmeny
+  **`unknown`, NEM `yes`**.
+- ⚠️ Szandekosan `unknown` es nem `no`: attol, hogy tavolrol nyult a gephez, meg **lehet
+  itthon**. A nem tudas kulon allapot — es a hangszoros kapu erre TILT.
+
+### ⚠️ Mert csapda, ami majdnem megvezetett
+
+**A fajlnev NEM a munkamenet ideje.** A RustDesk forgatja a naplot, es az uj fajl a
+**KOVETKEZO** munkamenet idejerol kapja a nevet: a `RustDesk_r2026-09-07_09-15-27.log`
+valojaban a **09-05 07:52:27**-es munkamenetet tartalmazza. Ha a fajlnevre epitettem volna,
+a felismeres **rendszeresen** melle nyult volna. Ezert a parser a TARTALMAT nezi.
+
+### A telefon-helyzet: DONTESRE var, nem epitettem meg
+
+Passzivan (ARP-olvasas, ⛔ szkenneles nelkul) megmertem: a halozat `200.33.0.0/24`,
+**25 szomszeddal** — **osztott/hazas** halozat, nem kis otthoni LAN. Ez gyengiti a
+„LAN-jelenlet" otletet. Opciok + ajanlas + **adatvedelmi hatarok**:
+`current/open-questions.md` **N)** szekcio. Ajanlas: **OwnTracks (FOSS) -> sajat vegpont**.
+
+Teszt: CLI **432/432** (13 uj).
+
+---
+
 ## A koteg a CCAP SORAT is megvarja — 2026-09-07
 
 > **Owner, elesben eszreveve:** *„latom, hogy message queue-ba kerultek az uzeneteim es nem

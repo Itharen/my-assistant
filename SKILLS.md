@@ -338,6 +338,26 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
   RAM mellett 5 perc alatt sem futott le; közvetlenül utána ugyanaz a fájl **77,6 mp**.
   Owner: *„90% usage felett várakozik"*.
 
+### Tavvezerles-szuro a jelenletben (`presence.remote-session.ts`)
+
+> **Owner (2026-09-07):** *„lehet megzavartam a jelenlet figyelest tavvezerlessel..."*
+
+- 🔴 **A problema, MERVE:** a RustDesk a **KONZOL-munkamenetbe injektalja a bevitelt**
+  (`query session` -> `console`, nem `rdp-tcp`), ezert a tavoli kattintas **bajtra ugyanugy
+  nez ki**, mint a helyi. Az uresjarati idobol ez SOHA nem lesz megkulonboztetheto.
+- ⭐ **A megoldas:** nem az inputot vizsgaljuk, hanem hogy volt-e **nyitott tavoli munkamenet**.
+  A RustDesk kapcsolat-kezeloje (`%APPDATA%\RustDesk\log\cm`) naplozza:
+  `Got new connection` -> kezdet, `connection closed` -> veg.
+- **Elo bizonyitek:** a 09:15:33-as „aktiv" minta a **09:15:27 -> 09:23:10** kozotti tavoli
+  munkamenetbe esik. Ez oldotta meg a reggeli rejtelyt.
+- ⚠️ **A FAJLNEV NEM A MUNKAMENET IDEJE.** A RustDesk forgatja a naplot, es az uj fajl a
+  **KOVETKEZO** munkamenet idejerol kapja a nevet: a `..._09-15-27.log` valojaban a
+  **09-05 07:52:27**-es munkamenetet tartalmazza. ⛔ Mindig a TARTALMAT elemezd.
+- **Az eredmeny `unknown`, NEM `no`:** attol, hogy tavolrol nyult a gephez, meg LEHET itthon.
+  A nem tudas kulon allapot — es a hangszoros kapu erre TILT.
+- Ha nincs RustDesk vagy a naplo olvashatatlan: ures lista = „nem tudunk tavoli munkamenetrol",
+  vagyis a jelenlet annyit tud, amennyit eddig is — nem kevesebbet.
+
 ### Mikor megy ki a koteg — a felteteles sor (`decideFlush`)
 
 > **Owner (2026-09-07):** *„ha running vagy van message a queue-ban akkor csak gyujtunk"*

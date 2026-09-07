@@ -16,7 +16,7 @@ kiesik. Lekérdezési hibánál a **régi megy változatlanul** — ⛔ hálóza
 | 1 | **A hangüzenet átirata törlődik** | a kötegben az **átirat** áll, a Discord-üzenet törzse viszont ÜRES ⇒ szabály lett: **üres friss tartalom sosem ír felül meglévőt** |
 | 2 | **A közben érkezett üzenet elvész** | a frissítés hálózati körökből áll, tehát eltart; a sima felülírás az ezalatt érkezettet eldobta volna ⇒ `applyPendingRefresh` **összefésül** |
 
-**Teszt: CLI 419/419 · szerver 42/42 · típusellenőrzés zöld.**
+**Teszt: CLI 432/432 · szerver 42/42 · típusellenőrzés zöld.**
 
 ---
 

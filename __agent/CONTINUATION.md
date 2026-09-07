@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 10:07
+**Utoljára frissítve:** 2026-09-07 10:15
 
 ---
 
@@ -14,7 +14,7 @@
 active_plan: __agent/plans/discord-two-way-hyperplan/hyperplan.plan.md
 state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
-tests: "CLI 419/419 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
+tests: "CLI 432/432 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
 owner_available: false        # AI Summiton (elindult 07:45); Discordon ir
 blocked_on_owner: "Nyitott kerdesek H/I/J/K/L/M - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak), M3 (az idegen interfood-osszefesules commitolhato-e). [M1 LEZARVA: megjavitva.]"
 ```
@@ -183,6 +183,37 @@ foglalt", hogy a CCAP soraban **mar all** egy tetel — ilyenkor a kuldes nem va
 ⭐ **Tanulsag:** a hianyzo adat **mar a kezunkben volt** — nem meresi, hanem **felhasznalasi**
 hiany. A tesztek azt ellenoriztek, amit a fuggveny NEZ, nem azt, amit nezni KELLENE. Ilyet a
 sajat review-korom nem talal meg; az owner elesben igen.
+
+---
+
+## ✅ 2026-09-07 10:15 — a TAVVEZERLES mar nem hazudik jelenletet (C-46)
+
+> Owner: *„Oh.... Most jovok ra h lehet megzavartam a jelenlet figyelest tavvezerlessel...
+> Nem lenne rossz ha le tudnad kerni a telefonom location-jet..."*
+
+**A reggeli rejtely MEGOLDVA es KODBA ONTVE.** A 09:15:33-as „aktiv" minta a
+**09:15:27 -> 09:23:10** kozotti RustDesk-munkamenetbe esik.
+
+| Mit | Allapot |
+|---|---|
+| **Miert nem lehetett korabban eszrevenni** | a RustDesk a **KONZOL-munkamenetbe injektalja a bevitelt** (`query session` -> `console`, nem `rdp-tcp`) ⇒ a tavoli kattintas **bajtra ugyanugy nez ki**, mint a helyi. Az uresjarati idobol **elvileg sem** volt megkulonboztetheto. |
+| **A megoldas** | nem az inputot nezzuk, hanem a **MUNKAMENETET**: a RustDesk `cm`-naploja (`Got new connection` / `connection closed`). |
+| **A jelenlet-olvasoban** | ha az „aktiv" minta tavoli munkamenetbe esik -> **`unknown`, NEM `yes`**. ⚠️ Szandekosan nem `no`: attol, hogy tavolrol nyult a gephez, meg **lehet itthon**. |
+| **⚠️ Mert csapda** | **a FAJLNEV NEM a munkamenet ideje** — a RustDesk forgat, es az uj fajl a **KOVETKEZO** munkamenet idejerol kap nevet. A `..._09-15-27.log` valojaban a **09-05 07:52:27**-es munkamenetet tartalmazza. ⛔ A parser a TARTALMAT nezi. |
+| **Teszt** | **CLI 432/432** (13 uj). |
+
+### 📍 A TELEFON-HELYZET: DONTESRE VAR, NEM EPITETTEM MEG
+
+⛔ Ez **uj hatokor**, nem „egyertelmu javitas" — ezert **nem** vagtam bele magamtol
+(`no-approval-for-obvious-fixes` explicit hatara).
+
+**Amit megmertem** *(passziv ARP-olvasas, ⛔ szkenneles nelkul)*: a halozat `200.33.0.0/24`,
+**25 szomszeddal** — **osztott/hazas** halozatnak nez ki, nem kis otthoni LAN-nak. Ez
+**gyengiti** a „LAN-jelenlet" otletet (+ Android MAC-randomizalas, alvo WiFi).
+
+⭐ **Ajanlasom: OwnTracks (FOSS) -> a MI vegpontunk.** Nincs harmadik fel, nincs fiok, nincs
+koltseg, es valodi helyzetet ad. Opciok, pontossag/akku, es az **adatvedelmi hatar**:
+`current/open-questions.md` **N)** szekcio (N1-N5). Kepesseg: **C-47**.
 
 ---
 

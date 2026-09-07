@@ -506,3 +506,30 @@
 | `Q-2026-09-07-M2` | **A C-42/C-43 (küldés-visszaolvasás, `--file`) a BASELINE-hoz tartozik, vagy külön képesség?** A kommunikáció baseline — ezek annak a megbízhatóságát adják. | Ha baseline, nem kell rájuk jóváhagyás, és ki is vehetők a katalógusból. | **l** | open |
 | `Q-2026-09-07-M3` | **Az `interfood.api-client.ts` duplikált `getImageUrl`-jét összefésültem** (különben a teljes CLI-build bukott). ⚠️ **Idegen, félkész munka**, commitolatlan. Bemehet a commitba, vagy a másik session zárja le? | Amíg lóg, minden commitomban ott van egy idegen változás. | **m** | open |
 
+---
+
+## N) Telefon-helyzet — hogyan tudjuk meg, hol vagy? 📍 (2026-09-07)
+
+> **Owner, 2026-09-07 09:38:** *„Óh.... Most jövök rá h lehet megzavartam a jelenlét
+> figyelést távvezérléssel... Nem lenne rossz ha le tudnád kérni a telefonom location-jét..."*
+
+**Amit MÁR megoldottam ehhez (nem kérdés):** a **távvezérlés-szűrő** kész — a RustDesk
+munkamenet-naplójából felismerem, ha a bevitel távoli volt, és olyankor a jelenlét
+`unknown`, nem `yes`. *(Mérve: a 09:15:33-as „aktív" minta a 09:15:27–09:23:10 közötti
+távoli munkamenetbe esik.)*
+
+**Amit MÉRTEM a hálózatról** *(passzív ARP-olvasás, ⛔ nem szkenneltem)*: a hálózat
+`200.33.0.0/24`, **25 szomszéddal** — ez **osztott/házas hálózatnak** néz ki, nem kis
+otthoni LAN-nak. Ez érdemben befolyásolja a választást.
+
+| ID | Kérdés | Miért kell | Fontosság | Status |
+|---|---|---|---|---|
+| `Q-2026-09-07-N1` | **Melyik utat választod?** ⭐ **Ajánlásom: OwnTracks (FOSS) → a MI szerverünk.** A telefon egy nyílt forrású appból küldi a helyzetet a saját végpontunkra — nincs harmadik fél, nincs fiók, nincs költség, és **valódi helyzetet** ad, nem csak „itthon/nem itthon"-t. Illeszkedik a `build-it-ourselves` + `no-paid-solutions` elvekhez. | Ez dönti el, mit építek. | **h** | open |
+| `Q-2026-09-07-N2` | **Alternatíva: LAN-jelenlét** (rajta van-e a telefon a hálózaton). Olcsóbb, app nélkül megy — DE: ⚠️ **osztott hálózat** (25 eszköz), az Android **MAC-et randomizál**, és alvó WiFi-nél „eltűnik" ⇒ *„itthon"* jelre használható, *„nincs itthon"* jelre **megbízhatatlan**. Kell-e másodlagos jelnek? | Kiegészítheti az N1-et, de önmagában gyenge. | **m** | open |
+| `Q-2026-09-07-N3` | Ha az N1-et választod: **melyik eszköz a telefonod** a hálózaton, illetve milyen néven fusson az OwnTracks-azonosító? | Enélkül nem tudom megkülönböztetni a többi eszköztől. | **m** | open |
+| `Q-2026-09-07-N4` | **Milyen pontosság kell?** Elég a *„otthon / úton / máshol"*, vagy valódi koordináta? És **milyen sűrűn** — a gyakori GPS **eszi az akkut**. | A pontosság ára az akku; ezt te döntöd el. | **m** | open |
+| `Q-2026-09-07-N5` | ⛔ **Adatvédelmi határ:** a helyzet-adat **hol tárolódjon**, és **meddig**? Javaslatom: a saját gépen, a `current/`-en KÍVÜL, és **csak a legutóbbi állapot**, nem teljes útvonal-történet. | A helyzet-előzmény a legérzékenyebb adat, amit valaha kezelnék. | **h** | open |
+
+⛔ **Amit NEM javaslok:** Google Find My Device / Maps-helymegosztás lekérdezése. Külső
+szolgáltatás + fiók-hozzáférés, törékeny, és ellentmond a `build-it-ourselves` elvnek.
+

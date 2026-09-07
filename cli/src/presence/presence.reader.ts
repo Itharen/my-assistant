@@ -13,6 +13,8 @@ import { existsSync } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+import { isRemoteAt, readRemoteSessions } from './presence.remote-session.js';
+
 /** Ennyi percen belüli aktív mérés jelenti azt, hogy a gépénél van. */
 export const PRESENCE_ACTIVE_WINDOW_MINUTES: number = 10;
 
@@ -72,6 +74,23 @@ export async function readPresence(
   }
 
   if (latest.idleState === 'active') {
+    // 🔴 TÁVVEZÉRLÉS-SZŰRŐ (owner, 2026-09-07: „lehet megzavartam a jelenlét figyelést
+    // távvezérléssel"). A RustDesk a KONZOL-munkamenetbe injektálja a bevitelt, tehát a
+    // távoli kattintás bájtra ugyanúgy néz ki, mint a helyi. Ha a mérés pillanatában nyitott
+    // távoli munkamenet volt, az „aktív" NEM jelent fizikai jelenlétet.
+    //
+    // ⚠️ Az eredmény szándékosan `unknown`, NEM `no`: attól, hogy távolról nyúlt a géphez,
+    // még LEHET itthon. A nem tudás külön állapot — és a hangszórós kapu erre TILT.
+    if (isRemoteAt(await readRemoteSessions(), latest.timestamp)) {
+      return {
+        isHome: 'unknown',
+        reason: `Friss mérés (${ageMinutes} perce) aktív bevitellel, DE ekkor TÁVOLI munkamenet `
+          + 'állt fenn (RustDesk) — a távvezérelt bevitel nem bizonyítja, hogy a gépnél van.',
+        latest,
+        ageMinutes,
+      };
+    }
+
     return {
       isHome: 'yes',
       reason: `Friss mérés (${ageMinutes} perce), aktív bevitel — a gépét használja.`,
