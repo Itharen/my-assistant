@@ -115,7 +115,7 @@ KEZDETÉN megy ki**, nem induláskor (`current/inventory/personal-items.md`).
 
 | # | Lépés | Parancs / fájl |
 |---|---|---|
-| 1 | **Mennyi az idő, milyen nap?** | `date "+%Y-%m-%d %H:%M %A"` |
+| 1 | **Mennyi az idő, milyen nap?** ⏰ **ÉS MINDEN további időpont-állítás előtt ÚJRA** | `date "+%Y-%m-%d %H:%M %A"` — ⛔ tilos korábbi mérésből extrapolálni (`time-must-be-measured.md`) |
 | 2 | **Itthon van? Ébren van?** | `ma comm doctor` (jelenlét + ébrenlét sor) |
 | 3 | **Írt valamit?** | `__agent/USER_INPUT.md` `[NEW]` · Discord-köteg |
 | 4 | **Tartozom válasszal?** | `ma comm doctor` válasz-kötelezettség sora |

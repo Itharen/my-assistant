@@ -691,6 +691,8 @@ megfogalmazása lesz a referencia.
 | `current/principles/proactive-lookup.md` | **Egy kérés → tartós alapértelmezés**: ha egyszer kérte, hogy nézzek utána, legközelebb **magamtól** megteszem (program, helyszín, megközelítés). Az utánanézés automatikus, a **cselekvés nem** |
 | `current/principles/message-delivery-reliability.md` | **A „sent: true" ≠ „megkapta"** — az üzenetek elúszhatnak. Discord az elsődleges, amíg nincs saját megoldás; irány: nyugta-követés + perzisztens postaláda |
 | `current/principles/discord-first-output.md` | ⭐ **DISCORD-FIRST**: ami érdemi, az **Discordra** megy, nem csak a sessionbe — mert amint elindul otthonról, a session-válasz láthatatlan. Több üzenet egy körben szabad |
+| `current/principles/discord-message-style.md` | **A Discord-üzenet RÖVID**: mi történt + mit kell tenned + milyen döntés vár rád. ⛔ Magyarázat, ok-lánc, mérési adat NEM — az a repóba megy. Szűrő: *„ebből következik számára teendő vagy döntés?"* |
+| `current/principles/time-must-be-measured.md` | ⏰ **Minden időpont-állítás ELŐTT `date`** — tilos korábbi mérésből extrapolálni. Mért lebukás: 07:12-t írtam, 06:59 volt |
 | `current/principles/thought-storm-inputs.md` | **Gondolat-orkán inputok**: egy üzenetben több téma. Szétbontás → besorolás → routing → visszajelzés. ⚠️ A **zárójeles félmondat** gyakran tartós szabály |
 
 **Új alapelv kezelése:** ha a user új szabály-szerű dolgot mond, **soha ne csak

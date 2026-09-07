@@ -102,9 +102,21 @@ Elv: `current/principles/message-delivery-reliability.md`.
 
 | # | Képesség | Státusz | Megjegyzés |
 |---|---|---|---|
-| C-33 | **Voice üzenet olvasása** (STT) | 📝 **javaslat** | Discord hangüzenet → szöveg → feldolgozás |
+| C-33 | **Voice üzenet olvasása** (STT) | 📝 **javaslat** | Hangüzenet → **saját STT (FDP AI**, fut a gépen) → ⭐ **TÜKÖR-ÜZENET** vissza (lássa, jól értettem-e) → utána válasz + feldolgozás |
 | C-34 | **Beszélgetés voice channelen** | 📝 **javaslat** | kétirányú hang a Discord voice channelen |
 | C-35 | **STT/TTS kiemelése a régi CCAP-ból** | 📝 **javaslat** | ez a C-33/C-34 előfeltétele — organizerben felvéve feladatként |
+
+> **Owner, 2026-09-07:** *„STT-hez általában a saját rendszert szoktuk használni, most is fut
+> a gépen. FDP AI-ként szerepel sok-sok kódban. egy voice üzenetet neked ide ebből a
+> sessionbe azt feldolgozzuk az STT-vel és ilyenkor egyrészt egy mirror üzenetet is kéne
+> küldjél, hogy lássam, hogy jól olvastad fel másrészt pedig utána arra is válaszolhatnád
+> illetve azt is feldolgozhatnád..."*
+>
+> ⭐ **A TÜKÖR-ÜZENET nem extra, hanem a képesség RÉSZE.** Egy félrehallott hangüzenetre adott
+> válasz rosszabb, mint a semmi — a tükör az, ami ezt elkapja. *(Ugyanaz az elv, mint a
+> küldés utáni visszaolvasásnál: ahol a bemenet ÉRTELMEZÉSEN megy át, ott vissza kell
+> igazolni.)*
+> ⚠️ Az FDP AI STT pontos belépési pontja ❓ **NINCS MÉG FELMÉRVE** — az a megépítés első lépése.
 
 ---
 
