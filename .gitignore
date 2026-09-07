@@ -41,3 +41,11 @@ browser-extension/dist/
 
 # Helyzet-adat — SOHA nem kerulhet a repoba (current/principles/location-retention.md)
 server/data/
+
+# 🔊 A hang-lánc futásidejű kimenetei — átmeneti nyersanyag, SOHA nem verziózzuk.
+# Az átemelt CCAP-kód hozza létre őket (`CV_Recording_ControlService` és `CVO_File_ControlService`),
+# a `process.cwd()`-hez képest. ⚠️ A felvételi könyvtárat a szolgáltatás induláskor KIÜRÍTI —
+# ha ide bármi verziózott kerülne, azt csendben törölné.
+cli/recordings/
+cli/_assets/voice-outputs/
+recordings/

@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 17:13
+**Utoljára frissítve:** 2026-09-07 17:38
 
 ---
 
@@ -892,6 +892,43 @@ néma kimaradás nincs. Leválásnál **5 mp türelem** a magától-újracsatlak
 KIVONAT"-ot írt, **nem** „nincs teendő"-t. Átmeneti hiba; nem építettem rá semmit.
 
 
+
+---
+
+## 🔴 2026-09-07 17:20–17:38 — AZ ÁTEMELT KÓDBÓL SOHA NEM KÉSZÜLT JS
+
+A 6. szakaszhoz be akartam tölteni a felvevő szolgáltatást. **Nem létezett.**
+`noEmit: true` + kizárás a fő buildből ⇒ a 70 fájl **típus-ellenőrzésen átment**, de
+**JS SOHA nem készült belőle**. ⚠️ A zöld típus-ellenőrzés **elfedte** a hiányt.
+
+🩹 `noEmit: false` + `outDir: "dist/cli"` *(nem `dist` — különben más kiosztásba esne, és a saját
+kódunk nem találná)* + `cli/scripts/transplanted-build-fix.ts` a **két környezet-különbségre**
+*(minimális manifest a dist-be · JSON-import attribútum + default-import)*. A forráshoz **nem
+nyúltunk**. LDP: 22 → **24** lépés.
+
+### ⚠️ SAJÁT MÉRÉSI HIBA — ezt jegyezd meg
+
+`timeout 22`-vel bisecteltem, és arra jutottam, hogy a beszéd-kimenet **beragad** import
+közben — majdnem beírtam a tervbe, hogy a 6. szakasz az **owner ElevenLabs-kulcsára vár**.
+**HAMIS volt:** közben az LDP teljes buildet futtatott és telítette a gépet.
+
+Nyugodt gépen minden betöltődik *(2,8 / 7,8 / 9,6 / **19,5** s)*, és példányosítható is —
+**API-kulcs nélkül**: `{"instantiated":true,"hasHandlePcmReceiver":true,"hasInitDir":true}`.
+
+📌 **A „no guessing" nem áll meg annál, hogy mértem.** Számít, MILYEN KÖRÜLMÉNYEK KÖZÖTT, és a
+mérés mellé oda kell írni, mi futott még. ⇒ Bináris `OK/HANG` helyett **időt** mérünk, bőkezű
+timeouttal.
+
+### Amit ez felszabadít
+
+✅ A 6. szakasz **nincs owner-kapun**. ⚠️ De a **19,5 s hidegindítás valós költség** — a
+hang-láncot **lustán** kell betölteni, nem a figyelő indulási útvonalán.
+⚠️ Mellékhatás: `cli/_assets/voice-outputs/` és `<cwd>/recordings/` jön létre; utóbbit a
+felvevő **induláskor kiüríti** ⇒ mindkettő gitignore-ban.
+
+Doksi: `__documentations/developments/2026-09-07-transplanted-code-never-compiled.md`
+
+
 ### A következő konkrét lépés
 
 **T-22 / 5. szakasz:** bekötés a hang-csatornára *(`1489036734632034496`)*, **kétirányú
@@ -927,7 +964,8 @@ mondja. ⛔ Nem kaparom tovább: két ellentmondó válasz után a forrás megb�
 
 ### A következő konkrét lépés
 
-**T-22 6. szakasz — FELVÉTEL + FELISMERÉS a hang-csatornából:** az átemelt
-`CV_Recording_ControlService` ráültetése ugyanarra a kapcsolatra, és az átirat átadása a
-`VoiceChannelBridge`-nek *(az már kész és tesztelt)*.
-⚠️ A fizetős ágak (ElevenLabs) kulcsa **owner-kapu** — a helyi felismerés útját kell először.
+**T-22 6. szakasz — FELVÉTEL bekötése:** a `VoiceConnection` kiadása a jelenlét-modulból, és
+`CV_Recording_ControlService.handlePcmReceiver(connection)` — **változatlan átemelt kódon**.
+Utána: a kész WAV → a **már működő** STT (`transcribeAudio`) → `VoiceChannelBridge`.
+⚠️ **LUSTA betöltés kötelező** — a hang-lánc hidegindítása 19,5 s, ez nem mehet a figyelő
+indulási útvonalára. ⭐ Owner-kapu **NINCS** rajta (mérve).

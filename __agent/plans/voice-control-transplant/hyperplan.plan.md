@@ -11,15 +11,39 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 17:13
+## 📊 STATUS — 2026-09-07 17:38
 
 | | |
 |---|---|
 | **Fázis** | 🟢 **5. szakasz KÉSZ** — a bot **ÉLŐBEN BENT ÜL** a hang-csatornában |
 | **Haladás** | **5/5 szakasz** *(a jelenlét-funkcióig; a felvétel+felismerés a 6. szakasz)* |
 | **Teszt** | CLI **513/513** zöld *(+9 a hang-hídra, +10 a jelenlétre)*; a fő build **érintetlen** |
-| **Következő lépés** | 6. szakasz: **felvétel + felismerés** a hang-csatornából *(az átemelt `CV_Recording_ControlService` ráültetése ugyanerre a kapcsolatra)* |
-| **Blokkoló** | nincs |
+| **Következő lépés** | 6. szakasz: **felvétel bekötése** — ⚠️ **LUSTÁN** (a hang-lánc hidegindítása **19,5 s**) |
+| **Blokkoló** | nincs — ⭐ **mérve: a 6. szakasz NINCS owner-kapun** (a lánc kulcs nélkül példányosítható) |
+
+### 🔴 2026-09-07 17:38 — AZ ÁTEMELT KÓDBÓL SOHA NEM KÉSZÜLT JS (javítva)
+
+A 4. szakasz „70 fájl bent van"-t állított. **Bent volt — de nem fordult le.**
+`noEmit: true` + kizárás a fő buildből ⇒ típus-ellenőrzésen átment, `dist/cli/src/_modules/`
+viszont **nem létezett**. ⚠️ A zöld típus-ellenőrzés **elfedte** a hiányt.
+
+🩹 `noEmit: false` · `outDir: "dist/cli"` *(⭐ nem `dist`: az emit máshova esne, és a saját kódunk
+nem találná meg a `../_modules/…` hivatkozásokat — mérve az első próbán)* · a fő builddel azonos
+`rootDirs` · új build-lépések az LDP-ben (`tsc-transplanted`, `fix-transplanted`).
+
+**Két környezet-különbség, a KIMENETEN feloldva** (`cli/scripts/transplanted-build-fix.ts` —
+a forráshoz nem nyúltunk): (1) minimális `package.json` a dist-be *(a `version`-import miatt)*;
+(2) JSON-import attribútum + default-import *(a Node 22 ESM-ben a JSON-modulnak csak `default`
+exportja van)*. 📌 A kettő **egymást fedte** — külön-külön javítva ugyanaz a hiba maradt volna.
+
+### ⚠️ Mérési hiba, amit magamon kaptam
+
+`timeout 22`-vel bisectelve azt állapítottam meg, hogy a beszéd-kimenet **beragad** import
+közben, és majdnem beírtam ide, hogy a 6. szakasz az **owner ElevenLabs-kulcsára vár**.
+**Hamis volt** — közben az LDP teljes buildet futtatott. Nyugodt gépen: 2,8 / 7,8 / 9,6 / 19,5 s,
+és `{"instantiated":true,"hasHandlePcmReceiver":true,"hasInitDir":true}` **kulcs nélkül**.
+
+📌 A „mértem" önmagában nem elég — **milyen körülmények között** mértem, az is a mérés része.
 
 ### ✅ ÉLŐ IGAZOLÁS — 2026-09-07 17:11
 

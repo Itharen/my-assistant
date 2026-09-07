@@ -24,7 +24,19 @@
   "compilerOptions": {
     "strict": false,
     "noUncheckedIndexedAccess": false,
-    "noEmit": true,
+    // 🔴 EMITÁLNI KELL — 2026-09-07-ig `noEmit: true` volt, és ez CSENDES ZSÁKUTCA volt:
+    // a 70 átemelt fájl a repóban ült, típus-ellenőrzésen átment, de **JS SOHA nem készült
+    // belőle** ⇒ futásidőben nem létezett. Mérve: `dist/cli/src/_modules/` NEM LÉTEZETT.
+    //
+    // ⚠️ `outDir` + `rootDirs` a FŐ BUILDDEL AZONOS — különben a kimenet máshova esne, és a
+    // `dist/cli/src/...` alatti saját kód nem találná meg a `../_modules/...` hivatkozásokat.
+    //
+    // ⛔ `noEmitOnError` SZÁNDÉKOSAN nincs bekapcsolva: az átemelt kódnak vannak típus-hibái,
+    // amiket az owner-korlát miatt NEM javítunk ki. A `tsc` alapból ilyenkor is emitál — a
+    // típus-hiba nem futásidejű hiba (a típusok törlődnek).
+    "noEmit": false,
+    "outDir": "dist/cli",
+    "rootDirs": ["./src", "./../server/src"],
     // 🔴 A `dom` NEM dísz — MÉRT OKA van, és a régi bot tsconfigjából jön SZÓ SZERINT.
     //
     // A hang-modulok NYERS `Buffer`-t adnak át a `fetch` törzsének. `dom` nélkül a

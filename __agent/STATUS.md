@@ -1,5 +1,19 @@
 # STATUS
 
+## 🔴 AZ ÁTEMELT KÓD MOST MÁR TÉNYLEG LÉTEZIK FUTÁSIDŐBEN — 2026-09-07 17:38
+
+A 70 átemelt fájlból **soha nem készült JS** (`noEmit: true`). A típus-ellenőrzés zöld volt, és
+ez **elfedte**. Javítva: emit + a két környezet-különbség feloldása a **kimeneten** (a forráshoz
+nem nyúltunk). LDP: 24 lépés.
+
+⚠️ **Saját mérési hiba is kibukott:** terhelés alatt mérve azt állapítottam meg, hogy a
+beszéd-kimenet beragad ⇒ majdnem beírtam egy nem létező owner-blokkolót. Nyugodt gépen minden
+betöltődik és példányosítható, **kulcs nélkül**.
+
+Doksi: `__documentations/developments/2026-09-07-transplanted-code-never-compiled.md`
+
+---
+
 ## 🔊 A BOT BENT ÜL A HANG-CSATORNÁBAN — 2026-09-07 17:13
 
 **ÉLŐBEN IGAZOLVA (17:11):** a bot belép a `honnie-place` csatornába (FDP-Johnnies), és 8 mp

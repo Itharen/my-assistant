@@ -74,6 +74,18 @@
       "fatal": true
     },
     {
+      "_comment": "🔊 AZ ÁTEMELT CCAP-KÓD BUILDJE. 🔴 2026-09-07-ig `noEmit: true` volt ⇒ a 70 átemelt fájlból JS SOHA nem keszult, tehat futasidoben NEM LETEZETT — a tipus-ellenorzes zold volt, es ez elfedte. ⚠️ `fatal: false`: az atemelt kodnak vannak tipus-hibai, amiket az owner-korlat miatt NEM javitunk (`transplant-not-rewrite`); a `tsc` ilyenkor is emital.",
+      "label": "tsc-transplanted",
+      "command": "cd cli && npx tsc -p tsconfig.transplanted.json",
+      "fatal": false
+    },
+    {
+      "_comment": "A ket KORNYEZET-kulonbseg feloldasa a KIMENETEN (a forrashoz nem nyulunk): minimalis package.json a dist-be + JSON-import attributum es default-import. Reszletek a szkript fejleceben.",
+      "label": "fix-transplanted",
+      "command": "cd cli && npx tsx scripts/transplanted-build-fix.ts",
+      "fatal": false
+    },
+    {
       "label": "cli-test",
       "command": "cd cli && jasmine --config=spec/support/jasmine.json",
       "fatal": false
