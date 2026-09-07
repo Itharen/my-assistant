@@ -328,7 +328,7 @@ ezekre mutat — egy friss session elhiheti, hogy semmi nem készült el, és **
 |---|---|---|
 | 1 | **C-43 — `ma comm say --file`** | ez a mai csonkolási incidens végleges javítása; kicsi, és utána minden más küldés biztonságos |
 | 2 | **C-42 — küldés utáni visszaolvasás** | a `--file`-lal együtt egy kör; a Python-megkerülés már így működik, csak át kell emelni a CLI-be |
-| 3 | **C-33 — STT-feldolgozás** *(owner kifejezett kérése)* | ⚠️ ELSŐ LÉPÉS: az **FDPAI STT végpont felderítése** (FAM + kód) — ⛔ nem tippelünk. Utána: hangüzenet letöltés → STT → **TÜKÖR-ÜZENET** → válasz |
+| 3 | **C-33 — STT-feldolgozas** *(owner kifejezett kerese)* | ✅ **A VEGPONT MEGVAN** (merve 07:19): `POST http://127.0.0.1:38321/v1/audio/transcriptions`, OpenAI-kompatibilis; keszenlet `GET /api/ready`. Doksi: `__documentations/dev/FDP_AI_STT.md`. Menet: hanguzenet letoltes → STT → **TUKOR-UZENET** → valasz. ⚠️ A keres pontos formatumat meg merni kell. |
 | 4 | **C-44 — konzol-log sor** | owner-kérés: ránézésre látszódjon, mi történik a rendszerben |
 | 5 | **L1 — címke-alapú session-feloldás** | a több-session működés feltétele |
 

@@ -105,7 +105,11 @@ Elv: `current/principles/message-delivery-reliability.md`.
 |---|---|---|---|
 | C-33 | **Voice üzenet olvasása** (STT) | 📝 **javaslat** | Hangüzenet → **saját STT (FDP AI**, fut a gépen) → ⭐ **TÜKÖR-ÜZENET** vissza (lássa, jól értettem-e) → utána válasz + feldolgozás |
 | C-34 | **Beszélgetés voice channelen** | 📝 **javaslat** | kétirányú hang a Discord voice channelen |
-| C-35 | **STT/TTS kiemelése a régi CCAP-ból** | 📝 **javaslat** | ez a C-33/C-34 előfeltétele — organizerben felvéve feladatként |
+| C-35 | **STT/TTS kiemelese a regi CCAP-bol** | 📝 **javaslat** | ⚠️ **UJRAGONDOLANDO**: a TTS **mar fut** az FDP AI-ban (`/api/v1/audio/speech`) — lehet, hogy nem kiemelni kell, hanem **hasznalni** |
+
+> ✅ **AZ FDP AI AZONOSITVA (2026-09-07 07:19, MERVE):** `ccap/speech-recognition`, Flask/Python, **port 38321**, CUDA (RTX PRO 6000), 74 vegpont.
+> **STT fo ut:** `POST /v1/audio/transcriptions` *(OpenAI-kompatibilis)* · keszenlet: `GET /api/ready`.
+> Reszletek: `__documentations/dev/FDP_AI_STT.md`.
 
 > **Owner, 2026-09-07:** *„STT-hez általában a saját rendszert szoktuk használni, most is fut
 > a gépen. FDP AI-ként szerepel sok-sok kódban. egy voice üzenetet neked ide ebből a
