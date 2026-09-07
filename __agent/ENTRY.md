@@ -120,6 +120,7 @@ KEZDETÉN megy ki**, nem induláskor (`current/inventory/personal-items.md`).
 | 2 | **Itthon van? Ébren van?** | `ma comm doctor` (jelenlét + ébrenlét sor) |
 | 3 | 🔴 **ÍRT VALAMIT? — KÉT LÉPÉS, mindkettő kötelező** | **(a)** `ma comm history` — a saját tárunk *(🔴 = megérkezett a Discordra, de HOZZÁM MÉG NEM)* · **(b)** `ma comm audit` — **magát a Discord-csatornát** kérdezi le, és összeveti. Nem-nulla kilépési kód = van hiány VAGY nem tudtuk megnézni |
 | 4 | **Tartozom válasszal?** | `ma comm doctor` válasz-kötelezettség sora |
+| 4b | 🔴 **TETT-E FÁJLT AZ INBOXBA?** | `ls __agent/inbox/` — ⚠️ **MÉRT MULASZTÁS 2026-09-07:** a summit-programot **21:05-kor** tette be, és **21:50-ig** nem vettem észre, mert az inbox-ellenőrzés nem volt a rutinban. A fájl **nem jelez magától** |
 | 5 | **Félbehagytam valamit?** | `__agent/STATUS.md` · `__agent/CONTINUATION.md` |
 | 6 | **Mi esedékes?** | `ma status digest` (organizer + lokál, hiteles kivonat) |
 

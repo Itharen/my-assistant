@@ -48,13 +48,7 @@ export async function sendDiscordMessage(
    * ⛔ A nyugta NEM torli a valasz-kotelezettseget — lasd `OutboundKind`.
    */
   kind: OutboundKind = 'reply',
-  /**
-   * ✂️ Átengedi a rövidség-őrt.
-   *
-   * ⚠️ TUDATOS DÖNTÉS legyen, ne alapértelmezés: az owner **el sem olvasta** a hosszú
-   * üzeneteimet (2026-09-07). Aki ezt igazra állítja, azt állítja, hogy ez az üzenet
-   * megéri a kockázatot.
-   */
+  /** ⚠️ Megtartva a hívók kedvéért — a rövidség MÁR NEM kapu, tehát nincs hatása. */
   allowLong: boolean = false,
 ): Promise<DiscordSendResult> {
   const token: string = (process.env['MA_DISCORD_BOT_TOKEN'] ?? '').trim();
@@ -65,18 +59,25 @@ export async function sendDiscordMessage(
     return { sent: false, partCount: 0, detail: 'Üres üzenetet nem küldünk.', remedy: 'Adj meg szöveget.' };
   }
 
-  // ✂️ RÖVIDSÉG-ŐR. ⛔ A küldés ELŐTT, mert utána már nincs mit tenni: az owner vagy elolvassa,
-  // vagy nem. A `reply`/`ack` fajtára egyaránt vonatkozik — a nyugta pláne legyen rövid.
+  // ✂️ RÖVIDSÉG: TANÁCS, NEM KAPU — az owner javította ki a saját javításomat.
+  //
+  // > **Owner (2026-09-07 21:45):** *„az nem annyira tűnik megoldásnak, hogy lekorlátozod magad,
+  // > hogy egy üzenetbe csak x mennyiségű karaktert írhatsz. Nem az a lényeg, hogy szét
+  // > szegmentáld az üzeneteidet, mert így tulajdonképpen csak ahelyett, hogy elküldenél egy
+  // > nagyobb üzenetet, ahelyett küldesz 10 kicsit, ami hülyeség… és amúgy is kell, hogy tudjál
+  // > hosszabb üzeneteket összeírni."*
+  //
+  // 🔴 AMIT ELRONTOTTAM: a hosszra optimalizáltam, pedig a panasz a **sűrűségre** szólt. A
+  // kemény korlát nem rövidebbé tett, hanem **feldarabolóvá** — és közben **elhagytam az
+  // emojikat**, amik épp a tagolást adták: *„egy csomó emojit használtál, ami tök jól
+  // szétbontotta nekem a dolgokat… és most ezt abbahagytad, pedig az jó volt."*
+  //
+  // ⇒ A hossz **nem a mérendő mennyiség**. Egy tagolt, emojikkal horgonyzott hosszú üzenet
+  // olvasható; egy tagolatlan rövid is lehet olvashatatlan. A `brevityHint` **jelez**, de
+  // ⛔ SOHA nem blokkol — a döntés a fogalmazásé, nem a számlálóé.
   const brevity = inspectBrevity(trimmed);
 
-  if (!allowLong && !brevity.acceptable) {
-    return {
-      sent: false,
-      partCount: 0,
-      detail: `TÚL HOSSZÚ — nem küldtem el. ${brevity.reason}`,
-      ...(brevity.remedy ? { remedy: brevity.remedy } : {}),
-    };
-  }
+  void allowLong;
 
   if (!token || !channelId) {
     return {

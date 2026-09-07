@@ -13,11 +13,16 @@ describe('discord.brevity-guard', () => {
     expect(verdict.reason).toBeUndefined();
   });
 
-  it('🔴 A MÉRT ESET: ~1100 karakteres üzenetet MEGÁLLÍT (ezt nem olvasta el)', () => {
-    const verdict = inspectBrevity('a'.repeat(1100));
+  it('⭐ a HOSSZÚ üzenet is átmehet — az owner javította ki a korlátomat (2026-09-07 21:45)', () => {
+    // „amúgy is kell, hogy tudjál hosszabb üzeneteket összeírni" — pl. a holnapi
+    // programból összeállított ajánlás. ⇒ 1100 karakter MÁR NEM kifogás.
+    expect(inspectBrevity('a'.repeat(1100)).acceptable).toBe(true);
+  });
+
+  it('csak a TÉNYLEG szélsőséges hosszra jelez — és akkor is CSAK jelez, nem blokkol', () => {
+    const verdict = inspectBrevity('a'.repeat(MAX_MESSAGE_CHARS + 1));
 
     expect(verdict.acceptable).toBe(false);
-    expect(verdict.chars).toBe(1100);
     expect(verdict.reason).toContain(String(MAX_MESSAGE_CHARS));
   });
 
@@ -31,10 +36,9 @@ describe('discord.brevity-guard', () => {
   });
 
   it('⛔ SOHA nem csonkol — a teendőt adja meg, nem levágott szöveget', () => {
-    const verdict = inspectBrevity('b'.repeat(500));
+    const verdict = inspectBrevity('b'.repeat(MAX_MESSAGE_CHARS + 50));
 
     expect(verdict.remedy).toContain('Fogalmazd át');
-    expect(verdict.remedy).toContain('--long');
   });
 
   it('a pontosan a határon lévő üzenet még átmegy', () => {

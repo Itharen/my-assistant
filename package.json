@@ -1,6 +1,6 @@
 {
   "name": "my-assistant",
-  "version": "0.1.399",
+  "version": "0.1.400",
   "description": "my-assistant — personal life-management ecosystem (cli + server + client). FDP-shaped, self-built, FOSS-only.",
   "private": true,
   "DyBu_settings": {

@@ -25,17 +25,23 @@
  *
  * ⇒ Felülvizsgálandó, ha kiderül, hogy túl szűk vagy túl bő (`open-questions.md`).
  */
-export const MAX_MESSAGE_CHARS: number = 400;
+export const MAX_MESSAGE_CHARS: number = 1200;
 
 /**
  * Ennél több sor már „falnak" néz ki a telefonon, akkor is, ha karakterben belefér.
  *
  * ⚠️ Szintén assziszens-választás. A telefon-képernyő az igazi korlát, nem a karakterszám.
  */
-export const MAX_MESSAGE_LINES: number = 8;
+export const MAX_MESSAGE_LINES: number = 40;
 
 export interface BrevityVerdict {
-  /** Kiküldhető-e külön engedély nélkül. */
+  /**
+   * Tagoltnak és olvashatónak látszik-e.
+   *
+   * ⛔ 2026-09-07 21:45 ÓTA NEM KAPU — csak jelzés. Az owner javította ki: a kemény korlát
+   * nem rövidebbé tett, hanem **feldarabolóvá**, és a tagolást adó **emojikat** hagytam el
+   * miatta. A hossz nem a mérendő mennyiség.
+   */
   acceptable: boolean;
   chars: number;
   lines: number;

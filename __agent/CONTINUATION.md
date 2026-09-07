@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 21:44
+**Utoljára frissítve:** 2026-09-07 21:52
 
 ---
 
@@ -1295,6 +1295,52 @@ egyetlen jarhato ut — ezt a bedrock-agent tudja megitelni, nem en.
 
 📌 **Amit ez lezar:** a `Q-2026-09-07-01` *(a figyelo a build alatt nem el)* es a voice-drop
 **ugyanannak az oknak a ket tunete**. Egy javitas mindkettot rendezi.
+
+
+
+---
+
+## 2026-09-07 21:45-21:52 — KET OWNER-KORREKCIO + A SUMMIT-AJANLAS KIMENT
+
+### A rovidseg-korlat: ROSSZ METRIKAT tettem merhetove
+
+> *„az nem annyira tunik megoldasnak, hogy lekorlatozod magad… ahelyett kuldesz 10 kicsit, ami
+> hulyeseg… es amugy is kell, hogy tudjal hosszabb uzeneteket osszeirni."*
+> *„eddig egy csomo emoji-t hasznaltal, ami tok jol szetbontotta nekem a dolgokat… es most ezt
+> abba hagytad, pedig az jo volt."*
+
+**DUPLA hiba:** (1) a **hosszra** optimalizaltam, pedig a panasz a **suruségre** szolt — a kemeny
+korlat nem rovidebbe tett, hanem **feldarabolova**; (2) a korlat miatt **elhagytam az emojikat**,
+amik epp a tagolast adtak ⇒ a „javitasom" **elvette a jot**.
+
+⭐ **A helyes merce: nem a hossz, hanem a TAGOLTSAG.**
+
+📌 **META-TANULSAG:** ket korrel korabban irtam le, hogy *„ami nem merheto, azt nem tartom be"* —
+es erre **rossz dolgot tettem merhetove**. A mechanikus kapu csak akkor segit, ha a **helyes
+mennyiseget** meri. **A rossz metrika aktivan art.**
+
+**Kodban:** `discord.brevity-guard.ts` = **jelzes, NEM kapu**; a `sendDiscordMessage` nem blokkol;
+1200 karakter / 40 sor, csak figyelmeztetes. 536/536 zold.
+
+### A SUMMIT-PROGRAM megvolt az inboxban — 45 percig nem vettem eszre
+
+Az owner **21:05-kor** betette (`__agent/inbox/summit-program-08.md`, 18,5 kB), en **21:50-kor**
+neztem meg. ⚠️ **Az inbox-ellenorzes nem volt a kor-rutinban** — a fajl **nem jelez magatol**.
+🩹 Felvéve: `ENTRY.md` §1 **4b. lepes**.
+
+### Az ajanlas — merve a programbol
+
+🔴 **Robotika a nap 2-n: EGYETLEN tetel** (`15:00`, Innovation Hall). ⇒ Az owner **#1 prioritasa
+holnap alig van jelen** — ezt elore tudnia kell.
+
+⭐ **De az Innovation Hall (Neprajzi Muzeum) osszefuggo blokkot ad 14:40→17:20:** kodvaltas ·
+🤖 robotok+agentek · agentek · agentic coding · **onfejleszto szoftver** · harom magyar nyelvmodell.
+📌 Egy terem, hat eloadas, **nulla atjaras** — pont a nap-1 sajat tanulsaga szerint
+*(„minimalizalni az epuletek kozti mozgast")*.
+
+⏰ **14:30-ra erkezeshez:** indulas **13:45**, keszulodes **12:45**-tol.
+🔀 Alternativa: MKIK Prompt Arena elo vibecoding (14:00 / 15:00 / 16:00 Prompt Battle) — ⚠️ **masik
+epulet**, utkozik a robotikassal es a blokk-elvvel.
 
 
 ### A következő konkrét lépés

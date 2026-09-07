@@ -158,3 +158,42 @@ szöveges bekezdést.
 Nem a hossz, hanem a **csend**: egy el nem olvasott üzenet pontosan úgy néz ki, mintha meg sem
 írtam volna — de közben **én azt hiszem, tájékoztattam**. Ugyanaz a hibaosztály, mint amikor a
 köteg a fájlban maradt: **a feladó szemszögéből minden rendben van**.
+
+---
+
+## 🔴 2026-09-07 21:45 — AZ OWNER VISSZAVONTA A KORLÁTOMAT (a javításom rossz volt)
+
+> **Szó szerint:** *„az nem annyira tűnik megoldásnak, hogy lekorlátozod magad, hogy egy
+> üzenetbe csak x mennyiségű karaktert írhatsz. Nem az a lényeg, hogy szét szegmentáld az
+> üzeneteidet, mert így tulajdonképpen csak ahelyett, hogy elküldenél egy nagyobb üzenetet,
+> ahelyett küldesz 10 kicsit, ami hülyeség, és nem ez lenne a cél. és amúgy is kell, hogy tudjál
+> hosszabb üzeneteket összeírni."*
+>
+> *„Plusz eddig egy csomó emoji-t használtál, ami tök jól szétbontotta nekem a dolgokat, meg
+> jól vizualizált, és most ezt abba hagytad, pedig az jó volt."*
+
+### Amit elrontottam — DUPLA hiba
+
+1. **A hosszra optimalizáltam, pedig a panasz a SŰRŰSÉGRE szólt.** A kemény korlát nem
+   rövidebbé tett, hanem **feldarabolóvá**: 10 kis üzenet ugyanannyi *(vagy több)* olvasnivaló,
+   csak széttörve.
+2. **A korlát miatt elhagytam az emojikat** — pedig **azok adták a tagolást**, amit ő
+   kifejezetten hasznosnak tartott. ⇒ A „javításom" **elvette a jót**, és nem adta vissza a
+   hiányzót.
+
+### A helyes mérce
+
+⭐ **Nem a hossz, hanem a TAGOLTSÁG.** Egy emojikkal horgonyzott, szakaszolt hosszú üzenet
+olvasható; egy tagolatlan rövid is lehet olvashatatlan.
+
+**És kell tudnom hosszan is írni** — például a holnapi programból összeállított **ajánlás**
+természeténél fogva hosszú.
+
+### Mi maradt a kódban
+
+`discord.brevity-guard.ts` — **jelzés, NEM kapu**. A `sendDiscordMessage` **nem blokkol**.
+A korlátok 1200 karakter / 40 sor, és csak **figyelmeztetnek**.
+
+📌 **A meta-tanulság:** két körrel korábban azt írtam, *„ami nem mérhető, azt nem tartom be"* —
+és erre **rossz dolgot tettem mérhetővé**. A mechanikus kapu csak akkor segít, ha a **helyes
+mennyiséget** méri. A rossz metrika **aktívan árt**.
