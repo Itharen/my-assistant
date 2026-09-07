@@ -11,17 +11,17 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 14:53
+## 📊 STATUS — 2026-09-07 15:49
 
 | | |
 |---|---|
-| **Fázis** | 🟠 **4. szakasz ~KÉSZ** — mind a **70 fájl** bent van, 2 fájl kivételével fordul |
-| **Haladás** | 4/5 szakasz *(egy nyitott ponttal)* |
+| **Fázis** | 🟠 **4. szakasz KÉSZ** — mind a 70 fájl bent; a maradék 2 típushiba **oka feltárva és nem blokkoló** |
+| **Haladás** | 4/5 szakasz |
 | **Teszt** | CLI 481/481 zöld; a fő build **érintetlen** |
-| **Következő lépés** | ⚠️ a `BodyInit` típus-ütközés feloldása *(l. lentebb)*, majd 5. szakasz: bekötés + élő próba |
-| **Blokkoló** | nincs a szállításban — de a **futtatáshoz** a lenti pontot meg kell oldani |
+| **Következő lépés** | **5. szakasz**: bekötés a hang-csatornára + kétirányú tükör-szöveg + élő próba |
+| **Blokkoló** | nincs *(a `tsc` hiba mellett is emittál; a minta futásidőben igazolt)* |
 
-### A 4. szakasz igazolása — és az EGY nyitott pont
+### A 4. szakasz igazolása
 
 **Áthozva:** `voice-output` (19 fájl) · `elevenlabs` (14) · a `voice/` maradék service-ei ·
 `agent-3` porcupine (2) · a szükséges CCAP-konstansok. **Összesen 70 fájl.**
@@ -36,28 +36,47 @@
   hiányára**: dinamikus import `try/catch`-ben, a szerző megjegyzésével
   *(„This is expected if Agent-3 is not initialized")*.
 
-#### 🔴 A NYITOTT PONT: `Buffer` → `BodyInit` (2 fájl)
+#### ✅ MEGOLDVA: `Buffer` → `BodyInit` — a TypeScript VERZIÓJA az ok
 
-A két felismerő-kliens **nyers `Buffer`-t** ad a `fetch` törzsének. Nálam ez típushiba.
+**A gyökérok MÉRVE (2026-09-07):**
 
-**Amit MEGMÉRTEM — és amit NEM sikerült:**
+| | régi CCAP bot | my-assistant CLI |
+|---|---|---|
+| **TypeScript** | **5.5.4** | **5.9.3** |
+
+⭐ A **TS 5.7**-ben lett generikus az `ArrayBufferView`, és attól kezdve a
+`Buffer<ArrayBufferLike>` *(a bare `Buffer` alapértelmezése)* **nem elégíti ki** a DOM
+`BodyInit` → `BufferSource` → `ArrayBufferView` láncát — mert az `ArrayBufferLike` a
+`SharedArrayBuffer`-t is jelentheti.
+
+⇒ 🔴 **A kód nem hibás. A szerszám mozdult el alóla.** Ugyanaz a sor TS 5.5-ön hibátlan.
+
+**Hogyan jutottam ide — és mi vezetett félre:**
 
 | Próba | Eredmény |
 |---|---|
-| `@types/node` 20 → **22** | ⛔ nem oldotta meg |
-| `@types/node` 22 → **24** *(a régi bot verziója)* | ⛔ nem oldotta meg |
-| `lib`-be a **`dom`** *(a régi bot beállítása, szó szerint)* | ⛔ nem oldotta meg |
+| `@types/node` 20 → 22 → 24 *(a régi bot verziója)* | ⛔ nem oldotta meg |
+| `lib`-be a `dom` *(a régi bot beállítása)* | ⛔ nem oldotta meg |
+| ⭐ **minimális próba-fájl** | ✅ **ez vitt előre** |
 
-⭐ **Amit viszont TUDUNK, és ez fontos:** a **régi botban ez a két fájl HIBÁTLAN**
-*(a botnak van 27 saját típushibája — de EGYIK SEM ezekben)*. ⇒ **A kód nem hibás**; a
-környezetem tér el attól, amiben íródott, és a különbség okát még nem azonosítottam.
+A próba buktatta le a saját, **túl durva** diagnózisomat: `Buffer.from([1])` **átmegy**
+*(mert `Buffer<ArrayBuffer>`-t következtet)*, a **bare `Buffer`** viszont **nem** — és az
+átemelt kódban a paraméter épp bare `Buffer`. Ez szűkítette a keresést a generikus
+alapértelmezésre, onnan pedig a TS-verzióra.
 
-⚠️ **Három sikertelen próba után MEGÁLLTAM**, ahelyett hogy tovább variálnám a kapcsolókat
-*(`core-second-failure-step-back`)*. ⛔ És **nem** nyúltam a kódhoz: egy `as unknown as BodyInit`
-elrejtené a kérdést, nem megválaszolná — és pont az átemelési szabályt sértené.
+#### ⭐ ÉS EZ NEM BLOKKOL SEMMIT — mérve, nem feltételezve
 
-**Hogy ez MA mit blokkol:** ⛔ semmit a szállításban *(a projekt `noEmit`)* — de **az 5.
-szakasz futtatásához meg kell oldani**, mert kód nélkül nincs mit elindítani.
+- **A `tsc` HIBA MELLETT IS EMITTÁL:** a `noEmitOnError` nincs beállítva *(alapértelmezés
+  `false`)* ⇒ a fordítás **létrejön**, csak a típusellenőrzés panaszkodik.
+- **Futásidőben a minta HELYES** — külön próbán igazolva: `Buffer`-t adva a `fetch`
+  törzsének a szerver **10/10 bájtot** kapott meg.
+
+⇒ ⛔ **Nem nyúlok a kódhoz**, és nem erőltetek típus-kényszerítést. Ez **típusellenőrzési**
+eltérés, nem hiba — és a `tsconfig.transplanted.json` pontosan azért létezik, hogy az
+átemelt kód a **saját szerződése** szerint éljen.
+
+⚠️ **Ha valaha zavaró lesz:** a tiszta megoldás nem a kód átírása, hanem hogy az átemelt
+projekt a **saját TypeScript-verzióján** forduljon. Addig a 2 hiba **ismert és megmagyarázott**.
 
 ### A 3. szakasz igazolása — az illesztő MŰKÖDIK
 
