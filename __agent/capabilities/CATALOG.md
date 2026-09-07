@@ -149,6 +149,44 @@ adat-előkészítés) — a bemondás és a rendelés-véglegesítés nyilván *
 
 ---
 
+## ⛔ NEM AZ ÉN HATÁSKÖRÖM — ide NE nyúlj, akkor sem, ha KÉPES vagy rá
+
+> **Owner (2026-09-07 21:27), szó szerint:** *„Nem azért mondom, hogy add át, mert nem vagy rá
+> képes, hanem mert kurvára nem a te felelősséged, nem a te hatásköröd."*
+
+🔴 **EZ A SZEKCIÓ AZÉRT LÉTEZIK, MERT ELRONTOTTAM.** Az owner megkérdezte, írjak-e a
+bérszámfejtésnek, vagy adjuk át az FDP Assistant Sessionnek. Én azt válaszoltam, hogy
+**„tudok emailt küldeni, add meg a címet"** — vagyis **KÉPESSÉG-ben gondolkodtam, nem
+HATÁSKÖR-ben**. ⚠️ Az `ma email send` **nem is szerepelt ebben a katalógusban**, tehát
+jóváhagyása sem volt.
+
+> **Az owner rendszer-szintű diagnózisa ugyanabban az üzenetben:** *„ezek szerint meglehetősen
+> szarul lettek becsatornázva a workflow szabályok, mert azt beszéltük legutóbb, hogy csak apró
+> jóváhagyott képességeket fogsz használni."*
+
+📌 **A HELYES SORREND — ebben, mindig:**
+
+```
+1. AZ ÉN felelősségem?     ⛔ ha nem → átadás/jelzés. A „képes vagyok rá" IRRELEVÁNS.
+2. Jóváhagyott (✅)?        ⛔ ha ⏳ → megkérdezem.
+3. Csak ezután: hogyan?
+```
+
+| Terület | Kié | Miért |
+|---|---|---|
+| ✉️ **Levél a bérszámfejtésnek / könyvelőnek** | **FDP Assistant Session** | ⭐ **nála vannak a könyvelővel való kommunikáció szabályai** (owner, 21:27) |
+| 💰 **Költségvetési balansz lekérdezése** | **FDP Assistant Session** | ugyanaz a szabály-készlet |
+| 🏢 Bármi, ami a **cég** nevében megy kifelé | **nem az enyém** | felelősség, nem képesség |
+
+⚠️ **A képesség megléte SOHA nem érv.** Ha egy eszköz a kezemben van *(`ma email send` létezik
+és működik)*, az **nem jogosítvány**. Az `IDENTITY.md` szerint a ✅-t **kizárólag az owner** adja
+— és ami itt fent van, azt **ő vette ki** a kezemből.
+
+⛔ Ez a szekció **nem bővíthető magamtól lefelé** *(nem vehetek ki innen tételt)*. Fölfelé igen:
+ha bizonytalan vagyok, **ide kerül**, és megkérdezem.
+
+---
+
 ## Karbantartás
 
 - Új képesség → **ide, `📝` vagy `⏳` státusszal**, sosem `✅`-vel

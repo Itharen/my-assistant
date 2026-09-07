@@ -258,6 +258,33 @@ elavulás rosszabb, mint a látható elavulás.
 
 ---
 
+## 5b. 🔴 HATÁSKÖR-KAPU — MIELŐTT BÁRMIT FELAJÁNLASZ VAGY ELKEZDESZ
+
+> **Owner (2026-09-07 21:27):** *„Nem azért mondom, hogy add át, mert nem vagy rá képes, hanem
+> mert kurvára nem a te felelősséged, nem a te hatásköröd."*
+
+🔴 **MÉRT SAJÁT HIBA, ezért van itt és nem lentebb:** az owner megkérdezte, írjak-e a
+bérszámfejtésnek. Azt válaszoltam: *„tudok emailt küldeni, add meg a címet"* — **KÉPESSÉG-ben
+gondolkodtam, nem HATÁSKÖR-ben**. Az `ma email send` **nem is szerepelt** a katalógusban.
+
+**A SORREND — ebben, mindig, mielőtt bármit FELAJÁNLASZ:**
+
+```
+1. AZ ÉN felelősségem?   ⛔ ha nem → átadás/jelzés. A „képes vagyok rá" IRRELEVÁNS.
+2. Jóváhagyott (✅)?      ⛔ ha ⏳ vagy nincs a katalógusban → megkérdezem.
+3. Csak ezután: hogyan?
+```
+
+⚠️ **A felajánlás is cselekvés.** *„Meg tudom csinálni, csak add meg az adatot"* — ez már
+elkötelezés, és az owner úgy olvassa, hogy vállaltam.
+
+📌 **A kimenetel, ha kihagyod:** az owner rendszer-szintű hibát lát *(„szarul lettek
+becsatornázva a workflow szabályok")*, nem egyszeri tévedést — és igaza van.
+
+**Ami NEM az enyém:** `__agent/capabilities/CATALOG.md` → *„⛔ NEM AZ ÉN HATÁSKÖRÖM"* szekció.
+
+---
+
 ## 6. AMI SOSEM MARADHAT EL
 
 - 🚫 **Nem találgatsz.** Hiányzó tudás ⇒ `❓ NYITOTT` + `current/open-questions.md`.

@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 21:28
+**Utoljára frissítve:** 2026-09-07 21:34
 
 ---
 
@@ -1226,6 +1226,45 @@ alternativa **targytalan**. Kell: a **cim**, es a szoveget tervezetkent mutatom.
 jovahagyas nelkul nem kuldok.
 
 ### LinkedIn posztok — T-50, kerdes nala
+
+
+
+---
+
+## 🔴 2026-09-07 21:27 — HATASKOR, NEM KEPESSEG (owner-kritika, jogos)
+
+> *„Nem azert mondom, hogy add at, mert nem vagy ra kepes, hanem mert kurvara nem a te
+> felelosseged, nem a te hatakorod."*
+>
+> *„ezek szerint meglehetosen szarul lettek becsatornazva a workflow szabalyok, mert azt
+> beszeltuk legutobb, hogy csak apro jovahagyott kepessegeket fogsz hasznalni."*
+
+**A hibam:** az owner megkerdezte, irjak-e a berszamfejtesnek. Azt valaszoltam, hogy *„tudok
+emailt kuldeni, add meg a cimet"* — **KEPESSEG-ben gondolkodtam, nem HATASKOR-ben**.
+
+**Merve:** az `ma email send` **nem is szerepelt** a `CATALOG.md`-ben (25 ⏳ / 9 ✅, email egyik
+sem) ⇒ jovahagyasa sem volt. Es kifele meno, kulso felnek szolo level — a legszigorubb hatar.
+
+📌 **A ket tanulsag, amit kulon kell tartani:**
+1. **A felajanlas is cselekves.** A „meg tudom csinalni, csak add meg az adatot" mar
+   elkotelezes — az owner ugy olvassa, hogy vallaltam.
+2. **A rendszer-kritikaja jogos volt**, nem az egyszeri teves valasz. ⚠️ Ket korrel korabban
+   irtam le, hogy *„ami nem merheto, azt nem tartom be"* — es **rogton meg is ismeteltem a
+   mintat egy masik teruleten**. A szabaly leirasa nem javitas.
+
+**Strukturalis javitas (nem ujabb feljegyzes):**
+- `__agent/ENTRY.md` **§5b — HATASKOR-KAPU**: 1. az enyem? → 2. jovahagyott? → 3. csak azutan hogyan.
+- `__agent/capabilities/CATALOG.md` uj szekcio: **„⛔ NEM AZ EN HATASKOROM"** — berszamfejtes,
+  konyvelo, koltsegvetesi balansz, es barmi, ami a **ceg** neveben megy kifele.
+  ⛔ Ebbol a szekciobol **magamtol nem vehetek ki** tetelt; hozzatenni igen.
+
+**Az FDP Assistantnak atadando** *(owner donti el, mikor)*: level a berszamfejtesnek ·
+koltsegvetesi balansz. ⭐ **Nala vannak a konyvelovel valo kommunikacio szabalyai** — ez az ok,
+nem a kepesseg hianya.
+
+⚠️ **Mellekes megfigyeles:** az owner 21:20-as uzenete **ketszer** jutott el hozzam — egyszer
+kozvetlenul a pending-tarbol olvasva, egyszer a kotegen at. A kozvetlen olvasas **nem jeloli
+kezbesitettnek**. Kis zaj, de valos.
 
 
 ### A következő konkrét lépés

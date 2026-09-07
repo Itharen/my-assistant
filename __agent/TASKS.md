@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 21:28
+**Utoljára frissítve:** 2026-09-07 21:34
 
 ---
 
@@ -76,7 +76,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 | T-44 | 🤝 | 📅 **AI Summit nap 2 — LOGISZTIKA** *(⚠️ nem programtervezés)* | 🟢 **A logisztika kész**: zárás 18:00 ⇒ visszaszámolt indulás + készülődés-kezdés + viendő lista (`current/events/2026-09-07-ai-summit-budapest.md`). ⛔ **Melyik előadásra menjen — az NINCS tervezve**, ahhoz a program kell, ami nem publikált | 🙋 **EGY bemenet:** hánykor akar ott lenni |
 | T-45 | 🤖 | 🔍 **A review-eszköz (`dc rev`) bekötve — a találatok levitele** | **Bekötve ma**: CI/CD 12→13 lépés (`dc-review-relay`), LDP 17→22 (cli/server/client/relay/ext), mind `fatal: false`. ⚠️ **Eddig SEHOL nem futott.** Mérve: **2110 találat** (cli 1429 / server 364 / client 252 / relay 38 / ext 27), ~56 s. Mérés: `__documentations/developments/2026-09-07-review-tool-cicd-wiring.md` | a **relay 38** találatával kezdeni *(ez a legkisebb, és ez fut a CI/CD-ben)*. ⛔ Az átemelt CCAP-kód 280 találata **nem munkalista** (`transplant-not-rewrite`). A `fatal: true`-vá tétel **külön owner-döntés** |
 | T-46 | 🤖 | 📥 **Discord-csatolmány fogadása** | **Megépítve**, 503/503 — `cli/src/discord/discord.file-intake.ts`. Eddig a fájl **némán elveszett** (szöveg nélkül elutasítva, szöveggel leesett az üzenetről). Most `__agent/inbox/`-ba mentődik | ⚠️ **élő próbára vár**: az owner holnapi summit-programja lesz az első valódi csatolmány. Addig NEM ✅ |
-| T-48 | 🤝 | ✉️ **Bérszámfejtés-email megírása** | ⭐ **Tudok emailt küldeni** (`ma email send`) ⇒ NEM kell átadni másik sessionnek. Owner 21:20: *„te írjál nekem a bérszámfejtésnek, vagy adjuk át… az FDP Assistant Sessionnek"* | 🙋 **kell a CÍM**; a szöveget tervezetként mutatom. ⛔ Külső levelet jóváhagyás nélkül nem küldök |
+| T-48 | 🙋 | ✉️ **Bérszámfejtés + költségvetési balansz** | ⛔ **NEM AZ ÉN HATÁSKÖRÖM** (owner 21:27): *„nem azért…, mert nem vagy rá képes, hanem mert kurvára nem a te felelősséged"*. ⭐ Az **FDP Assistant Sessionnél** vannak a **könyvelővel való kommunikáció szabályai** | 🙋 **owner dönti el, mikor adjuk át.** Az azonosító + a küldés szabályai nálam: `__agent/references/ccap-session-messaging.md` |
 | T-49 | 🤖 | 🎙️ **A voice-drop oka MEGVAN** | **Mérve: 17 belépés ma = 17 ledobás**, mindegyik LDP-restartkor. Az owner diagnózisa (21:20) helyes. ⚠️ A javítás (make-before-break) a **`dc ldp`-ben** van ⇒ **my-assistanton KÍVÜL** | 🙋 **owner-döntés:** adjak-e FDP feature requestet? ⛔ Magamtól nem nyúlok hozzá |
 | T-50 | 🙋 | 📝 **LinkedIn posztok kitétele** | Owner 21:20: *„a LinkedIn posztokat ki kéne tenni, amiket terveztem"* | 🙋 **kérdés nála:** nála vannak megtervezve, vagy nekem kell összeszedni? |
 | T-51 | 🤖 | 📮 **CC-session üzenetküldés — szabályok ADOPTÁLVA** | ✅ `__agent/references/ccap-session-messaging.md`: a 6 HARD szabály (§7), a végpontok, és a **beazonosított ID-k** — 🔴 a fájl tetején a kötelező „a szabályokat MINDIG előbb olvasd el" figyelmeztetéssel. FDP Assistant: `ccs-eb7533f2-msf45rno` | ⛔ küldés **csak owner-jóváhagyással**; a `status` küldés előtt újra lekérdezendő |
@@ -147,6 +147,7 @@ rendszer-feladataim**, amiknek a kulcsa nála van.
 
 | # | Feladat | Igazolás |
 |---|---|---|
+| ✅ | ⛔ **Hatáskör-kapu beépítve** | Owner 21:27 rendszer-kritikája: *„szarul lettek becsatornázva a workflow szabályok"*. **ENTRY §5b**: 1. az enyém? → 2. jóváhagyott? → 3. csak azután hogyan. **CATALOG**: új „NEM AZ ÉN HATÁSKÖRÖM" szekció. ⚠️ Mérve: az `ma email send` **nem is szerepelt** a katalógusban |
 | ✅ | ✂️ **Rövidség-őr — a hosszú üzenet nem megy ki** | Owner 21:06: *„nem olvastam, hosszú üzeneteket írsz"*. ⚠️ A szabály **már létezett** — nem tartott vissza. Most **gépi korlát**: 400 karakter / 8 sor, `--long`-gal felülbírálható. 535/535, élesben igazolva (514 karakter blokkolva) |
 | ✅ | 🔴 **Az automatikus action-log hookok NEM FUTOTTAK** — két ok | Mérve: **2026-08-28…09-06 között NULLA** hook-bejegyzés, közben 400-600 sor/nap kézi. (1) BOM nélküli `.ps1` + em dash ⇒ a **Windows PowerShell 5.1** nem parse-olta *(a hook `powershell`-lel indul, nem `pwsh`-sal)*; (2) elavult `cli/build/main.js` útvonal *(valódi: `cli/dist/cli/src/main.js`)*. **Javítva mindkettő**, a hook azóta ír. Doksi: `__documentations/developments/2026-09-07-action-log-hooks-were-dead.md` |
 | ✅ | **Duplikált feldolgozás javítva** *(owner 12:21)* | 481/481 + **regresszió-teszt**: az `append()` addig CSAK a várakozó köteget nézte, az archívumot nem ⇒ a kézbesített üzenet védelme megszűnt. Most **mindkét halmazt** nézi (`isKnownMessage`), és a **hangfelismerés is** ellenőrzi a drága lépés ELŐTT |
