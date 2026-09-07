@@ -12,6 +12,34 @@
 > az MVP-re kéne fókuszálni, ami a pénzkeresés, illetve a pénzkeresésnek
 > bármilyen és többféle formája.
 
+## 2026-09-07 — PRIORITÁS-KORREKCIÓ (owner, az AI Summitról)
+
+> **Szó szerint:** *„Előre kell venni a mikromunkák és hackaton szerű megjelenéseket.
+> (Reklámnak és pénznek)"*
+
+⇒ A **mikromunkák** és a **hackathon-szerű megjelenések** **ELŐRE kerülnek** a
+prioritás-sorban. Két okból egyszerre — és ez a kettősség a lényeg:
+
+| Miért | Mit ad |
+|---|---|
+| 💰 **Pénz** | közvetlen bevétel, az MVP-fókusz szíve |
+| 📣 **Reklám** | láthatóság — ez az, amit egy tisztán belső fejlesztés **nem** ad meg |
+
+**A háttér, amit ugyanabban az üzenetben mondott** *(AI Summit, 2026-09-07)*:
+
+> *„Ma az AI summit első nagy tanulsága, hogy mindenki fossa magából a SaaS és mindenféle
+> szoftvereket....."*
+
+⭐ **Ez nem csak hangulat, hanem piaci megfigyelés, és magyarázza a korrekciót:** ha a
+szoftver-kínálat telített, akkor a **megkülönböztetés** és a **láthatóság** ér többet, mint
+még egy termék — a hackathon/mikromunka pedig pont ezt adja, **miközben fizet is**.
+
+📌 Kapcsolódó meglévő tétel: `current/tasks/inbox.md` — *„Mikromunkák beindítása"*
+(`org:task:6a72198fce096533ed928995`), prioritás **108**. ⇒ Ennek a prioritása
+**felülvizsgálandó felfelé**, és a hackathon-megjelenés **új tételként** felveendő.
+
+---
+
 ## Strukturált
 
 **Az MVP = pénzkeresés.** Bármilyen és többféle formában.

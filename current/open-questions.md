@@ -533,3 +533,25 @@ otthoni LAN-nak. Ez érdemben befolyásolja a választást.
 ⛔ **Amit NEM javaslok:** Google Find My Device / Maps-helymegosztás lekérdezése. Külső
 szolgáltatás + fiók-hozzáférés, törékeny, és ellentmond a `build-it-ourselves` elvnek.
 
+### ✅ VÁLASZOK (owner, 2026-09-07 10:24)
+
+> *„Jól hangzik az owntracks.. nemtom mennyi időbként... Legyen állítható és majd
+> finomhangoljuk. Hol tárold...? Db-ben? Meddig? Nem is tudom... Maradhat hosszabb távon is
+> ami hasznos... Pl amikor nem otthon... Az otthonit meg fölösleges tárolni."*
+
+| ID | Státusz | A döntés |
+|---|---|---|
+| `N1` | ✅ **answered** | **OwnTracks** — *„Jól hangzik az owntracks"* |
+| `N2` | ⚪ **dropped** | A LAN-jelenlét elesik: az N1 megoldja, és a hálózat úgyis osztott (25 eszköz) |
+| `N3` | ⚪ **dropped** | Az OwnTracks saját azonosítót használ — nem kell a hálózaton beazonosítani a telefont |
+| `N4` | ✅ **answered** | A gyakoriság **ÁLLÍTHATÓ**, nem beégetett; a finomhangolás később, méréssel *(GPS ↔ akku)* |
+| `N5` | ✅ **answered** | 🏠 **otthon → NEM tároljuk a koordinátát** · 🚶 **nem-otthon → tárolható hosszabb távon is**. Kanonikus: `current/principles/location-retention.md` |
+
+⭐ **Az N5-ös válasz adatvédelmi szempontból is a jó irány, és magától adódott:** a
+leggyakoribb és legérzékenyebb pont (az otthon) az, amiből a **legkevesebb** információ
+származik — a szűkítés itt **egybeesik** a hasznossággal, nem ütközik vele.
+
+⏳ **Ami még nyitva:** a pontos tárolási hely (db vagy fájl) — ezt az owner rám bízta
+*(„Nem is tudom...")*, tehát assistant-döntés, a fenti korlátokon **belül**. Illetve hogy
+mekkora sugár számít „otthonnak" — ez **mérendő**, nem tippelendő.
+
