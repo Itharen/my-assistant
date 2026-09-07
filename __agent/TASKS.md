@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-08 00:05
+**Utoljára frissítve:** 2026-09-08 01:05
 
 ---
 
@@ -76,7 +76,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 | T-44 | 🤝 | 📅 **AI Summit nap 2 — TERV** | 🟢 **ÚJRACSINÁLVA a `summit-planning.md` 7 lépése szerint** (`current/events/2026-09-08-summit-day2-plan.md`): A/B/NEM lista · ütközések · épületváltás-minimalizálás · energia · visszanézési lista. ⛔ Az első kísérletem hibás volt: **időpontból indultam, és ahhoz hajlítottam az érdeklődést** | 🙋 **owner dönt:** 11:00 (teljes A-lista) vagy 13:45 (délutáni blokk)? + a vibecoding-ütközés |
 | T-45 | 🤖 | 🔍 **A review-eszköz (`dc rev`) bekötve — a találatok levitele** | **Bekötve ma**: CI/CD 12→13 lépés (`dc-review-relay`), LDP 17→22 (cli/server/client/relay/ext), mind `fatal: false`. ⚠️ **Eddig SEHOL nem futott.** Mérve: **2110 találat** (cli 1429 / server 364 / client 252 / relay 38 / ext 27), ~56 s. Mérés: `__documentations/developments/2026-09-07-review-tool-cicd-wiring.md` | a **relay 38** találatával kezdeni *(ez a legkisebb, és ez fut a CI/CD-ben)*. ⛔ Az átemelt CCAP-kód 280 találata **nem munkalista** (`transplant-not-rewrite`). A `fatal: true`-vá tétel **külön owner-döntés** |
 | T-46 | 🤖 | 📥 **Discord-csatolmány fogadása** | **Megépítve**, 503/503 — `cli/src/discord/discord.file-intake.ts`. Eddig a fájl **némán elveszett** (szöveg nélkül elutasítva, szöveggel leesett az üzenetről). Most `__agent/inbox/`-ba mentődik | ⚠️ **élő próbára vár**: az owner holnapi summit-programja lesz az első valódi csatolmány. Addig NEM ✅ |
-| T-48 | 🤝 | 💰 **Pénzügyi helyzetkép + bérszámfejtés — KIADVA** | ⭐ **2026-09-07 23:23: elküldve** `ccs-e4e4fadf-mtroyj33`-nak (`{"success":true}`), `__agent/FDP-HANDOFF.md` + `CONTINUATION.md` pointerekkel. Három kérdés: balansz · belefér-e ~1M Ft ügyvédi díj · ElevenLabs 20→100 € *(+960 €/év)*. Mellette a bérszámfejtés-megkeresés | ⏸️ **az FDP dolgozik rajta.** Az eredményt az `AGENT_BUS.md`-be kértem ⇒ onnan továbbítom |
+| T-48 | 🤝 | 💰 **Pénzügyi helyzetkép + bérszámfejtés** | 🔴 **Az FDP némán megállt**: 1016 esemény, majd **semmi nyom** (se AGENT_BUS, se commit) — 1 óra tétlenség. **01:05: utánaküldve**, miután a küldés-feltétel mindhárom ága teljesült. A `FDP-HANDOFF.md` új **0b** szakasza tiltja a néma megállást | ⏸️ a válaszára vár. Ha megint semmi ⇒ **owner-kérdés**, nem újabb prompt |
 | T-52 | 🤖 | 🖥️ **Konzol-visszajelzés a hang-feldolgozásról** | Owner 21:47: *„a konzolban nem látom azokat a visszajelzéseket, amiket annó a CCAP-ban"*. ⚠️ **Jogos: ilyet nem építettem** — az action-logba írok, ami neki nem látszik | 🔵 nyitott: mit lásson és hol (LDP-konzol / kliens) |
 | T-49 | 🤖 | 🎙️ **A voice-drop oka MEGVAN + FRS felvéve** | **Mérve: 17 ledobás = 17 LDP-restart** (+ a figyelő 18 perces kiesése). Az owner diagnózisa helyes. ✅ **BFR-MYASSISTANT-001** felvéve a bedrock-csatornába (`__documentations/BEDROCK-FRS.md`, `cli-dynamo`, high) — ez a **kanonikus út**, nem idegen repó szerkesztése | ⏸️ bedrock-agent válaszára vár. ⛔ A `dc ldp`-hez magamtól nem nyúlok |
 | T-50 | 🙋 | 📝 **LinkedIn posztok kitétele** | Owner 21:20: *„a LinkedIn posztokat ki kéne tenni, amiket terveztem"* | 🙋 **kérdés nála:** nála vannak megtervezve, vagy nekem kell összeszedni? |

@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-08 00:05
+**Utoljára frissítve:** 2026-09-08 01:05
 
 ---
 
@@ -1651,6 +1651,45 @@ munkat takarit meg. Itt egyik sem all. Lehet, hogy az FDP-oldali repoba irt.
 A ket feldolgozott fajl a `current/events/2026-09-08-summit-source/`-ba kerult, README-vel.
 ⚠️ A `planning-spec.md` melle odairtam, hogy **nem hatter-info volt, hanem a feladat resze** —
 ezt egyszer mar rosszul iteltem meg.
+
+
+
+---
+
+## 2026-09-08 01:05 — A DEV SZALLIT, az FDP NEMAN MEGALLT (utankuldve)
+
+### ⭐ DEV — folyamatos, ertelmes kimenet
+
+`events 2277 → 2883`, es **negy uj commit** 00:09–01:02 kozott:
+**user-journey teszt** a hang-lancra *(a kotelezo ②J reteg)* · journey-katalogus · **az EJFEL nem
+vaghatja kette a merest** ⇒ gordulo ablak · **felso hatar a `--hours`-ra** *(„a lathato hiba jobb,
+mint a nema lassulas")*.
+
+📌 Ez utobbi ketto **sajat felismeres** volt, nem a handoffbol — a DEV nem csak vegrehajt, hanem
+**megtalalja a hibakat a sajat munkajaban**.
+
+### 🔴 FDP — 1016 esemeny, aztan SEMMI
+
+Megnezve: **nincs `AGENT_BUS` bejegyzes, nincs commit** a repoban, es az `fdp-documentations`
+egyetlen friss commitja **mas sessione** *(review-crusade)*. Az esemenyszam **valtozatlan**
+23:23 ota.
+
+⚠️ **Kivulrol ez megkulonboztethetetlen attol, mintha meg sem kapta volna a feladatot.**
+
+**Amit tettem — es amiert csak most:**
+1. ⛔ Az elozo korben **NEM kuldtem utana** (§7.3: helyesbito prompt csak igazolt munka mellett).
+   Most mar **egy ora tetlenseg** a bizonyitek, nem a talalgatas.
+2. **Elobb a TARTOS javitas:** `FDP-HANDOFF.md` **0b szakasz** — a **nema megallas a legrosszabb
+   kimenetel**; kesz / reszleges / **blokkolt** / nem-az-en-dolgom, de **mindig irjon**.
+   ⭐ *„A »nincs eleg adatom« NEM kudarc — a hallgatas az."*
+3. **Kuldes-feltetel ellenorizve KOZVETLENUL kuldes elott:** `waiting-input` + `busy: false` +
+   **ures sor** ⇒ `KULDHETO: True`. Csak utana ment ki a prompt (`{"success":true}`).
+
+### 📌 Amit a delegalas ARA-kent latok
+
+A DEV suru commitjai **suru LDP-ciklusokat** valtanak ki ⇒ a Discord-figyelo **gyakrabban esik ki**
+*(most 7 perc)*. ⇒ A **BFR-MYASSISTANT-001** *(make-before-break restart)* a delegalassal
+**fontosabb lett**, nem kevesbe.
 
 
 ### A következő konkrét lépés

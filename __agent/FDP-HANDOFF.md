@@ -18,6 +18,29 @@
 
 ---
 
+## 🔴 0b. A NÉMA MEGÁLLÁS A LEGROSSZABB KIMENETEL
+
+**Mérve 2026-09-07 23:23 → 2026-09-08 01:02:** az első kiadás után **1016 eseményt** termeltél,
+majd megálltál — és **sehol nem maradt nyomod**: se `AGENT_BUS.md`, se commit, se jegyzet.
+
+⚠️ Kívülről ez **megkülönböztethetetlen** attól, mintha meg sem kaptad volna a feladatot.
+
+⇒ **KÖTELEZŐ, minden körben, akkor is ha nem végeztél:**
+
+| Helyzet | Mit írj az `AGENT_BUS.md`-be |
+|---|---|
+| ✅ kész | az eredmény |
+| 🟡 részleges | ameddig eljutottál, és mi hiányzik |
+| 🔴 **blokkolt** | **MI blokkol, és mi oldaná fel** *(adat · hozzáférés · owner-döntés)* |
+| ⚪ nem a te dolgod | mondd ki, és **kinek** kellene |
+
+📌 **A „nincs elég adatom" NEM kudarc — a hallgatás az.** Egy blokkolt állapot leírva
+továbbvihető; a csend nem.
+⭐ Ha nincs hozzáférésed a könyvelési adatokhoz, **azt írd meg** — akkor az owner megadja, vagy
+más útra tesszük a kérdést.
+
+---
+
 ## 1. 🔴 FELADAT — PÉNZÜGYI HELYZETKÉP (owner, 2026-09-07 23:20)
 
 > **Szó szerint:** *„a pénzügyi jelentéssel kapcsolatban az érdekelne, hogy **mi fér még bele a
