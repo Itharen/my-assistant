@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 21:34
+**Utoljára frissítve:** 2026-09-07 21:44
 
 ---
 
@@ -77,7 +77,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 | T-45 | 🤖 | 🔍 **A review-eszköz (`dc rev`) bekötve — a találatok levitele** | **Bekötve ma**: CI/CD 12→13 lépés (`dc-review-relay`), LDP 17→22 (cli/server/client/relay/ext), mind `fatal: false`. ⚠️ **Eddig SEHOL nem futott.** Mérve: **2110 találat** (cli 1429 / server 364 / client 252 / relay 38 / ext 27), ~56 s. Mérés: `__documentations/developments/2026-09-07-review-tool-cicd-wiring.md` | a **relay 38** találatával kezdeni *(ez a legkisebb, és ez fut a CI/CD-ben)*. ⛔ Az átemelt CCAP-kód 280 találata **nem munkalista** (`transplant-not-rewrite`). A `fatal: true`-vá tétel **külön owner-döntés** |
 | T-46 | 🤖 | 📥 **Discord-csatolmány fogadása** | **Megépítve**, 503/503 — `cli/src/discord/discord.file-intake.ts`. Eddig a fájl **némán elveszett** (szöveg nélkül elutasítva, szöveggel leesett az üzenetről). Most `__agent/inbox/`-ba mentődik | ⚠️ **élő próbára vár**: az owner holnapi summit-programja lesz az első valódi csatolmány. Addig NEM ✅ |
 | T-48 | 🙋 | ✉️ **Bérszámfejtés + költségvetési balansz** | ⛔ **NEM AZ ÉN HATÁSKÖRÖM** (owner 21:27): *„nem azért…, mert nem vagy rá képes, hanem mert kurvára nem a te felelősséged"*. ⭐ Az **FDP Assistant Sessionnél** vannak a **könyvelővel való kommunikáció szabályai** | 🙋 **owner dönti el, mikor adjuk át.** Az azonosító + a küldés szabályai nálam: `__agent/references/ccap-session-messaging.md` |
-| T-49 | 🤖 | 🎙️ **A voice-drop oka MEGVAN** | **Mérve: 17 belépés ma = 17 ledobás**, mindegyik LDP-restartkor. Az owner diagnózisa (21:20) helyes. ⚠️ A javítás (make-before-break) a **`dc ldp`-ben** van ⇒ **my-assistanton KÍVÜL** | 🙋 **owner-döntés:** adjak-e FDP feature requestet? ⛔ Magamtól nem nyúlok hozzá |
+| T-49 | 🤖 | 🎙️ **A voice-drop oka MEGVAN + FRS felvéve** | **Mérve: 17 ledobás = 17 LDP-restart** (+ a figyelő 18 perces kiesése). Az owner diagnózisa helyes. ✅ **BFR-MYASSISTANT-001** felvéve a bedrock-csatornába (`__documentations/BEDROCK-FRS.md`, `cli-dynamo`, high) — ez a **kanonikus út**, nem idegen repó szerkesztése | ⏸️ bedrock-agent válaszára vár. ⛔ A `dc ldp`-hez magamtól nem nyúlok |
 | T-50 | 🙋 | 📝 **LinkedIn posztok kitétele** | Owner 21:20: *„a LinkedIn posztokat ki kéne tenni, amiket terveztem"* | 🙋 **kérdés nála:** nála vannak megtervezve, vagy nekem kell összeszedni? |
 | T-51 | 🤖 | 📮 **CC-session üzenetküldés — szabályok ADOPTÁLVA** | ✅ `__agent/references/ccap-session-messaging.md`: a 6 HARD szabály (§7), a végpontok, és a **beazonosított ID-k** — 🔴 a fájl tetején a kötelező „a szabályokat MINDIG előbb olvasd el" figyelmeztetéssel. FDP Assistant: `ccs-eb7533f2-msf45rno` | ⛔ küldés **csak owner-jóváhagyással**; a `status` küldés előtt újra lekérdezendő |
 | T-41 | 🙋 | **Agent a támogatásokra / pályázatokra / mikromunkára** | ⭐ **HATÓKÖR-KORREKCIÓ (owner 2026-09-07 20:49):** *„ez nem a te feladatod lesz, az arra majd egy agentet kell összeállítsunk és elindítsunk"* ⇒ ⛔ **NEM én csinálom.** A mai feltárás (`current/leads/2026-09-07-exploration.md`) az agent **kiindulása** marad, nem kidobott munka | ⏸️ **owner-vezérelt**: az agent összeállítása. ⛔ Magamtól nem indítok agentet (nincs jóváhagyva) |

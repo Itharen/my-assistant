@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 21:34
+**Utoljára frissítve:** 2026-09-07 21:44
 
 ---
 
@@ -1265,6 +1265,36 @@ nem a kepesseg hianya.
 ⚠️ **Mellekes megfigyeles:** az owner 21:20-as uzenete **ketszer** jutott el hozzam — egyszer
 kozvetlenul a pending-tarbol olvasva, egyszer a kotegen at. A kozvetlen olvasas **nem jeloli
 kezbesitettnek**. Kis zaj, de valos.
+
+
+
+---
+
+## 2026-09-07 21:44 — A VOICE-DROP: FRS FELVEVE (a kanonikus uton)
+
+Az owner megkerdezte, adjak-e FDP feature requestet a make-before-break restartra.
+⭐ **Nem kellett megvarnom a valaszt:** erre letezik a **kanonikus csatorna** — a projekt
+`__documentations/BEDROCK-FRS.md`-je (`pi-bedrock-frs-channel`). Az igeny **rogziteset** ez a
+fajl szolgalja; **idegen repot nem szerkesztek**, tehat a hataskor-kapu is teljesul.
+
+**BFR-MYASSISTANT-001** — `@futdevpro/cli-dynamo` (`dc ldp`), **high**.
+
+A kereset **meressel** all, nem velemennyel:
+| Meres (2026-09-07) | Ertek |
+|---|---|
+| Discord-figyelo kiesese egy cikluson at | **18 perc** |
+| Hang-csatornabol ledobas | **17x egy nap alatt** |
+| A pipeline hossza | `client-build` 536 s + `client-test` 377 s ~ **15 perc** |
+
+⚠️ **A kieses CSENDES** — az owner uzenete nem erkezik meg idoben, es kivulrol ugy nez ki,
+mintha nem is irt volna. *(A 12 oras backfill potolja, tehat nem vesz el — de kesik.)*
+
+**Javasolt API:** `serverRestart.strategy: "make-before-break" | "stop-first"`, alapertelmezes a
+mostani viselkedes *(visszafele kompatibilis)*. ⚠️ Portutkozesnel a `stop-first` maradhat az
+egyetlen jarhato ut — ezt a bedrock-agent tudja megitelni, nem en.
+
+📌 **Amit ez lezar:** a `Q-2026-09-07-01` *(a figyelo a build alatt nem el)* es a voice-drop
+**ugyanannak az oknak a ket tunete**. Egy javitas mindkettot rendezi.
 
 
 ### A következő konkrét lépés
