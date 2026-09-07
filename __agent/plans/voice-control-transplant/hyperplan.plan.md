@@ -11,14 +11,14 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 13:52
+## 📊 STATUS — 2026-09-07 14:00
 
 | | |
 |---|---|
 | **Fázis** | 🟠 **1–2. szakasz KÉSZ** — a levél-fájlok bent, a hang-lánc IGAZOLTAN működik |
 | **Haladás** | 2/5 szakasz |
 | **Teszt** | CLI 477/477 zöld; a fő build **érintetlen** *(az átemelt kód kizárva)* |
-| **Következő lépés** | 3. szakasz: a CCAP-csatolás leszakítása *(6 hivatkozás)* — ez a legnehezebb |
+| **Következő lépés** | 3. szakasz: az illesztő réteg — ⭐ **mérve: mindössze 5 tulajdonság** + egy 95 soros ősosztály |
 | **Blokkoló** | nincs. ✅ V-1…V-3 megválaszolva |
 
 ### Az 1. szakasz igazolása — mért, nem állított
@@ -79,7 +79,7 @@ jövőbeli Node-frissítéseket is törékennyé tenné — pont azon a gépen, 
 | `@discordjs/voice`, `prism-media`, `wav`, `formdata-node`, opus-kódoló | — | ✅ **TELEPÍTVE és élő próbán igazolva** *(2. szakasz)* |
 | `_collections/consts/settings.const` | 9 | illesztés: my-assistant konfiguráció |
 | `_collections/consts/env-keys.const` | 4 | illesztés: `.env` kulcsnevek |
-| `_services/ccap.master-service` + `ccap.control-service` + `ccap.service-base` | 6 | 🔴 **a legnehezebb pont** — a CCAP magjához köt |
+| `_services/ccap.master-service` + `ccap.control-service` + `ccap.service-base` | 6 | ⭐ **mérve: csak 5 tulajdonság** kell belőlük — l. a 3. szakaszt |
 
 ### ⭐ A legjobb hír: a felismerés INGYEN mehet
 
@@ -176,10 +176,37 @@ külső csatolás nélkül. Ezek 1:1-ben átjönnek.
 ⚠️ Az opus-kódolók **natív** modulok — Windowson ez a leggyakoribb buktató.
 **Kész, ha:** egy minimális próba **igazoltan** felvesz és kiír egy hangfájlt.
 
-### 3. szakasz — a CCAP-csatolás LESZAKÍTÁSA *(a legnehezebb)*
+### 3. szakasz — a CCAP-csatolás LESZAKÍTÁSA
 
-A 6 hivatkozás a CCAP magjára. ⛔ **Nem a modult írjuk át**, hanem **illesztő réteget** adunk
-alá: ugyanaz a felület, my-assistant-implementációval.
+⛔ **Nem a modult írjuk át**, hanem **illesztő réteget** adunk alá: ugyanaz a felület,
+my-assistant-implementációval.
+
+#### ⭐ MÉRVE (2026-09-07): a felület jóval KESKENYEBB, mint a „6 hivatkozás" sugallta
+
+A 6 import mögött **mindössze 5 tulajdonság** tényleges használata áll:
+
+| Amit a `CCAP_MasterService`-ből hívnak | Db | Mi ez |
+|---|---|---|
+| `llmChat_CS` | 3 | LLM-beszélgetés — 🔴 **ennek NINCS my-assistant megfelelője** |
+| `voiceChannel` | 2 | a hang-csatorna kezelője |
+| `io_CS` | 1 | be-/kimenet |
+| `discordServer` | 1 | a szerver-objektum |
+| `defaultMessagingProvider` | 1 | az üzenet-küldő |
+
+**Plusz az ősosztály:** `CV_ServiceBase extends CCAP_ServiceBase` *(95 sor)* — és a `CV_ServiceBase`
+**teljes törzse ki van kommentelve**, vagyis ma puszta átnevezés. A leszármazottak egyetlen
+öröklött dolgot használnak: `gatherMessagesInChannel`.
+
+⇒ **Ez nem „a legnehezebb rész", hanem egy 5 tagú illesztő** + egy 95 soros ősosztály átemelése.
+*(A korábbi becslés a hivatkozások SZÁMÁN alapult — a mérés a tényleges HASZNÁLATOT nézte.)*
+
+#### ⚠️ Az egyetlen valódi nyitott kérdés: `llmChat_CS`
+
+A my-assistantban **nincs LLM-beszélgetés-szolgáltatás** — itt a „gondolkodás" maga a
+CC session. Meg kell nézni, **mire** használja a `voice` az `llmChat_CS`-t: ha csak a
+felismerés utáni értelmezésre, akkor az én utam a **Discord-köteg** *(az átirat úgyis
+hozzám kerül)*, és az ág elhagyható **kód-változtatás nélkül** — csak nem hívódik.
+
 **Kész, ha:** a `voice/` fordul, és a CCAP-ra semmi nem hivatkozik.
 
 ### 4. szakasz — az api-service-ek + a control-service-ek
