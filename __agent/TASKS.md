@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 22:00
+**Utoljára frissítve:** 2026-09-07 22:15
 
 ---
 
@@ -82,7 +82,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 | T-50 | 🙋 | 📝 **LinkedIn posztok kitétele** | Owner 21:20: *„a LinkedIn posztokat ki kéne tenni, amiket terveztem"* | 🙋 **kérdés nála:** nála vannak megtervezve, vagy nekem kell összeszedni? |
 | T-51 | 🤖 | 📮 **CC-session üzenetküldés — szabályok ADOPTÁLVA** | ✅ `__agent/references/ccap-session-messaging.md`: a 6 HARD szabály (§7), a végpontok, és a **beazonosított ID-k** — 🔴 a fájl tetején a kötelező „a szabályokat MINDIG előbb olvasd el" figyelmeztetéssel. FDP Assistant: `ccs-eb7533f2-msf45rno` | ⛔ küldés **csak owner-jóváhagyással**; a `status` küldés előtt újra lekérdezendő |
 | T-41 | 🙋 | **Agent a támogatásokra / pályázatokra / mikromunkára** | ⭐ **HATÓKÖR-KORREKCIÓ (owner 2026-09-07 20:49):** *„ez nem a te feladatod lesz, az arra majd egy agentet kell összeállítsunk és elindítsunk"* ⇒ ⛔ **NEM én csinálom.** A mai feltárás (`current/leads/2026-09-07-exploration.md`) az agent **kiindulása** marad, nem kidobott munka | ⏸️ **owner-vezérelt**: az agent összeállítása. ⛔ Magamtól nem indítok agentet (nincs jóváhagyva) |
-| T-22 | 🤖 | 🔊 **Voice control — ÉLŐBEN ÁTMENT** | ⭐ **2026-09-07 21:49: az owner beszéde a hang-csatornából ELJUTOTT hozzám** (`MA-VOICE-SPEECH-QUEUED`). A lánc működik. ✅ Javítva: a tükör a **hang-csatornába** megy (eddig a fő szövegesbe — ezért nem látott reakciót) | 🔴 **NYITOTT: sok beszédből csak 1 mondat jutott át.** Az átemelt hangerő/ZCR-szűrő dobja el a többit — ⛔ vakon nem nyúlok hozzá, előbb MÉRNI kell |
+| T-22 | 🤖 | 🔴 **Voice control — NINCS KÉSZ** *(visszaminősítve)* | ⛔ **Túlállítottam:** 1 mondat ment át egy egész beszélgetésből, és ezt „élőben átment"-nek neveztem. Owner 22:08: *„annak egy százaléka lett transzkriptálva… leginkább semmi nem ment át"*. ✅ Javítva: a tükör a hang-csatornába megy. ✅ Új: **megszólalás-számláló** (`MA-VOICE-SPEECH-DETECTED`) — észlelt vs. eljutott | 🎯 **1. a mérés kiolvasása** (mennyi bukik és hol) → 2. minden üzenet a hang-csatornába → 3. **hangos** visszajelzés |
 | T-10 | 🤖 | 🔴 **Sikertelen STT újrapróbálása** | **megépítve**, 474/474 teszt — `cli/src/stt/stt.retry-queue.ts` | ⚠️ **élő próbára vár**: a következő sikertelen felismerésnél derül ki. Addig NEM ✅ |
 
 ---

@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 22:00
+**Utoljára frissítve:** 2026-09-07 22:15
 
 ---
 
@@ -1376,6 +1376,53 @@ el**, csak egy fajlra mutattam. ⚠️ **Telefonrol nem lat fajlt.**
 📌 **Tanulsag:** a *keszultseg jelentese* nem helyettesiti a **hasznos hasznos payloadot**. Ha egy
 ertek erdekli, az erteket kell elkuldeni, nem a lelohelyet.
 **`ccs-eb7533f2-msf45rno`** — elkuldve.
+
+
+
+---
+
+## ⛔ 2026-09-07 22:08 — VISSZAVONVA: a hang-lanc NINCS KESZ (tulallitottam)
+
+> **Owner:** *„A voice channel-nek a feldolgozasat extrem hianyosnak talalom… beszeltem,
+> beszeltem, tulajdonkeppen annak egy szazaleka lett aztan transzkriptalva, es azt is belemostad
+> ebbe a chatbe, amitol aztan fingom nincs, hogy mi ment at, mi nem. De leginkabb semmi nem ment at."*
+
+🔴 **A SAJAT HIBAM, elore:** **egy** mondat ment at egy egesz beszelgetesbol, es ezt
+**„ELOBEN ATMENT"**-nek neveztem. **Az nem siker, az 1%.** A `MA-VOICE-SPEECH-QUEUED` **egyetlen**
+bejegyzese engem is figyelmeztethetett volna — de en a *„van egyaltalan?"* kerdesre valaszoltam,
+nem arra, hogy *„az egeszbol mennyi?"*.
+
+📌 **A hibaminta:** **az elso siker nem a mukodes bizonyiteka.** Egy vegponttol vegpontig atjuto
+peldany azt igazolja, hogy a **lanc ossze van kotve** — semmit nem mond az **atviteli aranyrol**.
+A ketto osszekeverese ugyanaz az osztaly, mint amikor a zold tipus-ellenorzest futasidoju
+letezesnek vettem.
+
+### Amit az owner kovetel — mind jogos, egyik sincs kesz
+
+1. **Minden uzenet keruljon be a hang-csatornaba is** *(ne mosodjon a fo chatbe)*
+2. **Hangos visszajelzes** — erzekeles, nyugtazas
+3. Lathatosag: **mi ment at es mi nem**
+
+### Amit ebben a korben megcsinaltam
+
+✅ **A tukor mar a HANG-csatornaba megy** *(eddig a fo szovegesbe — ezert nem latott reakciot)*.
+
+✅ **MEGSZOLALAS-SZAMLALO** — `MA-VOICE-SPEECH-DETECTED`, `{detected, delivered, droppedSoFar}`.
+A `receiver.speaking` esemenyre **parhuzamosan** ulunk ra: ⛔ **megfigyeles, nem modositas**, az
+atemelt kodhoz nem nyultunk. ⚠️ `?.`-tal vedve: a **diagnosztika sosem buktathatja meg** azt,
+amit megfigyel.
+
+⭐ **Miert EZ volt az elso lepes, es nem a szuro allitgatasa:** most a kidobott mondat **nemán**
+tunik el. Enelkul barmilyen kuszob-modositas **puszta talalgatas** lenne (`core-no-guessing`) —
+es az atemelt kodhoz vakon nyulni ketszeresen tilos (`transplant-not-rewrite`).
+
+### A kovetkezo lepes sorrendje
+
+1. **A meres kiolvasasa** — hany megszolalas indul, hany jut el a hookig, es hol vesz el
+2. Minden atirat a **hang-csatornaba**
+3. **Hangos** visszajelzes *(a `voice-output` mar atemelve — ez a kovetkezo hasznositasa)*
+
+⚠️ 536/536 zold, de **ez semmit nem bizonyit az atviteli aranyrol** — azt csak elo beszed meri.
 
 
 ### A következő konkrét lépés

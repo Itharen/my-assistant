@@ -31,6 +31,30 @@ export interface TransplantedRecorder {
   onWavFileReadyForProcessing?: (data: { userId: string; filename: string }) => void;
 }
 
+/**
+ * 🔴 MEGSZOLALAS-SZAMLALO — a NEMA ELDOBAS lathatova tetele.
+ *
+ * > **Owner (2026-09-07 22:08):** *„beszéltem, beszéltem, tulajdonképpen annak egy százaléka
+ * > lett aztán transzkriptálva… De leginkább semmi nem ment át."*
+ *
+ * ⭐ A MERES, AMI HIANYZOTT: az atemelt felvevo hangero- es ZCR-alapu validacioja **nemán
+ * eldobja** a megszolalasok tobbseget. A `onWavFileReadyForProcessing` hook **csak a
+ * TULELOKET** latja — a kidobottakrol sem az owner, sem en nem tudok semmit.
+ *
+ * ⇒ Ezert a `receiver.speaking` esemenyre **parhuzamosan** ulunk ra. ⛔ Ez **megfigyeles, nem
+ * modositas**: az atemelt kodhoz nem nyulunk (`transplant-not-rewrite`), csak megszamoljuk,
+ * hany megszolalas INDULT, es osszevetjuk azzal, hany ERKEZETT meg a hookig.
+ *
+ * 📌 Enelkul a szuro allitgatasa **puszta talalgatas** lenne — pontosan az, amit a
+ * `core-no-guessing` tilt.
+ */
+export interface SpeechAttemptStats {
+  /** Hany megszolalast erzekelt a Discord (`speaking.start`). */
+  detected: number;
+  /** Hany jutott el a feldolgozo hookig. */
+  delivered: number;
+}
+
 export interface VoiceRecordingResult {
   started: boolean;
   detail: string;
@@ -163,6 +187,8 @@ export async function startVoiceRecording(params: {
   bridge?: VoiceChannelBridge;
   loadRecorder?: typeof loadTransplantedRecorder;
   onHandled?: (outcome: RecordingHandled) => void;
+  /** 🔴 Minden ERZEKELT megszolalasnal hivodik — ez teszi lathatova a nema eldobast. */
+  onSpeechAttempt?: (stats: SpeechAttemptStats) => void;
 }): Promise<VoiceRecordingResult> {
   if (!params.ownerUserId) {
     return {
@@ -173,6 +199,7 @@ export async function startVoiceRecording(params: {
   }
 
   const bridge: VoiceChannelBridge = params.bridge ?? new VoiceChannelBridge();
+  const stats: SpeechAttemptStats = { detected: 0, delivered: 0 };
   const load: typeof loadTransplantedRecorder = params.loadRecorder ?? loadTransplantedRecorder;
 
   try {
@@ -183,6 +210,8 @@ export async function startVoiceRecording(params: {
     recorder.onWavFileReadyForProcessing = (data: { userId: string; filename: string }): void => {
       // ⛔ `void`-olt: az átemelt kód SZINKRON hívja ezt a hookot, tehát ígéretet nem adhatunk
       // vissza neki. A hibát itt kell elkapni, különben `unhandledRejection` lenne belőle.
+      stats.delivered += 1;
+
       void handleFinishedRecording({
         userId: data.userId,
         filename: data.filename,
@@ -203,6 +232,17 @@ export async function startVoiceRecording(params: {
     };
 
     recorder.handlePcmReceiver(params.connection);
+
+    // 🔴 MEGFIGYELES a hivatalos `receiver.speaking` esemenyre — PARHUZAMOSAN az atemelt
+    // felvevovel, azt nem zavarva. Ez teszi lathatova, hany megszolalas INDULT.
+    // ⚠️ `?.` SZANDEKOS: a szamlalo DIAGNOSZTIKA. Ha barmi okbol nincs `receiver`, az a
+    // felvetelt NEM buktathatja meg — a megfigyeles sosem lehet dragabb, mint amit megfigyel.
+    params.connection.receiver?.speaking?.on('start', (userId: string): void => {
+      if (userId !== params.ownerUserId) return;
+
+      stats.detected += 1;
+      params.onSpeechAttempt?.({ ...stats });
+    });
 
     return { started: true, detail: 'A hang-csatorna felvétele elindult.' };
   } catch (error: unknown) {

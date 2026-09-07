@@ -51,7 +51,11 @@ import {
   VoiceChannelPresence,
   readVoicePresenceConfig,
 } from '../voice/voice-channel-presence.js';
-import { startVoiceRecording, type RecordingHandled } from '../voice/voice-channel-recorder.js';
+import {
+  startVoiceRecording,
+  type RecordingHandled,
+  type SpeechAttemptStats,
+} from '../voice/voice-channel-recorder.js';
 import { transcribeAudio } from '../stt/stt.client.js';
 import { composeMirrorMessage } from '../stt/stt.mirror.js';
 import {
@@ -481,6 +485,22 @@ export class DiscordListener {
       ownerUserId: (process.env['MA_DISCORD_USER_ID'] ?? '').trim(),
       ownerName: 'Itharen',
       channelId: channelId,
+      // 🔴 A NEMA ELDOBAS LATHATOVA TETELE. Owner 22:08: „beszéltem, beszéltem, tulajdonképpen
+      // annak egy százaléka lett aztán transzkriptálva". Enelkul sem o, sem en nem tudjuk,
+      // HANY megszolalas veszett el — es a szuro allitgatasa puszta talalgatas lenne.
+      onSpeechAttempt: (stats: SpeechAttemptStats): void => {
+        void this.safeLog({
+          kind: 'note',
+          summary: `[discord/listener] 🎙️ Megszólalás érzékelve — ${stats.detected} észlelt / `
+            + `${stats.delivered} eljutott a feldolgozásig.`,
+          extra: {
+            code: 'MA-VOICE-SPEECH-DETECTED',
+            detected: stats.detected,
+            delivered: stats.delivered,
+            droppedSoFar: stats.detected - stats.delivered,
+          },
+        });
+      },
       onHandled: (outcome: RecordingHandled): void => {
         void this.safeLog({
           kind: outcome.queued ? 'note' : 'error',
