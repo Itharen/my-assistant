@@ -10,6 +10,8 @@
 // elvesztek**. Ez a modul adja a szűrőnek azt a tudást, amivel meg tudja különböztetni a
 // „semmit" a „hangüzenettől".
 
+import { collectFlags, describeFlags } from '../stt/stt.flags.js';
+
 /** Egy Discord-csatolmány — csak az a néhány mező, amit a döntéshez használunk. */
 export interface DiscordAttachment {
   id: string;
@@ -181,6 +183,10 @@ export function composeTranscriptForBatch(params: {
   const length: string = params.durationSecs
     ? ` (${Math.round(params.durationSecs)} mp)`
     : '';
+  // ⭐ FLAGEK (owner-kérés, 2026-09-07): a gépi átirat és a gépelt szöveg RÁNÉZÉSRE AZONOS,
+  // pedig az egyik szó szerinti utasítás, a másik valószínűségi tipp. A flag ezt teszi
+  // láthatóvá — köztük azt is, ha az átirat MONDAT KÖZBEN ér véget.
+  const flags: string = describeFlags(collectFlags(params.transcript));
 
-  return `🎙️ HANGÜZENET — gépi átirat${length}, NEM gépelt szöveg:\n${params.transcript}`;
+  return `🎙️ HANGÜZENET${length} — NEM gépelt szöveg\n[${flags}]\n${params.transcript}`;
 }
