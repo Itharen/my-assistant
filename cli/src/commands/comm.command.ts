@@ -2,9 +2,16 @@
 //
 //   doctor  — tételes diagnosztika: mi él, mi hiányzik, MIT KELL TENNI
 //   flush   — a Discord-köteg kiküldése (a döntés szerint, vagy `--force`-szal)
+//   listen  — a Discord-figyelő (hosszan futó)
+//   say     — kimenő üzenet; `--text` VAGY `--file`
+//
+// 🔴 A `--file` NEM kényelmi opció (2026-09-07 incidens): Windowson az `npx`/`cmd` burkoló
+// a többsoros `--text` argumentumot AZ ELSŐ ÚJSORNÁL LEVÁGTA, és a rendszer minden szintje
+// sikert jelentett rá. Fájlból olvasva a szöveg SOHA nem megy át a shellen.
 //
 // A `doctor` alapból EMBER-OLVASHATÓ táblát ír; `--json`-nal gépi envelope-ot.
 
+import { readFile } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
 
 import { runCommDoctor } from '../comm/comm.doctor.js';
@@ -30,6 +37,33 @@ const AREA_LABEL: Record<CommCheck['area'], string> = {
   presence: 'Jelenlét',
 };
 
+/**
+ * A kimenő üzenet szövegének feloldása — `--file` VAGY `--text`.
+ *
+ * 🔴 A `--file` az AJÁNLOTT út. A 2026-09-07-i incidensben a Windows `npx`/`cmd` burkoló a
+ * többsoros `--text` argumentumot az ELSŐ ÚJSORNÁL levágta — a CLI és a `discord.js`
+ * hibátlanul működött, csak sosem kapta meg a teljes szöveget. Fájlból olvasva a szöveg
+ * **soha nem megy át a shellen**, tehát ez a hiba szerkezetileg lehetetlenné válik.
+ *
+ * ⛔ A hiányzó/olvashatatlan fájl NEM csendes: `CcapError`-t dob, orvoslással.
+ */
+async function resolveOutgoingText(
+  source: { text?: string; file?: string },
+): Promise<{ ok: true; text: string } | { ok: false; detail: string; remedy: string }> {
+  if (!source.file) return { ok: true, text: source.text ?? '' };
+
+  try {
+    return { ok: true, text: await readFile(source.file, 'utf-8') };
+  } catch (err: unknown) {
+    return {
+      ok: false,
+      detail: `A megadott fájl nem olvasható: ${source.file} — `
+        + `${err instanceof Error ? err.message : String(err)}`,
+      remedy: 'Ellenőrizd az útvonalat (abszolút út a legbiztosabb), és hogy UTF-8 a kódolás.',
+    };
+  }
+}
+
 export async function runCommCommand(subcommand: string, args: string[]): Promise<void> {
   const startedAt: number = Date.now();
   const requestId: string = makeRequestId();
@@ -40,6 +74,7 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
       pretty: { type: 'boolean' },
       force: { type: 'boolean' },
       text: { type: 'string' },
+      file: { type: 'string' },
     },
     strict: false,
   });
@@ -73,8 +108,23 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
     }
 
     if (subcommand === 'say') {
-      const text: string = typeof parsed.values.text === 'string' ? parsed.values.text : '';
-      const result = await sendDiscordMessage(text);
+      const source = await resolveOutgoingText({
+        text: typeof parsed.values.text === 'string' ? parsed.values.text : undefined,
+        file: typeof parsed.values.file === 'string' ? parsed.values.file : undefined,
+      });
+
+      if (!source.ok) {
+        // ⛔ A hiba SOSEM csendes: a hívó lássa, MI a baj és MIT tegyen.
+        writeEnvelope(
+          ok(action, requestId, startedAt, { sent: false, partCount: 0, detail: source.detail, remedy: source.remedy }),
+          true,
+        );
+        process.exitCode = 1;
+
+        return;
+      }
+
+      const result = await sendDiscordMessage(source.text);
 
       writeEnvelope(ok(action, requestId, startedAt, result), pretty || !asJson);
 

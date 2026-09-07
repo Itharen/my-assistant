@@ -9,6 +9,7 @@
 
 import { Client, GatewayIntentBits, type TextBasedChannel } from 'discord.js';
 
+import { verifyDelivery, type DeliveredMessage } from './discord.delivery-check.js';
 import { recordOutbound } from './discord.reply-tracker.js';
 
 /** A Discord üzenet-hossz korlátja. E fölött darabolunk. */
@@ -21,6 +22,15 @@ export interface DiscordSendResult {
   detail: string;
   /** MIT KELL TENNI, ha nem ment. */
   remedy?: string;
+  /**
+   * A küldés UTÁNI visszaolvasás eredménye — tényleg megérkezett-e, teljes egészében.
+   *
+   * ⚠️ `false` esetén a `sent: true` **NEM jelent sikert**: a darab kiment, de csonkán
+   * (vagy egyáltalán nem) érkezett meg. Ez fogta meg a 2026-09-07-i incidenst.
+   */
+  verifiedIntact?: boolean;
+  /** A visszaolvasás összegzése. */
+  verifyDetail?: string;
 }
 
 /**
@@ -73,10 +83,17 @@ export async function sendDiscordMessage(text: string): Promise<DiscordSendResul
     // G-1: a valasz-kotelezettseg kovetesehez rogzitjuk, hogy valaszoltunk.
     await recordOutbound();
 
+    // ⭐ KÜLDÉS UTÁNI VISSZAOLVASÁS (owner-javaslat, 2026-09-07). A `send()` visszatérése
+    // csak azt mondja meg, hogy ELINDULT — azt nem, hogy TELJES EGÉSZÉBEN megérkezett.
+    const verdict = await verifyAgainstChannel(channel, parts);
+
     return {
       sent: true,
       partCount: parts.length,
       detail: parts.length === 1 ? 'Elküldve.' : `Elküldve ${parts.length} részletben.`,
+      verifiedIntact: verdict.intact,
+      verifyDetail: verdict.detail,
+      ...(verdict.intact ? {} : { remedy: verdict.remedy }),
     };
   } catch (err: unknown) {
     const message: string = err instanceof Error ? err.message : String(err);
@@ -91,6 +108,36 @@ export async function sendDiscordMessage(text: string): Promise<DiscordSendResul
   } finally {
     // A kapcsolatot MINDIG bontjuk — különben a folyamat nem állna le.
     await client.destroy().catch(() => undefined);
+  }
+}
+
+/**
+ * A csatorna visszaolvasása és összevetése azzal, amit küldtünk.
+ *
+ * 🔴 SOHA nem dob: ha maga az ellenőrzés bukik, azt „nem tudjuk"-ként jelentjük — de a
+ * küldést nem minősítjük sikertelennek miatta. A hamis riasztás is kár.
+ */
+async function verifyAgainstChannel(
+  channel: unknown,
+  parts: string[],
+): Promise<{ intact: boolean; detail: string; remedy?: string }> {
+  try {
+    const fetchable = channel as {
+      messages: { fetch: (options: { limit: number }) => Promise<Map<string, { id: string; content: string }>> };
+    };
+    const history = await fetchable.messages.fetch({ limit: Math.min(parts.length + 3, 20) });
+    const arrived: DeliveredMessage[] = [...history.values()].map((message) => ({
+      id: message.id,
+      content: message.content,
+    }));
+
+    return verifyDelivery({ sentParts: parts, arrived });
+  } catch (err: unknown) {
+    return {
+      intact: true,
+      detail: 'A visszaolvasás nem futott le '
+        + `(${err instanceof Error ? err.message : String(err)}) — a küldés maga sikeres volt.`,
+    };
   }
 }
 
