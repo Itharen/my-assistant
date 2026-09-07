@@ -68,6 +68,34 @@ A `--file` javítás halasztásának **indoka megszűnt**: a kód módosítása 
 csatornát. A ~23 perces pipeline alatt a szerver és mindkét figyelő **fut**; csak a legvégén
 van egy rövid újraindulás.
 
+---
+
+## 🔴 A VÉGPONTTÓL VÉGPONTIG PRÓBA NEM LUXUS — 2026-09-07, három mért lebukás
+
+Egyetlen munkamenetben **három** hiba került elő úgy, hogy a típusellenőrzés és **minden teszt
+zöld volt**. Egyiket sem lehetett volna olvasással megtalálni.
+
+| # | Mi volt | Miért nem fogta meg semmi |
+|---|---|---|
+| 1 | A relay-lehúzó `Authorization: Bearer`-t küldött, a relay `x-ma-relay-token`-t olvas | a két oldal **külön fordul**, és külön-külön **helyes** volt |
+| 2 | Az `nginx -t` „syntax is ok"-ot mondott — a **saját alapértelmezett** configjára | a parancs **lefutott**, csak nem azt vizsgálta, amit hittem |
+| 3 | A helyzet-tár a `build/` alá került volna, amit minden fordítás **letöröl** | a útszámolás forrásból futva **jó**, fordítva **rossz** |
+
+### A három szabály, ami ebből következik
+
+⭐ **1. A szerződést a MÁSIK OLDALON kell megnézni.** A fejléc-név, a mezőnév, a válasz alakja —
+ezekre a **szokásból következtetni** tilos. Egy „mindenki így csinálja" feltevés pontosan
+addig működik, amíg a másik oldal is így csinálja.
+
+⭐ **2. „A parancs lefutott" ≠ „azt vizsgálta, amit hittem".** A csatolás nem érvényesült, a
+`cd` nem oda vitt, a build elavult volt — mindhárom **sikeres kimenetet** adott. ⇒ Egy
+igazolás **első lépése** annak bizonyítása, hogy a **helyes bemeneten** dolgozik
+*(listázd ki a fájlokat, nézd meg a `pwd`-t, nézd meg a build idejét)*.
+
+⭐ **3. Ami forrásból fut, az még nem fut fordítva is.** Minden útvonal-számolás, ami a kód
+**saját helyéből** indul (`import.meta.url`, `__dirname`), **elrendezés-függő** — és élesben
+más az elrendezés. A tartós adat helyét **soha ne a kód helyéből** számold.
+
 ### Kapcsolódó
 
 - `current/principles/ldp-default-runtime.md` — az LDP a default futtatási mód

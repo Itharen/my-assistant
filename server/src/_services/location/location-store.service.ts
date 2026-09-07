@@ -11,13 +11,15 @@
 // | **Nincs új függőség** | a Mongo megvan, de egy helyzet-naplóhoz nem ad semmit |
 // | **Olvasható** | egy `tail`-lel megnézhető, mit tárolunk — ez adatvédelmi szempontból is jó |
 //
-// 🔴 A HELY: `server/data/location/` — **gitignore-olva**. A helyzet-adat SOHA nem kerülhet a
-// repóba. *(A `current/` git-trackelt, ezért az kizárva; `.gitignore`-ban a `server/data/`.)*
+// 🔴 A HELY: `~/.config/my-assistant/location/` — **a repón KÍVÜL**. A helyzet-adat soha nem
+// kerülhet a repóba *(a `current/` git-trackelt, ezért az eleve kizárt)*, és — 2026-09-07-i
+// mérés után — a **build-kimenetbe sem**, mert onnan minden fordítás letörölné.
+// A pontos indoklás a `resolveLocationStoreDir()` fölött.
 
 import { existsSync } from 'node:fs';
 import { appendFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import * as path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { homedir } from 'node:os';
 
 import {
   DEFAULT_LOCATION_CONFIG,
@@ -26,12 +28,35 @@ import {
 } from './location.models.js';
 import { pruneExpired } from './location.retention.js';
 
-/** A tár könyvtára. A `_services/location` mindkét elrendezésben négy szint mély. */
+/**
+ * A tár könyvtára.
+ *
+ * 🔴 MÉRT HIBA (2026-09-07) — EZ ADATVESZTÉST OKOZOTT VOLNA. Korábban a fájl SAJÁT helyéből
+ * (`import.meta.url`) számoltunk négy szintet felfelé, azzal a feltevéssel, hogy a
+ * `_services/location` „mindkét elrendezésben négy szint mély". A VALÓSÁG más:
+ *
+ * | elrendezés | a fordított fájl helye | 4 szint fel |
+ * |---|---|---|
+ * | forrásból (`tsx`) | `server/src/_services/location` | a projekt gyökere ✅ |
+ * | fordítva | `server/build/server/src/_services/location` | 🔴 **`server/build`** |
+ *
+ * A tsconfig ugyanis a `cli/`-t is fordítja, ezért a közös gyökér a repo gyökere lesz, és a
+ * kimenet egy szinttel mélyebbre kerül. ⇒ Fordított kódban — vagyis ÉLESBEN — a helyzet-adat
+ * a `build/` ALÁ került volna, amit a `build-base` (`rimraf ./build`) **minden fordításnál
+ * letöröl**. Az owner kérése (*„Maradhat hosszabb távon is ami hasznos"*) így némán meghiúsult
+ * volna, és a hiány pontosan úgy nézett volna ki, mintha nem is mozdult volna sehova.
+ *
+ * ⭐ EZÉRT NEM A KÓD HELYÉBŐL SZÁMOLUNK TÖBBÉ. A felhasználói adat nem lakhat a
+ * build-kimenetben. A tár oda kerül, ahol a többi tartós adatunk is van
+ * (`~/.config/my-assistant/`, mint a Discord-köteg és az STT-újrapróbáló sor).
+ * A `MA_LOCATION_DIR` felülírja — ez teszi teszteléskor elkülöníthetővé.
+ */
 export function resolveLocationStoreDir(): string {
-  const here: string = path.dirname(fileURLToPath(import.meta.url));
-  const projectRoot: string = path.resolve(here, '..', '..', '..', '..');
+  const override: string = (process.env['MA_LOCATION_DIR'] ?? '').trim();
 
-  return path.join(projectRoot, 'server', 'data', 'location');
+  if (override) return override;
+
+  return path.join(homedir(), '.config', 'my-assistant', 'location');
 }
 
 function resolveStoreFile(): string {

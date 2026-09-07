@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 13:05
+**Utoljára frissítve:** 2026-09-07 13:20
 
 ---
 
@@ -73,7 +73,6 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 |---|---|---|---|---|
 | T-10 | 🤖 | 🔴 **Sikertelen STT újrapróbálása** | **megépítve**, 474/474 teszt — `cli/src/stt/stt.retry-queue.ts` | ⚠️ **élő próbára vár**: a következő sikertelen felismerésnél derül ki. Addig NEM ✅ |
 | T-35 | 🙋 | 🔴 **A CI/CD-t semmi nem INDÍTJA el** | a pipeline-config kész, de a repo `Itharen/my-assistant` — ⚠️ **NEM** a `futdevpro` szervezetben, így a szervezeti GitHub-webhook **nem fedi**. `gh` nincs telepítve ⇒ a webhook létét **nem tudtam ellenőrizni — unverified** | owner: repo-szintű webhook az Overseerre, **vagy** a repo átvitele a szervezetbe |
-| T-04 | 🤖 | **Relay — a lehúzó oldal** | a relay `/pull` + `/ack` kész | a my-assistant szerverben az ütemezett lehúzás + `location-store` írás |
 
 ---
 
@@ -148,6 +147,7 @@ rendszer-feladataim**, amiknek a kulcsa nála van.
 | ✅ | **Overseer-regisztráció** | 844/844 |
 | ✅ | **T-01 relay gateway-conf** | `nginx -t` a konténerben LEFUT az új conf-on: fallback-cert generálás után **sikeres** ⇒ nem tudja crash-loopoltatni a gateway-t |
 | ✅ | **T-02 relay SSL** | `ssl-config.json` 36 → 37 domain, JSON érvényes |
+| ✅ | **T-04 relay lehúzó oldal** | **élő, végponttól végpontig próba** a futó relay ellen: helyzet betöltve → lehúzva → eltárolva → nyugtázva → a következő kör üres. ⭐ A **home** helyzet koordináta NÉLKÜL tárolódott (`{state:"home"}`) — az owner szabálya élőben igazolva |
 | ✅ | **T-03 relay CI/CD + Dockerfile** | JSON érvényes, 12 lépés; a `node build/index.js` belépési pont **élőben elindult**, a `/api/relay/pull` **401**-et adott token nélkül *(fail-closed igazolva)*. ⚠️ Maga a **pipeline-futás** még nem próbálódott — az a T-35-ön múlik |
 | ✅ | **`startup-test` javítás** | 8 teszt / 0 bukás; mind a 14 pipeline-lépés zöld |
 

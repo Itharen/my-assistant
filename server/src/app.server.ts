@@ -51,6 +51,7 @@ import { VersionBroadcast_SocketServerService } from './_services/socket-service
 import { DiscordListener_Service } from './_services/discord-listener.service';
 import { PresenceMonitor_Service } from './_services/presence-monitor.service';
 import { SystemPulse_Service } from './_services/system-pulse.service';
+import { RelayPuller_Service } from './_services/location/relay-puller.service';
 import { WeatherPoll_Service } from './_services/weather-poll.service';
 
 /** my-assistant App bootstrap. DyNTS_AppExtended-t terjeszti — Mongo + routes + static client + sockets. */
@@ -220,6 +221,11 @@ export class App extends DyNTS_AppExtended {
    * • `PresenceMonitor_Service` (owner, 2026-09-06): a jelenlét-figyelő ugyanezen az elven.
    *   Ez **112 napig volt halott**, mert az indítása egy ütemezett feladaton múlt, amit
    *   senki nem ellenőrzött — és enélkül a hangszórós kapu „ismeretlen"-t lát és TILT.
+   * • `RelayPuller_Service` (owner, 2026-09-07): a telefon helyzetét a relayről **mi húzzuk
+   *   le**, kifelé indított kapcsolattal. Azért ITT van, mert ez a lehúzás a my-assistant
+   *   EGYETLEN útja a helyzet-adathoz — a szerver kívülről szándékosan elérhetetlen, tehát
+   *   ha ez a figyelő nem indul el, a helyzet **soha** nem érkezik meg, és a hiánya pontosan
+   *   úgy néz ki, mintha az owner nem mozdult volna.
    */
   override async getRootServices(): Promise<unknown[]> {
     return [
@@ -227,6 +233,7 @@ export class App extends DyNTS_AppExtended {
       DiscordListener_Service.getInstance(),
       PresenceMonitor_Service.getInstance(),
       SystemPulse_Service.getInstance(),
+      RelayPuller_Service.getInstance(),
     ];
   }
 
