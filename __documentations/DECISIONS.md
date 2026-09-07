@@ -393,9 +393,93 @@ a verziózott local state migrációt igényel, de az upstream accountot nem mó
 
 ---
 
+## DEC-MA-021 — Expired Interfood days use live Last Minute inventory with a separate finalization gate
+
+**Dátum:** 2026-09-05
+**Forrás:** owner request, `current/feature-requests/interfood-scraper.md`, live Interfood endpoint/frontend/FAQ
+**Decision:** Lejárt normál határidejű, lefedetlen következő napnál kizárólag a publikus
+`GET /api/v1/menu/last-minute` aktuális occurrence-ei használhatók rendelhetőségi forrásként. A CLI megőrzi a
+provider orderability flaget, időablakot és nyers számlálókat, de saját készletképletet nem vezet le. Üres válasznál
+a nap megoldatlan marad. Mivel a provider szerint a Last Minute rendelés nem mondható le, véglegesítése friss
+inventory readbackhez és külön, azonnali owner-megerősítéshez kötött. Owner-reviewban a leves 🍲, a desszert 🍰.
+
+**Indok:**
+- A normál heti menü a deadline után nem bizonyítja, hogy az occurrence még rendelhető.
+- A Last Minute készlet dinamikus: a live kalibráció során rövid időn belül 45-ről 44-re változott, miközben a két
+  kiválasztott occurrence rendelhető maradt.
+- Az upstream `isLastMinuteOrderable`/`disabled` állapot erősebb bizonyíték, mint egy dokumentálatlan számítás a
+  szolgáltató belső számlálóiból.
+- A nem lemondható véglegesítés kockázata nagyobb, mint egy visszafordítható kosárdrafté.
+
+**Reverzibilitás:** A publikus adapter endpointja cserélhető a stabil `ma interfood last-minute` JSON-szerződés
+megtartásával. A külön finalizációs kapu csak új owner-döntéssel lazítható.
+
+---
+
+## DEC-MA-022 — Chrome Side Panel companion, native LinkedIn page and manual-send evidence
+
+**Dátum:** 2026-09-05
+**Forrás:** `__agent/plans/linkedin-integration-hyperplan/master-plans/mp-06-guided-manual-send-workspace.plan.md`
+**Decision:** A My Assistant saját, vendor-semleges MV3 Chrome Side Panel bővítményt használ a vezetett LinkedIn
+munkamódhoz. A valódi LinkedIn top-level lap marad; a panel kizárólag a saját localhost UI-t mutatja. A bővítmény
+nem kér LinkedIn host permissiont, nem olvas/manipulál DOM-ot, és nem küld üzenetet. A `manual-send-reported`
+kizárólag owner-jelentés, nem API receipt. A manifest key stabil extension-ID-t rögzít; a szerver csak a dedikált
+`?surface=sidepanel` válasznál és csak ennek az exact extension originnek enged frame-elést. Minden normál útvonal
+megtartja az alapértelmezett `SAMEORIGIN` védelmet.
+
+**Indok:**
+- a LinkedIn iframe-et saját frame policy és szerződési határ tiltja;
+- natív Split View létrehozó webes/extension API nincs igazolva;
+- a Side Panel egy ablakban tartja a saját workflow-t és a natív LinkedInt anélkül, hogy a LinkedIn oldalt
+  automatizálná;
+- a meglévő cache/draft SSOT újrahasználata megakadályozza a CLI és UI állapotának szétcsúszását.
+
+**Reverzibilitás:** A companion kikapcsolható vagy eltávolítható; a `/linkedin` UI és a `ma linkedin` CLI ettől
+függetlenül működik. A natív-tab fallback megmarad.
+
+---
+
+## DEC-MA-023 — Explicit Interfood favorite precedes warnings but retains them
+
+**Dátum:** 2026-09-05
+**Forrás:** owner correction, `current/principles/interfood-food-preferences.md`
+**Decision:** A hard reject továbbra is kizár. Utána az explicit favorite rangja megelőzi a warning és negatív
+preferencia tier-eket, ezért a kedvenc figyelmeztetés mellett is a főajánlásban marad. A figyelmeztetés kötelezően
+látható, a tej/tejszínnel jelölt étel továbbra sem kerülhet health lane-be. Az owner-tábla egészségjelölője 🥦, és
+nem renderel üres leves-/desszerthelyőrző sort.
+
+**Indok:** A korábbi warning-first rendezés a kedvenceket alternatívába tolta, így a megjelenítés nem követte az
+owner explicit prioritását. A ⭐+⚠️ együttes jelölés veszteség nélkül mutatja mind a preferenciát, mind a kockázatot.
+
+**Reverzibilitás:** A comparator tier-sorrendje és a prezentációs marker módosítható, de owner-döntés nélkül nem
+gyengíthető vissza; az IF-J04 regresszió előbb jelezné a változást.
+
+---
+
+## DEC-MA-024 — Message-bound semantic LinkedIn reply queue
+
+**Dátum:** 2026-09-06
+**Forrás:** `__agent/plans/linkedin-integration-hyperplan/master-plans/mp-07-semantic-reply-triage.plan.md`
+**Decision:** A legutolsó inbound üzenet kizárólag `technicalNeedsReplyCandidate`. A **Válaszra vár** queue-ba
+csak az a thread kerülhet, amelynek az aktuális legutolsó üzenetéhez friss, magyarázható agenti vagy owneri review
+kapcsolódik, és annak kategóriája `priority-direct-project`, `actionable` vagy `clarification-needed`. A review és
+az agentdraft az értékelt message ID-hoz kötött; új aktivitás mindkettőt automatikusan elavulttá teszi. Az
+agentfüggetlen SSOT-writeback a `ma linkedin review` CLI.
+
+**Indok:** Az üzenet iránya nem hordoz beszélgetési jelentést: recruiter-elutasítás, automatikus kampány vagy a
+user korábbi válaszára érkező lezárás ugyanúgy inbound. A teljes threadet használó szemantikai döntés megszünteti
+ezeket a hamis pozitívokat, miközben az exact-message binding megakadályozza, hogy új üzenetre régi döntést vagy
+draftot használjunk.
+
+**Reverzibilitás:** A kategóriák és rangsor verziózott cache-migrációval bővíthetők. A direction-only döntésre
+visszaállás tudatos biztonsági regresszió lenne, ezért az LI-J08 release-gate védi.
+
+---
+
 ## Convention új DEC-hez
 
 ```markdown
+
 ## DEC-MA-NNN — Rövid cím
 
 **Dátum:** YYYY-MM-DD
@@ -408,3 +492,66 @@ a verziózott local state migrációt igényel, de az upstream accountot nem mó
 
 **Reverzibilitás:** Becslés effort-ra ha valaha visszafordítjuk.
 ```
+
+---
+
+## DEC-MA-010 — 🔴 A DEC-MA-009 port-kiosztás ÜTKÖZIK (XY=24 foglalt) + a relay port-igénye
+
+**Dátum:** 2026-09-07
+**Forrás:** owner — *„Fdp templates ben lévő minták alapján vegyünk fel portokat."*
+**Státusz:** ⏳ **owner-döntésre vár** (a relay-részre javaslat, a my-assistant-részre kérdés)
+
+### 🔴 A LELET: a DEC-MA-009 feltevése MA MÁR NEM IGAZ
+
+A DEC-MA-009 (2026-05-09) azt írta: *„XY=24 jelenleg üres az `port-env-settings.const.ts`-ben —
+biztonságosan használható"*. **Ez ma nem áll.** Megmérve a kanonikus SSOT-ban:
+
+```
+E:/Programming/Own/CURSOR/NPM-packages/fdp-templates/src/_constants/environment/port-env-settings.const.ts
+
+204:  nicheDatasetsSpace_client: 4224,
+205:  nicheDatasetsSpace_http: 39245,
+207:  nicheDatasetsSpace_notificationSocket: 39247,
+```
+
+⇒ A **my-assistant jelenlegi portjai (39245, 4224) a `niche-datasets-space`-é**.
+
+| | |
+|---|---|
+| ⚠️ **Ma miért nem robban** | a my-assistant **csak RAVEN-en, lokálisan** fut; az nds máshol. Az ütközés **lappangó**, nem aktív. |
+| 🔴 **Mikor robbanna** | ha a my-assistant bármely része **PLO KOON-ra** (test szerver) kerülne — ott az nds **tényleg fut**. |
+| 📌 **Miért most derült ki** | mert a relay **oda települ**, és ezért kellett a port-kiosztást komolyan megnézni |
+
+⚠️ **A `my-assistant` NINCS BENNE a SSOT-ban.** *(A `fdpAssistant` = XY 21 egy **másik** projekt —
+„FDP Assistant" —, nem ez.)* Vagyis a 24-es slotot a my-assistant **sosem regisztrálta**;
+a DEC-MA-009 „előre allokált" reménye nem valósult meg, az nds pedig időközben elvitte.
+
+### A szabad slotok — mérve
+
+A SSOT legmagasabb kiosztott azonosítója **32** (`fdpWatchNReview`: 4232 / 39325).
+**A 33-tól felfelé szabad** — ellenőrizve: `4233 / 39335 / 39337 / 4234 / 39345` egyike sem szerepel.
+
+⚠️ **Mellékes, de fontos:** a FAM-ban lévő emlékeztető *(„War Factory 24 · Niche Datasets 25 ·
+FAM 26")* **ELAVULT** — a fájl szerint `warFactory` = **06**, `nicheDatasetsSpace` = **24**,
+`fdpPal` = **25**. ⇒ **A FÁJL a SSOT, nem a memória-jegyzet.**
+
+### Javaslat
+
+| Mi | XY | Portok |
+|---|---|---|
+| ⭐ **`my-assistant-relay`** *(új, a relay)* | **34** | `39345` http · `39347` notif · *(kliens nincs)* |
+| ❓ **`my-assistant`** *(a meglévő, ütköző)* | **33** | `39335` http · `4233` kliens · `39337` notif |
+
+**A relay-re a 34 biztonságos** — szabad slot, és a relay az egyetlen rész, ami közös hosztra megy.
+
+**A my-assistant átköltöztetése (24 → 33) KÜLÖN döntés**, mert:
+- ⚠️ érinti a futó szervert, az LDP-konfigot, a `.env`-et és a doksikat *(a DEC-MA-009 szerint
+  a felület kicsi: „`grep 39245 | wc -l` mutatja a teljes felületet")*;
+- ⛔ **de amíg nem tesszük meg, a my-assistant szervert NEM szabad PLO KOON-ra deployolni.**
+
+### Regisztráció
+
+Ha az owner jóváhagyja, a slot(ok) **be is kerülnek** a `port-env-settings.const.ts`-be —
+különben megismétlődik ugyanez: egy másik projekt szépen elviszi a „szabadnak hitt" slotot.
+⚠️ Az `fdp-templates` **bedrock-csomag**, a my-assistant projekten **kívül** ⇒ az oda írás
+külön owner-jóváhagyást igényel *(vagy BEDROCK-FRS-t)*.
