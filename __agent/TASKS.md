@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 13:09
+**Utoljára frissítve:** 2026-09-07 13:15
 
 ---
 
@@ -71,8 +71,8 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 
 | # | Ki | Feladat | Hol tart | Következő lépés |
 |---|---|---|---|---|
+| T-22 | 🤖 | 🔴 **Voice control ÁTEMELÉSE a régi CCAP-ból** *(nagy)* — **ELŐREVÉVE** | owner 2026-09-07 12:37: *„Ezt nagyon szeretném még előbb látni"* | ⛔ **A régi kódban SEMMIT nem szabad változtatni** — owner: *„nagyon törékeny az a kód, de cserében meg egész jól működött"*. ⇒ **átemelés, nem átírás** |
 | T-10 | 🤖 | 🔴 **Sikertelen STT újrapróbálása** | **megépítve**, 474/474 teszt — `cli/src/stt/stt.retry-queue.ts` | ⚠️ **élő próbára vár**: a következő sikertelen felismerésnél derül ki. Addig NEM ✅ |
-| T-35 | 🙋 | 🔴 **A CI/CD-t semmi nem INDÍTJA el** | a pipeline-config kész, de a repo `Itharen/my-assistant` — ⚠️ **NEM** a `futdevpro` szervezetben, így a szervezeti GitHub-webhook **nem fedi**. `gh` nincs telepítve ⇒ a webhook létét **nem tudtam ellenőrizni — unverified** | owner: repo-szintű webhook az Overseerre, **vagy** a repo átvitele a szervezetbe |
 
 ---
 
@@ -103,6 +103,7 @@ a darabolás **kikapcsolható marad**, ha rontana.
 
 | # | Ki | Feladat | Miért | Forrás |
 |---|---|---|---|---|
+| T-40 | 🤖 | 🔴 **Az üzenetek nem jutnak el hozzám az LDP-újraindítások között** | owner 2026-09-07 12:57: *„félek, hogy egy kicsit elsikkadt egy pár üzenet. Itt a LDP-s folyamatos újraindítások között nem perzisztálnak rendesen az üzenetek"* — **MÉRVE, igaza van**: 5 üzenet `delivered`-nek jelölve, de a sessionbe **nem érkezett meg** | owner 12:57 + saját mérés |
 | T-12 | 🤖 | **Figyelés/riasztás a sikertelen feldolgozásokra** | *„nem ártana valami kezelés, figyelés"* — ⚠️ a T-10 sora már **szól**, ha végleg feladja; ami HIÁNYZIK: a **várakozó sor láthatósága** *(konzol-pulzus + `comm doctor`)* | owner 12:00 |
 
 ### Egyéb
@@ -110,7 +111,6 @@ a darabolás **kikapcsolható marad**, ha rontana.
 | # | Ki | Feladat | Miért | Forrás |
 |---|---|---|---|---|
 | T-20 | 🤝 | **Mikromunkák + hackathon előrevétele** | *„Reklámnak és pénznek"* — ⚠️ ez **kétfelé bomlik**: a *prioritás-átállítás az organizerben* **élet-feladat**, az viszont, hogy én ezt **felvessem és kövessem**, rendszer-feladat | owner 10:25 |
-| T-22 | 🤖 | **Voice control átemelése** *(nagy)* | a régi `ccap` `/discord-bot/src/_modules/voice/` (~6700 sor) | owner 07:38 |
 | T-23 | 🤖 | **LDP működés Bedrockba** | | owner 2026-09-06 |
 
 ---
@@ -147,6 +147,8 @@ rendszer-feladataim**, amiknek a kulcsa nála van.
 | ✅ | **Overseer-regisztráció** | 844/844 |
 | ✅ | **T-01 relay gateway-conf** | `nginx -t` a konténerben LEFUT az új conf-on: fallback-cert generálás után **sikeres** ⇒ nem tudja crash-loopoltatni a gateway-t |
 | ✅ | **T-02 relay SSL** | `ssl-config.json` 36 → 37 domain, JSON érvényes |
+| ✅ | **T-35 CI/CD-indító** | ⭐ **az owner oldotta meg**: átvitte a repót a `futdevpro` szervezetbe (2026-09-07 13:03). Igazolva: `futdevpro/my-assistant` létezik és tartalmazza a legfrissebb commitot; a remote átállítva a kanonikus címre |
+| ✅ | **T-12 a várakozó STT-sor láthatósága** | **élő próba**: 2 tétellel a sorban a `doctor` 🟡-t adott és a **legsürgősebb** tétellé tette; a konzol-pulzus `🎙️ 2 hang újrapróbálásra vár` |
 | ✅ | **T-04 relay lehúzó oldal** | **élő, végponttól végpontig próba** a futó relay ellen: helyzet betöltve → lehúzva → eltárolva → nyugtázva → a következő kör üres. ⭐ A **home** helyzet koordináta NÉLKÜL tárolódott (`{state:"home"}`) — az owner szabálya élőben igazolva |
 | ✅ | **T-03 relay CI/CD + Dockerfile** | JSON érvényes, 12 lépés; a `node build/index.js` belépési pont **élőben elindult**, a `/api/relay/pull` **401**-et adott token nélkül *(fail-closed igazolva)*. ⚠️ Maga a **pipeline-futás** még nem próbálódott — az a T-35-ön múlik |
 | ✅ | **`startup-test` javítás** | 8 teszt / 0 bukás; mind a 14 pipeline-lépés zöld |

@@ -37,10 +37,18 @@ export interface DiscordFlushDecision {
 export interface DiscordFlushResult {
   /** Hány üzenetet vitt be ez a kiküldés. */
   deliveredCount: number;
-  /** Igaz, ha a CCAP sorba tette (foglalt volt a session). */
+  /**
+   * Igaz, ha a CCAP SORBA TETTE (foglalt volt a session).
+   *
+   * 🔴 A SORBA ÁLLÍTÁS NEM KÉZBESÍTÉS — mérve 2026-09-07: öt így „kézbesített" owner-üzenet
+   * soha nem érkezett meg a sessionbe. Ilyenkor a `deliveredCount` **0**, és a köteg
+   * várakozó marad.
+   */
   queued: boolean;
   /** A ténylegesen elküldött prompt — naplózáshoz. */
   promptPreview: string;
+  /** Ember-olvasható kiegészítés, ha a kiküldés nem a szokásos módon zárult. */
+  detail?: string;
 }
 
 /** A kötegelő beállításai. */

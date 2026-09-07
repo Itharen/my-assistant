@@ -1,4 +1,4 @@
-import { decideFlush } from './discord.bridge.js';
+import { DiscordBridge, decideFlush } from './discord.bridge.js';
 import { composeBatchPrompt } from './discord.batch-composer.js';
 import { DISCORD_INBOUND_PREFIX, type DiscordInboundMessage } from './discord.models.js';
 
@@ -71,7 +71,7 @@ describe('decideFlush', () => {
     expect(decision.reason).toContain('Összegyűjtési ablak');
   });
 
-  it('opens the safety valve when the oldest message waited past the hold limit — even if busy', () => {
+  it('🔴 a tartási korlát lejárta ELLENÉRE sem küld foglalt sessionbe — ez nyelt el 5 üzenetet', () => {
     const decision = decideFlush({
       pending: [message({ receivedAt: ageSeconds(16 * 60) })],
       isBusyProcessing: true,
@@ -80,8 +80,27 @@ describe('decideFlush', () => {
       config: CONFIG,
     });
 
+    // MÉRT HIBA (2026-09-07): korábban ITT `true` állt („küldünk, foglaltság ellenére is").
+    // A foglalt sessionbe küldött prompt a CCAP SORÁBA áll, mi pedig kézbesítettnek jelöltük
+    // — az owner öt üzenete így tűnt el úgy, hogy minden szint SIKERT jelentett rá.
+    expect(decision.shouldFlush).toBe(false);
+    expect(decision.reason).toContain('A session dolgozik');
+    // ⭐ De a lejárt korlát LÁTSZIK az indoklásban — nem némán maradunk veszteg.
+    expect(decision.reason).toContain('tartási korlát LEJÁRT');
+  });
+
+  it('a lejárt tartási korlát az összegyűjtési ablakot VISZONT felülírja — szabad sessionnél', () => {
+    const decision = decideFlush({
+      // Friss üzenet (a gyűjtő-ablakon belül), DE a köteg legrégebbije rég vár.
+      pending: [message({ receivedAt: ageSeconds(16 * 60) }), message({ receivedAt: ageSeconds(1) })],
+      isBusyProcessing: false,
+      queuedItemCount: 0,
+      now: NOW,
+      config: CONFIG,
+    });
+
     expect(decision.shouldFlush).toBe(true);
-    expect(decision.reason).toContain('Biztonsági szelep');
+    expect(decision.reason).toContain('tartási korlát is lejárt');
   });
 });
 
@@ -207,7 +226,7 @@ describe('decideFlush — a CCAP SORA is szamit (owner, 2026-09-07)', () => {
     expect(decision.shouldFlush).toBe(true);
   });
 
-  it('⚠️ a BIZTONSAGI SZELEP a tele sort is felulirja — kulonben orokre allna a koteg', () => {
+  it('🔴 a tele sorba SEM kuld, barmilyen regi is a koteg', () => {
     const decision = decideFlush({
       pending: [message({ receivedAt: ageSeconds(9999) })],
       isBusyProcessing: true,
@@ -217,7 +236,78 @@ describe('decideFlush — a CCAP SORA is szamit (owner, 2026-09-07)', () => {
       config: CONFIG,
     });
 
-    expect(decision.shouldFlush).toBe(true);
-    expect(decision.reason).toContain('Biztonsági szelep');
+    // ⭐ Az owner szabalya: „ha running vagy van message a queue-ban akkor csak gyujtunk".
+    // A sorba kuldes nem varakoztatas — merve: a sorba tett prompt SOSEM erkezett meg.
+    // A koteg latszik a `doctor`-ban es a konzol-pulzusban, tehat a varakozas NEM nema.
+    expect(decision.shouldFlush).toBe(false);
+  });
+});
+
+describe('DiscordBridge.flush — 🔴 a SORBA ÁLLÍTÁS NEM KÉZBESÍTÉS', () => {
+
+  /** Csak annyi tár, amennyit a `flush` érint — és megjegyzi, véglegesítettünk-e. */
+  function makeStore(pending: DiscordInboundMessage[]): { store: unknown; committed: number[] } {
+    const committed: number[] = [];
+
+    return {
+      store: {
+        readPending: async (): Promise<DiscordInboundMessage[]> => pending,
+        commitDelivered: async (count: number): Promise<void> => { committed.push(count); },
+      },
+      committed: committed,
+    };
+  }
+
+  /** Hamis CCAP: szabad session, és a `sendPrompt` a kért módon válaszol. */
+  function makeCcap(queued: boolean): unknown {
+    return {
+      inspectRuntime: async (): Promise<unknown> => ({
+        isBusyProcessing: false,
+        queuedItemCount: 0,
+        isQueueLocked: false,
+      }),
+      sendPrompt: async (): Promise<{ queued: boolean; raw: unknown }> => ({ queued: queued, raw: {} }),
+      // a `resolveSelfIdentity` a session-listából párosít a környezeti azonosítóra
+      listCcSessions: async (): Promise<unknown[]> => ([{ sessionId: 's-1', claudeSessionId: 'cc-teszt' }]),
+    };
+  }
+
+  const old: DiscordInboundMessage[] = [message({ receivedAt: ageSeconds(60) })];
+
+  let savedSessionId: string | undefined;
+
+  beforeEach(() => {
+    savedSessionId = process.env['CLAUDE_CODE_SESSION_ID'];
+    process.env['CLAUDE_CODE_SESSION_ID'] = 'cc-teszt';
+  });
+
+  afterEach(() => {
+    if (savedSessionId === undefined) delete process.env['CLAUDE_CODE_SESSION_ID'];
+    else process.env['CLAUDE_CODE_SESSION_ID'] = savedSessionId;
+  });
+
+  it('🔴 `queued: true` esetén NEM véglegesít, és 0 kézbesítettet jelent', async () => {
+    const { store, committed } = makeStore(old);
+    const bridge = new DiscordBridge(store as never, makeCcap(true) as never, CONFIG);
+
+    const result = await bridge.flush({ now: NOW, force: true });
+
+    // Ez nyelt el 5 owner-üzenetet 2026-09-07-én: a sorba tett prompt sosem érkezett meg,
+    // mi mégis kézbesítettnek könyveltük.
+    expect(result?.queued).toBe(true);
+    expect(result?.deliveredCount).toBe(0);
+    expect(committed).toEqual([]);
+    expect(result?.detail ?? '').toContain('NEM kézbesítés');
+  });
+
+  it('igazolt átvételnél viszont véglegesít', async () => {
+    const { store, committed } = makeStore(old);
+    const bridge = new DiscordBridge(store as never, makeCcap(false) as never, CONFIG);
+
+    const result = await bridge.flush({ now: NOW, force: true });
+
+    expect(result?.queued).toBe(false);
+    expect(result?.deliveredCount).toBe(1);
+    expect(committed).toEqual([1]);
   });
 });

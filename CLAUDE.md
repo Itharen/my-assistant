@@ -674,6 +674,7 @@ megfogalmazása lesz a referencia.
 | `current/principles/health-system.md` | Health zóna: napi 3× arc-mosás workflow + anti-deferral stratégia |
 | `current/principles/task-tracking.md` | 📋 **HARD RULE**: minden RENDSZER-feladat FAJLBAN (`__agent/TASKS.md`). ⛔ Ez NEM keverendo az owner organizerben levo ELET-feladataival — kulon terminologia (🤖 en / 🤝 kozosen / 🙋 owner-kapu). A `✅` csak IGAZOLAS utan |
 | `current/principles/uncertain-requests.md` | 🔍 **HARD RULE**: bizonytalan keresbe NEM vagunk bele — jeloljuk (🔍 FELTARANDO), korbejarjuk, csak utana epitjuk. Owner: *„a mar mukodo dolgokat keresztul huzhatja"*. Hatar a [[no-approval-for-obvious-fixes]] fele: *„ha tevedek, ez ELRONT valamit, ami most mukodik?"* |
+| `current/principles/transplant-not-rewrite.md` | 🚚 **HARD RULE**: torekeny, MUKODO kodot ATEMELUNK, nem atirunk — nincs „kozben rendberakom". Owner: *„nagyon torekeny az a kod, de cserében meg egész jól működött"*. Felulirja a „csinald meg az egyertelmut" reflexet |
 | `current/principles/fdp-ai-never-restart.md` | ⛔ **HARD RULE**: az FDP AI szolgáltatáshoz (port 38321) SOHA nem nyúlunk — nincs újraindítás/leállítás/modell-unload. Olvasás és használat szabad. Owner: *„Ahhoz soha ne nyúlj!"* |
 | `current/principles/no-paid-solutions.md` | **Univerzális hard rule**: SOHA ne ajánlj fizetős megoldást — ha létezik, lefejlesztjük magunknak |
 | `current/principles/build-it-ourselves.md` | **Univerzális default**: build-it-ourselves stance, FOSS / saját script preferred a heavy 3rd-party tooling helyett |

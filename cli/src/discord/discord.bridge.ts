@@ -63,20 +63,27 @@ export function decideFlush(params: {
   const oldestAgeMs: number = nowMs - timestampOf(params.pending[0], nowMs);
   const newestAgeMs: number = nowMs - timestampOf(params.pending[pendingCount - 1], nowMs);
 
-  if (oldestAgeMs >= config.maxHoldMs) {
-    return {
-      shouldFlush: true,
-      reason: `Biztonsági szelep: a legrégebbi üzenet ${Math.round(oldestAgeMs / 1000)} mp-e vár `
-        + `(korlát ${Math.round(config.maxHoldMs / 1000)} mp) — küldünk, foglaltság ellenére is.`,
-      pendingCount,
-    };
-  }
+  // ⚠️ A biztonsági szelep MÉRÉSE, de a döntés a foglaltság-kapuk UTÁN dől el.
+  //
+  // 🔴 MÉRT HIBA (2026-09-07) — EZ NYELT EL 5 ÜZENETET: a szelep KORÁBBAN itt, a kapuk ELŐTT
+  // állt, és 15 perc után „foglaltság ellenére is" küldött. A foglalt sessionbe küldött prompt
+  // viszont a CCAP SORÁBA áll — mi pedig `delivered`-nek jelöltük. Az owner öt üzenete így
+  // úgy tűnt el, hogy a rendszer minden szintje SIKERT jelentett rá.
+  //
+  // Az owner maga mondta ki a helyes szabályt: *„ha running vagy van message a queue-ban
+  // akkor csak gyűjtünk"* — és ő vette észre a hiányt is: *„félek, hogy egy kicsit elsikkadt
+  // egy pár üzenet"*.
+  //
+  // ⭐ A szelep ezért mostantól CSAK az összegyűjtési ablakot írja felül, a foglaltságot NEM.
+  // Egy foglalt sessionbe küldés nem kézbesítés, hanem eltűnés.
+  const holdExpired: boolean = oldestAgeMs >= config.maxHoldMs;
 
   if (params.isBusyProcessing) {
     return {
       shouldFlush: false,
       reason: `A session dolgozik — gyűjtünk tovább (${pendingCount} tétel vár), `
-        + 'hogy egy futásba minél több infó kerüljön.',
+        + 'hogy egy futásba minél több infó kerüljön.'
+        + (holdExpired ? ' ⚠️ A tartási korlát LEJÁRT, de foglalt sessionbe küldeni nem kézbesítés, hanem eltűnés.' : ''),
       pendingCount,
     };
   }
@@ -101,7 +108,7 @@ export function decideFlush(params: {
     };
   }
 
-  if (newestAgeMs < config.collectWindowMs) {
+  if (newestAgeMs < config.collectWindowMs && !holdExpired) {
     return {
       shouldFlush: false,
       reason: `Összegyűjtési ablak: a legutóbbi üzenet ${Math.round(newestAgeMs / 1000)} mp-es, `
@@ -112,7 +119,10 @@ export function decideFlush(params: {
 
   return {
     shouldFlush: true,
-    reason: `A session szabad és elcsendesedett — ${pendingCount} tétel megy ki EGY promptban.`,
+    reason: holdExpired
+      ? `A session szabad, és a tartási korlát is lejárt (${Math.round(oldestAgeMs / 1000)} mp) — `
+        + `${pendingCount} tétel megy ki EGY promptban.`
+      : `A session szabad és elcsendesedett — ${pendingCount} tétel megy ki EGY promptban.`,
     pendingCount,
   };
 }
@@ -222,12 +232,31 @@ export class DiscordBridge {
 
     const result = await this.ccap.sendPrompt({ sessionId: identity.sessionId, content: prompt });
 
+    // 🔴 A SORBA ÁLLÍTÁS NEM KÉZBESÍTÉS — és ezt MÉRTÜK, nem feltételezzük.
+    //
+    // 2026-09-07: öt owner-üzenet `delivered`-ként lett elkönyvelve, és **soha nem érkezett
+    // meg** a sessionbe — a köztes ~40 perc alatt több futás-határ is eltelt. A CCAP `queued`
+    // válasza tehát NEM azt jelenti, hogy „majd megkapod": azt jelenti, hogy „elvettem".
+    //
+    // ⇒ Ilyenkor a köteg **VÁRAKOZÓ MARAD**, és a következő körben — szabad session mellett —
+    // újra kimegy. Egy esetleges ismétlés LÁTHATÓ; a néma elnyelés nem.
+    // *(Ugyanaz az elv, mint a relay `/ack`-jénél: a törlés csak igazolt átvétel után jön.)*
+    if (result.queued) {
+      return {
+        deliveredCount: 0,
+        queued: true,
+        promptPreview: prompt.slice(0, 400),
+        detail: `⚠️ A CCAP SORBA TETTE a promptot (${batch.length} tétel) — ez NEM kézbesítés, `
+          + 'ezért a köteg várakozó maradt, és a következő szabad körben újra megy.',
+      };
+    }
+
     // Csak IDE eljutva véglegesítünk — igazolt átadás után.
     await this.store.commitDelivered(batch.length);
 
     return {
       deliveredCount: batch.length,
-      queued: result.queued,
+      queued: false,
       promptPreview: prompt.slice(0, 400),
     };
   }

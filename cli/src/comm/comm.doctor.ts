@@ -15,6 +15,7 @@ import { DiscordBatchStore } from '../discord/discord.batch-store.js';
 import { DiscordBridge } from '../discord/discord.bridge.js';
 import { readHeartbeat } from '../discord/discord.heartbeat.js';
 import { checkReplyObligation } from '../discord/discord.reply-tracker.js';
+import { MAX_ATTEMPTS, SttRetryQueue, type SttRetryEntry } from '../stt/stt.retry-queue.js';
 import { summarizeChecks, type CommCheck, type CommDoctorReport } from './comm.models.js';
 
 /** Ennyi perc után tekintjük elavultnak a jelenlét-mérést. */
@@ -36,6 +37,7 @@ export async function runCommDoctor(options: { projectRoot?: string } = {}): Pro
   await checkDiscordConfig(checks);
   await checkDiscordListener(checks);
   await checkDiscordBatch(checks);
+  await checkSttRetryQueue(checks);
   await checkReplyDebt(checks);
   await checkSpeakerGate(projectRoot, checks);
   await checkPresenceMonitor(projectRoot, checks);
@@ -262,6 +264,67 @@ async function checkDiscordBatch(checks: CommCheck[]): Promise<void> {
       status: 'unknown',
       detail: `A köteg-tár nem olvasható: ${err instanceof Error ? err.message : String(err)}`,
       remedy: `Ellenőrizd a fájlt: ${store.getPaths().pendingFile}`,
+    });
+  }
+}
+
+/**
+ * 🎙️ Várakozik-e hang a felismerésre?
+ *
+ * 🔴 MIÉRT VAN EZ A DOCTORBAN (owner, 2026-09-07: *„nem ártana valami kezelés, figyelés"*):
+ * egy sorban álló hang **tartalma még nem jutott el hozzám**. Ez pontosan az az állapot, ami
+ * kívülről ÚGY NÉZ KI, mintha minden rendben volna — és 2026-09-07-én pont így veszett el két
+ * üzenet, még az újrapróbáló sor előtt.
+ *
+ * ⚠️ A várakozás önmagában NEM hiba: a sor pont azért van, hogy várjon a terhelés apadására.
+ * `degraded` csak akkor, ha egy tétel már a próbálkozásai VÉGÉHEZ közeledik — onnantól ugyanis
+ * valós az esély, hogy a tartalom **véglegesen** elvész.
+ */
+async function checkSttRetryQueue(checks: CommCheck[]): Promise<void> {
+  try {
+    const entries: SttRetryEntry[] = await new SttRetryQueue().list();
+
+    if (entries.length === 0) {
+      checks.push({
+        id: 'stt-retry-queue',
+        area: 'discord',
+        label: 'Hangüzenetek újrapróbálási sora',
+        status: 'ok',
+        detail: 'Nincs felismerésre váró hang.',
+      });
+
+      return;
+    }
+
+    // A legtöbbet próbált tétel a kritikus: az van a legközelebb a végleges elvesztéshez.
+    const mostTried: SttRetryEntry = entries.reduce(
+      (worst, entry) => (entry.attempts > worst.attempts ? entry : worst),
+      entries[0]!,
+    );
+    const remaining: number = MAX_ATTEMPTS - mostTried.attempts;
+
+    checks.push({
+      id: 'stt-retry-queue',
+      area: 'discord',
+      label: 'Hangüzenetek újrapróbálási sora',
+      status: remaining <= 1 ? 'degraded' : 'ok',
+      detail: `${entries.length} hang vár felismerésre; a legtöbbet próbált `
+        + `${mostTried.attempts}/${MAX_ATTEMPTS} próbánál tart `
+        + `(következő: ${mostTried.nextAttemptAt}). Utoljára: ${mostTried.lastFailure}`,
+      remedy: remaining <= 1
+        ? '⚠️ Ez a hang a próbálkozásai VÉGÉN jár — ha a következő sem sikerül, a tartalma '
+          + 'ELVÉSZ. Nézd meg a rendszer-RAM-ot: 90% felett az FDP AI várakozik. '
+          + '⛔ A szolgáltatást NEM indítjuk újra — várd meg, amíg a terhelés apad.'
+        : undefined,
+    });
+  } catch (err: unknown) {
+    checks.push({
+      id: 'stt-retry-queue',
+      area: 'discord',
+      label: 'Hangüzenetek újrapróbálási sora',
+      status: 'unknown',
+      detail: `A sor nem olvasható: ${err instanceof Error ? err.message : String(err)}`,
+      remedy: 'Ellenőrizd a könyvtárat: ~/.config/my-assistant/stt-retry/',
     });
   }
 }
