@@ -9,9 +9,9 @@
 > beazonosítasz, ott nagyon fontos, hogy felírd, hogy ezeket a szabályokat mindig előtte kell
 > elolvasni."*
 >
-> ⛔ Az alábbi azonosítók **ismerete nem felhatalmazás**. A küldés owner-jóváhagyáshoz kötött
-> (`IDENTITY.md`: az orkesztráció **nem jóváhagyott**), kivéve ha az owner az adott feladatra
-> **kifejezetten** kéri.
+> ⭐ **2026-09-07 22:30 — VÁLTOZÁS:** az owner **két sessiont az én fennhatóságom alá adott**
+> *(„ALL Projects - My Assistant DEV" + „My FDP Assistant")*. Ezekre az orkesztráció
+> **JÓVÁHAGYOTT**. ⛔ **Minden más sessionre változatlanul TILOS** külön owner-kérés nélkül.
 
 ---
 
@@ -60,6 +60,8 @@ POST /api/cc-session/:id/prompt      → { content }   ⚠️ VISSZAVONHATATLAN
 
 | Cél | `sessionId` | Címke | Státusz akkor |
 |---|---|---|---|
+| ⭐ **A FEJLESZTŐM** — ide megy MINDEN fejlesztési munka | **`ccs-d5027942-mtroz7ve`** | ALL Projects - My Assistant DEV | `running` |
+| ⭐ **AZ FDP-ASSZISZTENSEM** — FDP-ügyek, könyvelő, bérszámfejtés | **`ccs-e4e4fadf-mtroyj33`** | My FDP Assistant | `running` |
 | **FDP Assistant** *(az owner ezt nevezte meg)* | `ccs-eb7533f2-msf45rno` | ALL Projects - FDP Assistant NEW | `waiting-input` |
 | **Én** *(ide jönnek a Discord-üzenetek)* | `ccs-6f25a888-mtp9a8cx` | My Assistant | `running` |
 | FDP Fleet | `ccs-556c9670-mtnp9j8g` | FDP Fleet | `waiting-input` |

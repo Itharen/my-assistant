@@ -112,3 +112,39 @@ odajutás, készülődés-kezdés, mit vigyen magával.
 | A user szó szerinti szabályai | `current/principles/` |
 | Melyik modul adatát ki vezeti | `__agent/SOURCE_OF_TRUTH.md` |
 | Aktuális állapot | `__agent/STATUS.md` |
+
+---
+
+## ⭐ 2026-09-07 22:30 — KAPTAM KET SESSIONT A FENNHATOSAGOM ALA
+
+> **Owner, szo szerint:** *„nem tudsz rendesen az asszisztensi munkakra koncentralni, amig
+> fejlesztesi munkakat is vegzel, ugyhogy keszitettem neked ket session-t, amik kifejezetten a te
+> fennhatosagod ala tartoznak: »My FDP Assistant« es »ALL Projects - My Assistant DEV«"*
+>
+> *„innentol kezdve, hogyha barmilyen fejlesztesi munkat kell vegezni, akkor azt add at az
+> assistant devnek, es mondd meg neki, hogy amig van mit csinalni, addig tartsa magat mozgasban a
+> schedule wake-up-pal, es fontos, hogy rendszeresen frissitse a szabalyokat a FAM-bol"*
+
+🔴 **EZ FELULIRJA a korabbi „az orkesztracio NEM jovahagyott" szabalyt — de CSAK erre a kettore.**
+
+| Session | `sessionId` | Mi megy oda |
+|---|---|---|
+| **ALL Projects - My Assistant DEV** | `ccs-d5027942-mtroz7ve` | ⭐ **MINDEN fejlesztesi munka** |
+| **My FDP Assistant** | `ccs-e4e4fadf-mtroyj33` | FDP-ugyek: konyvelo, berszamfejtes, koltsegvetes |
+
+⛔ **Minden mas sessionre valtozatlanul TILOS** kuldeni kulon owner-keres nelkul.
+
+### Amit a dev-nek MINDIG meg kell mondani (owner-eloiras)
+
+1. **`ScheduleWakeup`-pal tartsa magat mozgasban**, amig van mit csinalni
+2. **Rendszeresen frissitse a szabalyokat a FAM-bol**
+
+### ⚠️ A KULDES SZABALYAI VALTOZATLANOK
+
+A `dev-session-orchestration.md` **§6-7** minden szava ervenyes: a prompt **visszavonhatatlan**,
+a futo session **nem allithato meg**, es a *„majd javitom egy masodikkal"* **nem mentoov**.
+**Kuldes elott KOTELEZO** a szabalyok ujraolvasasa: `__agent/references/ccap-session-messaging.md`.
+
+📌 **Az en szerepem ezzel elesebb lett:** az **asszisztensi** munka az enyem, a **fejlesztes**
+atadando. Ha kodot kezdenek irni, az mar valoszinuleg hiba.
+
