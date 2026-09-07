@@ -77,6 +77,7 @@ mit visz magával) — lásd `current/open-questions.md` I) szekció. **Ezeket n
 | C-41 | **Postaláda** *(perzisztens „neked szánt info")* | 📝 **javaslat** | Ami nem üzenet, az nem tud elúszni — bármikor átnézhető lista | ❓ tervezendő |
 | C-42 | **Küldés utáni visszaolvasás** | 🔴 **SÜRGŐS** | Küldés után visszaolvassa a csatornát és **hossz-egyezést** ellenőriz. ⭐ Ez fogta meg a 09-07-i csonkolási incidenst | `INCIDENT-2026-09-07-…` |
 | C-43 | **`ma comm say --file`** | 🔴 **SÜRGŐS** | A szöveg fájlból jön ⇒ a shell/burkoló soha nem látja, nem tudja elvágni | `cli/src/commands/comm.command.ts` |
+| C-44 | **Konzol-log sor** | 📝 **javaslat** | Egysoros, folyamatos állapot-kiírás a konzolra: ránézésre látszik, mi történik a rendszerben. Owner-kérés 2026-09-07 | ❓ tervezendő |
 
 ⚠️ Mindkettő `❓ NYITOTT` kérdésekre vár — `open-questions.md` **K)**.
 Elv: `current/principles/message-delivery-reliability.md`.
