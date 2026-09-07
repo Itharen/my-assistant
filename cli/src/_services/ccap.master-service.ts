@@ -27,6 +27,8 @@ import type {
 } from '@futdevpro/nts-dynamo/bot';
 import type { Channel, Client, Guild } from 'discord.js';
 
+import { VoiceChannelBridge } from '../voice/voice-channel-bridge.js';
+
 /**
  * Az LLM-felülvizsgáló felülete, ahogy a `cv-result-review` hívja.
  *
@@ -94,20 +96,96 @@ class PassThroughLlmChat implements LlmChatAdapter {
  * kötegbe folyik, mint a Discord-hangüzenetek — ugyanazzal a duplikáció-védelemmel, ugyanazzal
  * a válasz-kötelezettséggel, és ugyanúgy visszanézhetően (`ma comm history`).
  *
- * ⏳ A tényleges bekötés a terv **4-5. szakaszában** jön, a felvevő oldallal együtt. Addig
- * **jelez**, hogy hívták — ⛔ a néma elnyelés itt ugyanaz a hiba lenne, mint bárhol máshol.
+ * ✅ **BEKÖTVE (5. szakasz):** a `VoiceChannelBridge` teszi a kötegbe, és küldi a
+ * tükör-szöveget. ⛔ Üres szövegnél NEM hallgat: leíró hibát naplóz.
  */
 class BatchBoundBotIo implements BotIoAdapter {
 
+  private readonly bridge: VoiceChannelBridge = new VoiceChannelBridge();
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async handleMessageWithOptionalPreFlag(params: { addPreFlag: string }): Promise<DyNTS_Bot_MessageWrapper<any, any>> {
-    // ⛔ NEM néma `null`: ha ezt hívják, mielőtt a kötegbe kötés elkészül, az LÁTHATÓ hiba
-    // legyen. Egy üres visszatérés itt csendben elnyelné a felismert szöveget — pontosan azt,
-    // amiért az egész hang-út létezik.
-    throw new Error(`[voice-adapter] MA-VOICE-IO-NOT-WIRED: io_CS hívás (${params.addPreFlag}), `
-      + 'de a Discord-kötegbe kötés még nem készült el (a terv 4-5. szakasza). '
-      + 'Terv: __agent/plans/voice-control-transplant/hyperplan.plan.md');
+  async handleMessageWithOptionalPreFlag(params: {
+    message?: unknown;
+    addPreFlag: string;
+    issuer: string;
+    [key: string]: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  }): Promise<DyNTS_Bot_MessageWrapper<any, any>> {
+    const spoken: string = readTranscript(params.message);
+
+    // ⛔ Üres szöveget NEM juttatunk be — de MEGMONDJUK. A néma eldobás itt pont azt
+    // veszítené el, amiért az egész hang-út létezik.
+    if (!spoken) {
+      DyFM_Log.error('[voice-adapter] MA-VOICE-IO-EMPTY: a hang-csatornából ÜRES szöveg '
+        + `érkezett (${params.addPreFlag}) — nem tettem a kötegbe.`);
+
+      return null as never;
+    }
+
+    const outcome = await this.bridge.handleOwnerSpeech({
+      // ⚠️ A szegmens-azonosító a DUPLIKÁCIÓ-VÉDELEM alapja. Ha a hang-modul nem ad
+      // stabilat, az idő+szöveg lenyomata áll be helyette — így egy újraindítás után
+      // ugyanaz a mondat nem kerül be másodszor.
+      messageId: readSegmentId(params) ?? fallbackSegmentId(spoken),
+      channelId: readString(params['channelId']) || 'voice-channel',
+      speakerId: readString(params['userId']) || params.issuer || 'owner',
+      speakerName: readString(params['userDisplayName']) || 'Itharen',
+      transcript: spoken,
+    });
+
+    DyFM_Log.info(`[voice-adapter] io_CS → köteg: ${outcome.detail}`);
+
+    return null as never;
   }
+}
+
+/** A szöveg kinyerése abból, amit a hang-modul átad — több alakot is elfogad. */
+function readTranscript(message: unknown): string {
+  if (typeof message === 'string') return message.trim();
+
+  if (message && typeof message === 'object') {
+    const record = message as Record<string, unknown>;
+
+    for (const key of ['content', 'text', 'transcription']) {
+      const value: unknown = record[key];
+
+      if (typeof value === 'string' && value.trim()) return value.trim();
+    }
+  }
+
+  return '';
+}
+
+function readString(value: unknown): string {
+  return typeof value === 'string' ? value : '';
+}
+
+/** A hang-modul által adott szegmens-azonosító, ha van. */
+function readSegmentId(params: Record<string, unknown>): string | null {
+  for (const key of ['segmentId', 'messageId', 'id']) {
+    const value: unknown = params[key];
+
+    if (typeof value === 'string' && value) return value;
+  }
+
+  return null;
+}
+
+/**
+ * Tartalom-alapú azonosító, ha a hang-modul nem ad sajátot.
+ *
+ * ⚠️ SZÁNDÉKOSAN a szövegből képződik: így ugyanaz a mondat ugyanazt az azonosítót kapja,
+ * és a köteg duplikáció-szűrője **újraindítás után is** felismeri. Egy véletlenszerű
+ * azonosító pont ezt a védelmet kapcsolná ki.
+ */
+function fallbackSegmentId(text: string): string {
+  let hash: number = 0;
+
+  for (let index: number = 0; index < text.length; index += 1) {
+    hash = (hash * 31 + text.charCodeAt(index)) | 0;
+  }
+
+  return `voice-${Math.abs(hash).toString(36)}-${text.length}`;
 }
 
 /**
