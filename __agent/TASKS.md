@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 16:43
+**Utoljára frissítve:** 2026-09-07 17:13
 
 ---
 
@@ -76,7 +76,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 | T-45 | 🤖 | 🔍 **A review-eszköz (`dc rev`) bekötve — a találatok levitele** | **Bekötve ma**: CI/CD 12→13 lépés (`dc-review-relay`), LDP 17→22 (cli/server/client/relay/ext), mind `fatal: false`. ⚠️ **Eddig SEHOL nem futott.** Mérve: **2110 találat** (cli 1429 / server 364 / client 252 / relay 38 / ext 27), ~56 s. Mérés: `__documentations/developments/2026-09-07-review-tool-cicd-wiring.md` | a **relay 38** találatával kezdeni *(ez a legkisebb, és ez fut a CI/CD-ben)*. ⛔ Az átemelt CCAP-kód 280 találata **nem munkalista** (`transplant-not-rewrite`). A `fatal: true`-vá tétel **külön owner-döntés** |
 | T-46 | 🤖 | 📥 **Discord-csatolmány fogadása** | **Megépítve**, 503/503 — `cli/src/discord/discord.file-intake.ts`. Eddig a fájl **némán elveszett** (szöveg nélkül elutasítva, szöveggel leesett az üzenetről). Most `__agent/inbox/`-ba mentődik | ⚠️ **élő próbára vár**: az owner holnapi summit-programja lesz az első valódi csatolmány. Addig NEM ✅ |
 | T-41 | 🤖 | **Agent a támogatásokra / pályázatokra / sales-lehetőségekre** | owner 2026-09-07 13:30: *„van egy csomó támogatás meg pályázat meg sales lehetőség amire rá kéne állítani egy agent-et"* — ⚠️ illeszkedik az **MVP = pénzkeresés** fókuszhoz | felderítés: milyen forrásokat figyeljen, és mi a kimenet |
-| T-22 | 🤖 | 🔴 **Voice control ÁTEMELÉSE a régi CCAP-ból** *(nagy)* — **ELŐREVÉVE** | **4,5/5 szakasz**: 70 fájl bent · illesztő bekötve · **köteg-bekötés + kétirányú tükör KÉSZ** (490/490). Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md` | **belépés a hang-csatornába** (`1489036734632034496`) + **élő próba**. ⚠️ Ehhez a bot hang-jogosultsága és a felvevő oldal indítása kell |
+| T-22 | 🤖 | 🔴 **Voice control ÁTEMELÉSE a régi CCAP-ból** *(nagy)* — **ELŐREVÉVE** | 🟢 **5/5 szakasz — a bot ÉLŐBEN BENT ÜL** a `honnie-place` csatornában (igazolva 2026-09-07 17:11, 8 mp után is bent). 513/513 teszt. ⭐ A feltételezett jogosultság-blokkoló **NEM LÉTEZETT** — mérve: Connect+Speak megvan | **6. szakasz: felvétel + felismerés** — az átemelt `CV_Recording_ControlService` ráültetése ugyanerre a kapcsolatra |
 | T-10 | 🤖 | 🔴 **Sikertelen STT újrapróbálása** | **megépítve**, 474/474 teszt — `cli/src/stt/stt.retry-queue.ts` | ⚠️ **élő próbára vár**: a következő sikertelen felismerésnél derül ki. Addig NEM ✅ |
 
 ---

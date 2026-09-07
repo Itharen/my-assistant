@@ -47,6 +47,10 @@ import {
   type DiscordAttachment,
 } from './discord.voice-message.js';
 import { resolveProjectRoot } from '../utils/project-root.js';
+import {
+  VoiceChannelPresence,
+  readVoicePresenceConfig,
+} from '../voice/voice-channel-presence.js';
 import { transcribeAudio } from '../stt/stt.client.js';
 import { composeMirrorMessage } from '../stt/stt.mirror.js';
 import {
@@ -189,6 +193,9 @@ export class DiscordListener {
    */
   private sttInFlight: boolean = false;
 
+  /** 🔊 A hang-csatornai jelenlét — owner: „mindig ülj bent amikor megy a my assistant". */
+  private readonly voicePresence: VoiceChannelPresence = new VoiceChannelPresence();
+
 
 
   constructor(private readonly bridge: DiscordBridge = new DiscordBridge()) {}
@@ -235,6 +242,9 @@ export class DiscordListener {
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.DirectMessages,
         GatewayIntentBits.MessageContent,
+        // 🔊 A hang-csatornába belépéshez KELL — enélkül a `joinVoiceChannel` némán
+        // sosem érne `Ready` állapotba, csak időtúllépéssel bukna.
+        GatewayIntentBits.GuildVoiceStates,
       ],
       partials: [Partials.Channel, Partials.Message],
     });
@@ -288,6 +298,10 @@ export class DiscordListener {
     // kézzel le nem futtatja a `ma comm flush`-t.
     this.startFlushLoop();
 
+    // 🔊 BELÉPÉS A HANG-CSATORNÁBA. ⚠️ SZÁNDÉKOSAN NEM várjuk meg és nem tesszük fatálissá:
+    // a szöveges csatorna az elsődleges út, és egy hang-hiba NEM némíthatja el.
+    void this.joinVoiceChannel();
+
     // „Gépel…" visszajelzés, hogy a várakozás ne tűnjön halott csatornának (owner-kérés).
     this.startTypingIndicator(client, config);
 
@@ -312,6 +326,8 @@ export class DiscordListener {
 
     this.typing?.stop();
     this.typing = null;
+
+    this.voicePresence.leave();
 
     if (!this.client) return;
 
@@ -395,6 +411,51 @@ export class DiscordListener {
         extra: { code: 'MA-DISCORD-ENQUEUE-FAILED', messageId: incoming.messageId },
       });
     }
+  }
+
+  /**
+   * 🔊 Belépés a hang-csatornába — és bent maradás.
+   *
+   * > **Owner (2026-09-07):** *„mindig ülj bent amikor megy a my assistant"*
+   *
+   * ⭐ MIÉRT ITT, a figyelőben: a hang-jelenlét ugyanahhoz a Discord-klienshez tartozik, ami a
+   * szöveges üzeneteket viszi — így **egy** kapcsolat van, egy életciklussal. Külön indítandó
+   * folyamat előbb-utóbb nem indulna el, és a nem-indulás **csendes** lenne
+   * (`ldp-default-runtime.md`).
+   *
+   * 🔴 A HIÁNYZÓ KONFIGURÁCIÓ NEM HIBA, DE NEM IS NÉMA: ha nincs megadva a szerver/csatorna,
+   * naplózzuk — így később nem kell találgatni, miért nem ül bent.
+   */
+  private async joinVoiceChannel(): Promise<void> {
+    const config = readVoicePresenceConfig();
+
+    if (!config) {
+      await this.safeLog({
+        kind: 'note',
+        summary: '[discord/listener] Hang-csatorna NINCS beállítva — nem lépek be. '
+          + '(MA_DISCORD_GUILD_ID + MA_DISCORD_VOICE_CHANNEL_ID)',
+        extra: { code: 'MA-VOICE-NOT-CONFIGURED' },
+      });
+
+      return;
+    }
+
+    if (!this.client) return;
+
+    const result = await this.voicePresence.join(this.client, config);
+
+    await this.safeLog({
+      kind: result.joined ? 'note' : 'error',
+      summary: result.joined
+        ? `[discord/listener] 🔊 ${result.detail}`
+        : `[discord/listener] MA-VOICE-JOIN-FAILED: ${result.detail}`,
+      extra: {
+        code: result.joined ? 'MA-VOICE-JOINED' : 'MA-VOICE-JOIN-FAILED',
+        channelName: result.channelName ?? null,
+        guildName: result.guildName ?? null,
+        ...(result.remedy ? { remedy: result.remedy } : {}),
+      },
+    });
   }
 
   /**

@@ -1,5 +1,43 @@
 # STATUS
 
+## 🔊 A BOT BENT ÜL A HANG-CSATORNÁBAN — 2026-09-07 17:13
+
+**ÉLŐBEN IGAZOLVA (17:11):** a bot belép a `honnie-place` csatornába (FDP-Johnnies), és 8 mp
+után **is bent van**. Ezzel a **T-22 voice-átemelés 5/5 szakasza kész** a *jelenlét*-funkcióig.
+
+⭐ **A feltételezett jogosultság-blokkoló NEM LÉTEZETT** — mérve: `ViewChannel` + `Connect` +
+`Speak` mind megvan. Nem kellett owner-kör.
+
+**Hol él:** a Discord-figyelőben, **ugyanazon a kliensen**, ami a szöveges üzeneteket viszi ⇒
+egy kapcsolat, egy életciklus. ⚠️ A belépés **nem fatális**: hang-hiba nem némíthatja el a
+szöveget. ⚠️ A tartós jelenlét a **következő LDP-kör** után áll be.
+
+**Hátra (6. szakasz):** felvétel + felismerés — az átemelt `CV_Recording_ControlService`
+ráültetése ugyanerre a kapcsolatra.
+
+Teszt: **CLI 513/513** zöld. Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md`.
+
+---
+
+## 📥 A DISCORD-CSATOLMÁNY MÁR NEM VÉSZ EL — 2026-09-07 16:35
+
+A fájl eddig **szöveg nélkül elutasításra került**, szöveggel pedig **leesett** az üzenetről.
+Mostantól az `__agent/inbox/`-ba mentődik, és a helye az üzenet szövegébe kerül.
+⚠️ Élő csatolmánnyal még nem futott.
+
+---
+
+## 🔍 A REVIEW-ESZKÖZ BE VAN KÖTVE — 2026-09-07 16:35
+
+Eddig **sehol nem futott**. Most: CI/CD 13 lépés (`dc-review-relay`), LDP 22 lépés (cli · server ·
+client · relay · extension), mind `fatal: false`. **2110 találat** az első futáson.
+🙋 Owner-döntés nyitva: mikor legyen `fatal: true`.
+
+⚠️ Ugyanekkor derült ki, hogy az **automatikus action-log hookok 2026-08-28 óta nem írtak** —
+BOM-hiány + elavult útvonal. Javítva.
+
+---
+
 ## 📍 A HELYZET-LÁNC KÉSZ + a hangüzenet 👂-t kap — 2026-09-07 13:10
 
 **A relay-lánc mind a 4 kód-oldali tétele kész**, és a lehúzás **élő, végponttól végpontig

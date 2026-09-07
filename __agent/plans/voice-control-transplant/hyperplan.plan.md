@@ -11,15 +11,56 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 16:06
+## 📊 STATUS — 2026-09-07 17:13
 
 | | |
 |---|---|
-| **Fázis** | 🟠 **5. szakasz FÉLIG** — a köteg-bekötés és a kétirányú tükör KÉSZ; hátra: a hang-csatornába belépés |
-| **Haladás** | 4,5/5 szakasz |
-| **Teszt** | CLI **490/490** zöld *(9 új a hang-hídra)*; a fő build **érintetlen** |
-| **Következő lépés** | belépés a hang-csatornába *(`1489036734632034496`)* + **élő próba** |
-| **Blokkoló** | nincs *(a `tsc` hiba mellett is emittál; a minta futásidőben igazolt)* |
+| **Fázis** | 🟢 **5. szakasz KÉSZ** — a bot **ÉLŐBEN BENT ÜL** a hang-csatornában |
+| **Haladás** | **5/5 szakasz** *(a jelenlét-funkcióig; a felvétel+felismerés a 6. szakasz)* |
+| **Teszt** | CLI **513/513** zöld *(+9 a hang-hídra, +10 a jelenlétre)*; a fő build **érintetlen** |
+| **Következő lépés** | 6. szakasz: **felvétel + felismerés** a hang-csatornából *(az átemelt `CV_Recording_ControlService` ráültetése ugyanerre a kapcsolatra)* |
+| **Blokkoló** | nincs |
+
+### ✅ ÉLŐ IGAZOLÁS — 2026-09-07 17:11
+
+```
+joined: true · guild: "FDP-Johnnies" · channel: "honnie-place" · stillConnectedAfter8s: true
+```
+
+⭐ **A feltételezett blokkoló NEM LÉTEZETT.** A terv korábban azt állította, hogy *„ehhez a bot
+hang-jogosultsága kell"* — **mérve 2026-09-07 17:10**: a botnak **megvan** a `ViewChannel` +
+`Connect` + `Speak` joga a csatornán. ⇒ Nem kellett owner-kapu. *(Tanulság: a „valószínűleg
+jogosultság kell" feltételezés egy egyszerű, olvasás-only próbával eldönthető volt.)*
+
+**Mért azonosítók:** szerver `1467012131378434151` = **FDP-Johnnies** · csatorna
+`1489036734632034496` = **`honnie-place`** (voice, type 2). A `.env`-be *(gitignorált)*
+`MA_DISCORD_GUILD_ID` + `MA_DISCORD_VOICE_CHANNEL_ID` néven kerültek.
+
+### 🔴 A DÖNTÉS, AMI A TÖRÉKENY KÓDOT VÉDI
+
+Az átemelt `CV_Connection_ControlService` **név szerint** keresi a csatornát
+(`Operations.findChannelByName`), a **cache-ből**, `isTextBased()` szűrővel — az owner viszont
+**azonosítót** adott, ami stabil *(a név bármikor átírható)*.
+
+⛔ Az átemelt kódhoz **nem nyúltunk** (`transplant-not-rewrite`). Helyette mellé került egy
+**vékony, azonosító-alapú belépő** (`cli/src/voice/voice-channel-presence.ts`). A felvételi lánc
+a 6. szakaszban **változatlanul az eredeti kódon** fog futni — a `@discordjs/voice`
+`joinVoiceChannel`-je guildenként **ugyanazt a kapcsolatot** adja vissza, tehát nem lesz belőle
+két párhuzamos belépés.
+
+### Hol él a jelenlét
+
+A **Discord-figyelőben** (`discord.listener.ts`), ugyanazon a kliensen, ami a szöveges üzeneteket
+viszi ⇒ **egy** kapcsolat, **egy** életciklus. Külön indítandó folyamat előbb-utóbb nem indulna
+el, és a nem-indulás **csendes** lenne (`ldp-default-runtime.md`).
+
+⚠️ A belépés **szándékosan nem fatális és nem várt** (`void`): a szöveges csatorna az elsődleges
+út, és egy hang-hiba **nem némíthatja el**. A hiányzó konfiguráció **naplózódik**
+(`MA-VOICE-NOT-CONFIGURED`), a bukás is (`MA-VOICE-JOIN-FAILED`) — nincs néma kimaradás.
+
+⚠️ **Leválás-kezelés:** a `Disconnected` állapot **nem azonnal végleges** — 5 mp türelmet adunk a
+Discord magától-újracsatlakozásának, és csak utána bontunk. Aki azonnal bont, az egy magától
+gyógyuló zökkenőt tesz végleges kieséssé.
 
 ### Az 5. szakasz — a KÖTEG-BEKÖTÉS kész (`voice-channel-bridge.ts`)
 

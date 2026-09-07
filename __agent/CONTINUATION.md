@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 16:45
+**Utoljára frissítve:** 2026-09-07 17:13
 
 ---
 
@@ -849,6 +849,49 @@ program lesz az első próba.
 ⇒ **Ez oldja fel a T-44-et** (summit nap 2 terve): a program beküldési útja most készült el.
 
 
+
+---
+
+## ✅ 2026-09-07 17:00–17:13 — 🔊 A BOT BENT ÜL A HANG-CSATORNÁBAN (T-22 ⇒ 5/5)
+
+> **Owner:** *„server: 1467012131378434151 channel: 1489036734632034496 **mindig ülj bent**
+> amikor megy a my assistant"*
+
+**ÉLŐBEN IGAZOLVA 17:11:** `joined: true` · guild **FDP-Johnnies** · csatorna **`honnie-place`**
+· 8 mp után **is bent**. Teszt: **513/513**.
+
+### ⭐ A feltételezett blokkoló NEM LÉTEZETT
+
+A terv és a TASKS is azt állította, hogy *„ehhez a bot hang-jogosultsága kell"* — **owner-kapunak**
+jelölve. **Mérve 17:10** egy olvasás-only próbával: `ViewChannel` ✅ `Connect` ✅ `Speak` ✅.
+
+📌 **Tanulság:** egy „valószínűleg jogosultság kell" feltételezés **nem blokkoló, csak
+megméretlen**. Egyetlen read-only lekérdezés eldöntötte — és ezzel megspórolt egy owner-kört.
+
+### A döntés, ami a törékeny kódot védi
+
+Az átemelt `CV_Connection_ControlService` **név szerint**, cache-ből, `isTextBased()` szűrővel
+keresi a csatornát — az owner viszont **azonosítót** adott (stabil; a név átírható).
+⛔ Az átemelt kódhoz **nem nyúltunk**: mellé került egy vékony, **azonosító-alapú** belépő
+(`cli/src/voice/voice-channel-presence.ts`). A 6. szakasz felvételi lánca **változatlanul az
+eredeti kódon** fut majd — a `joinVoiceChannel` guildenként ugyanazt a kapcsolatot adja vissza.
+
+### Hol él, és mi NEM némíthatja el
+
+A **Discord-figyelőben**, ugyanazon a kliensen, ami a szöveget viszi ⇒ egy kapcsolat, egy
+életciklus. ⚠️ A belépés `void`-olt és **nem fatális**: hang-hiba **nem** vághatja el a szöveges
+csatornát. Hiányzó konfiguráció → `MA-VOICE-NOT-CONFIGURED`, bukás → `MA-VOICE-JOIN-FAILED`;
+néma kimaradás nincs. Leválásnál **5 mp türelem** a magától-újracsatlakozásnak.
+
+⚠️ **A tartós jelenlét a következő LDP-kör után áll be** — az élő próba egy különálló futás volt.
+
+### Mellékmérés: a `status digest` egyszer „organizer down"-t jelentett
+
+15:00-kor `Command failed: fo tasks.list --limit 100`; 15:03-kor **ugyanaz a hívás rendben**
+(5 lejárt · 10 dátum nélküli magas prio). ⭐ **A kivonat helyesen viselkedett:** „HIÁNYOS
+KIVONAT"-ot írt, **nem** „nincs teendő"-t. Átmeneti hiba; nem építettem rá semmit.
+
+
 ### A következő konkrét lépés
 
 **T-22 / 5. szakasz:** bekötés a hang-csatornára *(`1489036734632034496`)*, **kétirányú
@@ -884,5 +927,7 @@ mondja. ⛔ Nem kaparom tovább: két ellentmondó válasz után a forrás megb�
 
 ### A következő konkrét lépés
 
-**T-22 utolsó darabja:** belépés a hang-csatornába (`1489036734632034496`) + élő próba.
-⚠️ Ehhez a bot **hang-jogosultsága** és a felvevő oldal indítása kell.
+**T-22 6. szakasz — FELVÉTEL + FELISMERÉS a hang-csatornából:** az átemelt
+`CV_Recording_ControlService` ráültetése ugyanarra a kapcsolatra, és az átirat átadása a
+`VoiceChannelBridge`-nek *(az már kész és tesztelt)*.
+⚠️ A fizetős ágak (ElevenLabs) kulcsa **owner-kapu** — a helyi felismerés útját kell először.
