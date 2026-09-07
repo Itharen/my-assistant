@@ -24,6 +24,7 @@ import { AUDIT_LIMIT, auditDiscordChannel, formatChannelAudit } from '../comm/co
 import {
   buildVoiceFunnelReport,
   renderVoiceFunnel,
+  MAX_WINDOW_HOURS,
   type VoiceFunnelReport,
 } from '../voice/voice-funnel-report.js';
 import { resolveProjectRoot } from '../utils/project-root.js';
@@ -198,15 +199,20 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
       const hoursRaw: string = String(parsed.values.hours ?? '').trim();
       const hours: number = Number(hoursRaw);
 
-      if (hoursRaw && (!Number.isFinite(hours) || hours <= 0)) {
+      if (hoursRaw && (!Number.isFinite(hours) || hours <= 0 || hours > MAX_WINDOW_HOURS)) {
         writeEnvelope(
           fail(
             action,
             requestId,
             startedAt,
             'MA-COMM-BAD-HOURS',
-            `A --hours értéke nem értelmezhető pozitív számként: „${hoursRaw}".`,
-            { given: hoursRaw, remedy: 'Adj meg órát számként, pl. `--hours 24`.' },
+            `A --hours értéke nem értelmezhető 1 és ${MAX_WINDOW_HOURS} közötti számként: „${hoursRaw}".`,
+            {
+              given: hoursRaw,
+              maxHours: MAX_WINDOW_HOURS,
+              remedy: 'Adj meg órát számként, pl. `--hours 24`. A felső határ 90 nap, mert az '
+                + 'ablak napi fájlokra bomlik — ennél nagyobb érték csak lassaná tenné a parancsot.',
+            },
           ),
           pretty || !asJson,
         );

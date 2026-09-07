@@ -99,6 +99,16 @@ export const WEAK_SAMPLE_THRESHOLD: number = 5;
  */
 export const DEFAULT_WINDOW_HOURS: number = 12;
 
+/**
+ * A leghosszabb értelmes ablak — **90 nap**.
+ *
+ * ⚠️ MIÉRT KELL FELSŐ HATÁR: az ablak **napi fájlokra** bomlik, tehát egy elgépelt
+ * `--hours 100000` **több ezer** fájl-olvasást indítana, és a parancs látszólag „beragadna".
+ * ⭐ A látható, azonnali hiba mindig jobb, mint a néma lassulás — a felhasználó nem tudná
+ * eldönteni, hogy dolgozik-e vagy elakadt.
+ */
+export const MAX_WINDOW_HOURS: number = 90 * 24;
+
 interface ActionLogLine {
   ts?: string;
   extra?: {
