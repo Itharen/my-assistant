@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 17:38
+**Utoljára frissítve:** 2026-09-07 18:05
 
 ---
 
@@ -949,6 +949,47 @@ folyamat, ami a build alatt is él, vagy a szerver-újraindítás előrébb hoz�
 csinálom magamtól.
 
 
+
+---
+
+## ✅ 2026-09-07 18:00–18:05 — 🎙️ A 6. SZAKASZ MEGÉPÍTVE (a felvétel bekötve)
+
+**Előbb egy igazolás, ami tegnapról hiányzott:** a hang-csatornai bent-ülés **a valódi
+futásidőben is működik** — a figyelő maga lépett be, **3× `MA-VOICE-JOINED`** az action-logban
+(a legutóbbi 17:51). ⇒ Az 5. szakasz nem csak külön futásban volt igazolt.
+
+### A lánc
+
+```
+hang-kapcsolat → ÁTEMELT CCAP-felvevő → kész WAV → a MI STT-nk → VoiceChannelBridge → köteg
+```
+
+⭐ **A nehezét az átemelt kód végzi, változatlanul** (szegmentálás · beszéd-észlelés ·
+duplikált-kiküldés elleni védelem). ⭐ **A felismerést viszont a már bizonyított
+`transcribeAudio`** — a szerző hagyott egy `onWavFileReadyForProcessing` **hookot**, arra
+ülünk rá. ⇒ **Nincs szükség fizetős kulcsra.**
+
+### Négy döntés, amit a tesztek rögzítenek
+
+🔴 **csak az owner hangja** megy tovább *(a csatornába más is beléphet — a hangból nem látszik,
+ki mondta)* · ⚠️ **gyanús átiratra nem cselekszünk** · ⭐ a **fájlnév az azonosító** *(a híd
+duplikáció-védelme ingyen működik)* · 🔴 **lusta betöltés** *(19,5 s hidegindítás nem mehet a
+figyelő indulási útjára)*.
+
+⚠️ A betöltés **változóban álló** hivatkozással megy: sztring-literállal a TypeScript
+**belehúzná** az átemelt fát a `strict` fő buildbe — pontosan azt szüntetve meg, amiért ki van
+zárva. **Mérve:** literállal az `operations.ts` egyedül 4 hibát adott. *(Tudatos kivétel a
+„ne használj `import()`-ot" konvenció alól, két mért okkal — a fájl fejlécében leírva.)*
+
+### ⏳ AMI MÉG NINCS IGAZOLVA
+
+Valódi beszéd **nem ment át** a láncon. A felvevő csak akkor indul, ha valaki **tényleg
+megszólal** — ezt magamtól nem tudom előidézni. Runtime-ig igazolt: a lusta betöltő
+`{"loaded":true,"hasReceiver":true}`-t ad a lefordított kimenetből.
+
+523/523 teszt zöld.
+
+
 ### A következő konkrét lépés
 
 **T-22 / 5. szakasz:** bekötés a hang-csatornára *(`1489036734632034496`)*, **kétirányú
@@ -984,8 +1025,7 @@ mondja. ⛔ Nem kaparom tovább: két ellentmondó válasz után a forrás megb�
 
 ### A következő konkrét lépés
 
-**T-22 6. szakasz — FELVÉTEL bekötése:** a `VoiceConnection` kiadása a jelenlét-modulból, és
-`CV_Recording_ControlService.handlePcmReceiver(connection)` — **változatlan átemelt kódon**.
-Utána: a kész WAV → a **már működő** STT (`transcribeAudio`) → `VoiceChannelBridge`.
-⚠️ **LUSTA betöltés kötelező** — a hang-lánc hidegindítása 19,5 s, ez nem mehet a figyelő
-indulási útvonalára. ⭐ Owner-kapu **NINCS** rajta (mérve).
+⏳ **T-22 ÉLŐ PRÓBA:** az owner megszólal a `honnie-place` hang-csatornában, és megnézzük,
+bekerül-e az átirat a kötegbe. ⛔ Magamtól nem tudom előidézni.
+**Amit közben figyelni kell** az action-logban: `MA-VOICE-RECORDING-STARTED` *(elindult-e a
+felvétel a belépés után)*, majd `MA-VOICE-SPEECH-QUEUED` / `MA-VOICE-SPEECH-DROPPED`.

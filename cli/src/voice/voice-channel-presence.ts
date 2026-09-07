@@ -117,6 +117,16 @@ export class VoiceChannelPresence {
   /** Az utolsó sikeres belépés csatornája — a diagnosztikának. */
   private lastChannelName: string | null = null;
 
+  /**
+   * Az élő kapcsolat — a felvevő ezen ül rá.
+   *
+   * ⚠️ SZÁNDÉKOSAN csak olvasható, és `null`, ha nincs kapcsolat: a hívónak **látnia kell**,
+   * hogy nincs mire rákötni, nem egy fél-működő objektumot kapnia.
+   */
+  get activeConnection(): VoiceConnection | null {
+    return this.connection;
+  }
+
   get isConnected(): boolean {
     return this.connection?.state.status === VoiceConnectionStatus.Ready;
   }

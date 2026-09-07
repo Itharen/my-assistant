@@ -1,5 +1,18 @@
 # STATUS
 
+## 🎙️ A HANG-CSATORNA FELVÉTELE BEKÖTVE — 2026-09-07 18:05
+
+A lánc: **átemelt CCAP-felvevő** *(szegmentálás, beszéd-észlelés — változatlanul)* → kész WAV →
+**a mi STT-nk** *(`transcribeAudio`, már élőben bizonyított)* → `VoiceChannelBridge` → köteg.
+⭐ A szerző hagyott egy hookot — arra ültünk rá, tehát **nem kell fizetős kulcs**.
+
+✅ **A bent-ülés a VALÓDI futásidőben is igazolt** — a figyelő maga lépett be (3× `MA-VOICE-JOINED`).
+⏳ **A felvétel élő próbára vár:** valódi beszéd még nem ment át. Magamtól nem tudom előidézni.
+
+Teszt: **523/523**.
+
+---
+
 ## 🔴 AZ ÁTEMELT KÓD MOST MÁR TÉNYLEG LÉTEZIK FUTÁSIDŐBEN — 2026-09-07 17:38
 
 A 70 átemelt fájlból **soha nem készült JS** (`noEmit: true`). A típus-ellenőrzés zöld volt, és

@@ -11,14 +11,39 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 17:38
+## 📊 STATUS — 2026-09-07 18:05
 
 | | |
 |---|---|
-| **Fázis** | 🟢 **5. szakasz KÉSZ** — a bot **ÉLŐBEN BENT ÜL** a hang-csatornában |
-| **Haladás** | **5/5 szakasz** *(a jelenlét-funkcióig; a felvétel+felismerés a 6. szakasz)* |
-| **Teszt** | CLI **513/513** zöld *(+9 a hang-hídra, +10 a jelenlétre)*; a fő build **érintetlen** |
-| **Következő lépés** | 6. szakasz: **felvétel bekötése** — ⚠️ **LUSTÁN** (a hang-lánc hidegindítása **19,5 s**) |
+| **Fázis** | 🟢 **6. szakasz MEGÉPÍTVE** — a felvétel bekötve; ⏳ **élő próbára vár** (kell hozzá, hogy az owner beszéljen) |
+| **Haladás** | **6/6 szakasz megépítve** — a bent-ülés ÉLŐBEN igazolt, a felvétel még nem |
+| **Teszt** | CLI **523/523** zöld *(+9 híd, +10 jelenlét, +10 felvétel)*; a fő build **érintetlen** |
+| **Következő lépés** | ⏳ **ÉLŐ PRÓBA** — az owner beszél a `honnie-place`-ben, és megnézzük, bekerül-e a kötegbe |
+
+### 🎙️ A 6. SZAKASZ — a lánc, és ami benne DÖNTÉS
+
+```
+hang-kapcsolat → ÁTEMELT CCAP-felvevő → kész WAV → a MI STT-nk → VoiceChannelBridge → köteg
+```
+
+⭐ **A nehezét az átemelt kód végzi, VÁLTOZATLANUL:** szegmentálás *(mikor ér véget egy
+megszólalás)*, hangerő- és ZCR-alapú beszéd-észlelés, duplikált-kiküldés elleni védelem.
+Ez az, ami *„egész jól működött"* — ezért nem írjuk újra.
+
+⭐ **A FELISMERÉST viszont NEM az átemelt lánc végzi**, hanem a már **élőben bizonyított**
+`transcribeAudio` (FDP AI). ⛔ Ez nem a törékeny kód átírása: a szerzője **hagyott egy hookot**
+(`onWavFileReadyForProcessing`), és mi arra ülünk rá. ⇒ **Nincs szükség fizetős kulcsra.**
+
+| Döntés | Miért |
+|---|---|
+| 🔴 **CSAK az owner hangja** megy tovább | a csatornába más is beléphet, és az ő beszéde nem lehet utasítás — a hangból nem látszik, ki mondta |
+| ⚠️ **gyanús átiratra NEM cselekszünk** | ugyanaz, mint a hangüzeneteknél: a félrehallott mondat a kötegben már az owner szó szerinti utasításának látszana |
+| ⭐ a **fájlnév az azonosító** | megszólalásonként egyedi ⇒ a híd duplikáció-védelme ingyen működik |
+| 🔴 **lusta betöltés** | a hang-lánc hidegindítása **19,5 s** — ez nem mehet a figyelő indulási útvonalára, különben a csatorna ennyivel tovább néma |
+| ⚠️ a betöltés **változóban álló** hivatkozással | sztring-literállal a TS **belehúzná** az átemelt fát a `strict` fő buildbe — pontosan azt szüntetve meg, amiért ki van zárva *(mérve: 4 hiba)* |
+
+⏳ **AMI MÉG NINCS IGAZOLVA:** valódi beszéd még nem ment át a láncon. A `handlePcmReceiver`
+csak akkor indul, ha valaki **tényleg megszólal** — ezt magamtól nem tudom előidézni.
 | **Blokkoló** | nincs — ⭐ **mérve: a 6. szakasz NINCS owner-kapun** (a lánc kulcs nélkül példányosítható) |
 
 ### 🔴 2026-09-07 17:38 — AZ ÁTEMELT KÓDBÓL SOHA NEM KÉSZÜLT JS (javítva)

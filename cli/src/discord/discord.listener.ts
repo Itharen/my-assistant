@@ -51,6 +51,7 @@ import {
   VoiceChannelPresence,
   readVoicePresenceConfig,
 } from '../voice/voice-channel-presence.js';
+import { startVoiceRecording, type RecordingHandled } from '../voice/voice-channel-recorder.js';
 import { transcribeAudio } from '../stt/stt.client.js';
 import { composeMirrorMessage } from '../stt/stt.mirror.js';
 import {
@@ -453,6 +454,55 @@ export class DiscordListener {
         code: result.joined ? 'MA-VOICE-JOINED' : 'MA-VOICE-JOIN-FAILED',
         channelName: result.channelName ?? null,
         guildName: result.guildName ?? null,
+        ...(result.remedy ? { remedy: result.remedy } : {}),
+      },
+    });
+
+    if (result.joined) await this.startVoiceRecording(config.channelId);
+  }
+
+  /**
+   * 🎙️ A FELVÉTEL elindítása a hang-csatornán — CSAK sikeres belépés után.
+   *
+   * 🔴 LUSTA BETÖLTÉS, MÉRT OKKAL: az átemelt hang-lánc hidegindítása **19,5 s**
+   * (mérve 2026-09-07). Ha ez a figyelő indulási útvonalán lenne, minden szerver-indulás
+   * ennyivel csúszna — és a Discord-csatorna ennyivel tovább lenne néma. Itt viszont már
+   * bent ülünk, tehát a késés senkit nem tart fel.
+   *
+   * ⚠️ A bukás NEM fatális: a szöveges csatorna a fő út, azt egy hang-hiba nem némíthatja el.
+   */
+  private async startVoiceRecording(channelId: string): Promise<void> {
+    const connection = this.voicePresence.activeConnection;
+
+    if (!connection) return;
+
+    const result = await startVoiceRecording({
+      connection: connection,
+      ownerUserId: (process.env['MA_DISCORD_USER_ID'] ?? '').trim(),
+      ownerName: 'Itharen',
+      channelId: channelId,
+      onHandled: (outcome: RecordingHandled): void => {
+        void this.safeLog({
+          kind: outcome.queued ? 'note' : 'error',
+          summary: outcome.queued
+            ? `[discord/listener] 🎙️ Hang-csatorna: ${outcome.detail}`
+            : `[discord/listener] MA-VOICE-SPEECH-DROPPED: ${outcome.detail}`,
+          extra: {
+            code: outcome.queued ? 'MA-VOICE-SPEECH-QUEUED' : 'MA-VOICE-SPEECH-DROPPED',
+            fromOwner: outcome.fromOwner,
+            transcribed: outcome.transcribed,
+          },
+        });
+      },
+    });
+
+    await this.safeLog({
+      kind: result.started ? 'note' : 'error',
+      summary: result.started
+        ? '[discord/listener] 🎙️ A hang-csatorna felvétele elindult.'
+        : `[discord/listener] MA-VOICE-RECORDING-FAILED: ${result.detail}`,
+      extra: {
+        code: result.started ? 'MA-VOICE-RECORDING-STARTED' : 'MA-VOICE-RECORDING-FAILED',
         ...(result.remedy ? { remedy: result.remedy } : {}),
       },
     });
