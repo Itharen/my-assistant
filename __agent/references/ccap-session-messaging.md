@@ -73,6 +73,32 @@ azonosító** — mindig a `sessionId` alapján küldj, és ellenőrizd a státu
 
 ---
 
+## 🔍 HOGYAN ELLENŐRIZD, HOGY DOLGOZIK-E *(owner 2026-09-07 22:42: „időnként ellenőrizned is kell őket")*
+
+```
+GET /api/cc-session/<id>/inspect
+```
+
+| Mező | Mit jelent |
+|---|---|
+| `flags.isBusyProcessing` | ⭐ **ez a valódi jelzés** — épp dolgozik-e |
+| `runtime.isLive` | él-e a folyamat |
+| `runtime.eventSequence` | mennyit termelt — **növekszik**, ha halad |
+| `queue.stuck` | `None` = nincs beragadás |
+
+🔴 **MÉRT CSAPDA (2026-09-07 23:02):** a **LISTA**-végpont `lastActivityAt` és `costUsdTotal`
+mezője **29 percig változatlan** maradt — közben a session **1271 eseményt** termelt és aktívan
+dolgozott. ⚠️ Majdnem „beragadt"-nak jelentettem.
+
+📌 **Ezek a listás mezők NEM haladás-jelzők.** *(Ugyanaz a hibaosztály, mint a `status.json`
+léte az LDP-nél, vagy a `serverRunning: false` értelmezése: **egy mező NEVE nem a jelentése**.)*
+
+⇒ **Az `inspect` mellett mindig a KIMENETET is nézd:** `git log --since=…` · a hyperplan
+**STATUS-blokkja** · az action-log. Egy session lehet `isBusyProcessing: true` úgy is, hogy
+semmi hasznosat nem termel.
+
+---
+
 ## Ellenőrző lista küldés ELŐTT
 
 - [ ] Elolvastam a `dev-session-orchestration.md` §6-ot és §7-et **ebben a körben**?

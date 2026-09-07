@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 22:34
+**Utoljára frissítve:** 2026-09-07 23:05
 
 ---
 
@@ -1513,6 +1513,35 @@ mikozben kod-kereken porogtem.
 
 ⇒ **A szerepem elesebb lett: az asszisztensi munka az enyem, a fejlesztes atadando.**
 Ha kodot kezdek irni, az mar valoszinuleg hiba.
+
+
+
+---
+
+## ⚠️ 2026-09-07 23:02 — MAJDNEM TEVES RIASZTAS a DEV sessionrol
+
+**Owner 22:42:** *„időnként ellenőrizned is kell őket"* ⇒ felvettem az `ENTRY.md` **4c** lepesekent.
+
+**Az elso ket ellenorzes ellentmondott egymasnak:**
+
+| Nezet | Amit mutatott |
+|---|---|
+| **lista** (`GET /api/cc-session`) | `lastActivityAt` **29 percig valtozatlan** · `costUsdTotal: 0` · nincs commit |
+| **inspect** (`/inspect`) | `isBusyProcessing: true` · `isLive: true` · **`eventSequence: 1271`** · `queue.stuck: None` |
+
+⇒ **A session VEGIG dolgozott.** Mar keszultem „beragadt"-nak jelenteni.
+
+📌 **A tanulsag, ami tulmutat ezen:** a listas `lastActivityAt` es `costUsdTotal` **NEM
+halad̈as-jelzok** — nem frissulnek munka kozben. Ugyanaz a hibaosztaly, mint a `status.json`
+letezese az LDP-nel vagy a `serverRunning: false` felreolvasasa: ⚠️ **egy mezo NEVE nem a
+jelentese.** Ez ma **harmadszor** jott elo.
+
+⭐ **Amit jol csinaltam:** a §7.3 szerint **elobb merek, aztan kuldok**. Ha a listas adatra
+cselekedtem volna, egy folosleges — es **visszavonhatatlan** — helyesbito promptot kuldok egy
+dolgozo sessionnek.
+
+**Javitva:** `ENTRY.md` 4c es `__agent/references/ccap-session-messaging.md` mostantol az
+`inspect`-et irja elo, a listas mezoket pedig **kifejezetten megbizhatatlannak** jeloli.
 
 
 ### A következő konkrét lépés
