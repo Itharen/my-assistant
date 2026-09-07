@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 21:16
+**Utoljára frissítve:** 2026-09-07 21:28
 
 ---
 
@@ -1184,6 +1184,48 @@ keltek. A név is állítás.
 
 **T-44 átnevezve:** *„AI Summit nap 2 — LOGISZTIKA (⚠️ nem programtervezés)"*, a korlát a
 sorban is kimondva.
+
+
+
+---
+
+## 2026-09-07 21:20 — OT TETEL EGY UZENETBEN (az owner jelezte: az Anthropic limitek szukulnek)
+
+### A voice-drop oka MEGVAN — az owner diagnozisa helyes
+
+> *„Ugy latom, hogy a Voice Channel-rol ledroppolodsz. Lehet, hogy az LDP restart miatt?"*
+
+**MERVE: 17 `MA-VOICE-JOINED` ma = 17 ledobas**, mindegyik LDP-restartkor; az utolso 3 oraban 8.
+=> Minden kod-mentesem kidob a hang-csatornabol.
+
+**Az altala javasolt fix** *(elobb fusson le minden, es csak a tenyleges inditaskor alljon le a
+regi — „make-before-break")* a **`dc ldp`-ben** van => a **my-assistanton KIVUL**.
+NEM nyultam hozza. Felajanlottam FDP feature requestet.
+
+Ez ugyanannak a problemanak a masik arca, mint a `Q-2026-09-07-01` *(a figyelo a build alatt nem
+el)* — most mar **ket tunete** van ugyanannak az oknak.
+
+### CC-session uzenetkuldes — a szabalyok ADOPTALVA (explicit owner-feladat)
+
+`__agent/references/ccap-session-messaging.md`. A 6 HARD szabaly a `dev-session-orchestration.md`
+**7. szakaszabol**, a vegpontok, es a **beazonositott ID-k**.
+
+A fajl TETEJEN a kotelezo figyelmeztetes, ahogy kerte: *„ezeket a szabalyokat mindig elotte kell
+elolvasni"*. Az ID ismerete **nem felhatalmazas**.
+
+**A rendszer-teny, ami mindent visz:** a prompt **visszavonhatatlan**, a futo session **nem
+allithato meg**, es a *„majd javitom egy masodikkal"* **nem mentoov** — csak ujabb koltseges futas.
+
+**FDP Assistant:** `ccs-eb7533f2-msf45rno`. **Nevutkozes-csapda:** tobb „FDP Assistant" nevu
+session van, koztuk `completed` fork-ok. A **cimke nem azonosito**.
+
+### Berszamfejtes — NEM kell atadni
+
+**Tudok emailt kuldeni** (`ma email send`, Gmail API + SMTP) => az „adjuk at az FDP Assistantnek"
+alternativa **targytalan**. Kell: a **cim**, es a szoveget tervezetkent mutatom. Kulso levelet
+jovahagyas nelkul nem kuldok.
+
+### LinkedIn posztok — T-50, kerdes nala
 
 
 ### A következő konkrét lépés
