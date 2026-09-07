@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 22:20
+**Utoljára frissítve:** 2026-09-07 22:34
 
 ---
 
@@ -1471,6 +1471,50 @@ epuletben** van es a teljes delutant kiuti. A vibe coding amugy is a **visszanez
 ⏱️ **Trigger: 60 perc.** Az owner jelezte, hogy tovabb fogja allitgatni, es **nem fogja jelezni**.
 
 
+
+---
+
+## ⭐ 2026-09-07 22:30 — KET SESSION A FENNHATOSAGOM ALA (strukturalis valtozas)
+
+> *„nem tudsz rendesen az asszisztensi munkakra koncentralni, amig fejlesztesi munkakat is
+> vegzel, ugyhogy keszitettem neked ket session-t… »My FDP Assistant« es »ALL Projects -
+> My Assistant DEV«"*
+
+🔴 **EZ FELULIRJA a korabbi „az orkesztracio NEM jovahagyott" szabalyt — de CSAK erre a kettore.**
+
+| Session | `sessionId` | Mi megy oda |
+|---|---|---|
+| **My Assistant DEV** | `ccs-d5027942-mtroz7ve` | ⭐ **MINDEN fejlesztes** |
+| **My FDP Assistant** | `ccs-e4e4fadf-mtroyj33` | FDP: konyvelo, berszamfejtes, koltsegvetes |
+
+⛔ Minden mas sessionre valtozatlanul TILOS kuldeni.
+
+### Az elso dispatch — 22:33, `{"success":true}`
+
+**A hang-csatorna munka (T-22)** atadva. A prompt **minimalis + KET pointer**
+(`core-wakeup-state-file`): `__agent/DEV-HANDOFF.md` *(feladat + szabalyok)* es
+`__agent/CONTINUATION.md` *(allapot)*. Benne az owner ket eloirasa: **ScheduleWakeup** es
+**FAM-bol frissitett szabalyok**.
+
+⭐ **Uj fajl: `__agent/DEV-HANDOFF.md`** — folyamatvezerlo. Mert nem volt mire mutatni: a
+`CONTINUATION` az EN allapotom, tele asszisztensi ugyekkel. A dispatch-szabaly szerint ilyenkor
+**dedikalt fajlt kell letrehozni**, nem a promptba halmozni.
+
+**Amit beleirtam, es amiert:** a torekeny kodhoz nem nyulhat · a harom owner-kovetelmeny
+**sorrendben** *(1. merd ki, hol vesz el — csak utana szuro)* · a mert buktatok *(transplanted
+build kimaradasa, 19,5 s hidegindulas, meres build kozben)* · es ⛔ **ne jelentse kesznek egyetlen
+sikeres peldany alapjan** — ez az EN hibam volt, ne orokolje.
+
+### 📌 Amit ez rolam mond
+
+Az owner diagnozisa: **a fejlesztes elszivta a figyelmet az asszisztensi munkatol**. A mai nap
+ezt alatamasztja — a summit-terv, ami az **elso szamu terulete**, ketszer is rosszul keszult el,
+mikozben kod-kereken porogtem.
+
+⇒ **A szerepem elesebb lett: az asszisztensi munka az enyem, a fejlesztes atadando.**
+Ha kodot kezdek irni, az mar valoszinuleg hiba.
+
+
 ### A következő konkrét lépés
 
 **T-22 / 5. szakasz:** bekötés a hang-csatornára *(`1489036734632034496`)*, **kétirányú
@@ -1506,7 +1550,10 @@ mondja. ⛔ Nem kaparom tovább: két ellentmondó válasz után a forrás megb�
 
 ### A következő konkrét lépés
 
-⏳ **NÉGY DOLOG VÁR AZ OWNERRE, addig egyikkel sem tudok haladni:**
+⏳ **AZ OWNERRE VÁR — és a fejlesztés MÁR NEM az én dolgom (22:30 óta):**
+
+0a. 📅 **Holnap: 11:00 vagy 13:45?** *(a terv kész: `current/events/2026-09-08-summit-day2-plan.md`)*
+0b. 🛠️ A **DEV session** dolgozik a hang-csatornán — én a **kimenetet verifikálom**, nem kódolok.
 
 -1. ~~Az „elveszett" üzenet~~ ✅ **LEZÁRVA** — nem volt benne tartalom (köhögés). Az őr helyesen
     jelölte gyanúsnak.
