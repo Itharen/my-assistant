@@ -763,7 +763,8 @@ aminek a veszteségét most mérjük. A `cue-heard` a legérzékenyebb: az **bes
 
 **Amit már megtettem, hogy ne legyen belőle baj:**
 - 🔇 **Azonnali kikapcsolás kód nélkül:** `MA_VOICE_CUES=off` a `.env`-ben.
-- ⏱️ **Fék:** két jelzés között legalább 3 másodperc.
+- ⏱️ **Fék, két sávban:** a „hallak" **3 s**, a kimenetel-jelzések **0,8 s** — külön, mert közös
+  fékkel a „hallak" elnyelte volna azt a jelzést, hogy elveszett a mondatod.
 
 **Amit várok:** fejhallgató vagy hangszóró. Ha hangszóró, javaslom a `cue-heard` kikapcsolását
 (vagy az egész jelzés-készletét), amíg nem mérjük meg, hogy tényleg visszahallatszik-e.

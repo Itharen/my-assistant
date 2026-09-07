@@ -11,7 +11,7 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 23:05
+## 📊 STATUS — 2026-09-07 23:20
 
 > ⛔ **A KORÁBBI, 18:05-ös STATUS TÚLÁLLÍTOTT.** „6/6 szakasz megépítve" ⇒ a lánc **össze van
 > kötve**, de az **átviteli arány ~1%** volt: az owner végigbeszélt egy beszélgetést, és
@@ -24,7 +24,7 @@
 | **Az 1. owner-követelmény** *(mérd ki, hol vész el)* | ✅ **MEGÉPÍTVE** — `voice-drop-probe.ts`. ⏳ Az élő adat az owner beszédére vár |
 | **A 2. owner-követelmény** *(MINDEN átirat a hang-csatornába)* | ✅ **MEGÉPÍTVE** — a sikertelen/gyanús/eldobott megszólalás is **látható nyomot** hagy, összevont jelentéssel (`voice-missed-speech.ts`) |
 | **A 3. owner-követelmény** *(🔊 hangjelzések, mint a CCAP-ban)* | ✅ **MEGÉPÍTVE** — 5 jelzés, a CCAP **eredeti hangjaival**; futásidőben igazolva (útvonal + ffmpeg-dekódolás). 🔇 `MA_VOICE_CUES=off` kikapcsoló |
-| **Teszt** | CLI **575/575** zöld *(+14 szonda, +14 kiesés-jelentő, +11 hangjelzés)*; fő `tsc` zöld; a transzplantált build emittál |
+| **Teszt** | CLI **582/582** zöld *(+14 szonda, +14 kiesés-jelentő, +18 hangjelzés, +4 kimenetel-osztályozás)*; fő `tsc` zöld; szerver `tsc` zöld; a transzplantált build emittál |
 | **Következő lépés** | ⏳ **ÉLŐ MÉRÉS** — az owner beszél a `honnie-place`-ben, és kiolvassuk a tölcsért: `speechStarts → filesOpened → filesDelivered → filesDropped (mp)`. ⛔ A szűrő-küszöbhöz addig NEM nyúlunk |
 
 ### 🔍 A MÉRŐESZKÖZ, ami 22:44-kor megépült — és MIÉRT nem volt elég a régi számláló

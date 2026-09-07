@@ -89,14 +89,14 @@ describe('VoiceCuePlayer — hallható visszajelzés a hang-csatornában', () =>
     expect(seen.every((p: string): boolean => p.endsWith('.mp3'))).toBe(true);
   });
 
-  it('🔴 a FÉK működik — túl hamar jövő második jelzés kimarad', async () => {
+  it('🔴 a FÉK működik — két „hallak" túl sűrűn nem szólalhat meg', async () => {
     const { player, played, now } = makePlayer();
 
     player.attach(makeConnection().connection);
 
     await player.play('heard');
     now.value += 500;
-    await player.play('dropped');
+    await player.play('heard');
 
     expect(played.length).toBe(1);
   });
@@ -108,7 +108,44 @@ describe('VoiceCuePlayer — hallható visszajelzés a hang-csatornában', () =>
 
     await player.play('heard');
     now.value += 3_500;
+    await player.play('heard');
+
+    expect(played.length).toBe(2);
+  });
+
+  it('🔴 a „hallak" NEM nyelheti el az ELDOBVA jelzést (a valós időzítés: ~1,4 s)', async () => {
+    const { player, played, now } = makePlayer();
+
+    player.attach(makeConnection().connection);
+
+    await player.play('heard');
+    now.value += 1_400;
     await player.play('dropped');
+
+    expect(played.length).toBe(2);
+    expect(played[1]).toContain('cue-dropped.mp3');
+  });
+
+  it('⭐ a kimenetel-jelzések EGYMÁST viszont fékezik (nem géppuska)', async () => {
+    const { player, played, now } = makePlayer();
+
+    player.attach(makeConnection().connection);
+
+    await player.play('dropped');
+    now.value += 200;
+    await player.play('dropped');
+
+    expect(played.length).toBe(1);
+  });
+
+  it('a kimenetel-fék UTÁN a következő kimenetel megszólal', async () => {
+    const { player, played, now } = makePlayer();
+
+    player.attach(makeConnection().connection);
+
+    await player.play('dropped');
+    now.value += 1_000;
+    await player.play('understood');
 
     expect(played.length).toBe(2);
   });

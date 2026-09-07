@@ -386,7 +386,8 @@ A lánc: hang-kapcsolat → **átemelt CCAP-felvevő** → WAV → a mi STT-nk �
 - ⭐ **Miért nem elég a `detected − delivered`:** összemossa a **beleolvadt** megszólalást
   *(nem veszteség)* a felvevő **eldobásával** *(veszteség)*. A fájl-szintű mérés választja szét.
 - 🔇 **`MA_VOICE_CUES=off`** — a hangjelzések azonnali kikapcsolása kódmódosítás nélkül
-  *(hangszóró-visszacsatolás esetére)*. Fék: 3 s két jelzés között.
+  *(hangszóró-visszacsatolás esetére)*. ⏱️ **Két sáv, két fék:** „hallak" **3 s**, kimenetel **0,8 s**
+  — közös fékkel a „hallak" **elnyelné** az eldobás-jelzést (t≈1,4 s).
 - 🔍 **A mérés kiolvasása** a naplóból:
   ```bash
   grep MA-VOICE-SPEECH-DROPPED-SILENTLY __agent/log/actions/$(date +%F).jsonl

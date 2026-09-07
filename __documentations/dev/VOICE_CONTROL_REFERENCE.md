@@ -175,7 +175,11 @@ A hangok a CCAP eredetijei (`LIVE-projects/ccap/discord-bot/src/_assets/sounds/`
 ⚠️ **HANGSZÓRÓ-VISSZACSATOLÁS.** A jelzés az owner hangszórójából is megszólal, és a mikrofonja
 **visszaveheti** — pont abba a láncba, aminek a veszteségét mérjük. A `cue-heard` a
 legérzékenyebb: az **beszéd közben** szól.
-🔇 **Kikapcsolás kód nélkül:** `MA_VOICE_CUES=off` · ⏱️ fék: 3 s két jelzés között.
+🔇 **Kikapcsolás kód nélkül:** `MA_VOICE_CUES=off`
+⏱️ **KÉT SÁV, KÉT FÉK:** a „hallak" *(ambient)* **3 s**, a kimenetel-jelzések *(eldobva / megvan /
+nem értettem / hiba)* **0,8 s**. 🔴 **Miért nem egy közös fék:** a valós időzítésben az „hallak"
+*(t=0)* és az eldobás *(t≈1,4 s)* egy 3 s-os közös fékbe esik ⇒ az owner **sosem hallaná** a
+fontosabbat. Egy hangulatjelzés nem némíthat el egy információt.
 ❓ Nyitott: `Q-2026-09-07-07` (hozzárendelés) · `Q-2026-09-07-08` (fejhallgató-e).
 
 ### 8.5 ⛔ Amihez NEM nyúlunk, és miért

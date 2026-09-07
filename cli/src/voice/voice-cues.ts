@@ -79,14 +79,42 @@ const CUE_FILES: Record<VoiceCue, string> = {
 };
 
 /**
- * Két jelzés között ennyi időnek el kell telnie.
+ * 🔴 KÉT SÁV, KÉT FÉK — és ez NEM finomhangolás, hanem hibajavítás.
  *
- * 🔴 MÉRT INDOK: ma az eldobás a **többség**, tehát fék nélkül a csatorna egy szakadatlan
- * „pling-pling" lenne — és a **folyamatos** jelzés pontosan annyit ér, mint a semmi: nem
- * hordoz információt. ⭐ Ugyanaz a logika, amiért a szöveges kiesés-jelentés is összevon
- * (`voice-missed-speech.ts`).
+ * ⚠️ **A HIBA, amit ez megszüntet** *(a záró review-körben, az időzítés végigkövetésével
+ * találtam meg)*: egyetlen közös fékkel a leggyakoribb eset **elnyelte a fontos jelzést**.
+ *
+ * ```
+ * t=0,0 s   az owner megszólal        → 🎙️ „hallak"  ▸ a fék elindul
+ * t~1,0 s   csend ⇒ a felvétel lezárul
+ * t~1,4 s   a szonda látja: a felvevő ELDOBTA
+ *           → 🎚️ „eldobva"           ⛔ A 3 s-os fék MEGETTE
+ * ```
+ *
+ * ⇒ Az owner hallotta volna, hogy *„hallak"*, és **sosem** azt, hogy elveszett — pedig épp ez
+ * az információ. ⭐ Az „hallak" **hangulatjelzés**; a kimenetel **maga az információ**. Egy
+ * hangulatjelzés nem némíthat el egy információt.
  */
-const DEFAULT_MIN_GAP_MS: number = 3_000;
+const AMBIENT_MIN_GAP_MS: number = 3_000;
+
+/**
+ * A KIMENETEL-jelzések féke — sokkal rövidebb.
+ *
+ * ⭐ Nem kell hosszú: a felvevő `AfterSilence`-szel **1000 ms** csenddel zár, tehát két
+ * kimenetel eleve nem eshet ennél sűrűbben; és az egyidejű megszólalás ellen amúgy is véd a
+ * „még szól az előző" ellenőrzés.
+ */
+const OUTCOME_MIN_GAP_MS: number = 800;
+
+/**
+ * Melyik sávba tartozik a jelzés.
+ *
+ * ⭐ `ambient` = *„figyelek"* · `outcome` = *„ez lett belőle"*. A kettő nem versenyezhet
+ * ugyanazért a fékért.
+ */
+function cueTier(cue: VoiceCue): 'ambient' | 'outcome' {
+  return cue === 'heard' ? 'ambient' : 'outcome';
+}
 
 /** A hangok helye. ⚠️ Ugyanaz a `process.cwd()`-konvenció, amit a felvevő is használ. */
 export function resolveSoundsDir(): string {
@@ -111,8 +139,10 @@ export function areCuesEnabled(): boolean {
 }
 
 export interface VoiceCuePlayerOptions {
-  /** Ennyi időnek el kell telnie két jelzés között. Alapérték 3000 ms. */
+  /** A „hallak" jelzés féke. Alapérték 3000 ms. */
   minGapMs?: number;
+  /** A KIMENETEL-jelzések féke. Alapérték 800 ms. ⭐ Külön sáv — l. `cueTier`. */
+  outcomeMinGapMs?: number;
   /** ⚠️ A jelzés hibája SOSEM fatális — csak jelentjük. */
   onError?: (detail: string) => void;
   /** Tesztelhetőség: a hangok könyvtára. */
@@ -140,7 +170,8 @@ export class VoiceCuePlayer {
   private readonly options: VoiceCuePlayerOptions;
   private readonly player: AudioPlayer = createAudioPlayer();
   private connection: VoiceConnection | null = null;
-  private lastPlayedAtMs: number = 0;
+  private lastAmbientAtMs: number = 0;
+  private lastOutcomeAtMs: number = 0;
   private missingSounds: Set<string> = new Set();
 
   constructor(options: VoiceCuePlayerOptions = {}) {
@@ -181,9 +212,15 @@ export class VoiceCuePlayer {
     if (!(this.options.enabled ?? areCuesEnabled)()) return;
 
     const now: () => number = this.options.now ?? Date.now;
-    const minGap: number = this.options.minGapMs ?? DEFAULT_MIN_GAP_MS;
+    const tier: 'ambient' | 'outcome' = cueTier(cue);
+    const minGap: number = tier === 'ambient'
+      ? this.options.minGapMs ?? AMBIENT_MIN_GAP_MS
+      : this.options.outcomeMinGapMs ?? OUTCOME_MIN_GAP_MS;
+    const lastAtMs: number = tier === 'ambient' ? this.lastAmbientAtMs : this.lastOutcomeAtMs;
 
-    if (now() - this.lastPlayedAtMs < minGap) return;
+    if (now() - lastAtMs < minGap) return;
+
+    // ⛔ Az egyidejű megszólalás ellen ez véd — sávtól függetlenül.
     if (this.player.state.status !== AudioPlayerStatus.Idle) return;
 
     const soundsDir: string = this.options.soundsDir ?? resolveSoundsDir();
@@ -204,7 +241,8 @@ export class VoiceCuePlayer {
       return;
     }
 
-    this.lastPlayedAtMs = now();
+    if (tier === 'ambient') this.lastAmbientAtMs = now();
+    else this.lastOutcomeAtMs = now();
 
     try {
       const playFile: (p: string) => Promise<void> = this.options.playFile

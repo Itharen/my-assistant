@@ -1777,7 +1777,7 @@ A jelzés a hang-csatornába szól ⇒ az owner **hangszórójából** is megsz�
 legérzékenyebb: az **beszéd közben** szól.
 
 🩹 **Amit tettem helyette:** 🔇 `MA_VOICE_CUES=off` azonnali kikapcsoló (kód nélkül) + ⏱️
-3 másodperces fék két jelzés között. ❓ Két kérdés felvéve: **Q-2026-09-07-07** (jó-e a
+fék két sávban *(l. a 23:20-as záró review-szakaszt)*. ❓ Két kérdés felvéve: **Q-2026-09-07-07** (jó-e a
 hozzárendelés) és **Q-2026-09-07-08** (fejhallgató-e).
 
 ### Teszt
@@ -1790,3 +1790,44 @@ hozzárendelés) és **Q-2026-09-07-08** (fejhallgató-e).
 mérhető, ha az owner **beszél** a `honnie-place`-ben. Akkor derül ki:
 `speechStarts → filesOpened → filesDelivered → filesDropped (mp)`.
 ⛔ **A szűrő-küszöbhöz addig nem nyúlok** — az lenne a találgatás.
+
+
+---
+
+## 🔴 2026-09-07 23:20 — ZÁRÓ REVIEW: KÉT VALÓS HIBA A SAJÁT MUNKÁMBAN
+
+### 1. A duplikátum „veszteségnek" látszott a naplóban
+
+Minden `queued: false` **`MA-VOICE-SPEECH-DROPPED`**-ként naplózódott — beleértve a
+**duplikátumot** *(a híd már feldolgozta)* és az **idegen beszélőt**. Egyik sem veszteség,
+mégis annak látszott volna, és **épp azt a mérést rontotta volna el**, amiért az egész készült.
+
+⚠️ **Elsőre a visszaútra javítottam** *(duplikátum = `QUEUED`)* — az meg azt állította volna,
+hogy bekerült a kötegbe. ⇒ **Három kimenetel, három kód**, és mivel ezt **kétszer** elrontottam,
+az osztályozás **tesztelt függvénybe** került: `classifyRecordingOutcome` (+4 teszt).
+
+### 2. 🔊 A „hallak" jelzés ELNYELTE volna az „eldobva" jelzést
+
+Az időzítés végigkövetésével jött ki — nem kódolvasásból:
+
+```
+t=0,0 s   az owner megszólal          → 🎙️ „hallak"   ▸ a 3 s-os fék elindul
+t~1,0 s   csend ⇒ a felvétel lezárul
+t~1,4 s   a szonda látja: ELDOBVA     → 🎚️ „eldobva"  ⛔ A FÉK MEGETTE
+```
+
+⇒ A **leggyakoribb** esetben az owner azt hallotta volna, hogy *„hallak"*, és **sosem** azt,
+hogy elveszett a mondata — pedig épp ez az információ.
+
+🩹 **Két sáv, két fék:** ambient („hallak") **3 s** · kimenetel **0,8 s**.
+⭐ **Az elv:** egy **hangulatjelzés** nem némíthat el egy **információt**.
+
+### 3. 📌 Doksi-vs-valóság: a féket NÉGY helyen írtam le 3 másodpercként
+
+A javítás után mind a négy hamis lett *(`VOICE_CONTROL_REFERENCE` · `SKILLS.md` ·
+`open-questions` · ez a fájl)*. ⚠️ Pontosan a **fél-frissítés** hibamintája — mind javítva
+ugyanabban a change-setben.
+
+**Teszt: CLI 582/582 zöld** · szerver típus-ellenőrzés zöld *(nem nyúltam hozzá, ellenőrizve)*.
+A transzplantált build 2 hibája **mérve**: mindkettő az átemelt fában
+(`cv-audio-classification` / `cv-local-speech-recognition`), nem ez a change-set okozta.
