@@ -23,6 +23,15 @@ import {
   type IncomingDiscordMessage,
   type MessageFilterConfig,
 } from './discord.message-filter.js';
+import { sendDiscordMessage } from './discord.sender.js';
+import {
+  composeTranscriptForBatch,
+  downloadVoiceAttachment,
+  selectVoiceAttachment,
+  type DiscordAttachment,
+} from './discord.voice-message.js';
+import { transcribeAudio } from '../stt/stt.client.js';
+import { composeMirrorMessage } from '../stt/stt.mirror.js';
 
 /**
  * Milyen sűrűn nézzük meg, hogy a köteg kiküldhető-e.
@@ -50,6 +59,15 @@ const BACKFILL_LIMIT: number = 50;
  */
 const BACKFILL_MAX_AGE_MS: number = 12 * 60 * 60_000;
 
+/**
+ * Ennyi hang-azonositot tartunk szamon a duplikatum-szures miatt.
+ *
+ * ⚠️ Vedokorlat: a figyelo **hetekig fut egyfolytaban**, es egy korlatlanul novo halmaz
+ * lassan szivargo memoria lenne. A hanguzenet ritka, tehat ez a keret bosegesen eleg —
+ * a lenyeg, hogy legyen FELSO HATAR.
+ */
+const TRANSCRIBED_MEMORY_LIMIT: number = 500;
+
 /** Discord-üzenet → a saját, szűk adatszerkezetünk. Egy helyen, hogy ne csússzon szét. */
 function toIncoming(message: Message): IncomingDiscordMessage {
   return {
@@ -59,7 +77,29 @@ function toIncoming(message: Message): IncomingDiscordMessage {
     authorName: message.author.username,
     isFromBot: message.author.bot,
     content: message.content,
+    attachments: [...message.attachments.values()].map((a): DiscordAttachment => ({
+      id: a.id,
+      url: a.url,
+      name: a.name,
+      size: a.size,
+      ...(a.contentType ? { contentType: a.contentType } : {}),
+      ...(typeof a.duration === 'number' ? { durationSecs: a.duration } : {}),
+    })),
   };
+}
+
+/**
+ * A kötegbe kerülő alak.
+ *
+ * ⛔ A **csatolmányok szándékosan kimaradnak**: a Discord letöltési linkjei ALÁÍRTAK és
+ * LEJÁRNAK, tehát a tárolásuk félrevezető lenne (később már nem működnek), ráadásul
+ * fölöslegesen hizlalná a köteg-fájlt. Ami a hangból számít — az átirat —, az addigra
+ * már a `content`-ben van.
+ */
+function toBatchEntry(incoming: IncomingDiscordMessage): Omit<IncomingDiscordMessage, 'attachments'> {
+  const { attachments: _attachments, ...rest } = incoming;
+
+  return rest;
 }
 
 export interface DiscordListenerStartResult {
@@ -98,6 +138,16 @@ export class DiscordListener {
    * és a köteg elejéről a duplájat törölnénk — vagyis üzenet is VESZHETNE.
    */
   private flushInFlight: boolean = false;
+
+  /**
+   * Amit ebben a futásban MÁR átírtunk hangból.
+   *
+   * 🔴 MIÉRT KELL: a hang-út **drága** (mérve: 77,6 mp) és **látható mellékhatása van** —
+   * kimegy a tükör-üzenet. A Discord viszont ugyanazt az eseményt újraküldheti. A kötegelő
+   * duplikátum-szűrése csak a KÖTEGBE tételnél csap le, vagyis a felismerés és a tükör
+   * addigra már MEGTÖRTÉNT volna. Ezért itt, a drága lépés ELŐTT szűrünk.
+   */
+  private readonly transcribedMessageIds: Set<string> = new Set();
 
   constructor(private readonly bridge: DiscordBridge = new DiscordBridge()) {}
 
@@ -250,6 +300,18 @@ export class DiscordListener {
       return;
     }
 
+    // 🎙️ HANGÜZENET: a szöveget előbb elő kell állítani — STT + TÜKÖR-ÜZENET.
+    // Ha nem sikerül megbízhatóan, a kötegbe SEMMI nem kerül (lásd a metódus doksiját).
+    if (verdict.hasAudio) {
+      const spoken: string | null = await this.transcribeVoiceMessage(incoming);
+
+      if (spoken === null) return;
+
+      incoming.content = incoming.content.trim()
+        ? `${incoming.content.trim()}\n\n${spoken}`
+        : spoken;
+    }
+
     try {
       const isNew: boolean = await this.bridge.enqueue({
         messageId: incoming.messageId,
@@ -281,6 +343,144 @@ export class DiscordListener {
   }
 
   /**
+   * Hangüzenet → szöveg, TÜKÖR-ÜZENETTEL.
+   *
+   * A menet: csatolmány kiválasztása → letöltés → STT → **tükör-üzenet a Discordra** →
+   * a kötegbe kerülő, megjelölt átirat.
+   *
+   * 🔴 A DÖNTÉS, AMI A LEGFONTOSABB: **bizonytalan vagy sikertelen felismerésnél `null`-t
+   * adunk**, tehát a kötegbe SEMMI nem kerül. Ilyenkor a tükör-üzenet már elment az ownernek
+   * *(„NEM cselekszem rá")*, ő pedig újraküldi vagy leírja. Egy félrehallott mondat
+   * ugyanis a kötegben már az **ő szó szerinti utasításának látszana** — és arra
+   * cselekednék. Inkább ne értsük, mint félreértsük.
+   *
+   * Hibát SOHA nem dob: a hangfeldolgozás nem döntheti meg a figyelőt.
+   *
+   * @returns a kötegbe teendő, megjelölt átirat — vagy `null`, ha nem szabad továbbadni.
+   */
+  private async transcribeVoiceMessage(incoming: IncomingDiscordMessage): Promise<string | null> {
+    // ⛔ Ugyanazt a hangot nem ismerjük fel kétszer: drága, és MÁSODIK tükör-üzenetet küldene.
+    if (this.transcribedMessageIds.has(incoming.messageId)) return null;
+
+    this.transcribedMessageIds.add(incoming.messageId);
+    this.forgetOldestTranscribedIds();
+
+    const selection = selectVoiceAttachment(incoming.attachments ?? []);
+
+    if (!selection.attachment) {
+      // Ide elvileg nem jutunk (a szűrő már látott hangot) — de ha mégis, MONDJUK MEG.
+      await this.reportVoiceProblem(incoming, `Nem találtam feldolgozható hangot. ${selection.rejection ?? ''}`);
+
+      return null;
+    }
+
+    const attachment = selection.attachment;
+    const download = await downloadVoiceAttachment(attachment);
+
+    if (!download.ok || !download.bytes) {
+      await this.reportVoiceProblem(
+        incoming,
+        `A hangüzenet letöltése nem sikerült. ${download.detail}`,
+        download.remedy,
+      );
+
+      return null;
+    }
+
+    const result = await transcribeAudio({
+      audio: download.bytes,
+      filename: attachment.name,
+      ...(attachment.contentType ? { contentType: attachment.contentType } : {}),
+    });
+
+    // ⭐ A TÜKÖR MINDIG MEGY — sikernél, bizonytalanságnál és bukásnál is. Ez az egyetlen
+    // pont, ahol az owner MÉG A CSELEKVÉS ELŐTT elkaphatja a félreértést.
+    await this.sendMirror(composeMirrorMessage(result), incoming.messageId);
+
+    if (!result.ok || result.suspicious) {
+      await this.safeLog({
+        kind: 'note',
+        summary: '[discord/listener] MA-DISCORD-VOICE-NOT-TRUSTED: a hangüzenet átirata nem '
+          + `megbízható, ezért NEM került a kötegbe — ${result.suspicionReason ?? result.detail}`,
+        extra: {
+          code: 'MA-DISCORD-VOICE-NOT-TRUSTED',
+          messageId: incoming.messageId,
+          ok: result.ok,
+          suspicious: result.suspicious,
+        },
+      });
+
+      return null;
+    }
+
+    await this.safeLog({
+      kind: 'note',
+      summary: `[discord/listener] Hangüzenet felismerve (${result.text.length} karakter, `
+        + `${Math.round(result.elapsedMs / 1000)} mp) — tükör elküldve.`,
+      extra: { code: 'MA-DISCORD-VOICE-TRANSCRIBED', messageId: incoming.messageId },
+    });
+
+    return composeTranscriptForBatch({
+      transcript: result.text,
+      ...(attachment.durationSecs === undefined ? {} : { durationSecs: attachment.durationSecs }),
+    });
+  }
+
+  /** A duplikatum-halmaz felso hatarnak tartasa — a `Set` beszurasi sorrendet tart. */
+  private forgetOldestTranscribedIds(): void {
+    while (this.transcribedMessageIds.size > TRANSCRIBED_MEMORY_LIMIT) {
+      const oldest: string | undefined = this.transcribedMessageIds.values().next().value;
+
+      if (oldest === undefined) return;
+
+      this.transcribedMessageIds.delete(oldest);
+    }
+  }
+
+  /** A tükör-üzenet kiküldése. A küldési hiba nem akaszthatja meg a feldolgozást. */
+  private async sendMirror(text: string, messageId: string): Promise<void> {
+    try {
+      const sent = await sendDiscordMessage(text);
+
+      if (!sent.sent || sent.verifiedIntact === false) {
+        await this.safeLog({
+          kind: 'error',
+          summary: '[discord/listener] MA-DISCORD-MIRROR-UNDELIVERED: a tükör-üzenet nem '
+            + `igazoltan érkezett meg — ${sent.verifyDetail ?? sent.detail}`,
+          extra: { code: 'MA-DISCORD-MIRROR-UNDELIVERED', messageId },
+        });
+      }
+    } catch (err: unknown) {
+      await this.safeLog({
+        kind: 'error',
+        summary: '[discord/listener] MA-DISCORD-MIRROR-FAILED: a tükör-üzenet küldése elbukott — '
+          + `${err instanceof Error ? err.message : String(err)}`,
+        extra: { code: 'MA-DISCORD-MIRROR-FAILED', messageId },
+      });
+    }
+  }
+
+  /** Hangüzenet-probléma: az ownernek is MEGMONDJUK, nem csak a naplóba tesszük. */
+  private async reportVoiceProblem(
+    incoming: IncomingDiscordMessage,
+    detail: string,
+    remedy?: string,
+  ): Promise<void> {
+    await this.safeLog({
+      kind: 'error',
+      summary: `[discord/listener] MA-DISCORD-VOICE-FAILED: ${detail}`,
+      extra: { code: 'MA-DISCORD-VOICE-FAILED', messageId: incoming.messageId },
+    });
+
+    await this.sendMirror(
+      `🎙️ **Hangüzenet — nem tudtam feldolgozni.**\n\n${detail}`
+        + (remedy ? `\n→ ${remedy}` : '')
+        + '\n\n📌 **Nem tippelek arra, mit mondtál** — írd le, vagy küldd újra.',
+      incoming.messageId,
+    );
+  }
+
+  /**
    * A leállás alatt érkezett üzenetek pótlólagos beolvasása.
    *
    * A `Read Message History` jogosultsággal elkérjük a csatorna utolsó üzeneteit, és a
@@ -309,12 +509,28 @@ export class DiscordListener {
         if (message.createdTimestamp < oldestAcceptedMs) continue;
 
         const incoming: IncomingDiscordMessage = toIncoming(message);
+        const verdict = filterIncomingMessage(incoming, config);
 
-        if (!filterIncomingMessage(incoming, config).accepted) continue;
+        if (!verdict.accepted) continue;
         if (await this.bridge.getStore().hasBeenDelivered(incoming.messageId)) continue;
 
+        // 🔴 A HANGOT ITT IS FEL KELL ISMERNI. Enelkul a leallas alatt erkezett hanguzenet
+        // URES tartalommal kerulne a kotegbe — vagyis a backfill pont azt veszitene el,
+        // amiert letezik. (Merve 2026-09-07: a backfill NEM a handleMessage-en megy at.)
+        if (verdict.hasAudio) {
+          const spoken: string | null = await this.transcribeVoiceMessage(incoming);
+
+          if (spoken === null) continue;
+
+          incoming.content = incoming.content.trim()
+            ? `${incoming.content.trim()}
+
+${spoken}`
+            : spoken;
+        }
+
         const isNew: boolean = await this.bridge.enqueue({
-          ...incoming,
+          ...toBatchEntry(incoming),
           receivedAt: new Date(message.createdTimestamp).toISOString(),
         });
 

@@ -338,6 +338,28 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
   RAM mellett 5 perc alatt sem futott le; közvetlenül utána ugyanaz a fájl **77,6 mp**.
   Owner: *„90% usage felett várakozik"*.
 
+### Hangüzenet Discordon — a teljes út (`discord.voice-message.ts`)
+
+```
+Discord hanguzenet  ->  szuro (hangot is elfogad)  ->  letoltes  ->  FDP AI STT
+                    ->  ⭐ TUKOR-UZENET a Discordra  ->  megjelolt atirat a kotegbe
+```
+
+- 🔴 **MERT BLOKKOLO, ezert keszult:** a Discord-hanguzenet **ures szoveggel** erkezik, a hang
+  csatolmany — a szuronk pedig az ures tartalmat *„nincs mit atadni"* indokkal **eldobta**.
+  A hanguzenetek tehat **nemán elvesztek**. Regresszio-teszt orzi *(a 8 uj szuro-teszt kozott)*.
+- ⭐ **Bizonytalan vagy sikertelen felismeresnel a kotegbe SEMMI nem kerul.** A tukor-uzenet
+  kimegy *(„NEM cselekszem ra")*, es varunk. Egy felrehallott mondat a kotegben mar az owner
+  **szo szerinti utasitasanak latszana** — inkabb ne ertsuk, mint felreertsuk.
+- **A kotegbe kerulo szoveg MEG VAN JELOLVE:** `🎙️ HANGÜZENET — gépi átirat …, NEM gépelt szöveg`.
+- **Vedokorlatok:** max **25 MB** *(a letoltott MERET is ellenorizve, nem csak a Discord
+  allitasa)* · 60 mp letoltesi idokorlat · ures fajl = hiba · **duplikatum-szures a DRAGA lepes
+  ELOTT** (a Discord ujrakuldhet egy esemenyt; enelkul masodik tukor-uzenet menne ki).
+- **A backfill is ezen az uton megy** — kulonben a leallas alatt erkezett hanguzenet URES
+  tartalommal kerulne a kotegbe, vagyis a backfill pont azt veszitene el, amiert letezik.
+- ⛔ A csatolmany-linkek **NEM kerulnek a koteg-fajlba**: alairtak es lejarnak.
+- ⚠️ A biztonsagi hatar valtozatlan: a hang **nem keruli meg** a kuldo-/csatorna-ellenorzest.
+
 ### Kommunikációs csatorna — CCAP-híd, hangszórós kapu, tick
 
 - **Ki vagyok a CCAP-ban:** `ma ccap whoami --pretty` — a `CLAUDE_CODE_SESSION_ID`-t párosítja a

@@ -1,4 +1,5 @@
 import { filterIncomingMessage, type IncomingDiscordMessage } from './discord.message-filter.js';
+import type { DiscordAttachment } from './discord.voice-message.js';
 
 const CONFIG = { allowedChannelId: 'chan-1', allowedAuthorId: 'owner-1' };
 
@@ -10,6 +11,17 @@ function message(overrides: Partial<IncomingDiscordMessage> = {}): IncomingDisco
     authorName: overrides.authorName ?? 'Owner',
     isFromBot: overrides.isFromBot ?? false,
     content: overrides.content ?? 'Szia, mi a helyzet?',
+    ...(overrides.attachments ? { attachments: overrides.attachments } : {}),
+  };
+}
+
+function voiceAttachment(): DiscordAttachment {
+  return {
+    id: 'a1',
+    url: 'https://cdn.discordapp.com/attachments/1/2/voice-message.ogg',
+    name: 'voice-message.ogg',
+    contentType: 'audio/ogg',
+    size: 9_000,
   };
 }
 
@@ -58,5 +70,81 @@ describe('filterIncomingMessage', () => {
 
     expect(verdict.accepted).toBe(false);
     expect(verdict.reason).toContain('Hiányos konfiguráció');
+  });
+});
+
+describe('filterIncomingMessage — HANGUZENET (regresszio)', () => {
+
+  it('elfogadja a hanguzenetet, pedig URES a szovege', () => {
+    // 🔴 EZ VOLT A HIBA (merve 2026-09-07): a Discord-hanguzenet ures `content`-tel
+    // erkezik, es a szuro "ures uzenet"-kent NEMAN ELDOBTA. Emiatt a hanguzenetek
+    // sosem jutottak el hozzam.
+    const verdict = filterIncomingMessage(
+      message({ content: '', attachments: [voiceAttachment()] }),
+      CONFIG,
+    );
+
+    expect(verdict.accepted).toBe(true);
+    expect(verdict.hasAudio).toBe(true);
+  });
+
+  it('kiseroszoveges hanguzenetet is elfogad, es jelzi a hangot', () => {
+    const verdict = filterIncomingMessage(
+      message({ content: 'ezt hallgasd meg', attachments: [voiceAttachment()] }),
+      CONFIG,
+    );
+
+    expect(verdict.accepted).toBe(true);
+    expect(verdict.hasAudio).toBe(true);
+  });
+
+  it('a hang NEM keruli meg a biztonsagi hatart — idegen kuldo elutasitva', () => {
+    const verdict = filterIncomingMessage(
+      message({ content: '', authorId: 'valaki-mas', attachments: [voiceAttachment()] }),
+      CONFIG,
+    );
+
+    expect(verdict.accepted).toBe(false);
+  });
+
+  it('a hang NEM keruli meg a csatorna-hatart sem', () => {
+    const verdict = filterIncomingMessage(
+      message({ content: '', channelId: 'mas-csatorna', attachments: [voiceAttachment()] }),
+      CONFIG,
+    );
+
+    expect(verdict.accepted).toBe(false);
+  });
+
+  it('a bot sajat hanguzenete sem jon at (visszhang-hurok)', () => {
+    const verdict = filterIncomingMessage(
+      message({ content: '', isFromBot: true, attachments: [voiceAttachment()] }),
+      CONFIG,
+    );
+
+    expect(verdict.accepted).toBe(false);
+  });
+
+  it('a csak-kep uzenetet tovabbra is elutasitja, de MASKENT indokolja', () => {
+    const verdict = filterIncomingMessage(
+      message({ content: '', attachments: [{
+        id: 'i1', url: 'https://x/y.png', name: 'kep.png', contentType: 'image/png', size: 10,
+      }] }),
+      CONFIG,
+    );
+
+    expect(verdict.accepted).toBe(false);
+    expect(verdict.reason).toContain('nem-hang');
+  });
+
+  it('a valoban ures uzenet indoka nem emliti a csatolmanyt', () => {
+    const verdict = filterIncomingMessage(message({ content: '   ' }), CONFIG);
+
+    expect(verdict.accepted).toBe(false);
+    expect(verdict.reason).toContain('Üres üzenet');
+  });
+
+  it('a sima szoveges uzenetnel a hasAudio nem igaz', () => {
+    expect(filterIncomingMessage(message(), CONFIG).hasAudio).toBeFalsy();
   });
 });

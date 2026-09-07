@@ -6,6 +6,8 @@
 //
 // Owner-előírás (2026-09-06): csak az owner üzenete jöhet, a dedikált csatornából.
 
+import { isAudioAttachment, type DiscordAttachment } from './discord.voice-message.js';
+
 /** A Discordtól kapott nyers üzenet — csak az a néhány mező, amit a döntéshez használunk. */
 export interface IncomingDiscordMessage {
   messageId: string;
@@ -15,6 +17,14 @@ export interface IncomingDiscordMessage {
   /** Igaz, ha a küldő maga is bot (köztük a MI botunk). */
   isFromBot: boolean;
   content: string;
+  /**
+   * A csatolmányok.
+   *
+   * 🔴 A Discord HANGÜZENETE üres `content`-tel érkezik — a hang egy csatolmány. E mező
+   * nélkül a szűrő „üres üzenetnek" látta és **eldobta** őket (mérve 2026-09-07).
+   * Elhagyható, hogy a régi hívók ne törjenek el; hiánya = nincs csatolmány.
+   */
+  attachments?: DiscordAttachment[];
 }
 
 export interface MessageFilterConfig {
@@ -28,6 +38,8 @@ export interface MessageFilterVerdict {
   accepted: boolean;
   /** Miért — naplózáshoz. Elutasításnál KÖTELEZŐEN kitöltött. */
   reason: string;
+  /** Igaz, ha az üzenet HANGOT tartalmaz — ilyenkor STT + tükör-üzenet következik. */
+  hasAudio?: boolean;
 }
 
 /**
@@ -68,8 +80,27 @@ export function filterIncomingMessage(
     };
   }
 
-  if (message.content.trim().length === 0) {
-    return { accepted: false, reason: 'Üres üzenet (pl. csak csatolmány) — nincs mit átadni.' };
+  const hasText: boolean = message.content.trim().length > 0;
+  const hasAudio: boolean = (message.attachments ?? []).some(isAudioAttachment);
+
+  // ⭐ A HANGÜZENET is tartalom, csak nem szöveg. Enélkül némán elveszne (mérve 2026-09-07).
+  if (hasAudio) {
+    return {
+      accepted: true,
+      reason: hasText
+        ? 'Owner hangüzenete kísérő szöveggel, a dedikált csatornából.'
+        : 'Owner hangüzenete a dedikált csatornából.',
+      hasAudio: true,
+    };
+  }
+
+  if (!hasText) {
+    return {
+      accepted: false,
+      reason: (message.attachments ?? []).length > 0
+        ? 'Csak nem-hang csatolmány érkezett, szöveg nélkül — ezt még nem tudjuk feldolgozni.'
+        : 'Üres üzenet — nincs mit átadni.',
+    };
   }
 
   return { accepted: true, reason: 'Owner üzenete a dedikált csatornából.' };

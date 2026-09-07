@@ -109,7 +109,7 @@ Elv: `current/principles/message-delivery-reliability.md`.
 
 | # | Képesség | Státusz | Megjegyzés |
 |---|---|---|---|
-| C-33 | **Voice üzenet olvasása** (STT) | ⏳ **magja megépült + élőben igazolt — jóváhagyásra vár** (2026-09-07) | Hangüzenet → **saját STT (FDP AI**, fut a gépen) → ⭐ **TÜKÖR-ÜZENET** vissza (lássa, jól értettem-e) → utána válasz + feldolgozás. Élő oda-vissza próba: ismert mondat **szóról szóra** visszajött. ⏳ Hátra: a Discord-hangüzenet **letöltése** és bekötése a figyelőbe | `cli/src/stt/` · `__documentations/dev/FDP_AI_STT.md` |
+| C-33 | **Voice üzenet olvasása** (STT) | ⏳ **TELJES ÚT MEGÉPÜLT — jóváhagyásra vár** (2026-09-07) | Hangüzenet → **saját STT (FDP AI**, fut a gépen) → ⭐ **TÜKÖR-ÜZENET** vissza (lássa, jól értettem-e) → utána válasz + feldolgozás. Élő oda-vissza próba: ismert mondat **szóról szóra** visszajött. A **letöltés + bekötés a figyelőbe kész** (a szűrő korábban némán eldobta a hangüzeneteket — javítva). ⏳ Hátra: **egy valódi Discord-hangüzenet** próbája — ehhez az owner küldjön egyet | `cli/src/stt/` · `cli/src/discord/discord.voice-message.ts` |
 | C-34 | **Beszélgetés voice channelen** | 📝 **javaslat** | ⭐ **VAN KÉSZ FORRÁS**: a régi `ccap/discord-bot` `_modules/voice/` (37 fájl, ~6681 sor) — belépés → hangmagasság/hangerő alapú beszéd-detektálás → STT → OUTOFCONTEXT/NOISE szűrés → **hang-alapú állapot-visszajelzés**. Kilépési pont: `reviewResult()`. Doksi: `__documentations/dev/VOICE_CONTROL_REFERENCE.md` |
 | C-35 | **STT/TTS kiemelese a regi CCAP-bol** | 📝 **javaslat** | ⚠️ **UJRAGONDOLANDO**: a TTS **mar fut** az FDP AI-ban (`/api/v1/audio/speech`) — lehet, hogy nem kiemelni kell, hanem **hasznalni** |
 

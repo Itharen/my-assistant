@@ -116,7 +116,7 @@
     },
     {
       "label": "startup-test",
-      "command": "tsx --tsconfig server/tsconfig.json --test scripts/start-my-assistant.test.ts scripts/linkedin-workspace.journey.test.ts",
+      "command": "npx tsx --tsconfig server/tsconfig.json --test scripts/start-my-assistant.test.ts scripts/linkedin-workspace.journey.test.ts",
       "fatal": false
     },
     {

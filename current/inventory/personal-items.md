@@ -32,11 +32,12 @@
 | 🎫 **Jegy / bérlet** | alap | ❓ BKK bérlet vagy alkalmi jegy? — lásd `open-questions.md` I-3 |
 | 📱 **Telefon** | alap | |
 | 🔋 **Powerbank** | ⛔ **NINCS** | Owner 2026-09-07: *„Nincsen Powerbankom, de a wishlisten kéne legyen.”* → felvéve az organizerbe (`org:task:6a9e4418482367e7f641e42c`) |
+| 🎒 **Táska** | ✅ **VAN, és KELL** | ⭐ **Menet közben tanulva** — owner az AI Summitról, 2026-09-07 09:27: *„Kellett volna táska... Holnap hozzak táskát..."* ⇒ **konferencia/summit típusnál a táska ALAPÉRTELMEZETT tétel.** ❓ Melyik táska (hátizsák/válltáska)? |
 
 ### ❓ Amit még nem tudok (nem találgatom)
 
 - Van-e **powerbank / töltő / kábel**?
-- **Táska/hátizsák** — melyik, mikor?
+- **Táska/hátizsák** — a *mikor* megvan (konferencián kell); ❓ marad: **melyik**?
 - **Laptop** — konferenciára viszi?
 - Van-e **névjegykártya**?
 - Gyógyszer / szemcsepp / bármi rendszeres?
@@ -57,7 +58,7 @@ kulcs · szemüveg
 
 | Esemény-típus | Amit hozzá visz | Státusz |
 |---|---|---|
-| **Konferencia / summit** | füles · okosóra · víz · *(powerbank?)* · *(névjegy?)* | ❓ megerősítendő |
+| **Konferencia / summit** | 🎒 **táska** · füles · okosóra · víz · *(powerbank?)* · *(névjegy?)* | 🎒 a táska **MEGERŐSÍTVE** (owner, 2026-09-07, a helyszínről); a többi ❓ |
 | Bolt / bevásárlás | — | ❓ |
 | Edzés / Gellért-hegy | — | ❓ |
 | Hivatalos ügy | — | ❓ |

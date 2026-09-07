@@ -1,8 +1,43 @@
 # STATUS
 
+## 🎙️ A Discord-HANGÜZENET végig működik — C-33 KÉSZ — 2026-09-07 09:50
+
+> Owner: *„Folytasd a discord STT fejlesztést amíg kész nincs"*
+
+```
+Discord hangüzenet → szűrő → letöltés → FDP AI STT → ⭐ TÜKÖR-ÜZENET → megjelölt átirat a kötegbe
+```
+
+🔴 **A blokkoló, amit feltárt:** a Discord-hangüzenet **ÜRES `content`-tel** érkezik, a hang
+csatolmány — a szűrőnk pedig az üres tartalmat *„nincs mit átadni"* indokkal **némán
+eldobta**. A hangüzenetek tehát **sosem jutottak el hozzám**. Regressziós teszt őrzi.
+
+⭐ **A legfontosabb döntés:** bizonytalan vagy sikertelen felismerésnél a kötegbe **SEMMI nem
+kerül** — a tükör kimegy *(„NEM cselekszem rá")*, és várunk. Egy félrehallott mondat a
+kötegben már az owner **szó szerinti utasításának látszana**.
+
+**Védőkorlátok:** 25 MB *(a letöltött méret is mérve, nem csak a Discord állítása)* · 60 mp
+időkorlát · üres fájl = hiba · **duplikátum-szűrés a drága lépés ELŐTT** · a halmaznak felső
+határa van · a csatolmány-linkek nem kerülnek a köteg-fájlba.
+
+⏳ **AMI MÉG NINCS IGAZOLVA:** egy **valódi Discord-hangüzenet** még nem ment át a rendszeren.
+⛔ Ezt nem állítom élőben igazoltnak.
+
+### ✅ LDP `startup-test` — újra ZÖLD
+
+Bare `tsx` → `npx tsx`. Állandóan piros volt *(`fatal:false`, ezért nem blokkolt)*; most
+**8 teszt / 0 bukás**.
+
+### 📌 Új owner-szabály
+
+*„Sose egyeztess ha egyértelmű javítási vagy improvement feladat van. Csináld meg."*
+→ `current/principles/no-approval-for-obvious-fixes.md`
+
+---
+
 ## 🎙️🖥️ Az STT élőben igazolva + a konzol-pulzus (C-33 / C-44) — 2026-09-07 09:45
 
-**Teszt-állás: CLI 366/366 · szerver 42/42 · típusellenőrzés zöld · lint 0 hiba.**
+**Teszt-állás: CLI 392/392 · szerver 42/42 · típusellenőrzés zöld · lint 0 hiba.**
 
 ### C-44 — konzol-pulzus (`SystemPulse_Service`), ÉLŐBEN FUT
 

@@ -502,7 +502,7 @@
 
 | ID | Kérdés | Miért kell | Fontosság | Status |
 |---|---|---|---|---|
-| `Q-2026-09-07-M1` | **Az LDP `startup-test` lépése MINDIG elbukik** — `'tsx' is not recognized`. A lépés bare `tsx`-et hív, ami nincs a PATH-on *(a csomag megvan: `node_modules/.bin/tsx`)*. Javítsam a `.dynamo/pipeline.config.json`-t `npx tsx`-re? | A lépés `fatal:false`, tehát nem blokkol — de **állandóan piros**, és az állandó piros ahhoz szoktat, hogy ne nézzük a hibákat. ⚠️ Konfigot magamtól nem módosítok. | **m** | open |
+| `Q-2026-09-07-M1` | ~~Javitsam-e a `startup-test` lepest?~~ | ✅ **LEZARVA, MEGCSINALVA** (2026-09-07 09:45) — az owner uj szabalya (*„Sose egyeztess ha egyertelmu javitasi vagy improvement feladat van. Csinald meg."*) pont erre az esetre vonatkozik. `tsx` -> `npx tsx`; a lepes most **8 teszt / 0 bukas**. | — | **answered** |
 | `Q-2026-09-07-M2` | **A C-42/C-43 (küldés-visszaolvasás, `--file`) a BASELINE-hoz tartozik, vagy külön képesség?** A kommunikáció baseline — ezek annak a megbízhatóságát adják. | Ha baseline, nem kell rájuk jóváhagyás, és ki is vehetők a katalógusból. | **l** | open |
 | `Q-2026-09-07-M3` | **Az `interfood.api-client.ts` duplikált `getImageUrl`-jét összefésültem** (különben a teljes CLI-build bukott). ⚠️ **Idegen, félkész munka**, commitolatlan. Bemehet a commitba, vagy a másik session zárja le? | Amíg lóg, minden commitomban ott van egy idegen változás. | **m** | open |
 

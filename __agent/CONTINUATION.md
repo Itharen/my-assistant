@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 09:45
+**Utoljára frissítve:** 2026-09-07 09:50
 
 ---
 
@@ -14,9 +14,9 @@
 active_plan: __agent/plans/discord-two-way-hyperplan/hyperplan.plan.md
 state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
-tests: "CLI 366/366 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
+tests: "CLI 392/392 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
 owner_available: false        # AI Summiton (elindult 07:45); Discordon ir
-blocked_on_owner: "Nyitott kerdesek H/I/J/K/L/M - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak), M1 (az LDP startup-test lepese javithato-e), M3 (az idegen interfood-osszefesules commitolhato-e)."
+blocked_on_owner: "Nyitott kerdesek H/I/J/K/L/M - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak), M3 (az idegen interfood-osszefesules commitolhato-e). [M1 LEZARVA: megjavitva.]"
 ```
 
 **Owner-utasítás (2026-09-06):** *„kezd el ennek a Hyperplan-nek a lefejlesztését, és amíg a
@@ -70,9 +70,51 @@ végére nem érsz, addig tartsd magad mozgásban a Schedule Wake-up-pal"*.
 
 ### 🔴 Ismert hiba, NEM altalam okozva
 
-Az LDP **`startup-test`** lepese mindig elbukik: `'tsx' is not recognized` (bare `tsx` a
-PATH-on kivul; a csomag megvan). `fatal:false`, nem blokkol, de allando piros.
-⚠️ Konfigot magamtol nem modositok -> `Q-2026-09-07-M1`.
+Az LDP **`startup-test`** lepese mindig elbukott: `'tsx' is not recognized` (bare `tsx` a
+PATH-on kivul; a csomag megvan). `fatal:false`, nem blokkolt, de allando piros volt.
+
+> ✅ **MEGOLDVA ugyanezen a napon, 09:45-kor** — lasd a lenti C-33-as szakaszt. Az owner uj
+> szabalya (*„Sose egyeztess ha egyertelmu javitasi vagy improvement feladat van"*) pont erre
+> az esetre vonatkozik, ezert a `Q-2026-09-07-M1` kerdes **lezarva**. A fenti bekezdes csak
+> tortenetileg all itt.
+
+---
+
+## ✅ 2026-09-07 09:45 — C-33 BEFEJEZVE (a Discord-hanguzenet vegig mukodik)
+
+> Owner: *„Folytasd a discord STT fejlesztest amig kesz nincs"*
+
+| Mit | Allapot |
+|---|---|
+| **A BLOKKOLO feltarva** | 🔴 A Discord-hanguzenet **URES `content`-tel** erkezik; a szuronk ezt *„ures uzenet"*-kent **nemán ELDOBTA**. A hanguzenetek SOSEM jutottak el hozzam. Regresszio-teszt orzi. |
+| **`discord.voice-message.ts` (uj)** | hang-felismeres (contentType ES kiterjesztes), csatolmany-valasztas, letoltes, a kotegbe kerulo szoveg **megjelolese**. |
+| **A figyelo bekotve** | letoltes -> STT -> **tukor-uzenet** -> megjelolt atirat a kotegbe. |
+| **⭐ A legfontosabb dontes** | **bizonytalan/sikertelen felismeresnel a kotegbe SEMMI nem kerul** — a tukor kimegy, es varunk. Egy felrehallott mondat a kotegben mar az owner szo szerinti utasitasanak latszana. |
+| **Vedokorlatok** | 25 MB (a **letoltott** meret is merve) · 60 mp idokorlat · ures fajl = hiba · **duplikatum-szures a DRAGA lepes ELOTT** · a halmaznak felso hatara van · a csatolmany-linkek NEM kerulnek a koteg-fajlba. |
+| **A backfill is ezen az uton megy** | kulonben a leallas alatt erkezett hanguzenet URES tartalommal kerult volna a kotegbe. |
+| **LDP `startup-test` JAVITVA** | bare `tsx` -> `npx tsx`. Allandoan piros volt; most **8 teszt / 0 bukas**. |
+| **Teszt** | **CLI 392/392** (26 uj), szerver 42/42. |
+| **Review-korok** | 1. kor: 3 finding (a backfill nyersen tette volna be a hangot · duplikatum ujra-felismerne + masodik tukrot kuldene · csatolmany-linkek a kotegben) — mind javitva. 2. kor: 1 finding (korlatlanul novo duplikatum-halmaz) — javitva. |
+
+### ⏳ AMI MEG NINCS IGAZOLVA
+
+**Egy VALODI Discord-hanguzenet** meg nem ment at a rendszeren — ehhez az ownernek kell
+kuldenie egyet. Az egysegtesztek a tiszta reszeket fedik, az STT elo probaja megvolt, de a
+**valodi csatolmany alakja** (contentType, `duration` mezo) meg **nem merve**.
+⛔ Ezt NEM allitom keszen igazoltnak.
+
+### 📌 UJ OWNER-SZABALY (szo szerint rogzitve)
+
+*„Sose egyeztess ha egyertelmu javitasi vagy improvement feladat van. Csinald meg.
+(Error handling, descriptive errors, guardrails, fixes always allowed)"*
+-> `current/principles/no-approval-for-obvious-fixes.md`
+
+### 📡 A JELENLET-MERES HATARA (owner kerdesere merve)
+
+A monitor **el es friss**, de azt meri, hogy **van-e input EZEN a gepen** — NEM azt, hogy az
+owner hol van. Az indulasa (07:45) utan **ket** aktiv mintat mert, az egyiket **09:15:33-kor**
+(5 mp-es input), jiggler nelkul. ⇒ Megerositi az owner sajat otletet: **a telefon a halozaton**
+kell masodlagos jelnek. ❓ Nyitott: ki generalta a 09:15-os inputot.
 
 ---
 

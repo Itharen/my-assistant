@@ -4,6 +4,57 @@
 
 ---
 
+## A Discord-HANGUZENET vegig mukodik (C-33 kesz) — 2026-09-07
+
+> **Owner:** *„Folytasd a discord STT fejlesztest amig kesz nincs"*
+
+```
+Discord hanguzenet -> szuro -> letoltes -> FDP AI STT -> TUKOR-UZENET -> megjelolt atirat a kotegbe
+```
+
+### 🔴 A BLOKKOLO, amit ez feltart
+
+A Discord hanguzenete **URES `content`-tel** erkezik — a hang egy csatolmany. A bejovo
+szuronk viszont az ures tartalmat *„Ures uzenet (pl. csak csatolmany) — nincs mit atadni"*
+indokkal **elutasitotta**. Vagyis a hanguzenetek **SOSEM jutottak el hozzam**, es kivulrol
+ez pontosan ugy nezett ki, mintha nem is kuldott volna semmit. Regresszio-teszt orzi.
+
+### Amit a megoldas tartalmaz
+
+- **`discord.voice-message.ts` (uj):** hang-felismeres (`contentType` ES kiterjesztes alapjan
+  is — egyik sem megbizhato onmagaban), csatolmany-valasztas, letoltes, es a kotegbe kerulo
+  szoveg **megjelolese**.
+- **A szuro** mostantol elfogadja a hangot — de a **biztonsagi hatar valtozatlan**: a hang nem
+  keruli meg a kuldo- es csatorna-ellenorzest (3 kulon teszt orzi).
+- ⭐ **Bizonytalan vagy sikertelen felismeresnel a kotegbe SEMMI nem kerul.** A tukor kimegy
+  (*„NEM cselekszem ra"*), es varunk. Egy felrehallott mondat a kotegben mar az owner
+  **szo szerinti utasitasanak latszana**.
+- **A kotegbe kerulo szoveg megjelolt:** `🎙️ HANGÜZENET — gépi átirat …, NEM gépelt szöveg`.
+
+### Vedokorlatok (owner: *„guardrails … always allowed"*)
+
+- max **25 MB** — es a **letoltott MERET** is ellenorizve, nem csak a Discord allitasa;
+- **60 mp** letoltesi idokorlat; ures fajl = hiba, nem csendes tovabbengedes;
+- **duplikatum-szures a DRAGA lepes ELOTT** — a Discord ujrakuldhet egy esemenyt, es enelkul
+  masodik tukor-uzenet menne ki + ujabb ~78 mp felismeres futna;
+- a duplikatum-halmaznak **felso hatara** van (nem szivargo memoria);
+- ⛔ a csatolmany-linkek **nem kerulnek a koteg-fajlba** (alairtak es lejarnak).
+
+### A backfill is ezen az uton megy
+
+Mert kulonben a leallas alatt erkezett hanguzenet **ures tartalommal** kerult volna a kotegbe —
+vagyis a backfill pont azt veszitette volna el, amiert letezik.
+
+### Mellesleg: az LDP `startup-test` lepese ujra ZOLD
+
+Bare `tsx`-et hivott, ami nincs a PATH-on -> `npx tsx`. Allandoan piros volt (`fatal:false`,
+ezert nem blokkolt). Most **8 teszt / 0 bukas**. Owner-szabaly szerint jarva el:
+*„Sose egyeztess ha egyertelmu javitasi vagy improvement feladat van. Csinald meg."*
+
+Teszt: CLI **392/392** (26 uj).
+
+---
+
 ## STT elo igazolas + a konzol-pulzus (C-33 / C-44) — 2026-09-07
 
 > **Owner:** *„Majd szeretnem, hogy egy sor logot is tegyunk a My Assistant projektbe, hogy amikor
