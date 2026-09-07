@@ -107,7 +107,7 @@ következtessen az aktuális tevékenységre, vagy passzív jelekből megtudja.
 ### Open kérdések
 
 - **Q-act-1**: Melyik réteggel kezdjünk? (Javaslat: L2 lokál gép — leghamarabb hozható, low-cost)
-- **Q-act-2**: Mobil platform: Android (Tasker) vagy iOS (Shortcuts)?
+- ~~**Q-act-2**: Mobil platform: Android (Tasker) vagy iOS (Shortcuts)?~~ -> **MEGVALASZOLVA (2026-09-07): ANDROID** (Ulefon Armor, kb. 8-as sorozat). Reszletek: `current/inventory/personal-items.md`.
 - **Q-act-3**: Hol tároljuk az activity-log-ot? `__agent/log/activity/YYYY-MM-DD.jsonl`?
 - **Q-act-4**: Privacy küszöb — meeting-címeket logoljunk-e? Mit NEM tárolunk?
 - **Q-act-5**: Milyen "natural language summary"-t generáljunk a logból? (pl. session elején: "Az utolsó interakció óta TERA-ban dolgoztál 2 órát + 1 óra séta")

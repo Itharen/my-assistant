@@ -30,7 +30,7 @@
 | 💧 **Víz** *(kulacs/palack)* | ellátmány | ❓ kulacs vagy vett víz? |
 | 👛 **Tárca** | alap | |
 | 🎫 **Jegy / bérlet** | alap | ❓ BKK bérlet vagy alkalmi jegy? — lásd `open-questions.md` I-3 |
-| 📱 **Telefon** | alap | |
+| 📱 **Telefon** | alap | **Ulefon Armor** (kb. 8-as sorozat), **Android** — owner, 2026-09-07: *„android telefonom van. Ulefon Armor... Asszem 8..."* ⚠️ a pontos modell **nem megerősített** (az owner maga is bizonytalan volt) |
 | 🔋 **Powerbank** | ⛔ **NINCS** | Owner 2026-09-07: *„Nincsen Powerbankom, de a wishlisten kéne legyen.”* → felvéve az organizerbe (`org:task:6a9e4418482367e7f641e42c`) |
 | 🎒 **Táska** | ✅ **VAN, és KELL** | ⭐ **Menet közben tanulva** — owner az AI Summitról, 2026-09-07 09:27: *„Kellett volna táska... Holnap hozzak táskát..."* ⇒ **konferencia/summit típusnál a táska ALAPÉRTELMEZETT tétel.** ❓ Melyik táska (hátizsák/válltáska)? |
 
