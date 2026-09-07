@@ -14,9 +14,9 @@
 active_plan: __agent/plans/discord-two-way-hyperplan/hyperplan.plan.md
 state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
-tests: "CLI 345/345 + szerver 28/28 zold"
+tests: "CLI 345/345 + szerver 28/28 zold; comm doctor 10 zold / 0 hibas (2026-09-07 06:26)"
 owner_available: false        # "most nem vagyok a gépnél… majd ha hazaértem"
-blocked_on_owner: "NINCS. Az LDP fut, a szerver alatta a Discord- ES a jelenlet-figyelot is viszi. Az interfood-blokkolo osszevonassal feloldva. Marad: a 7 kerdes."
+blocked_on_owner: "NINCS technikai. A jelenlet-figyelo ELOBEN IGAZOLT (a szerver inditotta 2026-09-07 01:30). Marad: a nyitott kerdesek H/I/J/K szekcioi - kiemelten a kepesseg-jovahagyasok (J1/J2) es az idobeosztas 8 preferenciaja (I1-I8)."
 ```
 
 **Owner-utasítás (2026-09-06):** *„kezd el ennek a Hyperplan-nek a lefejlesztését, és amíg a

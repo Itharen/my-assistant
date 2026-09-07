@@ -45,12 +45,37 @@ dc ldp
 ma comm doctor
 ```
 
+### ⛔ MIKOR NE INDÍTS ÚJRA — a szabály kivétele (mérve 2026-09-07 06:26)
+
+Az újraindítás **NEM öncél**: a frissesség a cél. Ha az újraindítás **többet ront, mint
+javít**, kihagyod — és **naplózod, hogy miért**.
+
+**Kihagyod, ha MINDHÁROM igaz:**
+
+| # | Feltétel | Hogyan méred |
+|---|---|---|
+| 1 | **Minden zöld** | `ma comm doctor` — nincs hibás/hiányzó sor |
+| 2 | A rendszer **nemrég** indult (< ~8 óra) | `logs/live-dev-pipeline/status.json` + az action-log indítás-bejegyzései |
+| 3 | **Esemény van a következő ~3 órában**, VAGY a user épp aktív | `current/events/` · `ma status digest` · a jelenlét-minta |
+
+🔴 **A MÉRT INDOK (ez váltotta ki a kivételt):** a teljes LDP-kör **~23 perc**
+*(`client-build` 536 s + `client-test` 377 s)*, és alatta a szerver — tehát a **Discord-csatorna
+is — ÁLL**. Egy esemény reggelén ez pontosan abban az ablakban vakítaná meg a csatornát,
+amikor a legjobban kell. *(2026-09-07: a user 06:26-kor ébren, 07:45-kor indul; a szerver
+01:30-kor indult, minden zöld ⇒ az újraindítás kimaradt, és ez volt a helyes.)*
+
+⇒ Ilyenkor a napindítás **technikai része kimarad**, de a **tartalmi** (áttekintés,
+`schedule-guardian`, értesítés) **NEM** — az mindig lefut.
+
+---
+
 ⚠️ **HA A USER MÉG ALSZIK:** a napindítás **technikai** részét elvégzed (újraindítás,
 adat-frissítés), de ⛔ **NEM szólsz** — a napi áttekintés az **ébredés utáni** első körben
 megy ki. *(A 06:30 ütemezés naptári, a te ébredésed csúszó — `sleep-system.md`.)*
 
-⚠️ **HA ESEMÉNY VAN AZNAP:** az újraindítás után **azonnal** a `schedule-guardian` jön —
-a készülődés-kezdés kiszámolása nem várhat a következő órás körre.
+⚠️ **HA ESEMÉNY VAN AZNAP:** a `schedule-guardian` **azonnal** jön — a készülődés-kezdés
+kiszámolása nem várhat a következő órás körre. ⭐ **A telefontöltés-emlékeztető a készülődés
+KEZDETÉN megy ki**, nem induláskor (`current/inventory/personal-items.md`).
 
 📌 Az ütemezés és a trigger-üzenet kanonikus szövege: **`__agent/SCHEDULE.md`**.
 

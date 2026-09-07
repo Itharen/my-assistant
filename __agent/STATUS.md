@@ -18,7 +18,13 @@ dc ldp  →  szerver  →  Discord-figyelő  +  Jelenlét-figyelő
   A teljes kör **1370 mp, minden lépés zöld**.
 - **Teszt:** CLI **345/345**, szerver **28/28**.
 
-⏳ **Owner-műveletre vár:** ❓ **7 kérdés** — `current/open-questions.md` H) szekció.
+✅ **ÉLŐBEN IGAZOLT (2026-09-07 01:30):** a szervert az LDP indította, az pedig **magától
+elindította mindkét figyelőt** — a `Jelenlét-figyelő elindítva (pid=267292)` bejegyzés a
+napló szerint a `supervised-child.start`-ból jött. Reggel 06:26-kor a `ma comm doctor`
+**10 zöld / 0 hibás**; a 112 napja piros jelenlét-sor **zöld lett**.
+
+⏳ **Owner-műveletre vár:** ❓ a nyitott kérdések **H) I) J) K)** szekciói — kiemelten a
+**képesség-jóváhagyások** (J1/J2) és az **időbeosztás 8 preferenciája** (I1–I8).
 *(A jelenlét-figyelő élesítése MÁR NEM owner-lépés — a szerver csinálja.)*
 
 ---
