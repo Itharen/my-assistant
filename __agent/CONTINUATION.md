@@ -316,3 +316,21 @@ ezekre mutat — egy friss session elhiheti, hogy semmi nem készült el, és **
 - `__documentations/dev/DISCORD_BOT_SETUP.md` — az owner beállítási lépései
 - `__agent/flows/recurring/hourly-assistant-tick/README.md` — a workflow-szabályok
 - `__agent/STATUS.md` — a projekt egészének pillanatképe
+
+---
+
+## ⏭️ MUNKASOR — az owner indulása után (2026-09-07 07:30-tól)
+
+> Owner: *„Amúgy építsd meg! ezt az STT feldolgozást. Pontosabban kezdjél bele a
+> megépítésébe, amikor elindultam."*
+
+| # | Feladat | Miért ebben a sorrendben |
+|---|---|---|
+| 1 | **C-43 — `ma comm say --file`** | ez a mai csonkolási incidens végleges javítása; kicsi, és utána minden más küldés biztonságos |
+| 2 | **C-42 — küldés utáni visszaolvasás** | a `--file`-lal együtt egy kör; a Python-megkerülés már így működik, csak át kell emelni a CLI-be |
+| 3 | **C-33 — STT-feldolgozás** *(owner kifejezett kérése)* | ⚠️ ELSŐ LÉPÉS: az **FDPAI STT végpont felderítése** (FAM + kód) — ⛔ nem tippelünk. Utána: hangüzenet letöltés → STT → **TÜKÖR-ÜZENET** → válasz |
+| 4 | **C-44 — konzol-log sor** | owner-kérés: ránézésre látszódjon, mi történik a rendszerben |
+| 5 | **L1 — címke-alapú session-feloldás** | a több-session működés feltétele |
+
+⚠️ **Minden fejlesztés után KÖTELEZŐ** a `post-development-verification.md` négy ellenőrzése.
+📌 **Az LDP eredményét** a `logs/live-dev-pipeline/status.json` + `output.log` adja.
