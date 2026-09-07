@@ -96,6 +96,44 @@ session memóriájára.
 **A lényeg egy mondatban:** a munka kész, **egyetlen owner-jóváhagyás hiányzik**, és a hurkot **szabály
 kötelez** leállítani — de **kimondottan**, nem némán, ezért ez a bejegyzés.
 
+---
+
+## 📨 ITT A LEVÉL — ez az, amit jóvá kell hagyni
+
+> 🔴 **Javítás.** Korábban fájl-útvonalra mutattam a szöveg helyett. Ez hiba volt: telefonról az a fájl
+> nem elérhető, tehát megválaszolhatatlan kérdést tettem fel. A most bevitt
+> `current/principles/approval-must-be-self-contained.md` és a flotta-szintű
+> `core-owner-decision-self-contained` is ezt tiltja — **a jóváhagyandó dolog MAGA megy ki.**
+
+**Címzett:** `geokberek@gmail.com` *(Geokbérek — a GEOK bérszámfejtési postafiókja)*
+**Tárgy:** `Jelenléti ívek – 2026. augusztus`
+**Csatolmány:** nincs *(az augusztusi íveket már elküldtük szeptember 1-én)*
+
+```
+Sziasztok,
+
+Az augusztusi jelenléti íveket szeptember 1-én küldtem el erre a címre (Tahi-Tóth Balázs
+és Gyöngyösi Anna, két PDF). Meg tudnátok erősíteni, hogy megérkeztek?
+
+A bérszámfejtést még nem kaptuk meg, és ilyenkor már szokott jönni — ezért kérdezem.
+Ha valami hiányzik hozzá tőlünk, szóljatok, és pótoljuk.
+
+Köszi,
+
+Ronnie J
+FDP AI Assistant
+Future Development Program Kft.
+https://futdevpro.hu
+```
+
+**Mit csinál, ha jóváhagyod:** elküld **egy** e-mailt a bérszámfejtőnek. Nem módosít adatot, nem indít
+folyamatot. ⚠️ **Nem visszafordítható** — elküldött levelet nem lehet visszahívni.
+
+**Válaszlehetőségek:** „mehet" → kiküldöm · „ne így" + amit másképp szeretnél → átírom · „várjunk" →
+nem megy ki, és 09-10-én újra jelentkezem.
+
+---
+
 ### Miért állt le a hurok
 
 A FAM-frissítés előhozott egy szabályt, ami **2026-09-07-én frissült**, és pont rám vonatkozik:
@@ -117,8 +155,7 @@ A FAM-frissítés előhozott egy szabályt, ami **2026-09-07-én frissült**, é
 
 ### 🔴 MI INDÍTANÁ ÚJRA — bármelyik elég, szólj és folytatom
 
-1. ✅ **„mehet" az ownertől** → **azonnal kiküldöm** a levelet (a kész szöveg + a kész `send-email` parancs:
-   `fdp-assistant/__documentations/payroll-communication.md` → „Levél-TERVEZET").
+1. ✅ **„mehet" az ownertől** → **azonnal kiküldöm** a fent teljes egészében kiírt levelet.
 2. ✅ **„ne így" / szöveg-módosítás** → átírom, és újra jóváhagyásra teszem.
 3. ✅ **Megjön a bérszámfejtés** → a levél tárgytalan, a hónap zárható.
 4. ⏰ **Ha 2026-09-10-ig egyik sem** → az a mért ritmus **leghosszabb** átfutása is (2026-01: 10-e);
