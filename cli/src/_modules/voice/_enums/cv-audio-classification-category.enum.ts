@@ -1,0 +1,43 @@
+
+
+export enum CV_AudioClassificationCategory {
+  speech = 'Speech',
+  humanVoice = 'Human voice',
+  maleSpeech = 'Male speech, man speaking',
+  femaleSpeech = 'Female speech, woman speaking',
+  childSpeech = 'Child speech, kid speaking',
+  babbling = 'Babbling',
+  speechSynthesizer = 'Speech synthesizer',
+  shout = 'Shout',
+  bellow = 'Bellow',
+  whoop = 'Whoop',
+  yell = 'Yell',
+  childrenShouting = 'Children shouting',
+  screaming = 'Screaming',
+  whispering = 'Whispering',
+  conversation = 'Conversation',
+  laughter = 'Laughter',
+  babyLaughter = 'Baby laughter',
+  giggle = 'Giggle',
+  snicker = 'Snicker',
+  bellyLaugh = 'Belly laugh',
+  chuckle = 'Chuckle, chortle',
+  crying = 'Crying, sobbing',
+  babyCry = 'Baby cry, infant cry',
+  whimper = 'Whimper',
+  wail = 'Wail, moan',
+  sigh = 'Sigh',
+  singing = 'Singing',
+  choir = 'Choir',
+  yodeling = 'Yodeling',
+  chant = 'Chant',
+  mantra = 'Mantra',
+  maleSinging = 'Male singing',
+  femaleSinging = 'Female singing',
+  childSinging = 'Child singing',
+  syntheticSinging = 'Synthetic singing',
+  rapping = 'Rapping',
+  humming = 'Humming'
+}
+
+const CV_allAudioClassificationCategories = Object.values(CV_AudioClassificationCategory);

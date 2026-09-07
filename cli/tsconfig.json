@@ -28,5 +28,16 @@
     }
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["dist", "node_modules"]
+  // ⛔ `src/_modules` KIZARVA a fo buildbol — ATMENETILEG, szandekosan.
+  //
+  // Ott a regi CCAP-bol ATEMELT voice-kod el, ami `strict` NELKUL irodott es mukodott.
+  // Az owner korlata: „semmit nem szabad valtoztatni a kodban" — ezert a szigorusagi
+  // kulonbseget a KONFIGURACIO oldja fel, nem a kod atirasa. A modul sajat, lazabb
+  // tsconfigja: `src/_modules/tsconfig.json`.
+  //
+  // ⚠️ Amig a CLI kodja NEM hivatkozik ra, a kizaras teljesen kockazatmentes: a fajlok
+  // a repoban vannak, de a fo build nem latja oket. A bekotes (projekt-hivatkozas vagy
+  // kulon build-lepes) a terv 3-4. szakaszaban jon, amikor lesz mit bekotni.
+  // Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md`
+  "exclude": ["dist", "node_modules", "src/_modules"]
 }

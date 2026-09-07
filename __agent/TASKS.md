@@ -71,7 +71,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 
 | # | Ki | Feladat | Hol tart | Következő lépés |
 |---|---|---|---|---|
-| T-22 | 🤖 | 🔴 **Voice control ÁTEMELÉSE a régi CCAP-ból** *(nagy)* — **ELŐREVÉVE** | owner 2026-09-07 12:37: *„Ezt nagyon szeretném még előbb látni"* | ⛔ **A régi kódban SEMMIT nem szabad változtatni** — owner: *„nagyon törékeny az a kód, de cserében meg egész jól működött"*. ⇒ **átemelés, nem átírás** |
+| T-22 | 🤖 | 🔴 **Voice control ÁTEMELÉSE a régi CCAP-ból** *(nagy)* — **ELŐREVÉVE** | **1/5 szakasz kész** (23 levél-fájl bent, 6 import-sor az EGYETLEN változás). Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md` | 2. szakasz: `@futdevpro/fsm-dynamo` + hang-függőségek. ⚠️ **V-1…V-3 owner-kérdés** nyitva — de nem blokkol |
 | T-10 | 🤖 | 🔴 **Sikertelen STT újrapróbálása** | **megépítve**, 474/474 teszt — `cli/src/stt/stt.retry-queue.ts` | ⚠️ **élő próbára vár**: a következő sikertelen felismerésnél derül ki. Addig NEM ✅ |
 
 ---
