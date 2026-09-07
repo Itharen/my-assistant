@@ -38,3 +38,6 @@ browser-extension/dist/
 
 # Windows crash dumps
 *.stackdump
+
+# Helyzet-adat — SOHA nem kerulhet a repoba (current/principles/location-retention.md)
+server/data/

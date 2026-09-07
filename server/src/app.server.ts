@@ -45,6 +45,7 @@ import { LinkedInWorkspace_Controller } from './_routes/linkedin/linkedin-worksp
 import { LinkedInWorkspace_FrameMiddleware } from './_routes/linkedin/linkedin-workspace-frame.middleware';
 import { InterfoodRecommendation_Controller } from './_routes/interfood/interfood-recommendation.controller';
 import { Health_Controller } from './_routes/health/health.controller';
+import { Location_Controller } from './_routes/location/location.controller';
 
 import { VersionBroadcast_SocketServerService } from './_services/socket-services/version-broadcast.socket-server-service';
 import { DiscordListener_Service } from './_services/discord-listener.service';
@@ -140,6 +141,11 @@ export class App extends DyNTS_AppExtended {
       new DyNTS_RoutingModule({
         route: '/errors',
         controllers: [ Errors_Controller.getInstance() ],
+      }),
+      // Helyzet-kovetes: az OwnTracks ide POST-ol. Megosztott titokkal vedve.
+      new DyNTS_RoutingModule({
+        route: '/location',
+        controllers: [ Location_Controller.getInstance() ],
       }),
       new DyNTS_RoutingModule({
         route: '/feedback',
