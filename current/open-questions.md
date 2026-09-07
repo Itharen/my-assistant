@@ -495,3 +495,14 @@
 | `Q-2026-09-07-J2` | **Melyik jóváhagyott képesség futhat ÜRESJÁRATBAN**, amikor nem vagy itt? | A proaktív sáv addig üres, amíg ez nincs eldöntve. | **h** | open |
 | `Q-2026-09-07-J3` | **Az orkesztráció (feladat átadása másoknak) mikor és milyen keretben legyen megbeszélve?** | Owner: *„az egyelőre még nem approve-olt"* — addig nem delegálok. | **m** | open |
 | `Q-2026-09-07-J4` | **Mi számít „nem vagyok elérhető"-nek?** Elég a gép-inaktivitás, vagy legyen külön „ne zavarj" jelzés? | Ez kapcsolja be az üresjárati sávot — rossz küszöbnél vagy zavarlak, vagy sosem dolgozom. | **m** | open |
+
+---
+
+## M) Fejlesztői / üzemeltetési kérdések 🛠️ (2026-09-07)
+
+| ID | Kérdés | Miért kell | Fontosság | Status |
+|---|---|---|---|---|
+| `Q-2026-09-07-M1` | **Az LDP `startup-test` lépése MINDIG elbukik** — `'tsx' is not recognized`. A lépés bare `tsx`-et hív, ami nincs a PATH-on *(a csomag megvan: `node_modules/.bin/tsx`)*. Javítsam a `.dynamo/pipeline.config.json`-t `npx tsx`-re? | A lépés `fatal:false`, tehát nem blokkol — de **állandóan piros**, és az állandó piros ahhoz szoktat, hogy ne nézzük a hibákat. ⚠️ Konfigot magamtól nem módosítok. | **m** | open |
+| `Q-2026-09-07-M2` | **A C-42/C-43 (küldés-visszaolvasás, `--file`) a BASELINE-hoz tartozik, vagy külön képesség?** A kommunikáció baseline — ezek annak a megbízhatóságát adják. | Ha baseline, nem kell rájuk jóváhagyás, és ki is vehetők a katalógusból. | **l** | open |
+| `Q-2026-09-07-M3` | **Az `interfood.api-client.ts` duplikált `getImageUrl`-jét összefésültem** (különben a teljes CLI-build bukott). ⚠️ **Idegen, félkész munka**, commitolatlan. Bemehet a commitba, vagy a másik session zárja le? | Amíg lóg, minden commitomban ott van egy idegen változás. | **m** | open |
+

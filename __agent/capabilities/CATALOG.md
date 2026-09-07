@@ -21,6 +21,12 @@
 
 ---
 
+> 🔴 **A `✅` NEM azt jelenti, hogy „megépült" — azt jelenti, hogy „a user JÓVÁHAGYTA".**
+> Egy elkészült, letesztelt, élőben igazolt képesség is **`⏳`** marad, amíg a user nem szól.
+> *(Mérve 2026-09-07: négy sort magamtól állítottam `✅`-re — hiba volt, visszaállítva.)*
+
+---
+
 ## 0️⃣ BASELINE — nem képesség, hanem alapfelszerelés
 
 ⛔ Ezek **nem** kerülnek jóváhagyás alá, és sosem „kapcsolhatók ki".
@@ -75,9 +81,9 @@ mit visz magával) — lásd `current/open-questions.md` I) szekció. **Ezeket n
 |---|---|---|---|---|
 | C-40 | **Nyugta-követés** | 📝 **javaslat** | A fontos üzenet „nyugtázandó"; ha nincs rá reakció, ismétlés/eszkaláció | ❓ tervezendő |
 | C-41 | **Postaláda** *(perzisztens „neked szánt info")* | 📝 **javaslat** | Ami nem üzenet, az nem tud elúszni — bármikor átnézhető lista | ❓ tervezendő |
-| C-42 | **Küldés utáni visszaolvasás** | ✅ **KÉSZ** (2026-09-07) | Küldés után visszaolvassa a csatornát és **hossz-egyezést** ellenőriz. ⭐ Ez fogta meg a 09-07-i csonkolási incidenst | `INCIDENT-2026-09-07-…` |
-| C-43 | **`ma comm say --file`** | ✅ **KÉSZ** (2026-09-07) | A szöveg fájlból jön ⇒ a shell/burkoló soha nem látja, nem tudja elvágni | `cli/src/commands/comm.command.ts` |
-| C-44 | **Konzol-log sor** | 📝 **javaslat** | Egysoros, folyamatos állapot-kiírás a konzolra: ránézésre látszik, mi történik a rendszerben. Owner-kérés 2026-09-07 | ❓ tervezendő |
+| C-42 | **Küldés utáni visszaolvasás** | ⏳ **megépült — jóváhagyásra vár** (2026-09-07) | Küldés után visszaolvassa a csatornát és **hossz-egyezést** ellenőriz. ⭐ Ez fogta meg a 09-07-i csonkolási incidenst | `INCIDENT-2026-09-07-…` |
+| C-43 | **`ma comm say --file`** | ⏳ **megépült — jóváhagyásra vár** (2026-09-07) | A szöveg fájlból jön ⇒ a shell/burkoló soha nem látja, nem tudja elvágni | `cli/src/commands/comm.command.ts` |
+| C-44 | **Konzol-log sor** | ⏳ **megépült — jóváhagyásra vár** (2026-09-07) | Percenként EGY sor a szerver konzolján: óra · futásidő · Discord-figyelő · jelenlét · várakozó köteg · utolsó kimenő. ⭐ A **valóságot** méri (fájl-frissesség), nem konfigurációs jelzőbitet; baj esetén 🔴/⚠️ jelenik meg a sorban. 14 teszt | `server/src/_services/system-pulse.service.ts` |
 
 ⚠️ Mindkettő `❓ NYITOTT` kérdésekre vár — `open-questions.md` **K)**.
 Elv: `current/principles/message-delivery-reliability.md`.
@@ -103,7 +109,7 @@ Elv: `current/principles/message-delivery-reliability.md`.
 
 | # | Képesség | Státusz | Megjegyzés |
 |---|---|---|---|
-| C-33 | **Voice üzenet olvasása** (STT) | 📝 **javaslat** | Hangüzenet → **saját STT (FDP AI**, fut a gépen) → ⭐ **TÜKÖR-ÜZENET** vissza (lássa, jól értettem-e) → utána válasz + feldolgozás |
+| C-33 | **Voice üzenet olvasása** (STT) | ⏳ **magja megépült + élőben igazolt — jóváhagyásra vár** (2026-09-07) | Hangüzenet → **saját STT (FDP AI**, fut a gépen) → ⭐ **TÜKÖR-ÜZENET** vissza (lássa, jól értettem-e) → utána válasz + feldolgozás. Élő oda-vissza próba: ismert mondat **szóról szóra** visszajött. ⏳ Hátra: a Discord-hangüzenet **letöltése** és bekötése a figyelőbe | `cli/src/stt/` · `__documentations/dev/FDP_AI_STT.md` |
 | C-34 | **Beszélgetés voice channelen** | 📝 **javaslat** | ⭐ **VAN KÉSZ FORRÁS**: a régi `ccap/discord-bot` `_modules/voice/` (37 fájl, ~6681 sor) — belépés → hangmagasság/hangerő alapú beszéd-detektálás → STT → OUTOFCONTEXT/NOISE szűrés → **hang-alapú állapot-visszajelzés**. Kilépési pont: `reviewResult()`. Doksi: `__documentations/dev/VOICE_CONTROL_REFERENCE.md` |
 | C-35 | **STT/TTS kiemelese a regi CCAP-bol** | 📝 **javaslat** | ⚠️ **UJRAGONDOLANDO**: a TTS **mar fut** az FDP AI-ban (`/api/v1/audio/speech`) — lehet, hogy nem kiemelni kell, hanem **hasznalni** |
 

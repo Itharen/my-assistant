@@ -99,14 +99,14 @@ export class PresenceMonitor_Service {
   }
 }
 
-interface PresenceMonitorPaths {
+export interface PresenceMonitorPaths {
   monitorDir: string;
   loggerScript: string;
   dataDir: string;
 }
 
 /** A figyelő szkript és az adatai. A `_services` mindkét elrendezésben három szint mély. */
-function resolvePresencePaths(): PresenceMonitorPaths {
+export function resolvePresencePaths(): PresenceMonitorPaths {
   const here: string = path.dirname(fileURLToPath(import.meta.url));
   const projectRoot: string = path.resolve(here, '..', '..', '..');
   const monitorDir: string = path.join(projectRoot, 'server', 'activity-monitor');

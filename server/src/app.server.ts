@@ -49,6 +49,7 @@ import { Health_Controller } from './_routes/health/health.controller';
 import { VersionBroadcast_SocketServerService } from './_services/socket-services/version-broadcast.socket-server-service';
 import { DiscordListener_Service } from './_services/discord-listener.service';
 import { PresenceMonitor_Service } from './_services/presence-monitor.service';
+import { SystemPulse_Service } from './_services/system-pulse.service';
 import { WeatherPoll_Service } from './_services/weather-poll.service';
 
 /** my-assistant App bootstrap. DyNTS_AppExtended-t terjeszti — Mongo + routes + static client + sockets. */
@@ -219,6 +220,7 @@ export class App extends DyNTS_AppExtended {
       WeatherPoll_Service.getInstance(),
       DiscordListener_Service.getInstance(),
       PresenceMonitor_Service.getInstance(),
+      SystemPulse_Service.getInstance(),
     ];
   }
 

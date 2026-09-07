@@ -303,6 +303,41 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
 - Folyamatos dokumentáció: minden új Interfood-kérés, működési tapasztalat és döntés ugyanabban a change-setben
   kerüljön az összes érintett helyre; kötelező mátrix: `current/principles/interfood-continuous-documentation.md`.
 
+### Konzol-pulzus — mi történik a rendszerben (`SystemPulse_Service`)
+
+- **Nem parancs, hanem a szerver folyamatos kimenete.** Az LDP terminálablakában **percenként
+  EGY sor** jelenik meg. Valódi, **rögzített** sor a futó rendszerből *(2026-09-07 09:20)*:
+  ```
+  🫀 09:20 · fut 1p │ 💬 Discord ✅ Honnie#6234 (50mp, 0 üz) │ 🏠 jelenlét ✅ tétlen (45mp) │ 📬 ⚠️ 3 üzenet vár │ ↩ kimenő 9p
+  ```
+  ⭐ **Ez a konkrét sor mutatta meg, hogy 3 üzenet vár** — a `📬 ⚠️` rész pontosan azt a
+  dolgát végezte, amiért a sor létezik.
+- ⭐ **Ránézésre olvasható:** ha valami baj van, 🔴 vagy ⚠️ jelenik meg **a sorban** —
+  `🔴 HALOTT (12p)` · `🔴 nincs életjel` · `🔴 ELAVULT` · `⚠️ 2 üzenet vár`.
+- 🔴 **A valóságot méri, nem a konfigurációt:** az életjel- és minta-fájlok FRISSESSÉGÉBŐL
+  dolgozik. ⚠️ Ne keverd az LDP `status.json`-jával: ott a `serverRunning: false` az LDP belső
+  „restart pending" jelzése, **nem** a szerver valós állapota.
+- **Nem helyettesíti a `ma comm doctor`-t:** a pulzus nyers tényeket mutat (hány üzenet vár,
+  mikor ment ki az utolsó); az **értékelés** — például a válasz-kötelezettség — a `doctor` dolga.
+- Hol: `server/src/_services/system-pulse.service.ts`. A sor formázása tiszta függvény
+  (`composePulseLine`), 14 teszttel.
+
+### Beszédfelismerés — `cli/src/stt/` (FDP AI, helyi)
+
+- **A saját, HELYI szolgáltatásunk** (`http://127.0.0.1:38321`), ⛔ nem fizetős.
+  A pontos, **mért** szerződés: `__documentations/dev/FDP_AI_STT.md`.
+- **`transcribeAudio()`** — nyers audio-bájtok POST-tal, `Content-Type` + `Filename` fejléccel.
+  ⛔ **NEM multipart.** Hibát **nem dob**: leíró eredményt ad `remedy`-vel.
+- ⭐ **`composeMirrorMessage()` — a TÜKÖR-ÜZENET kötelező.** Egy félrehallott hangüzenetre adott
+  magabiztos válasz **rosszabb, mint a semmi**; a tükör az egyetlen pont, ahol az owner **még a
+  cselekvés előtt** elkaphatja a félreértést.
+- **`inspectTranscript()` — hallucináció-őr.** Whisper csendre/zajra ismert felirat-töredékeket
+  ad vissza (`Продолжение следует…`, `Thanks for watching!`), és a válasz `status: processed`.
+  Az őr **soha nem dob el szöveget, csak MEGJELÖL** — a döntés a useré.
+- 🔴 **Időtúllépésnél ELŐSZÖR A RENDSZER-RAM-OT nézd, ne a GPU-t.** Mérve 2026-09-07: 93%-os
+  RAM mellett 5 perc alatt sem futott le; közvetlenül utána ugyanaz a fájl **77,6 mp**.
+  Owner: *„90% usage felett várakozik"*.
+
 ### Kommunikációs csatorna — CCAP-híd, hangszórós kapu, tick
 
 - **Ki vagyok a CCAP-ban:** `ma ccap whoami --pretty` — a `CLAUDE_CODE_SESSION_ID`-t párosítja a

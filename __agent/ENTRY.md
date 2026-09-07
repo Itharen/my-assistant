@@ -211,6 +211,21 @@ belső „restart pending" jelzése — **nem** azt jelenti, hogy a szerver nem 
 ⚠️ **Fél-frissítés = hiba.** A mért hibaminta: a `CONTINUATION.md` frissül, a hyperplan
 STATUS-blokkja nem — és a következő session **újra elvégzi a kész munkát**.
 
+🔴 **EZ MÁR NÉGYSZER MEGTÖRTÉNT** *(hyperplan STATUS ×3, `STATUS.md` ×1 — legutóbb 2026-09-07,
+amikor a blokk még `345/345 + 28/28`-at állított a valós `366/366 + 42/42` helyett)*.
+Ezért a lista **itt** áll, a belépési pontban — nem egy mélyebb fájlban, amit a kompaktálás
+kiejt. **Munkacsomag után MIND A NÉGY, kipipálva:**
+
+| # | Fájl | Mit kell benne frissíteni |
+|---|---|---|
+| 1 | `__agent/CONTINUATION.md` | tételes státusz + a következő konkrét lépés |
+| 2 | `__agent/plans/<terv>/hyperplan.plan.md` | ⭐ a **STATUS-blokk**: teszt-számok, dátum, review-kör |
+| 3 | `__agent/STATUS.md` | a projekt-szintű pillanatkép |
+| 4 | az érintett **dokumentáció** | ⚠️ a **CÍMEK és a hivatkozó helyek** is, nem csak a bekezdés |
+
+⚠️ **Ami elavult, de nem törölhető, azt BANNEREZD** (`core-stale-doc-marking`) — a néma
+elavulás rosszabb, mint a látható elavulás.
+
 ---
 
 ## 6. AMI SOSEM MARADHAT EL

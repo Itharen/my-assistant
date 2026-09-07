@@ -1,5 +1,47 @@
 # STATUS
 
+## 🎙️🖥️ Az STT élőben igazolva + a konzol-pulzus (C-33 / C-44) — 2026-09-07 09:45
+
+**Teszt-állás: CLI 366/366 · szerver 42/42 · típusellenőrzés zöld · lint 0 hiba.**
+
+### C-44 — konzol-pulzus (`SystemPulse_Service`), ÉLŐBEN FUT
+
+```
+🫀 09:20 · fut 1p │ 💬 Discord ✅ Honnie#6234 (50mp, 0 üz) │ 🏠 jelenlét ✅ tétlen (45mp) │ 📬 ⚠️ 3 üzenet vár │ ↩ kimenő 9p
+```
+
+⭐ **Már az első percben dolgozott:** ez a sor jelezte, hogy **3 üzenet vár** — enélkül
+később vettem volna észre őket. 14 teszt; a hiba-ágakra (halott figyelő, elavult mérés,
+várakozó köteg) legalább annyi jut, mint a boldog útra.
+
+### C-33 — az STT élő, végponttól végpontig próbája ✅ SIKERES
+
+Oda-vissza kör: SAPI-val generált **ismert mondat** → saját kliens → FDP AI → az átirat
+**szóról szóra** egyezett. `status: processed`, 77,6 mp, a hallucináció-őr helyesen nem
+jelölte gyanúsnak. A **timeout-ág is igazolt** (5 perc után leíró eredmény, a tükör nem
+találgat).
+⏳ **Hátra:** a Discord-hangüzenet **letöltése** és bekötése a figyelőbe.
+
+### ⛔ ÚJ HARD RULE — az FDP AI-hoz nem nyúlunk
+
+> **Owner:** *„Ne indítsd újra az FDP AI szolgáltatást! Ahhoz soha ne nyúlj!"*
+
+`current/principles/fdp-ai-never-restart.md` — olvasás és használat szabad, minden
+állapot-változtatás tilos. *(Nem indítottam újra; a „beragadt" diagnózisom hibás volt —
+a valódi ok a **93%-os rendszer-RAM** volt, nem zárolás.)*
+
+### 🔴 Ismert, NEM általam okozott hiba
+
+Az LDP **`startup-test`** lépése mindig elbukik: `'tsx' is not recognized` — a lépés bare
+`tsx`-et hív, ami nincs a PATH-on *(a csomag megvan)*. `fatal:false`, tehát nem blokkol, de
+**állandóan piros**. ⚠️ Konfigot magamtól nem módosítok → `Q-2026-09-07-M1`.
+
+⏳ **Owner-műveletre vár:** a nyitott kérdések **H) I) J) K) L) M)** szekciói — kiemelten a
+**képesség-jóváhagyások** (J1/J2), az **időbeosztás preferenciái** (I1–I9), és **M1** (a
+`startup-test` javítható-e).
+
+---
+
 ## 🎉 EGY belépési pont: `dc ldp` — alatta minden figyelő él — 2026-09-07
 
 **Owner-elv (új):** *„amúgy is ez kéne legyen az alap/default LDP működés… Azt a jelenlétfigyelőt

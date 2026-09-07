@@ -18,8 +18,11 @@ export const DEFAULT_CONFIDENCE_THRESHOLD: number = 0.55;
 /**
  * Ennyit várunk egy felismerésre.
  *
- * ⚠️ Mérve: bemelegedett modellel ~2 s. De az **első** hívás betölti a modellt a GPU-ra,
- * ami sokkal tovább tart — ezért a korlát nagyvonalú.
+ * ⚠️ A futásidő ERŐSEN INGADOZIK, és ezt MÉRTÜK, nem becsültük:
+ *  - hideg modell + **93%-os rendszer-RAM** mellett 5 percen túl sem futott le (2026-09-07);
+ *  - ugyanaz a fájl közvetlenül utána **77,6 mp** alatt, helyes átirattal;
+ *  - terheletlen, bemelegedett modellel ~2 s.
+ * Ezért a korlát nagyvonalú — inkább várjunk, mint hamisan „nem sikerült"-et mondjunk.
  */
 export const STT_TIMEOUT_MS: number = 5 * 60_000;
 
@@ -103,7 +106,9 @@ export async function transcribeAudio(params: {
         ? `A felismerés ${STT_TIMEOUT_MS / 60_000} perc után sem fejeződött be.`
         : `A felismerés nem futott le: ${err instanceof Error ? err.message : String(err)}`,
       remedy: aborted
-        ? 'Az első hívás betölti a modellt a GPU-ra — próbáld újra, a második gyors lesz.'
+        ? 'ELŐSZÖR A RENDSZER-RAM-OT NÉZD, ne a GPU-t: 90% fölött a szolgáltatás várakozik '
+          + '(owner + mérés, 2026-09-07: 93%-nál 5 perc timeout, közvetlenül utána 77,6 mp). '
+          + 'Zárj memóriaéhes folyamatot, vagy próbáld újra — a bemelegedett modell gyors.'
         : `Fut-e az FDP AI? GET ${FDP_AI_BASE_URL}/api/health`,
       elapsedMs: Date.now() - startedAt,
       suspicious: true,

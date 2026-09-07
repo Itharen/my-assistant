@@ -9,11 +9,12 @@ alaposan tervezd meg mindent, ami ehhez szükséges. Készíts egy Hyperplant"*
 
 ```yaml
 state: live-verified
-overall_progress: "EGY belepesi pont: dc ldp -> szerver -> Discord-figyelo + Jelenlet-figyelo. Mindketto felugyelve (SupervisedChild). CLI 345/345 + szerver 28/28 zold."
-blocking: "NINCS technikai blokkolo. Az LDP fut, az interfood-utkozes osszevonassal feloldva, a jelenlet-figyelot a szerver viszi. Marad: 7 nyitott kerdes."
+overall_progress: "EGY belepesi pont: dc ldp -> szerver -> Discord-figyelo + Jelenlet-figyelo + Konzol-pulzus. Mindharom felugyelve/bekotve. CLI 366/366 + szerver 42/42 zold."
+blocking: "NINCS technikai blokkolo. Marad: nyitott kerdesek (H, I, J, K, L, M)."
 architecture_decision: "SAJÁT bot (owner, 2026-09-06) + a CCAP hivatalos prompt-végpontja a bejuttatásra, SAJÁT oldali kötegeléssel (1 futás, nem N)"
 review_loop: "MINDKÉT szakaszra TELJESÜLT — 1. szakasz 8 kör/11 javítás, figyelő 7 kör/10 javítás; mindkettőnél az utolsó KETTŐ tiszta."
-last_updated: 2026-09-06
+last_updated: 2026-09-07
+outside_this_plan: "A 2026-09-07-i C-33 (STT) es C-44 (konzol-pulzus) NEM ennek a tervnek a resze - allapotuk: __agent/CONTINUATION.md + __agent/capabilities/CATALOG.md. Itt csak a teszt-szamok es a datum frissultek."
 ```
 
 | Master-plan | Cím | Állapot |

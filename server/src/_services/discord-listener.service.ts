@@ -111,7 +111,7 @@ function resolveListenerPaths(): DiscordListenerPaths {
  * Olvasási hiba esetén „nem fut"-ot mondunk — ez az ÓVATOS irány.
  */
 function isListenerAliveElsewhere(): boolean {
-  const file: string = path.join(homedir(), '.config', 'my-assistant', 'discord', 'listener-heartbeat.json');
+  const file: string = resolveListenerHeartbeatFile();
 
   try {
     if (!existsSync(file)) return false;
@@ -129,6 +129,17 @@ function isListenerAliveElsewhere(): boolean {
   } catch {
     return false;
   }
+}
+
+/**
+ * A Discord-figyelő ÉLETJEL-fájlja.
+ *
+ * SSOT: az útvonalat a szerveren belül CSAK itt képezzük — a `system-pulse.service.ts` is
+ * innen kéri. A CLI oldali párja: `cli/src/discord/discord.heartbeat.ts` →
+ * `resolveHeartbeatPath()`.
+ */
+export function resolveListenerHeartbeatFile(): string {
+  return path.join(homedir(), '.config', 'my-assistant', 'discord', 'listener-heartbeat.json');
 }
 
 /** Él-e még az adott folyamat? A `kill(pid, 0)` nem küld jelet, csak létezést kérdez. */

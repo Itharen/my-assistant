@@ -4,6 +4,51 @@
 
 ---
 
+## STT elo igazolas + a konzol-pulzus (C-33 / C-44) — 2026-09-07
+
+> **Owner:** *„Majd szeretnem, hogy egy sor logot is tegyunk a My Assistant projektbe, hogy amikor
+> ranezek a konzolra, az is arulkodjon nekem arrol, hogy mi minden tortenik a rendszerben."*
+
+### C-44 — `SystemPulse_Service` (uj)
+
+- **Percenkent EGY sor** a szerver konzoljan: ora - futasido - Discord-figyelo - jelenlet -
+  varakozo koteg - utolso kimeno uzenet.
+- 🔴 **A VALOSAGOT meri, nem a konfiguraciot:** az eletjel- es minta-fajlok FRISSESSEGEBOL dolgozik.
+  Nem azt kerdezi, „be van-e allitva", hanem azt, hogy „EL-E MOST". Baj eseten 🔴 / ⚠️ jelenik meg
+  a sorban, tehat egy pillantas eleg.
+- **Miert kellett:** a szerver konzolja addig EGYETLEN sort irt (indulas), utana nema volt — es a
+  nemasag meg a „minden rendben" kivulrol megkulonboztethetetlen. Pontosan ez tartotta a
+  jelenlet-figyelot 112 napig halottan.
+- Nem duplikal uzleti logikat: a valasz-kotelezettseg megitelese tovabbra is a `ma comm doctor`
+  dolga (SSOT). A pulzus csak nyers tenyeket mutat.
+- Az utvonal-feloldok **exportalva** lettek (`resolveListenerHeartbeatFile`, `resolvePresencePaths`)
+  ahelyett, hogy harmadszor is bemasoltuk volna oket.
+- **14 uj teszt** — a hiba-agakra (halott figyelo, elavult meres, varakozo koteg) legalabb annyi
+  jut, mint a boldog utra. Szerver: **42/42 zold**.
+
+### C-33 — az STT ELO, vegponttol vegpontig probaja SIKERES
+
+- **Modszer:** a Windows SAPI-val generalt **ismert szovegu** WAV -> sajat kliens -> FDP AI ->
+  az atirat **szorol szora** osszevetve az eredetivel.
+- `"Please check when the next train departs to Budapest."` -> ugyanez jott vissza (a zaro pont
+  nelkul), `status: processed`, 77,6 mp. A hallucinacio-or helyesen NEM jelolte gyanusnak.
+- A **timeout-ag is igazolt**: 5 perc utan leiro eredmenyt adott, es a tukor-uzenet helyesen
+  megtagadta a talalgatast.
+
+### 🔴 Egy hibas diagnozisom javitva — a RAM, nem a GPU
+
+> **Owner:** *„Az FDP AI vegpontja lehet lassu, amikor nagy a RAM usage (90% usage felett, varakozik)"*
+
+- **Megmerve:** RAM **93%** (118/127 GB) -> ugyanaz a fajl 5 perc alatt sem futott le; kozvetlenul
+  utana 77,6 mp; terheletlenul ~2 s.
+- Korabban a GPU-t mertem (5% kihasznaltsag) es ebbol arra jutottam, hogy „beragadt zar" — es
+  majdnem a szolgaltatas ujrainditasat kertem. **A rendszer-RAM-ot nem mertem meg.**
+- ⭐ **Tanulsag:** ha egy alrendszer „var", ne az elsokent eszedbe juto eroforrast merd meg, hanem
+  MINDET, mielott kovetkeztetsz. Bekerult a kliens `remedy` szovegebe is, hogy a hibauzenet maga
+  vezesse ra a kovetkezo olvasot.
+
+---
+
 ## Az LDP a default futtatasi mod + a jelenlet-figyelo is a szerver ala kerult — 2026-09-06
 
 > **Owner:** *"btw amugy is ez kene legyen az alap/default LDP mukodes... Azt a jelenletfigyelot is

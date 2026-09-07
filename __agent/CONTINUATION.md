@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 06:35
+**Utoljára frissítve:** 2026-09-07 09:45
 
 ---
 
@@ -14,9 +14,9 @@
 active_plan: __agent/plans/discord-two-way-hyperplan/hyperplan.plan.md
 state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
-tests: "CLI 345/345 + szerver 28/28 zold; comm doctor 10 zold / 0 hibas (2026-09-07 06:26)"
-owner_available: false        # "most nem vagyok a gépnél… majd ha hazaértem"
-blocked_on_owner: "Nyitott kerdesek H/I/J/K/L - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak)."
+tests: "CLI 366/366 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
+owner_available: false        # AI Summiton (elindult 07:45); Discordon ir
+blocked_on_owner: "Nyitott kerdesek H/I/J/K/L/M - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak), M1 (az LDP startup-test lepese javithato-e), M3 (az idegen interfood-osszefesules commitolhato-e)."
 ```
 
 **Owner-utasítás (2026-09-06):** *„kezd el ennek a Hyperplan-nek a lefejlesztését, és amíg a
@@ -45,6 +45,34 @@ végére nem érsz, addig tartsd magad mozgásban a Schedule Wake-up-pal"*.
 | MP-6 csatorna-diagnosztika | ✅ **KÉSZ, élesben lefuttatva, 9/9 teszt zöld** (2026-09-06) | nem |
 | MP-7 státusz-kivonat | ✅ **KÉSZ, élő organizer-adaton**, 12/12 teszt zöld | nem |
 | MP-7 a tick maga (Daytime/Nighttime) | ✅ **KÉSZ száraz futásig**, élő adaton, 10/10 teszt zöld | nem |
+
+---
+
+## ✅ 2026-09-07 09:00-09:45 — ELVEGZETT MUNKA
+
+| Mit | Allapot |
+|---|---|
+| **C-33 STT elo, vegponttol vegpontig proba** | ✅ **SIKERES.** SAPI-val generalt ISMERT mondat -> sajat kliens -> FDP AI -> az atirat SZOROL SZORA egyezett (77,6 mp, `status: processed`). A hallucinacio-or helyesen NEM jelolte gyanusnak. A **timeout-ag is igazolt** (5 perc utan leiro eredmeny, a tukor nem talalgat). |
+| **C-44 konzol-pulzus** | ✅ **MEGEPULT ES ELOBEN FUT.** `server/src/_services/system-pulse.service.ts`, 14 teszt. Mar az elso percben dolgozott: o jelezte, hogy 3 uzenet var. |
+| **⛔ UJ HARD RULE** | `current/principles/fdp-ai-never-restart.md` — owner: *„Ne inditsd ujra az FDP AI szolgaltatast! Ahhoz soha ne nyulj!"* Regisztralva a CLAUDE.md-ben, az AGENTS.md szinkronizalva. |
+| **Doksi-writeback** | `FDP_AI_STT.md` §3 ujrairva (mert szerzodes + RAM-fugges) · `CHANGELOG` uj entry · `SKILLS.md` ket uj szekcio · `CATALOG.md` · `STATUS.md` · `open-questions.md` **M)** szekcio |
+| **Review-korok** | 1. kor (korrektseg/edge): 3 finding, javitva · 2. kor (biztonsag/regresszio): **NULLA** · 3. kor (doksi vs. valosag): 1 finding (a SKILLS-ben KITALALT pelda-sor allt, valodira cserelve) · 4. kor (allapot-fajlok): 1 finding (a hyperplan STATUS-blokkja **negyedszer** elavult) · 5. kor: **NULLA**. |
+
+### 🔴 KET SAJAT HIBA, javitva
+
+1. **A CATALOG-ban magamtol allitottam 4 sort `✅`-re.** A `✅` a katalogusban **„a user
+   jovahagyta"**-t jelent, nem azt, hogy „megepult". Mind a negy visszaallitva `⏳`-ra, es a
+   szabaly kiirva a statusz-tablazat ala, hogy legkozelebb ne tevesszem el.
+2. **Hibas diagnozis:** a GPU-t mertem (5%) es abbol „beragadt zarra" kovetkeztettem —
+   majdnem a szolgaltatas ujrainditasat kertem. A valodi ok a **93%-os rendszer-RAM** volt
+   (owner mondta meg, en megmertem). ⭐ Tanulsag: ha egy alrendszer „var", ne az elsokent
+   eszedbe juto eroforrast merd meg, hanem MINDET, mielott kovetkeztetsz.
+
+### 🔴 Ismert hiba, NEM altalam okozva
+
+Az LDP **`startup-test`** lepese mindig elbukik: `'tsx' is not recognized` (bare `tsx` a
+PATH-on kivul; a csomag megvan). `fatal:false`, nem blokkol, de allando piros.
+⚠️ Konfigot magamtol nem modositok -> `Q-2026-09-07-M1`.
 
 ---
 
@@ -273,8 +301,11 @@ két különböző megvalósítás egymás alatt. Emiatt a **teljes CLI-build bu
 
 ## 🔴 VISSZATÉRŐ SAJÁT HIBÁM — a fél-frissítés
 
-**Háromszor** fordult elő ugyanaz: befejezek egy munkacsomagot, frissítem az egyik állapot-fájlt,
-és a többi **némán elavul**. Mérve: a hyperplan STATUS-blokkja **kétszer**, a `STATUS.md` **egyszer**.
+**NÉGYSZER** fordult elő ugyanaz: befejezek egy munkacsomagot, frissítem az egyik állapot-fájlt,
+és a többi **némán elavul**. Mérve: a hyperplan STATUS-blokkja **háromszor**, a `STATUS.md` **egyszer**.
+A negyedik: 2026-09-07 — a hyperplan még `345/345 + 28/28`-at állított a valós `366/366 + 42/42` helyett.
+⇒ Az ellenőrzőlista ezért **átkerült az `__agent/ENTRY.md` §5-be** is: ott minden körben elolvasom,
+itt viszont csak akkor, ha épp idáig görgetek.
 
 ⚠️ **Miért veszélyes:** az elavult állapot-fájl **hitelesnek látszik**. Az ébresztő-prompt épp
 ezekre mutat — egy friss session elhiheti, hogy semmi nem készült el, és **újra megcsinálja**.
@@ -326,11 +357,11 @@ ezekre mutat — egy friss session elhiheti, hogy semmi nem készült el, és **
 
 | # | Feladat | Miért ebben a sorrendben |
 |---|---|---|
-| 1 | **C-43 — `ma comm say --file`** | ez a mai csonkolási incidens végleges javítása; kicsi, és utána minden más küldés biztonságos |
-| 2 | **C-42 — küldés utáni visszaolvasás** | a `--file`-lal együtt egy kör; a Python-megkerülés már így működik, csak át kell emelni a CLI-be |
-| 3 | **C-33 — STT-feldolgozas** *(owner kifejezett kerese)* | ✅ **A VEGPONT MEGVAN** (merve 07:19): `POST http://127.0.0.1:38321/v1/audio/transcriptions`, OpenAI-kompatibilis; keszenlet `GET /api/ready`. Doksi: `__documentations/dev/FDP_AI_STT.md`. Menet: hanguzenet letoltes → STT → **TUKOR-UZENET** → valasz. ⚠️ A keres pontos formatumat meg merni kell. |
-| 4 | **C-44 — konzol-log sor** | owner-kérés: ránézésre látszódjon, mi történik a rendszerben |
-| 5 | **L1 — címke-alapú session-feloldás** | a több-session működés feltétele |
+| ~~1~~ | ✅ **KESZ** — C-43 `ma comm say --file` | ez a mai csonkolási incidens végleges javítása; kicsi, és utána minden más küldés biztonságos |
+| ~~2~~ | ✅ **KESZ** — C-42 kuldes utani visszaolvasas | a `--file`-lal együtt egy kör; a Python-megkerülés már így működik, csak át kell emelni a CLI-be |
+| ~~3~~ | ✅ **KESZ + ELOBEN IGAZOLT** — C-33 STT | ✅ **A SZERZODES VEGIGMERVE** (2026-09-07 09:30): `POST http://127.0.0.1:38321/api/recognition?confidence_threshold=0.55&skip_classification=1`, **NYERS bajtok** + `Content-Type` + `Filename` fejlec — ⛔ NEM multipart. Elo oda-vissza proba: ismert mondat **szorol szora** vissza (77,6 mp). Doksi: `__documentations/dev/FDP_AI_STT.md` §3. ⏳ **Hatra: a Discord-hanguzenet LETOLTESE** es bekotese a figyelobe. |
+| ~~4~~ | ✅ **KESZ + ELOBEN FUT** — C-44 konzol-pulzus | owner-kérés: ránézésre látszódjon, mi történik a rendszerben |
+| **5** | ⏭️ **KOVETKEZO** — L1 cimke-alapu session-feloldas | a több-session működés feltétele |
 
 ⚠️ **Minden fejlesztés után KÖTELEZŐ** a `post-development-verification.md` négy ellenőrzése.
 📌 **Az LDP eredményét** a `logs/live-dev-pipeline/status.json` + `output.log` adja.
@@ -339,5 +370,5 @@ ezekre mutat — egy friss session elhiheti, hogy semmi nem készült el, és **
 
 | Feladat | Forrás / állapot |
 |---|---|
-| **Voice control átemelése** *(nagy!)* | ✅ forrás megtalálva és MÉRVE: `ccap` (a RÉGI) `/discord-bot/src/_modules/voice/` — 37 fájl, ~6681 sor. Kilépési pont: `cv-result-review.control-service.ts` → `reviewResult()`. ⛔ NEM a `ccap-revisioned`. ⛔ ElevenLabs kihagyandó (fizetős) → a saját FDP AI (38321). Doksi: `__documentations/dev/VOICE_CONTROL_REFERENCE.md`. ⚠️ Külön tervet igényel. Organizer: `org:task:6a9e4f0a482367e7f641e628` |
+| **Voice control átemelése** *(nagy!)* | ✅ forrás megtalálva és MÉRVE: `ccap` (a RÉGI) `/discord-bot/src/_modules/voice/` — 37 fájl, ~6681 sor. Kilépési pont: `cv-result-review.control-service.ts` → `reviewResult()`. ⛔ NEM a `ccap-revisioned`. ⚠️ **ElevenLabs: NEM kihagyandó** — owner-korrekció 2026-09-07: a TTS-hez kelleni fog, csak most nincs rajta keret és a kulcs sem jó. Az elsődleges út a saját FDP AI (38321); ⛔ a kulcshoz nem nyúlunk. Doksi: `__documentations/dev/VOICE_CONTROL_REFERENCE.md`. ⚠️ Külön tervet igényel. Organizer: `org:task:6a9e4f0a482367e7f641e628` |
 | **GoPrint — póló** | emlékeztető hazafelé (ma vagy holnap). Organizer: `org:task:6a9e4f09482367e7f641e621` |

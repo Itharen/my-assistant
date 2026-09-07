@@ -63,16 +63,68 @@ generálás és az STT versenyezne a memóriáért.
 
 ---
 
-## 3. Amit MÉG NEM tudok
+## 3. A MÉRT szerződés — ÉLŐ PRÓBÁVAL IGAZOLVA (2026-09-07 09:30)
 
-⛔ Nem tippelem meg, a megépítés első lépésében mérem:
+> Ez a szakasz korábban „Amit MÉG NEM tudok" volt. **Már nem tippelés: végigmértük.**
 
-- a `POST /v1/audio/transcriptions` **pontos kérés-formátuma** *(multipart mezőnév, `model`
-  paraméter, nyelv-megadás)*
-- kell-e **hitelesítés** *(a health nem kért)*
-- a **válasz alakja** *(sima szöveg? szegmensek? konfidencia?)*
-- az **aszinkron** út — a transzkripció is task-alapú-e, mint a generálás
-- **magyar nyelv** minősége/beállítása
+### 3.1 A kérés pontos alakja
+
+```
+POST http://127.0.0.1:38321/api/recognition
+     ?confidence_threshold=0.55&skip_classification=1
+Headers:  Content-Type: audio/<típus>      (pl. audio/wav, audio/webm)
+          Filename: <fájlnév>
+Body:     NYERS audio-bájtok  —  ⛔ NEM multipart
+```
+
+⚠️ **Hitelesítés nincs** — a loopback-porton nyitott.
+
+### 3.2 A válasz alakja
+
+```json
+{ "status": "processed", "result": { "text": "..." }, "file_path": "...", "audio_category": "..." }
+```
+
+⭐ A kliens **mindkét alakot** kezeli (`result.text` ÉS `text`), mert a szolgáltatás verziói eltérhetnek.
+
+### 3.3 ⭐ AZ ÉLŐ, VÉGPONTTÓL VÉGPONTIG PRÓBA — SIKERES
+
+**Módszer (oda-vissza kör, hogy legyen mihez hasonlítani):** a Windows beépített SAPI
+beszédszintézisével generáltunk egy **ismert szövegű** WAV-ot, azt küldtük át a saját
+kliensünkön, és az átiratot **szó szerint** összevetettük az eredetivel.
+
+```
+bemenet (SAPI TTS):  "Please check when the next train departs to Budapest."
+átirat (FDP AI):     "Please check when the next train departs to Budapest"
+                     → SZÓRÓL SZÓRA egyezik (csak a záró pont hiányzik)
+státusz: processed · 77,6 mp · a hallucináció-őr helyesen NEM jelölte gyanúsnak
+```
+
+⇒ **A teljes lánc működik:** kliens → FDP AI → átirat → őr → tükör-üzenet.
+
+### 3.4 🔴 A FUTÁSIDŐ A RENDSZER-RAM-TÓL FÜGG — ez a legfontosabb üzemeltetési tény
+
+> **Owner (2026-09-07 09:10), szó szerint:** *„Az FDP AI végpontja lehet lassú, amikor nagy a
+> RAM usage (90% usage felett, várakozik)"*
+
+**Megmérve, ugyanazon a gépen, ugyanazzal a fájllal:**
+
+| Állapot | Eredmény |
+|---|---|
+| RAM **93%** (118/127 GB), hideg modell | ⏱ **5 perc** múlva sem futott le → időtúllépés |
+| RAM 93%, közvetlenül utána (bemelegedett) | ✅ **77,6 mp**, helyes átirattal |
+| terheletlen, bemelegedett | ~2 s |
+
+🔴 **A SAJÁT HIBÁM, amit ez javított:** a GPU-t mértem (5% kihasználtság, 1,9/97,9 GB) és
+ebből azt következtettem, hogy *„nem terhelés, hanem beragadt zár"* — és majdnem a
+szolgáltatás újraindítását kértem. **A rendszer-RAM-ot nem mértem meg.**
+
+⭐ **Általánosítható tanulság:** *ha egy alrendszer „vár", NE az elsőként eszedbe jutó erőforrást
+mérd meg, hanem MINDET, mielőtt következtetsz.* Egy zöld GPU nem zárja ki a memória-szűkületet.
+
+⇒ **Időtúllépéskor a sorrend: 1) rendszer-RAM · 2) `/api/ready` · 3) `/api/health`.**
+Ez bekerült a kliens `remedy` szövegébe is (`cli/src/stt/stt.client.ts`), hogy a hibaüzenet
+maga vezesse rá a következő olvasót.
 
 ---
 
