@@ -555,3 +555,22 @@ származik — a szűkítés itt **egybeesik** a hasznossággal, nem ütközik v
 *(„Nem is tudom...")*, tehát assistant-döntés, a fenti korlátokon **belül**. Illetve hogy
 mekkora sugár számít „otthonnak" — ez **mérendő**, nem tippelendő.
 
+
+---
+
+## V) A voice control ÁTEMELÉSE — 2026-09-07
+
+> **Owner (hangüzenetben, 12:37):** *„a régi CCAP-ból átemeljük a teljes voice communication
+> megoldást. Ezt nagyon szeretném még előbb látni."*
+
+Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md` · feladat: **T-22**
+
+| ID | Kérdés | Fontosság | Miért kell a válasz |
+|---|---|---|---|
+| `V1` | 🔵 **Melyik Discord hang-csatorna** legyen a „fülem"? | `m` | belépési pont nélkül nem tud csatlakozni |
+| `V2` | 🔵 **Mindig bent üljön**, vagy csak hívásra csatlakozzon? | `m` | a folyamatos jelenlét sávszélességet és CPU-t eszik — és a RAM már ma is szűkös |
+| `V3` | 🔵 ⭐ **Kell most a beszéd KIFELÉ is** *(`voice-output`)*, vagy először elég, hogy **hallak**? | `h` | **~2 600 sorral** rövidítené az első működő változatot |
+
+⚠️ **Egyik sem blokkolja** a 2. szakaszt (függőségek) — az a válaszoktól függetlenül halad.
+
+📌 A `V3` a legfontosabb: ez **a szállítmány méretét** dönti el, nem csak egy beállítást.

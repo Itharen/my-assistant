@@ -1,6 +1,6 @@
 {
   "name": "@my-assistant/cli",
-  "version": "0.1.360",
+  "version": "0.1.361",
   "private": true,
   "description": "my-assistant CLI — TTS push to Google Home / Nest speakers, Spotify resume, volume orchestration. Self-built, FOSS-only.",
   "type": "module",
@@ -38,6 +38,8 @@
     "google:query": "tsx src/main.ts google query"
   },
   "dependencies": {
+    "@futdevpro/fsm-dynamo": "1.16.35",
+    "@futdevpro/nts-dynamo": "1.15.133",
     "bonjour-service": "^1.2.1",
     "castv2-client": "^1.2.0",
     "discord.js": "^14.27.0",
