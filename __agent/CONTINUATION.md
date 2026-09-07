@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 13:09
+**Utoljára frissítve:** 2026-09-07 14:27
 
 ---
 
@@ -14,7 +14,7 @@
 active_plan: __agent/plans/discord-two-way-hyperplan/hyperplan.plan.md
 state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
-tests: "CLI 477/477 + szerver 74/74 zold; tipusellenorzes zold; comm doctor 11 zold / 0 hibas / 1 nem-megallapithato (2026-09-07 13:09)"
+tests: "CLI 481/481 + szerver 74/74 zold; tipusellenorzes zold; comm doctor 11 zold / 0 hibas / 1 nem-megallapithato (2026-09-07 13:09)"
 owner_available: false        # AI Summiton (elindult 07:45); Discordon ir
 blocked_on_owner: "Nyitott kerdesek H/I/J/K/L/M - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak), M3 (az idegen interfood-osszefesules commitolhato-e). [M1 LEZARVA: megjavitva.]"
 ```
@@ -678,3 +678,50 @@ Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md`
 
 ⚠️ **V3 owner-kérdés** *(kell-e most a `voice-output`)* **~2 600 sorral** szűkíthetné a
 szállítmányt — érdemes megvárni, mielőtt a 3–4. szakasz elindul.
+
+---
+
+## ✅ 2026-09-07 13:50–14:30 — A CSATORNA LEZÁRVA + a voice 3/5-nél
+
+### 🔴 A duplikáció-lánc VÉGE — mindhárom réteg javítva
+
+1. **Késés + darabolódás** *(korábban)*: a szelep foglalt sessionbe küldött → a CCAP sorba
+   tette → üzenetenként külön futásban érkezett. ⇒ a foglaltság-kapu javítva.
+2. **SAJÁT HIBA, ugyanaznap visszavonva:** a `queued` esetén nem véglegesítettem, ami
+   **újraküldést** okozott. Az owner azonnal kimondta: *„Az nem jó ha újraküldöd amit már
+   sorba állítottunk"*. ⭐ MÉRVE: a sorba tett prompt **megérkezik**, csak késve.
+3. **A duplikáció-védelem FÉLOLDALAS volt:** az `append()` csak a **várakozó köteget** nézte,
+   az archívumot nem ⇒ a kézbesített üzenet védelme megszűnt. Most `isKnownMessage()` MINDKÉT
+   halmazt nézi, és a **hangfelismerés is** ellenőrzi a drága lépés ELŐTT.
+
+**Igazolás:** a CCAP-sor **0**, a csatorna-ellenőrzés `36/36`, az utolsó üzenet **1 perc**
+alatt ért ide *(korábban órák)*.
+
+### 📜 Új eszközök a csatornához
+
+- **`ma comm history`** — visszanézés: kézbesített / 🔴 **még várakozó** / kimenő + 🎙️ átiratok.
+  ⚠️ A **saját** üzeneteim szövege eddig NEM volt rögzítve — mostantól igen.
+- **`ma comm audit`** — ⭐ **magát a Discordot** kérdezi le és veti össze. A saját tárunk
+  visszaolvasása nem bizonyít semmit, ha a rögzítés hibás.
+  ⇒ **Mindkettő KÖTELEZŐ minden körben** (`ENTRY.md` §1/3).
+
+### 🎙️ T-22 voice — 3/5 szakasz
+
+- **2. szakasz:** a hang-lánc **élő próbán** működik, ⭐ **natív fordítás nélkül**
+  *(a kód egyetlen opus-csomagot sem importál közvetlenül — a régi négy natív modul elkerülve)*.
+- **3. szakasz:** az illesztő megvan. ⭐ **Az útvonal-terv bevált:** az illesztőt oda tettem,
+  ahova a régi kód mutat, így az átemelt fájlban az **EGYETLEN** változás a `.js` kiterjesztés.
+- ⭐ **Mért egyszerűsítés:** 12 service közvetlenül a Dynamo-ősből származik, és **egyetlenegy**
+  épül a CCAP-ősre — épp az, amelynek a feladatát nálunk **én** látom el.
+
+### Owner-döntések, amik ma alakították a tervet
+
+- ⛔ a folyamatos feldolgozás **időzítése hatókörön kívül** — a mikrofon a kapcsoló
+- 🔴 **kétirányú tükör-szöveg** kell a hang-csatornába *(az ő beszéde ÉS az enyém)*
+- 🎯 **EGY funkció elég** — új hard rule, `current/principles/one-function-is-enough.md`
+- ⛔ **a Discord nem tud táblázatot** — a kimenő üzenetekben tilos
+
+### A következő konkrét lépés
+
+**T-22 / 4. szakasz:** a `voice-output` (2 633 sor) + a maradék `voice/` service-ek átemelése.
+A jelenlegi 6 fordítási hiba **mind** hiányzó modul — vagyis pontosan ez a munka.

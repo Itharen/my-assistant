@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 14:17
+**Utoljára frissítve:** 2026-09-07 14:27
 
 ---
 
@@ -72,7 +72,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 | # | Ki | Feladat | Hol tart | Következő lépés |
 |---|---|---|---|---|
 | T-41 | 🤖 | **Agent a támogatásokra / pályázatokra / sales-lehetőségekre** | owner 2026-09-07 13:30: *„van egy csomó támogatás meg pályázat meg sales lehetőség amire rá kéne állítani egy agent-et"* — ⚠️ illeszkedik az **MVP = pénzkeresés** fókuszhoz | felderítés: milyen forrásokat figyeljen, és mi a kimenet |
-| T-22 | 🤖 | 🔴 **Voice control ÁTEMELÉSE a régi CCAP-ból** *(nagy)* — **ELŐREVÉVE** | **1/5 szakasz kész** (23 levél-fájl bent, 6 import-sor az EGYETLEN változás). Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md` | 2. szakasz: hang-függőségek. ✅ **V1–V3 megválaszolva** (csatorna megvan, mindig bent ül, a `voice-output` IS kell ⇒ teljes 11 251 sor) |
+| T-22 | 🤖 | 🔴 **Voice control ÁTEMELÉSE a régi CCAP-ból** *(nagy)* — **ELŐREVÉVE** | **3/5 szakasz kész**: levél-fájlok · hang-lánc élő próbán · **illesztő igazoltan illeszkedik**. Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md` | 4. szakasz: a `voice-output` + a maradék service-ek. A 6 maradék hiba mind hiányzó modul |
 | T-10 | 🤖 | 🔴 **Sikertelen STT újrapróbálása** | **megépítve**, 474/474 teszt — `cli/src/stt/stt.retry-queue.ts` | ⚠️ **élő próbára vár**: a következő sikertelen felismerésnél derül ki. Addig NEM ✅ |
 
 ---
