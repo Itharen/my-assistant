@@ -111,3 +111,49 @@ describe('composeBatchPrompt', () => {
     expect(prompt).toContain('csonkolva');
   });
 });
+
+describe('composeBatchPrompt — idobelyeg es KOR', () => {
+
+  const sent: string = '2026-09-07T09:00:00+02:00';
+
+  function aged(content: string, receivedAt: string) {
+    return { ...message({ content }), receivedAt };
+  }
+
+  it('kiirja a KEZBESITES idejet — enelkul nincs mihez viszonyitani', () => {
+    const prompt = composeBatchPrompt([aged('szia', sent)], new Date('2026-09-07T09:01:00+02:00'));
+
+    expect(prompt).toContain('kézbesítve: 2026-09-07 09:01');
+  });
+
+  it('a FRISS uzenetnel nem ir kort — az csak zaj lenne', () => {
+    const prompt = composeBatchPrompt([aged('szia', sent)], new Date('2026-09-07T09:01:00+02:00'));
+
+    expect(prompt).not.toContain('perce');
+  });
+
+  it('percben irja a kort', () => {
+    const prompt = composeBatchPrompt([aged('szia', sent)], new Date('2026-09-07T09:28:00+02:00'));
+
+    expect(prompt).toContain('28 perce');
+  });
+
+  it('🔴 egy oranal regebbi uzenetet MEGJELOL — a kesoi valasz rossz valasz lehet', () => {
+    const prompt = composeBatchPrompt([aged('mikor induljak?', sent)], new Date('2026-09-07T10:35:00+02:00'));
+
+    expect(prompt).toContain('1 ó 35 perce');
+    expect(prompt).toContain('RÉGI');
+  });
+
+  it('az abszolut idobelyeg tovabbra is ott van', () => {
+    const prompt = composeBatchPrompt([aged('szia', sent)], new Date('2026-09-07T09:30:00+02:00'));
+
+    expect(prompt).toContain('2026-09-07 09:00');
+  });
+
+  it('hibas idobelyegen nem hasal el', () => {
+    const prompt = composeBatchPrompt([aged('szia', 'nem-datum')], new Date('2026-09-07T09:30:00+02:00'));
+
+    expect(prompt).toContain('szia');
+  });
+});

@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 09:56
+**Utoljára frissítve:** 2026-09-07 10:02
 
 ---
 
@@ -14,7 +14,7 @@
 active_plan: __agent/plans/discord-two-way-hyperplan/hyperplan.plan.md
 state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
-tests: "CLI 409/409 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
+tests: "CLI 415/415 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
 owner_available: false        # AI Summiton (elindult 07:45); Discordon ir
 blocked_on_owner: "Nyitott kerdesek H/I/J/K/L/M - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak), M3 (az idegen interfood-osszefesules commitolhato-e). [M1 LEZARVA: megjavitva.]"
 ```
@@ -139,6 +139,24 @@ kell masodlagos jelnek. ❓ Nyitott: ki generalta a 09:15-os inputot.
 
 ⭐ Mindketto **kod-hiba lett volna eles uzemben**, es mindkettot a **nezopont-valtas** hozta
 elo (1. kor: korrektseg · 3. kor: egyideju hozzaferes) — nem ugyanaz a checklist ketszer.
+
+---
+
+## ✅ 2026-09-07 10:02 — a koteg-prompt megmutatja az uzenetek KORAT
+
+> Owner: *„Ezeket a discord inputjaimat, lehet hasznos lenne ellatni timestamp-el"*
+
+Az **abszolut idobelyeg mar megvolt** (`### Uzenet [1/3] — 2026-09-07 09:10`) — ami hianyzott,
+az a **KOR**. A koteg csak akkor megy ki, amikor a session felszabadul; abszolut idobelyegbol
+nem tunik fel, hogy egy keres kozben **elavult**.
+
+```
+### Uzenet [1/2] - 2026-09-07 09:00 *(1 o 35 perce - ⚠️ REGI, nezd meg, aktualis-e meg)*
+```
+
+- a **kezbesites ideje** is kiirodik (kulon sor) — enelkul nincs mihez viszonyitani;
+- friss uzenetnel (< 2 perc) nincs jelzes, hogy ne legyen zaj.
+- Teszt: **CLI 415/415** (6 uj).
 
 ---
 

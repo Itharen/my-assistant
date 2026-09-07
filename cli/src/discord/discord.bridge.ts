@@ -179,7 +179,7 @@ export class DiscordBridge {
 
     if (batch.length === 0) return null;
 
-    const prompt: string = composeBatchPrompt(batch);
+    const prompt: string = composeBatchPrompt(batch, now);
 
     const result = await this.ccap.sendPrompt({ sessionId: identity.sessionId, content: prompt });
 

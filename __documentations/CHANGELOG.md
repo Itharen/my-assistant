@@ -4,6 +4,24 @@
 
 ---
 
+## A koteg-prompt megmutatja az uzenetek KORAT — 2026-09-07
+
+> **Owner:** *„Ezeket a discord inputjaimat, lehet hasznos lenne ellatni timestamp-el"*
+
+Az **abszolut idobelyeg mar megvolt** — ami hianyzott, az a **kor**. A koteg csak akkor megy
+ki, amikor a session felszabadul, ami akar **egy ora** is lehet; abszolut idobelyegbol viszont
+nem tunik fel, hogy egy keres kozben **elavult**. A *„mikor induljak?"* egy oraval kesobb mast
+jelent — es ott a **rossz valasz rosszabb, mint a kesoi**.
+
+- minden uzenet melle: `*(28 perce)*`, egy oran tul `*(1 o 35 perce — ⚠️ REGI, nezd meg,
+  aktualis-e meg)*`;
+- a **kezbesites ideje** kulon sorban — enelkul nincs mihez viszonyitani;
+- friss uzenetnel (< 2 perc) nincs jelzes, hogy ne legyen zaj.
+
+Teszt: CLI **415/415** (6 uj).
+
+---
+
 ## A koteg FRISSUL kikuldes elott — 2026-09-07
 
 > **Owner:** *„Jo lenne ha a discord msg kezeles frissitene kuldes elott a msg-eket. (Ha

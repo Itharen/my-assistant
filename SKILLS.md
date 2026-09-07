@@ -338,6 +338,31 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
   RAM mellett 5 perc alatt sem futott le; közvetlenül utána ugyanaz a fájl **77,6 mp**.
   Owner: *„90% usage felett várakozik"*.
 
+### A koteg-prompt idobelyege ES KORA (`discord.batch-composer.ts`)
+
+> **Owner-otlet (2026-09-07):** *„Ezeket a discord inputjaimat, lehet hasznos lenne ellatni
+> timestamp-el"*
+
+Az **abszolut idobelyeg** mar korabban is ott volt; ami hianyzott, az a **KOR**:
+
+```
+INCOMING_USER_MSG_ON_DISCORD: 2 uj uzenet Discordon (idorendben, osszevonva).
+*(kezbesitve: 2026-09-07 10:35)*
+
+### Uzenet [1/2] - 2026-09-07 09:00 *(1 o 35 perce - ⚠️ REGI, nezd meg, aktualis-e meg)*
+Mikor induljak?
+
+### Uzenet [2/2] - 2026-09-07 10:34
+Ez most jott.
+```
+
+- 🔴 **Miert szamit:** a koteg csak akkor megy ki, amikor a session felszabadul — ez akar **egy
+  ora** is lehet. Puszta abszolut idobelyegbol nem tunik fel, hogy egy keres mar **elavult**:
+  a *„mikor induljak?"* egy oraval kesobb egeszen mast jelent, es a rossz valasz rosszabb,
+  mint a kesoi.
+- A **kezbesites ideje** kulon sorban all — enelkul nincs mihez viszonyitani a kort.
+- **Friss uzenetnel (< 2 perc) nincs kor-jelzes** — ott csak zaj lenne.
+
 ### A koteg FRISSITESE kikuldes elott (`discord.batch-refresh.ts`)
 
 > **Owner (2026-09-07):** *„Jo lenne ha a discord msg kezeles frissitene kuldes elott a
