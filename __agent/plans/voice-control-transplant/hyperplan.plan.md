@@ -11,7 +11,7 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 14:00
+## 📊 STATUS — 2026-09-07 14:06
 
 | | |
 |---|---|
@@ -19,7 +19,7 @@
 | **Haladás** | 2/5 szakasz |
 | **Teszt** | CLI 477/477 zöld; a fő build **érintetlen** *(az átemelt kód kizárva)* |
 | **Következő lépés** | 3. szakasz: az illesztő réteg — ⭐ **mérve: mindössze 5 tulajdonság** + egy 95 soros ősosztály |
-| **Blokkoló** | nincs. ✅ V-1…V-3 megválaszolva |
+| **Blokkoló** | nincs. ✅ V-1…V-3 megválaszolva · ✅ az `llmChat_CS` kérdése is megoldva |
 
 ### Az 1. szakasz igazolása — mért, nem állított
 
@@ -200,12 +200,32 @@ A 6 import mögött **mindössze 5 tulajdonság** tényleges használata áll:
 ⇒ **Ez nem „a legnehezebb rész", hanem egy 5 tagú illesztő** + egy 95 soros ősosztály átemelése.
 *(A korábbi becslés a hivatkozások SZÁMÁN alapult — a mérés a tényleges HASZNÁLATOT nézte.)*
 
-#### ⚠️ Az egyetlen valódi nyitott kérdés: `llmChat_CS`
+#### ✅ MEGOLDVA: mire használja az `llmChat_CS`-t — MÉRVE (2026-09-07)
 
-A my-assistantban **nincs LLM-beszélgetés-szolgáltatás** — itt a „gondolkodás" maga a
-CC session. Meg kell nézni, **mire** használja a `voice` az `llmChat_CS`-t: ha csak a
-felismerés utáni értelmezésre, akkor az én utam a **Discord-köteg** *(az átirat úgyis
-hozzám kerül)*, és az ág elhagyható **kód-változtatás nélkül** — csak nem hívódik.
+A `cv-result-review.control-service.ts` **két párhuzamos LLM-kérdést** tesz fel a felismerés
+UTÁN:
+
+1. **beleillik-e a beszélgetésbe?** → `OK` / `NOISE` / `OUTOFCONTEXT` / `MISPELLED`
+2. **javítsd a helyesírást és a félrehallást** → a javított szöveg
+
+⭐ **EZT A MY-ASSISTANTBAN MÁR MEGCSINÁLJUK — csak máshogy, és jobb helyen:**
+
+| a régi bot | a my-assistant |
+|---|---|
+| egy LLM dönti el, hogy értelmes-e | ⭐ **ÉN** döntöm el, teljes kontextussal |
+| egy LLM javítja a félrehallást | `stt.flags.ts` **megjelöli**, ⛔ nem írja át *(a döntés az owneré)* |
+| hallucináció-szűrés az LLM-re bízva | `stt.transcript-guard.ts` — mért mintákra |
+
+🔴 **Ezért az adapter itt SZÁNDÉKOSAN átereszt:** `OK` + a **változatlan** átirat. Az ítéletet
+nem egy köztes LLM hozza, hanem az kerül a **Discord-kötegbe**, ahonnan hozzám jut — ahol
+megvan az egész beszélgetés, a feladatok és a szabályok. Egy köztes modell ennél
+**kevesebbet** tud, tehát rosszabbul dönt.
+
+⚠️ **De NEM néma csonk:** az adapter **naplózza**, valahányszor meghívják. Egy csendes
+„mindig OK" pont az a hibafajta, amit a projekt tilt — így viszont **látszik**, ha az ág
+mégis számítana.
+
+⭐ **A kód így BÁJTRA VÁLTOZATLAN marad:** ugyanazt a felületet hívja, csak alatta más van.
 
 **Kész, ha:** a `voice/` fordul, és a CCAP-ra semmi nem hivatkozik.
 
