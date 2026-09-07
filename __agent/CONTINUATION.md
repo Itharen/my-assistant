@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 14:27
+**Utoljára frissítve:** 2026-09-07 14:54
 
 ---
 
@@ -725,3 +725,48 @@ alatt ért ide *(korábban órák)*.
 
 **T-22 / 4. szakasz:** a `voice-output` (2 633 sor) + a maradék `voice/` service-ek átemelése.
 A jelenlegi 6 fordítási hiba **mind** hiányzó modul — vagyis pontosan ez a munka.
+
+---
+
+## ✅ 2026-09-07 14:40–15:00 — T-22 voice: 4/5 szakasz
+
+**Mind a 70 fájl bent van.** `voice-output` (19) · `elevenlabs` (14) · a `voice/` maradék
+service-ei · `agent-3` porcupine (2) · a szükséges CCAP-konstansok.
+**Telepítve:** `@futdevpro/fdp-templates` · `openai` · `@elevenlabs/elevenlabs-js`.
+
+### Két típus-váz — kód-változtatás HELYETT, és mindkettő mérésen alapul
+
+- **`new-version-context`** — ⭐ az egyetlen hivatkozás **kikommentelt kódban** van, tehát
+  halott import. Az eredeti egy **egész CCAP-alrendszert** húzna magával.
+- **`porcupine-sdk.d.ts`** — a Picovoice **fizetős** SDK típusai. ⭐ A régi kód **maga számít
+  a hiányára**: dinamikus import `try/catch`-ben, a szerző megjegyzésével
+  *(„This is expected if Agent-3 is not initialized")*. A wake-word amúgy is hatókörön kívül.
+
+### 🔴 SAJÁT HIBA, javítva
+
+Átemelt kódot tettem a **szigorú** ágba (`src/_collections`, `src/_enums`). Az átemelt fájlok
+az **eredeti** relatív útvonalaikon hivatkoznak egymásra — épp ezért maradhattak változatlanok
+—, tehát ezek a könyvtárak **is** átemelt kódot tartalmaznak.
+⇒ A laza projekt feljebb került: `cli/tsconfig.transplanted.json`, mind a hármat lefedi.
+
+### ⚠️ EGY NYITOTT PONT — nem oldottam meg, hanem MEGÁLLTAM
+
+A két felismerő-kliens nyers `Buffer`-t ad a `fetch` törzsének ⇒ típushiba (2 fájl).
+
+**Amit próbáltam:** `@types/node` 20→22 ⛔ · 22→24 *(a régi bot verziója)* ⛔ ·
+`lib`-be a `dom` *(a régi bot beállítása szó szerint)* ⛔
+
+⭐ **Amit viszont tudunk:** a **régi botban ez a két fájl HIBÁTLAN** *(a botnak van 27 saját
+típushibája — de egyik sem ezekben)*. ⇒ A kód nem hibás; a **környezetem** tér el attól,
+amiben íródott, és az okot még nem azonosítottam.
+
+⛔ **Nem nyúltam a kódhoz.** Egy `as unknown as BodyInit` elrejtené a kérdést, nem
+megválaszolná — és épp az átemelési szabályt sértené.
+⚠️ Ma **semmit nem blokkol** (a projekt `noEmit`), de az **5. szakasz futtatásához** meg kell
+oldani.
+
+### A következő konkrét lépés
+
+**1)** A `BodyInit`-ütközés oka — friss szemmel, más irányból *(pl. hogyan fordul a régi bot
+ugyanezen a fájlon: `module: commonjs` + node-resolution vs. az én `bundler`-em)*.
+**2)** Utána 5. szakasz: bekötés a `V-1` csatornára + **kétirányú tükör-szöveg** + élő próba.

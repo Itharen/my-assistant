@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 14:27
+**Utoljára frissítve:** 2026-09-07 14:54
 
 ---
 
@@ -72,7 +72,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 | # | Ki | Feladat | Hol tart | Következő lépés |
 |---|---|---|---|---|
 | T-41 | 🤖 | **Agent a támogatásokra / pályázatokra / sales-lehetőségekre** | owner 2026-09-07 13:30: *„van egy csomó támogatás meg pályázat meg sales lehetőség amire rá kéne állítani egy agent-et"* — ⚠️ illeszkedik az **MVP = pénzkeresés** fókuszhoz | felderítés: milyen forrásokat figyeljen, és mi a kimenet |
-| T-22 | 🤖 | 🔴 **Voice control ÁTEMELÉSE a régi CCAP-ból** *(nagy)* — **ELŐREVÉVE** | **3/5 szakasz kész**: levél-fájlok · hang-lánc élő próbán · **illesztő igazoltan illeszkedik**. Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md` | 4. szakasz: a `voice-output` + a maradék service-ek. A 6 maradék hiba mind hiányzó modul |
+| T-22 | 🤖 | 🔴 **Voice control ÁTEMELÉSE a régi CCAP-ból** *(nagy)* — **ELŐREVÉVE** | **4/5 szakasz**: mind a **70 fájl** bent, 2 fájl kivételével fordul. Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md` | ⚠️ a `Buffer`→`BodyInit` típus-ütközés feloldása *(3 próba nem vezetett célra — a régi botban ez a 2 fájl HIBÁTLAN)*, majd bekötés + élő próba |
 | T-10 | 🤖 | 🔴 **Sikertelen STT újrapróbálása** | **megépítve**, 474/474 teszt — `cli/src/stt/stt.retry-queue.ts` | ⚠️ **élő próbára vár**: a következő sikertelen felismerésnél derül ki. Addig NEM ✅ |
 
 ---
