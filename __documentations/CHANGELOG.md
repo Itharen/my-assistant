@@ -4,6 +4,35 @@
 
 ---
 
+## A koteg FRISSUL kikuldes elott — 2026-09-07
+
+> **Owner:** *„Jo lenne ha a discord msg kezeles frissitene kuldes elott a msg-eket. (Ha
+> idokozben meg gyujtes/kuldes elott javitom/modositom, akkor a friss menjen neked."*
+
+- **`discord.batch-refresh.ts` (uj):** tiszta dontesi logika, Discord-kapcsolat nelkul
+  tesztelheto. Harom eset KULON: `present` -> a friss szoveg · `deleted` -> kiesik ·
+  `unknown` -> **valtozatlanul megmarad**.
+- 🔴 **A `deleted` es az `unknown` osszemosasa nemá uzenet-vesztes lenne** — egy halozati
+  hiba NEM torolhet uzenetet. Ezert csak a Discord `10008` (`Unknown Message`) szamit torlesnek.
+- **`flush({ beforeSend })` (uj kampó):** a frissites a **kuldes pillanataban** fut, nem a
+  15 mp-es koron — igy pontosan egyszer, akkor, amikor szamit.
+- 🔴 **`force: true`:** a discord.js alapbol a gyorsitotarbol adna vissza a **regi**, meg nem
+  szerkesztett szoveget; enelkul az egesz frissites **nemán hatastalan** maradt volna.
+
+### Ket sulyos hiba, amit a review-loop fogott meg (mindketto MIELOTT elment volna)
+
+1. 🔴 **A hanguzenet atirata torlodott volna.** A kotegben az ATIRAT all, a Discord-uzenet
+   torzse viszont URES — a frissites ezt irta volna felul. Szabaly lett belole: **ures friss
+   tartalom sosem ir felul meglevot.**
+2. 🔴 **A kozben erkezett uzenet elveszett volna.** A frissites halozati korokbol all, tehat
+   eltart; egy sima „ird felul a fajlt" hivas az ezalatt erkezett uzenetet eldobta volna.
+   Ezert a `replacePending` helyett **`applyPendingRefresh`** keszult, ami **osszefesul**:
+   csak a vizsgalt (`knownIds`) tetelekhez nyul, minden mas a helyen marad.
+
+Teszt: CLI **409/409** (17 uj).
+
+---
+
 ## A Discord-HANGUZENET vegig mukodik (C-33 kesz) — 2026-09-07
 
 > **Owner:** *„Folytasd a discord STT fejlesztest amig kesz nincs"*

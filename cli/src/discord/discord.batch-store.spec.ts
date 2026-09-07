@@ -99,3 +99,71 @@ describe('DiscordBatchStore', () => {
     expect((await store.readPending()).length).toBe(1);
   });
 });
+
+describe('DiscordBatchStore.applyPendingRefresh', () => {
+
+  it('a frissitett tartalmat irja vissza', async () => {
+    const { store } = makeStore();
+
+    await store.append(message('m1', 'regi szoveg'));
+    await store.applyPendingRefresh({
+      refreshed: [message('m1', 'javitott szoveg')],
+      knownIds: ['m1'],
+    });
+
+    const pending = await store.readPending();
+
+    expect(pending.length).toBe(1);
+    expect(pending[0]?.content).toBe('javitott szoveg');
+  });
+
+  it('a kihagyott (torolt) tetelt eltavolitja', async () => {
+    const { store } = makeStore();
+
+    await store.append(message('m1', 'egy'));
+    await store.append(message('m2', 'ketto'));
+    await store.applyPendingRefresh({ refreshed: [message('m1', 'egy')], knownIds: ['m1', 'm2'] });
+
+    const pending = await store.readPending();
+
+    expect(pending.map((p) => p.messageId)).toEqual(['m1']);
+  });
+
+  it('🔴 a KOZBEN ERKEZETT uzenetet MEGTARTJA — ez a legfontosabb', async () => {
+    // A frissites halozati korokbol all, tehat eltart egy ideig. Ha ezalatt uj uzenet
+    // erkezik, egy sima felulirás NEMÁN ELDOBNA — pontosan az a hibaosztaly, ami ellen
+    // az egesz csatorna epult.
+    const { store } = makeStore();
+
+    await store.append(message('m1', 'regi'));
+
+    // A frissites mar kiolvasta az m1-et... es EKKOR erkezik az m2.
+    await store.append(message('m2', 'kozben erkezett'));
+
+    await store.applyPendingRefresh({ refreshed: [message('m1', 'friss')], knownIds: ['m1'] });
+
+    const pending = await store.readPending();
+
+    expect(pending.map((p) => p.messageId)).toEqual(['m1', 'm2']);
+    expect(pending[0]?.content).toBe('friss');
+    expect(pending[1]?.content).toBe('kozben erkezett');
+  });
+
+  it('ures frissitesnel a kozben erkezett uzenet egyedul marad', async () => {
+    const { store } = makeStore();
+
+    await store.append(message('m1', 'torolni'));
+    await store.append(message('m2', 'uj'));
+    await store.applyPendingRefresh({ refreshed: [], knownIds: ['m1'] });
+
+    expect((await store.readPending()).map((p) => p.messageId)).toEqual(['m2']);
+  });
+
+  it('ures tarra sem hasal el', async () => {
+    const { store } = makeStore();
+
+    await store.applyPendingRefresh({ refreshed: [], knownIds: [] });
+
+    expect(await store.readPending()).toEqual([]);
+  });
+});

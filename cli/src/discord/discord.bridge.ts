@@ -122,7 +122,31 @@ export class DiscordBridge {
    *
    * @param force igaz esetén a döntést átugorja (kézi kiküldés diagnosztikához).
    */
-  async flush(params: { now?: Date; force?: boolean } = {}): Promise<DiscordFlushResult | null> {
+  async flush(params: {
+    now?: Date;
+    force?: boolean;
+    /**
+     * Kozvetlenul a KULDES ELOTT fut, amikor mar eldolt, hogy megy a koteg.
+     *
+     * > **Owner (2026-09-07):** *„Jo lenne ha a discord msg kezeles frissitene kuldes elott a
+     * > msg-eket. (Ha idokozben meg gyujtes/kuldes elott javitom/modositom, akkor a friss
+     * > menjen neked."*
+     *
+     * ⭐ Szandekosan ITT, es nem a kor elejen: a kiküldési kör 15 mp-enkent fut, de a kotegn
+     * gyakran percekig var (amig a session dolgozik). Ha a frissitest a kor elejen vegeznenk,
+     * ugyanazokat az uzeneteket kerdeznenk le a Discordtol **feleslegesen, percenkent
+     * negyszer** — itt viszont pontosan egyszer fut, akkor, amikor szamit.
+     *
+     * A visszaadott lista lesz a kikuldott koteg. Hiba eseten a hivo a **valtozatlan** listat
+     * adja vissza — a frissites elmaradasa sosem allithatja meg a kikuldest.
+     *
+     * 🔴 SZERZODES: ha a hivo **megvaltoztatja** a listat (frissit vagy kihagy egy tetelt),
+     * azt **vissza is kell irnia a tarba** (`store.applyPendingRefresh`). A veglegesites ugyanis a
+     * tar ELSO N elemet archivalja — ha a tar es a visszaadott lista szetcsuszik, rossz
+     * uzeneteket veglegesitenenk.
+     */
+    beforeSend?: (pending: DiscordInboundMessage[]) => Promise<DiscordInboundMessage[]>;
+  } = {}): Promise<DiscordFlushResult | null> {
     const now: Date = params.now ?? new Date();
     const pending: DiscordInboundMessage[] = await this.store.readPending();
 
@@ -145,7 +169,16 @@ export class DiscordBridge {
     }
 
     // A pillanatkép rögzítése: a küldés alatt érkező üzeneteket NEM véglegesítjük.
-    const batch: DiscordInboundMessage[] = pending;
+    //
+    // ⚠️ A `beforeSend` **csökkentheti** a lista hosszát (torolt uzenet), ezert a
+    // `commitDelivered` a FRISSITETT hosszal hivodik — kulonben tobbet veglegesitenenk,
+    // mint amennyit tenylegesen elkuldtunk.
+    const batch: DiscordInboundMessage[] = params.beforeSend
+      ? await params.beforeSend(pending)
+      : pending;
+
+    if (batch.length === 0) return null;
+
     const prompt: string = composeBatchPrompt(batch);
 
     const result = await this.ccap.sendPrompt({ sessionId: identity.sessionId, content: prompt });

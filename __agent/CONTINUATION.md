@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 09:50
+**Utoljára frissítve:** 2026-09-07 09:56
 
 ---
 
@@ -14,7 +14,7 @@
 active_plan: __agent/plans/discord-two-way-hyperplan/hyperplan.plan.md
 state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
-tests: "CLI 392/392 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
+tests: "CLI 409/409 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
 owner_available: false        # AI Summiton (elindult 07:45); Discordon ir
 blocked_on_owner: "Nyitott kerdesek H/I/J/K/L/M - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak), M3 (az idegen interfood-osszefesules commitolhato-e). [M1 LEZARVA: megjavitva.]"
 ```
@@ -115,6 +115,30 @@ A monitor **el es friss**, de azt meri, hogy **van-e input EZEN a gepen** — NE
 owner hol van. Az indulasa (07:45) utan **ket** aktiv mintat mert, az egyiket **09:15:33-kor**
 (5 mp-es input), jiggler nelkul. ⇒ Megerositi az owner sajat otletet: **a telefon a halozaton**
 kell masodlagos jelnek. ❓ Nyitott: ki generalta a 09:15-os inputot.
+
+---
+
+## ✅ 2026-09-07 09:56 — C-45: a koteg FRISSUL kikuldes elott
+
+> Owner: *„Jo lenne ha a discord msg kezeles frissitene kuldes elott a msg-eket."*
+
+| Mit | Allapot |
+|---|---|
+| **`discord.batch-refresh.ts` (uj)** | tiszta dontesi logika. `present` -> friss szoveg · `deleted` -> kiesik · `unknown` -> **valtozatlanul marad**. |
+| **`flush({ beforeSend })` kampó** | a frissites a **kuldes pillanataban** fut, nem a 15 mp-es koron — igy pontosan egyszer, akkor, amikor szamit. |
+| **`force: true`** | 🔴 a discord.js alapbol a GYORSITOTARBOL adna a REGI szoveget ⇒ a frissites nemán hatastalan lett volna. |
+| **`applyPendingRefresh`** | osszefesul, nem felulir — a kozben erkezett uzenet megmarad. |
+| **Teszt** | **CLI 409/409** (17 uj). |
+
+### 🔴 KET SULYOS HIBA, amit a review-loop fogott meg (mielott elment volna)
+
+1. **A hanguzenet atirata torlodott volna.** A kotegben az ATIRAT all, a Discord-uzenet
+   torzse viszont URES. Szabaly lett belole: **ures friss tartalom SOSEM ir felul meglevot.**
+2. **A kozben erkezett uzenet elveszett volna.** A frissites halozati korokbol all, tehat
+   eltart; a sima felulírás az ezalatt erkezettet eldobta volna.
+
+⭐ Mindketto **kod-hiba lett volna eles uzemben**, es mindkettot a **nezopont-valtas** hozta
+elo (1. kor: korrektseg · 3. kor: egyideju hozzaferes) — nem ugyanaz a checklist ketszer.
 
 ---
 
@@ -362,6 +386,14 @@ ezekre mutat — egy friss session elhiheti, hogy semmi nem készült el, és **
 ---
 
 ## Mért csapdák (ne kelljen újra felfedezni)
+
+- 🔴 **NE futtass `npm test`-et, amig az LDP EPP EGY KORT FUT.** Mindketto ugyanazt a
+  `cli/dist` (illetve `server/build`) konyvtarat **rimraf-olja**, tehat utkoznek: a sajat
+  futasom **1 hamis bukast** adott (2026-09-07 09:5x), mikozben az LDP epp a `tsc-cli`
+  fazisban jart. Ket ujrafuttatas tisztan zold lett, es az **LDP sajat merese** is
+  `cli-test 409/409`. ⇒ **Ez NEM flake es NEM kod-hiba** — utkozes.
+  **Recept:** bukas utan ELOSZOR nezd meg a `logs/live-dev-pipeline/status.json` `phase`-et;
+  ha epp fut egy kor, **varj es futtasd ujra**, ne nyomozz.
 
 - A `cat > fájl <<'EOF'` heredoc **elhasalt** hosszú magyar tartalmon → fájlíráshoz a
   dedikált fájlíró eszközt használom, nem shell-heredocot.

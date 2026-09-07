@@ -14,6 +14,7 @@ import { Client, Events, GatewayIntentBits, Partials, type Message } from 'disco
 
 import { logAction } from '../action-log/action-log.client.js';
 import { DiscordBridge } from './discord.bridge.js';
+import type { DiscordInboundMessage } from './discord.models.js';
 import { HEARTBEAT_INTERVAL_MS, writeHeartbeat } from './discord.heartbeat.js';
 import { checkReplyObligation } from './discord.reply-tracker.js';
 import { TypingIndicator } from './discord.typing-indicator.js';
@@ -23,6 +24,11 @@ import {
   type IncomingDiscordMessage,
   type MessageFilterConfig,
 } from './discord.message-filter.js';
+import {
+  describeRefresh,
+  refreshBatchEntries,
+  type CurrentMessageState,
+} from './discord.batch-refresh.js';
 import { sendDiscordMessage } from './discord.sender.js';
 import {
   composeTranscriptForBatch,
@@ -575,13 +581,113 @@ ${spoken}`
    * eredményt. 🔴 SOHA nem dob: egy CCAP-kimaradás nem döntheti meg a figyelőt, különben
    * a bejövő üzenetek is elvesznének.
    */
+  /**
+   * A varakozo koteg frissitese a Discord AKTUALIS allapotarol — kikuldes ELOTT.
+   *
+   * > **Owner (2026-09-07):** *„Jo lenne ha a discord msg kezeles frissitene kuldes elott a
+   * > msg-eket. (Ha idokozben meg gyujtes/kuldes elott javitom/modositom, akkor a friss
+   * > menjen neked."*
+   *
+   * A koteg akar percekig gyulhet, amig a session dolgozik. Ha az owner ezalatt kijavit egy
+   * elgepelest vagy atfogalmaz egy utasitast, a REGI szoveg alapjan cselekednek — miközben o
+   * mar a javitott valtozatot hiszi ervenyesnek.
+   *
+   * 🔴 Hibat SOHA nem dob es SOHA nem urit koteget: ha a lekerdezes nem megy, a **regi
+   * tartalom megy at valtozatlanul**. Egy halozati zavar nem vehet el uzenetet — az sokkal
+   * rosszabb lenne, mint egy elavult szoveg.
+   */
+  private async refreshPendingFromDiscord(
+    pending: DiscordInboundMessage[],
+  ): Promise<DiscordInboundMessage[]> {
+    const client: Client | null = this.client;
+
+    if (!client || pending.length === 0) return pending;
+
+    try {
+      const states: Map<string, CurrentMessageState> = new Map();
+
+      for (const item of pending) {
+        states.set(item.messageId, await this.readCurrentMessageState(client, item));
+      }
+
+      const outcome = refreshBatchEntries(pending, states);
+
+      // Ha semmi nem valtozott, NEM irjuk ujra a fajlt — folosleges IO es folosleges kockazat.
+      if (outcome.updatedCount === 0 && outcome.removedCount === 0) return pending;
+
+      // 🔴 A tarba is vissza kell irni: a veglegesites a tar ELSO N elemet archivalja, tehat a
+      // tar es a kikuldott koteg nem csuszhat szet (lasd a `flush` beforeSend szerzodeset).
+      await this.bridge.getStore().applyPendingRefresh({
+        refreshed: outcome.entries,
+        knownIds: pending.map((item) => item.messageId),
+      });
+      await this.safeLog({
+        kind: 'note',
+        summary: `[discord/listener] Koteg frissitve kikuldes elott — ${describeRefresh(outcome) ?? 'nincs valtozas'}.`,
+        extra: {
+          code: 'MA-DISCORD-BATCH-REFRESHED',
+          updatedCount: outcome.updatedCount,
+          removedCount: outcome.removedCount,
+          unresolvedCount: outcome.unresolvedCount,
+        },
+      });
+
+      return outcome.entries;
+    } catch (err: unknown) {
+      await this.safeLog({
+        kind: 'error',
+        summary: '[discord/listener] MA-DISCORD-REFRESH-FAILED: a koteg frissitese nem sikerult, '
+          + `a REGI tartalom megy at valtozatlanul — ${err instanceof Error ? err.message : String(err)}`,
+        extra: { code: 'MA-DISCORD-REFRESH-FAILED' },
+      });
+
+      // ⛔ A frissites elmaradasa SOSEM allithatja meg a kikuldest.
+      return pending;
+    }
+  }
+
+  /**
+   * Egy uzenet aktualis allapota a Discordon.
+   *
+   * ⚠️ A „torolve" es a „nem tudom" KULON eset. A Discord a nemletezo uzenetre `10008`
+   * (`Unknown Message`) hibakodot ad — CSAK ezt vesszuk torlesnek. Barmi mas (halozat,
+   * jogosultsag, idotullepes) `unknown`, es olyankor **megtartjuk** az uzenetet.
+   */
+  private async readCurrentMessageState(
+    client: Client,
+    entry: { messageId: string; channelId: string },
+  ): Promise<CurrentMessageState> {
+    try {
+      const channel = await client.channels.fetch(entry.channelId);
+
+      if (!channel || !channel.isTextBased()) return { kind: 'unknown' };
+
+      // 🔴 `force: true` KOTELEZO: a discord.js alapbol a GYORSITOTARBOL ad vissza, ami
+      // eppen a REGI, szerkesztes elotti szoveg lenne — vagyis a frissites nemán
+      // hatastalan maradna. (MessageUpdate esemenyre nem iratkozunk fel.)
+      const message = await channel.messages.fetch({ message: entry.messageId, force: true });
+
+      return { kind: 'present', content: message.content };
+    } catch (err: unknown) {
+      const code: unknown = (err as { code?: unknown })?.code;
+
+      // 10008 = Unknown Message — ez a BIZONYOS torles.
+      return code === 10008 ? { kind: 'deleted' } : { kind: 'unknown' };
+    }
+  }
+
   private async flushTick(): Promise<void> {
     if (this.flushInFlight) return;
 
     this.flushInFlight = true;
 
     try {
-      const result = await this.bridge.flush();
+      // ⭐ A frissites a KULDES PILLANATABAN fut (`beforeSend`), nem a kor elejen: igy
+      // pontosan akkor kerdezzuk le a Discordot, amikor szamit — es nem percenkent negyszer,
+      // feleslegesen, mikozben a koteg ugyis var.
+      const result = await this.bridge.flush({
+        beforeSend: (pending) => this.refreshPendingFromDiscord(pending),
+      });
 
       if (!result) return;
 

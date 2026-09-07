@@ -103,6 +103,47 @@ export class DiscordBatchStore {
   }
 
   /**
+   * A várakozó köteg frissítése — a KÖZBEN ÉRKEZETT üzenetek megtartásával.
+   *
+   * > **Owner-kérés (2026-09-07):** *„Jó lenne ha a discord msg kezelés frissítené küldés
+   * > előtt a msg-eket. (Ha időközben még gyűjtés/küldés előtt javítom/módosítom, akkor a
+   * > friss menjen neked."*
+   *
+   * 🔴 **MIÉRT NEM EGYSZERŰ FELÜLÍRÁS:** a frissítés hálózati körökből áll (a Discordtól
+   * kérdezzük le az üzeneteket), tehát **eltart egy ideig**. Ha ezalatt új üzenet érkezik, egy
+   * sima „írd felül a fájlt a régi listával" hívás azt **NÉMÁN ELDOBNÁ** — pontosan az a
+   * hibaosztály, ami ellen az egész csatorna épült.
+   *
+   * Ezért itt **összefésülünk**: a `refreshed` lista a `knownIds`-ben szereplő tételeket
+   * váltja le *(a hiányzók = törölve, azok kiesnek)*, és **minden más pending tétel a
+   * helyén marad**, az eredeti sorrend végén.
+   *
+   * ⚠️ Ugyanaz az átmeneti-fájl + átnevezés minta, mint a `commitDelivered`-nél: egy
+   * megszakadás nem hagyhat félkész köteg-fájlt.
+   */
+  async applyPendingRefresh(params: {
+    /** A frissített tételek, a kiküldés sorrendjében. */
+    refreshed: DiscordInboundMessage[];
+    /** Amiket a frissítés EGYÁLTALÁN vizsgált — csak ezekhez nyúlunk. */
+    knownIds: string[];
+  }): Promise<void> {
+    const known: Set<string> = new Set(params.knownIds);
+    const current: DiscordInboundMessage[] = await this.readPending();
+    // Ami a frissítés óta érkezett: nem vizsgáltuk, tehát nem is dönthetünk róla.
+    const arrivedMeanwhile: DiscordInboundMessage[] = current.filter(
+      (entry) => !known.has(entry.messageId),
+    );
+
+    const merged: DiscordInboundMessage[] = [...params.refreshed, ...arrivedMeanwhile];
+    const temporaryFile: string = `${this.paths.pendingFile}.tmp`;
+    const body: string = merged.map((entry) => JSON.stringify(entry)).join('\n');
+
+    await mkdir(dirname(this.paths.pendingFile), { recursive: true });
+    await writeFile(temporaryFile, body.length > 0 ? `${body}\n` : '', 'utf-8');
+    await rename(temporaryFile, this.paths.pendingFile);
+  }
+
+  /**
    * Kézbesítettük-e már ezt az üzenetet? — az archívum alapján.
    *
    * 🔴 A visszamenőleges beolvasáshoz (backfill) KELL: indításkor a csatorna korábbi

@@ -1,5 +1,25 @@
 # STATUS
 
+## 🔄 A köteg FRISSÜL kiküldés előtt — 2026-09-07 09:56
+
+> Owner: *„Jó lenne ha a discord msg kezelés frissítené küldés előtt a msg-eket. (Ha időközben
+> még gyűjtés/küldés előtt javítom/módosítom, akkor a friss menjen neked."*
+
+A köteg akár percekig vár (amíg a session dolgozik). Mostantól a **kiküldés pillanatában**
+lekérdezzük a Discordtól az aktuális szöveget: a **javított** változat megy át, a **törölt**
+kiesik. Lekérdezési hibánál a **régi megy változatlanul** — ⛔ hálózati hiba nem törölhet üzenetet.
+
+### 🔴 Két súlyos hibát a review-loop fogott meg — mielőtt elment volna
+
+| # | Mi lett volna | Miért |
+|---|---|---|
+| 1 | **A hangüzenet átirata törlődik** | a kötegben az **átirat** áll, a Discord-üzenet törzse viszont ÜRES ⇒ szabály lett: **üres friss tartalom sosem ír felül meglévőt** |
+| 2 | **A közben érkezett üzenet elvész** | a frissítés hálózati körökből áll, tehát eltart; a sima felülírás az ezalatt érkezettet eldobta volna ⇒ `applyPendingRefresh` **összefésül** |
+
+**Teszt: CLI 409/409 · szerver 42/42 · típusellenőrzés zöld.**
+
+---
+
 ## 🎙️ A Discord-HANGÜZENET végig működik — C-33 KÉSZ — 2026-09-07 09:50
 
 > Owner: *„Folytasd a discord STT fejlesztést amíg kész nincs"*

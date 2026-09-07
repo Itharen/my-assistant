@@ -338,6 +338,34 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
   RAM mellett 5 perc alatt sem futott le; közvetlenül utána ugyanaz a fájl **77,6 mp**.
   Owner: *„90% usage felett várakozik"*.
 
+### A koteg FRISSITESE kikuldes elott (`discord.batch-refresh.ts`)
+
+> **Owner (2026-09-07):** *„Jo lenne ha a discord msg kezeles frissitene kuldes elott a
+> msg-eket. (Ha idokozben meg gyujtes/kuldes elott javitom/modositom, akkor a friss menjen neked."*
+
+- A koteg akar **percekig gyulhet**, amig a session dolgozik. Ha ezalatt kijavitasz egy
+  elgepelest vagy atfogalmazol egy utasitast, a **friss** valtozat megy at.
+- **Mikor fut:** pontosan a **kuldes pillanataban** (`flush({ beforeSend })`), NEM a
+  15 mp-es koron. Igy nem kerdezzuk le a Discordot feleslegesen percenkent negyszer.
+- 🔴 **`force: true` a lekerdezesnel** — a discord.js alapbol a **gyorsitotarbol** adna vissza
+  a **regi, szerkesztes elotti** szoveget, es a frissites nemán hatastalan maradna.
+
+**A harom eset szandekosan kulon van kezelve:**
+
+| Allapot | Mit teszunk | Miert |
+|---|---|---|
+| `present` | a **friss** szoveget vesszuk | ez a keres |
+| `deleted` *(Discord `10008`)* | **kiejtjuk** a kotegbol | ha visszavontad, ne cselekedjek ra |
+| `unknown` *(halozat, jogosultsag, idotullepes)* | **valtozatlanul megtartjuk** | ⛔ egy halozati hiba NEM torolhet uzenetet |
+
+- 🔴 **URES friss tartalom SOSEM ir felul meglevot.** A **hanguzenet** miatt kritikus: ott a
+  kotegben az **atirat** all, a Discord-uzenet torzse viszont ures — enelkul a frissites pont
+  az utolso lepesnel torolne ki a felismert szoveget.
+- 🔴 **A kozben erkezett uzenet megmarad** (`store.applyPendingRefresh` osszefesul, nem
+  felulir): a frissites halozati korokbol all, tehat eltart — egy sima felulirás az ezalatt
+  erkezett uzenetet **nemán eldobna**.
+- A frissites elmaradasa **sosem allitja meg a kikuldest** — olyankor a regi tartalom megy at.
+
 ### Hangüzenet Discordon — a teljes út (`discord.voice-message.ts`)
 
 ```
