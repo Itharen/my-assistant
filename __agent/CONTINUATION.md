@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 22:15
+**Utoljára frissítve:** 2026-09-07 22:20
 
 ---
 
@@ -1423,6 +1423,52 @@ es az atemelt kodhoz vakon nyulni ketszeresen tilos (`transplant-not-rewrite`).
 3. **Hangos** visszajelzes *(a `voice-output` mar atemelve — ez a kovetkezo hasznositasa)*
 
 ⚠️ 536/536 zold, de **ez semmit nem bizonyit az atviteli aranyrol** — azt csak elo beszed meri.
+
+
+
+---
+
+## 🔴 2026-09-07 22:11 — AZ AJANLAST VISSZAFELE CSINALTAM (owner-kritika, jogos)
+
+> *„kitalaltal nekem egy indulasi idopontot, majd ahhoz igazitottad azt, hogy vajon mi
+> erdekelhet. Volt egy egesz hosszu kurva bonyolult programosszeallitasi terv, amit eldobtal a
+> faszba…"*
+
+**Ket kulon hiba:**
+1. **Idopontbol indultam**, es ahhoz hajlitottam az erdeklodeset. ⇒ Forditva kell: a **program**
+   dontse el, mi kell, es az idopont **kovetkezmeny** legyen.
+2. **Volt egy reszletes osszeallitasi terv** *(7 lepes, A/B lista, harom kategoria, utkozesek,
+   epuletvaltas, energia, visszanezesi lista)* — a nap-1 atadasban. **Eldobtam.**
+   ⚠️ Ujra be kellett tennie az inboxba: `__agent/inbox/summit-planning.md`.
+
+📌 **A tanulsag:** amikor egy feladathoz **kapok modszertant**, az nem hatter-info, hanem **a
+feladat resze**. A sajat, gyorsabb megkozelitesem lecserelte az ovet — es az eredmeny
+hasznalhatatlan lett.
+
+### Az UJ terv — `current/events/2026-09-08-summit-day2-plan.md`
+
+A 158 eloadas vegigszurve a **hat prioritasa** szerint. Eredmeny:
+⭐ **Neprajzi Muzeum, es ott is maradsz** — a neki erdekes anyag ~80%-a ket egymas melletti
+teremben *(Innovation Hall + Quantum Stage)*.
+
+**A-lista 9 tetel**, ebbol **14:00→17:20 hat egymas utan, EGY teremben**: on-prem AI · kodvaltas ·
+🤖 agentek+robotok *(az EGYETLEN robotikas)* · agentek · **Agentic AI Coding Revolution** ·
+**onfejleszto szoftver** · **harom magyar nyelvmodell**.
+
+**Ket belepesi pont — a PROGRAM adja:** 11:00 *(teljes A-lista, de ~80 perc uresjarat 12:00
+korul)* vagy 13:45 *(delutani blokk, nulla atjaras)*.
+
+⚠️ **Utkozes az owner dontesere:** a Prompt Arena elo vibecodingja (14:00/15:00) **masik
+epuletben** van es a teljes delutant kiuti. A vibe coding amugy is a **visszanezesi** listajan van.
+
+### 🔊 A hang-csatorna kovetelmenyei — rogzitve (owner 22:13)
+
+1. **Minden atirat szovegkent a HANG-csatornaba** *(ne a fo chatbe mosva)*
+2. **HANGJELZESEK, ahogy a CCAP-ban voltak:** feldolgozas indul · beszednek azonositva · eldobva ·
+   folyamatban · megjott ⇒ **folyamatos** visszajelzes arrol, hogy hallom es ertem
+⭐ A `voice-output` modul **mar at van emelve** — az alap megvan, a bekotes hianyzik.
+
+⏱️ **Trigger: 60 perc.** Az owner jelezte, hogy tovabb fogja allitgatni, es **nem fogja jelezni**.
 
 
 ### A következő konkrét lépés
