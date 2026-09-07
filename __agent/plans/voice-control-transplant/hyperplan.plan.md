@@ -11,7 +11,7 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 14:09
+## 📊 STATUS — 2026-09-07 14:15
 
 | | |
 |---|---|
@@ -253,9 +253,34 @@ Discord-hangüzenetek is érkeznek. Így a hang-csatorna **nem külön csatorna*
 ugyanaz az út — ugyanazzal a duplikáció-védelemmel, ugyanazzal a válasz-kötelezettséggel,
 és ugyanazzal a visszanézhetőséggel (`ma comm history`).
 
-⚠️ **Ami ebből következik és mérendő lesz:** a hang-csatorna **folyamatosan** termel átiratot
-*(V-2: „mindig ülj bent")*, a köteg viszont a gyűjtő-ablak szerint ürül. Élő próbánál meg kell
-nézni, hogy a **beszéd-tempó** és a **köteg-ütem** összeér-e — ez nem tervezhető, csak mérhető.
+#### ⛔ HATÓKÖRÖN KÍVÜL: a folyamatos feldolgozás időzítése — owner, 2026-09-07 14:13
+
+> *„Ezzel a continuous voice feldolgozás időzítéssel most ne foglalkozz. Azt majd én fogom
+> egyelőre a mikrofonomat ki be kapcsolni."*
+
+⇒ A korábbi aggályom *(beszéd-tempó ↔ köteg-ütem)* **tárgytalan**: a **mikrofon** lesz a kapcsoló,
+nem egy algoritmus. ⭐ Ez a legegyszerűbb megoldás, és **azonnal működik** — a hangvezérelt
+szegmentálás finomhangolása ráér, ha egyáltalán kell valaha.
+
+#### 🔴 ÚJ KÖVETELMÉNY: TÜKÖR-SZÖVEG a hang-csatornába, MINDKETTŐNKRŐL
+
+> **Owner, 2026-09-07 14:13:** *„Viszont oda is kell majd mirror text formában mindkettőnknek"*
+
+⇒ Ami a hang-csatornában **elhangzik**, az **szövegként is megjelenik** ott — **az ő beszéde
+ÉS az enyém** egyaránt.
+
+| Irány | Mi hangzik el | Mi jelenik meg szövegben |
+|---|---|---|
+| ő → én | a beszéde | a **felismert átirat** |
+| én → ő | a `voice-output` TTS-e | ⭐ az, **amit kimondtam** |
+
+⭐ **MIÉRT EZ A HELYES:** a hang **elszáll**, a szöveg **marad**. Egy félrehallott mondatot csak
+akkor lehet elkapni, ha **látható** — és a hang-csatornában ez ma sehol nem látszana. Ugyanaz az
+elv, mint a Discord-hangüzenetek tükrénél: *„inkább ne értsük, mint félreértsük"*.
+
+⚠️ **A saját oldalam KÜLÖN indok:** ha a TTS mást mond, mint amit szántam *(rossz kiejtés,
+csonka szöveg)*, azt **csak a leírt változat** buktatja le. Ez az én oldalamon ma **nincs meg**
+sehol — a `voice-output` eddig csak hangot adott.
 
 **Kész, ha:** a `voice/` fordul, és a CCAP-ra semmi nem hivatkozik.
 
@@ -266,8 +291,10 @@ A tényleges 11 ezer sor. **Változatlanul**, csak import-utak.
 
 ### 5. szakasz — bekötés + ÉLŐ próba
 
-Belépés a hang-csatornába, felismerés a **helyi** ágon, az átirat a meglévő
-Discord-kötegbe.
+Belépés a hang-csatornába *(V-1: `1489036734632034496`)*, felismerés a **helyi** ágon, az
+átirat a meglévő Discord-kötegbe — **és a TÜKÖR-SZÖVEG mindkét irányban** *(owner 14:13)*.
+
+⛔ **A folyamatos feldolgozás időzítése NEM része** — az owner a mikrofonjával kapcsol.
 **Kész, ha:** az owner beszél a hang-csatornába, és az átirat eljut hozzám.
 
 ---
