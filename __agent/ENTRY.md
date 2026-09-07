@@ -285,6 +285,8 @@ becsatornázva a workflow szabályok")*, nem egyszeri tévedést — és igaza v
 
 **Ami NEM az enyém:** `__agent/capabilities/CATALOG.md` → *„⛔ NEM AZ ÉN HATÁSKÖRÖM"* szekció.
 
+🔴 **ÉS HA MÁSIK SESSIONNEK KÜLDENÉL:** a feltétel **`waiting-input` + `busy: false` + ÜRES SOR** — mindhárom. ⚠️ **Mérve 2026-09-07 23:40:** a DEV `waiting-input` és **nem** foglalt volt, **mégis volt tétel a sorában** *(a saját ébresztője)*. A régi, csak-státusz alapú ellenőrzésem **ráküldött volna**. Kanonikus: `__agent/references/ccap-session-messaging.md`.
+
 ---
 
 ## 6. AMI SOSEM MARADHAT EL

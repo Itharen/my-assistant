@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 23:24
+**Utoljára frissítve:** 2026-09-07 23:42
 
 ---
 
@@ -1574,6 +1574,39 @@ nem ok. Ha ez rossz feltevés, a handoff szerint jelezniuk kell.
 A `cli/src/voice/voice-channel-recorder.spec.ts` **modosult a lemezen**: uj export
 (`classifyRecordingOutcome`). ⇒ Nem csak `isBusyProcessing: true`, hanem **valodi kimenet** is van.
 📌 Pont ez a kulonbseg, amit a 4c lepes eloir: a statusz nem bizonyitek, a **kimenet** az.
+
+
+
+---
+
+## 🔴 2026-09-07 23:39 — SORBAALLAS: a statusz onmagaban NEM eleg a kuldeshez
+
+> **Owner:** *„ne kuldjel uzenetet, amikor folyamatban van a folyamat… ha mar van sorban is
+> uzenet, akkor sokadikkent kerul sorba, azok mar nagyon szet fognak maszni."*
+
+**Amit mertem — a figyelmeztetes talalt, de meg nem harapott:**
+
+| Session | Statusz | Busy | Sor |
+|---|---|---|---|
+| **DEV** | `waiting-input` | `false` | ⚠️ **1 tetel** *(a sajat ScheduleWakeup-ja)* |
+| **FDP** | `waiting-input` | `false` | ures |
+
+✅ **Mindket dispatch elott ellenoriztem a statuszt**, es egyik sem torlodott.
+🔴 **DE a modszerem hianyos volt:** csak `status` + `busy`. A **sort nem neztem.**
+⇒ Ha most kuldenek a DEV-nek, a promptom **a sajat ebresztoje moge** allna be, es a ketto
+**szetmaszna** — pontosan az, amirol az owner beszel.
+
+📌 **AZ UJ FELTETEL — mindharom kell:** `runtime.status = waiting-input` **ÉS**
+`flags.isBusyProcessing = false` **ÉS** ⭐ **`queue.items` URES.**
+⛔ Ha barmelyik nem teljesul: **nem kuldok**, varok a kovetkezo korig.
+
+⭐ **Amiert ez tobb, mint egy szabaly-pontositas:** a `waiting-input` **nem azt jelenti, hogy
+szabad a palya** — csak azt, hogy epp nem szamol. A sor ettol fuggetlenul allhat tele.
+*(Ugyanaz a mintazat, mint a `lastActivityAt`-nal ket oraja: **egy mezo neve nem a jelentese**,
+es a „nem foglalt" nem egyenlo a „fogadokesz"-szel.)*
+
+Javitva: `__agent/references/ccap-session-messaging.md` *(uj szekcio + checklist)* es
+`__agent/ENTRY.md` §5b.
 
 
 ### A következő konkrét lépés

@@ -73,6 +73,36 @@ azonosító** — mindig a `sessionId` alapján küldj, és ellenőrizd a státu
 
 ---
 
+## 🔴 A KÜLDÉS FELTÉTELE: `waiting-input` **ÉS ÜRES SOR** — a kettő NEM ugyanaz
+
+> **Owner (2026-09-07 23:39):** *„ne küldjél üzenetet, amikor folyamatban van a folyamat a
+> rendszerben. Másik session orkesztrációs alaptétel, hogy meg kell nézni, hogy folyamatban
+> van-e, mielőtt üzeneteket küldözgetsz rá. Mert ha folyamatban van, sorba kerül. Ha már van
+> sorban is üzenet, akkor sokadikként kerül sorba, azok már nagyon szét fognak mászni."*
+
+⭐ **A MÉRÉS, AMI ÉLESÍTETTE (2026-09-07 23:40):** a DEV session `status: waiting-input`,
+`isBusyProcessing: false` — **mégis volt egy tétel a sorában** *(a saját ScheduleWakeup-ja)*.
+⇒ Ha a régi módszeremmel *(csak `status` + `busy`)* küldtem volna, a promptom **a saját ébresztője
+mögé** áll be, és a kettő **szétmászik**.
+
+**A HELYES ELLENŐRZÉS — mindhárom kell:**
+
+```
+GET /api/cc-session/<id>/inspect
+```
+
+| Feltétel | Elvárt |
+|---|---|
+| `runtime.status` | `waiting-input` |
+| `flags.isBusyProcessing` | `false` |
+| ⭐ **`queue.items`** | **ÜRES** |
+
+⛔ **Ha bármelyik nem teljesül: NE KÜLDJ.** Várd meg a következő kört.
+📌 A sorbaállított prompt **nem gyorsítás, hanem halasztás + kockázat**: külön, teljes értékű
+futásként indul, és a **sorrend csúszhat** ahhoz képest, amit szántál.
+
+---
+
 ## 🔍 HOGYAN ELLENŐRIZD, HOGY DOLGOZIK-E *(owner 2026-09-07 22:42: „időnként ellenőrizned is kell őket")*
 
 ```
@@ -106,5 +136,5 @@ semmi hasznosat nem termel.
 - [ ] **Dedup:** nincs már megválaszolva? *(7.2)*
 - [ ] **Egy** jól körülhatárolt munkacsomag? *(7.5)*
 - [ ] **Újraolvastam** a saját promptomat? *(7.6)*
-- [ ] Frissen lekérdezett `status`? *(7.3)*
+- [ ] Frissen lekérdezett `status` **ÉS `queue.items` ÜRES**? *(7.3 + owner 23:39)*
 - [ ] A trigger-üzenet **minimális**, két pointerrel?
