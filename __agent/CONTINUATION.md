@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 20:39
+**Utoljára frissítve:** 2026-09-07 20:57
 
 ---
 
@@ -1095,6 +1095,48 @@ a küszöb megkérdőjelezve `Q-2026-09-07-05`.
 529/529 teszt zöld.
 
 
+
+---
+
+## 🔴 2026-09-07 20:55–20:57 — HÁROM OWNER-KORREKCIÓ, EGY SAJÁT ADÓSSÁGGAL
+
+### 1. ⛔ FALSE ALARM: a „elveszett üzenet" nem veszett el
+
+> *„Nem volt az második üzenetemben semmilyen tartalom, épp csak megnyomtam a gombot,
+> köhintettem és elküldött."*
+
+⭐ **De az őr HELYESEN működött:** köhögésből lett *„Köszönöm"*, és pont ezt kell gyanúsnak
+jelölnie. 📌 **A csere jó irányba dől:** egy fölösleges rákérdezés olcsó, egy elnyelt üzenet nem.
+⇒ A guard-javítás **érvényben marad**, csak a példa nem valódi tartalom-vesztés volt.
+
+### 2. 🔴 SAJÁT ADÓSSÁG — nem válaszoltam, hanem visszakérdeztem
+
+> *„mintha nem [válaszoltál] volna arra a kérésemre, hogy mi lenne akkor, hogyha a pozíció
+> visszajelzést beleépítenénk egyfajta mobil appba"*
+
+**Igaza volt.** A kérdését **owner-döntéssé alakítottam és visszadobtam** (L1/L2), ahelyett hogy
+állást foglaltam volna. ⛔ A working-style ezt kimondottan tiltja: *„Ne mondja meg neked, mit
+csinálj — inkább ötletelj"*, és *„a Definition of Done-t TE mondod ki"*.
+
+📌 **A hibaminta neve:** *kérdés visszapattintása döntésként*. Owner-kapu ott van, ahol
+**cselekedni** nem szabad nélküle — nem ott, ahol **véleményt** kérnek.
+
+**A válasz megírva:** `current/feature-requests/own-location-app.md`. Lényege:
+✅ **csináljuk sajátban, Capacitorral** · ⭐ mérve: az organizernek **kész APK-futószalagja** van
+(`build-mobile-*` szkriptek) · 🔴 a fő nehézség **nem az app**, hanem hogy a **böngésző/PWA
+háttérben NEM tud helyet küldeni** *(platform-korlát — ezért létezik az OwnTracks)* · a plugin
+**nem fizetős** (MIT-es alternatívák, ellenőrizve) · a három „ár" közül **kettő elesik**
+(telepítés = kézi APK egy usernek; auto-update = v2; location sharing = **már kész**).
+
+### 3. ⭐ HATÓKÖR-KORREKCIÓ — a T-41 nem az én feladatom
+
+> *„a mikromunkák, meg a támogatáskeresések, ez nem a te feladatod lesz, az arra majd egy
+> agentet kell összeállítsunk és elindítsunk."*
+
+⇒ T-41 átkeretezve: **owner-vezérelt agent-építés**, nem az én munkám. A mai feltárás
+**kiindulásként megmarad**. ⛔ Agentet magamtól nem indítok — nincs jóváhagyva.
+
+
 ### A következő konkrét lépés
 
 **T-22 / 5. szakasz:** bekötés a hang-csatornára *(`1489036734632034496`)*, **kétirányú
@@ -1132,8 +1174,10 @@ mondja. ⛔ Nem kaparom tovább: két ellentmondó válasz után a forrás megb�
 
 ⏳ **NÉGY DOLOG VÁR AZ OWNERRE, addig egyikkel sem tudok haladni:**
 
--1. 🔴 **AZ ELVESZETT ÜZENET ÚJRAKÜLDÉSE** (2026-09-07 20:32, 9 mp) — a tartalmát senki nem
-    ismeri. Kértem Discordon.
+-1. ~~Az „elveszett" üzenet~~ ✅ **LEZÁRVA** — nem volt benne tartalom (köhögés). Az őr helyesen
+    jelölte gyanúsnak.
+0b. 📍 **Saját helyzet-app: belevágjunk a v1-be?** — a válaszom megvan
+    (`current/feature-requests/own-location-app.md`), a döntés az övé.
 
 0. **T-44 / holnap** — ⭐ **a legidőérzékenyebb**: hánykor akar ott lenni a summiton?
    Egyetlen szám, és abból megy az időzített készülődés-emlékeztető.
