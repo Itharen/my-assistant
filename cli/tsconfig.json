@@ -39,5 +39,5 @@
   // a repoban vannak, de a fo build nem latja oket. A bekotes (projekt-hivatkozas vagy
   // kulon build-lepes) a terv 3-4. szakaszaban jon, amikor lesz mit bekotni.
   // Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md`
-  "exclude": ["dist", "node_modules", "src/_modules"]
+  "exclude": ["dist", "node_modules", "src/_modules", "src/_collections", "src/_enums"]
 }

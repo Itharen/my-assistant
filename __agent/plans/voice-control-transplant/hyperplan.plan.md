@@ -11,15 +11,53 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 14:26
+## 📊 STATUS — 2026-09-07 14:53
 
 | | |
 |---|---|
-| **Fázis** | 🟠 **1–3. szakasz KÉSZ** — az illesztő megvan és **igazoltan illeszkedik** |
-| **Haladás** | 3/5 szakasz |
+| **Fázis** | 🟠 **4. szakasz ~KÉSZ** — mind a **70 fájl** bent van, 2 fájl kivételével fordul |
+| **Haladás** | 4/5 szakasz *(egy nyitott ponttal)* |
 | **Teszt** | CLI 481/481 zöld; a fő build **érintetlen** |
-| **Következő lépés** | 4. szakasz: a `voice-output` + a maradék `voice/` service-ek átemelése |
-| **Blokkoló** | nincs |
+| **Következő lépés** | ⚠️ a `BodyInit` típus-ütközés feloldása *(l. lentebb)*, majd 5. szakasz: bekötés + élő próba |
+| **Blokkoló** | nincs a szállításban — de a **futtatáshoz** a lenti pontot meg kell oldani |
+
+### A 4. szakasz igazolása — és az EGY nyitott pont
+
+**Áthozva:** `voice-output` (19 fájl) · `elevenlabs` (14) · a `voice/` maradék service-ei ·
+`agent-3` porcupine (2) · a szükséges CCAP-konstansok. **Összesen 70 fájl.**
+
+**Telepítve:** `@futdevpro/fdp-templates` · `openai` · `@elevenlabs/elevenlabs-js`
+*(az utóbbi kettő a fizetős ágak fordításához kell — ⛔ nem lesznek alapértelmezés)*.
+
+**Két típus-váz, kód-változtatás HELYETT:**
+- `new-version-context.data-model.ts` — ⭐ mérve: az egyetlen hivatkozás **kikommentelt kódban**
+  van, tehát halott import. Az eredeti egy **egész CCAP-alrendszert** húzna magával.
+- `porcupine-sdk.d.ts` — a Picovoice **fizetős** SDK típusai. ⭐ A régi kód **maga számít a
+  hiányára**: dinamikus import `try/catch`-ben, a szerző megjegyzésével
+  *(„This is expected if Agent-3 is not initialized")*.
+
+#### 🔴 A NYITOTT PONT: `Buffer` → `BodyInit` (2 fájl)
+
+A két felismerő-kliens **nyers `Buffer`-t** ad a `fetch` törzsének. Nálam ez típushiba.
+
+**Amit MEGMÉRTEM — és amit NEM sikerült:**
+
+| Próba | Eredmény |
+|---|---|
+| `@types/node` 20 → **22** | ⛔ nem oldotta meg |
+| `@types/node` 22 → **24** *(a régi bot verziója)* | ⛔ nem oldotta meg |
+| `lib`-be a **`dom`** *(a régi bot beállítása, szó szerint)* | ⛔ nem oldotta meg |
+
+⭐ **Amit viszont TUDUNK, és ez fontos:** a **régi botban ez a két fájl HIBÁTLAN**
+*(a botnak van 27 saját típushibája — de EGYIK SEM ezekben)*. ⇒ **A kód nem hibás**; a
+környezetem tér el attól, amiben íródott, és a különbség okát még nem azonosítottam.
+
+⚠️ **Három sikertelen próba után MEGÁLLTAM**, ahelyett hogy tovább variálnám a kapcsolókat
+*(`core-second-failure-step-back`)*. ⛔ És **nem** nyúltam a kódhoz: egy `as unknown as BodyInit`
+elrejtené a kérdést, nem megválaszolná — és pont az átemelési szabályt sértené.
+
+**Hogy ez MA mit blokkol:** ⛔ semmit a szállításban *(a projekt `noEmit`)* — de **az 5.
+szakasz futtatásához meg kell oldani**, mert kód nélkül nincs mit elindítani.
 
 ### A 3. szakasz igazolása — az illesztő MŰKÖDIK
 

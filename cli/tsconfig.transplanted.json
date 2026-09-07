@@ -1,0 +1,50 @@
+{
+  // ⛔ AZ ÁTEMELT CCAP-KÓD SAJÁT, LAZÁBB SZERZŐDÉSE — szándékos, owner-korláton alapul.
+  //
+  // > **Owner, 2026-09-07:** *„semmit nem szabad változtatni a kódban jelenleg, mert nagyon
+  // > törékeny az a kód, de cserében meg egész jól működött."*
+  //
+  // A régi CCAP-bot `strict` NÉLKÜL fordult. A my-assistant CLI `strict: true` +
+  // `noUncheckedIndexedAccess: true`. Ha a kódot igazítanám a szigorhoz, minden hozzáadott
+  // `!` és őr egy **igazolhatatlan viselkedés-változás** volna: a régi bot NEM FUT, a modul
+  // 2026-01-31 óta változatlan, tehát **nincs mihez hasonlítani**.
+  //
+  // ⇒ A különbséget ott oldjuk fel, ahol nem árt: a **konfigurációban**.
+  //
+  // 🔴 MIÉRT NEM CSAK `src/_modules`: az átemelt kód a saját, EREDETI útvonalain hivatkozik
+  // egymásra (`../../../_collections/...`, `../../../_enums/...`) — épp ezért maradhatott
+  // változatlan. Ezek a könyvtárak tehát UGYANÚGY átemelt kódot tartalmaznak, és ugyanez a
+  // laza szerződés vonatkozik rájuk. *(Mérve: szigorúan fordítva az `operations.ts` egyedül
+  // 4 hibát adott.)*
+  //
+  // ⚠️ ADÓSSÁG, és annak is jelöljük. Az élő próba után (5. szakasz) a szigorítás külön kör
+  // lehet — onnantól VAN mihez mérni.
+  // Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md`
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strict": false,
+    "noUncheckedIndexedAccess": false,
+    "noEmit": true,
+    // 🔴 A `dom` NEM dísz — MÉRT OKA van, és a régi bot tsconfigjából jön SZÓ SZERINT.
+    //
+    // A hang-modulok NYERS `Buffer`-t adnak át a `fetch` törzsének. `dom` nélkül a
+    // `BodyInit` az @types/node szigorúbb (undici) változata, ami a `Buffer<ArrayBufferLike>`-ot
+    // NEM fogadja el ⇒ 2 fájl elbukik. A `dom`-mal a DOM-beli `BodyInit` érvényes, ami
+    // `BufferSource`-t is enged.
+    //
+    // ⭐ MÉRVE (2026-09-07): a régi bot `lib`-je `["es6","es2022","dom"]`, és nála ez a két
+    // fájl HIBÁTLAN *(a botnak van 27 saját hibája — de EGYIK SEM ezekben)*. Előbb az
+    // @types/node verzióra gyanakodtam (20 → 22 → 24), de a bump NEM oldotta meg: nem a
+    // típus-csomag verziója számított, hanem a `lib`.
+    //
+    // ⇒ Vagyis a kód nem hibás — az én KÖRNYEZETEM tért el attól, amiben íródott.
+    // Ezt a különbséget a helyes irányba oldjuk fel: a kód marad, a beállítás igazodik.
+    "lib": ["es6", "es2022", "dom"]
+  },
+  "include": [
+    "src/_modules/**/*.ts",
+    "src/_collections/**/*.ts",
+    "src/_enums/**/*.ts"
+  ],
+  "exclude": ["dist", "node_modules"]
+}
