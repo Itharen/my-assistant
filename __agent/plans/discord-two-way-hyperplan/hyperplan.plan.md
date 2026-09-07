@@ -9,7 +9,7 @@ alaposan tervezd meg mindent, ami ehhez szükséges. Készíts egy Hyperplant"*
 
 ```yaml
 state: live-verified
-overall_progress: "EGY belepesi pont: dc ldp -> szerver -> Discord-figyelo + Jelenlet-figyelo + Konzol-pulzus. Mindharom felugyelve/bekotve. CLI 447/447 + szerver 42/42 zold."
+overall_progress: "EGY belepesi pont: dc ldp -> szerver -> Discord-figyelo + Jelenlet-figyelo + Konzol-pulzus. Mindharom felugyelve/bekotve. CLI 468/468 + szerver 42/42 zold."
 blocking: "NINCS technikai blokkolo. Marad: nyitott kerdesek (H, I, J, K, L, M)."
 architecture_decision: "SAJÁT bot (owner, 2026-09-06) + a CCAP hivatalos prompt-végpontja a bejuttatásra, SAJÁT oldali kötegeléssel (1 futás, nem N)"
 review_loop: "MINDKÉT szakaszra TELJESÜLT — 1. szakasz 8 kör/11 javítás, figyelő 7 kör/10 javítás; mindkettőnél az utolsó KETTŐ tiszta."

@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 10:25
+**Utoljára frissítve:** 2026-09-07 10:33
 
 ---
 
@@ -14,7 +14,7 @@
 active_plan: __agent/plans/discord-two-way-hyperplan/hyperplan.plan.md
 state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
-tests: "CLI 447/447 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
+tests: "CLI 468/468 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
 owner_available: false        # AI Summiton (elindult 07:45); Discordon ir
 blocked_on_owner: "Nyitott kerdesek H/I/J/K/L/M - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak), M3 (az idegen interfood-osszefesules commitolhato-e). [M1 LEZARVA: megjavitva.]"
 ```
@@ -234,6 +234,41 @@ A rendszer mukodott, a **visszajelzese** nem.
 | **Visszamenoleges helyesseg** | a regi, `kind` nelkuli bejegyzesek **valasznak** szamitanak — ez a helyes ertelmezes, teszt orzi. |
 | **Review-talalat** | a jelolo eloszor **memoriaban** volt — de a szerver **minden LDP-korben ujraindul**, tehat elveszett volna, es ujabb nyugta ment volna ki. Most **fajlban** van. |
 | **Teszt** | **CLI 447/447** (15 uj). |
+
+---
+
+## ✅ 2026-09-07 10:33 — OWNER-DONTESEK + a helyzet-kovetes MAGJA (C-47 resz)
+
+### Harom owner-dontes rogzitve
+
+| Mi | Dontes |
+|---|---|
+| **N1 helyzet-kovetes** | ✅ **OwnTracks** — *„Jol hangzik az owntracks"* |
+| **N4 gyakorisag** | ✅ **ALLITHATO**, nem beegetett — *„Legyen allithato es majd finomhangoljuk"* |
+| **N5 tarolas** | ✅ 🏠 otthon: **NEM taroljuk a koordinatat** · 🚶 nem-otthon: tarolhato hosszabb tavon is |
+| **Prioritas** | ✅ **mikromunka + hackathon ELORE** — *„Reklamnak es penznek"*. Hatter: telitett a szoftver-kinalat. -> `mvp-focus.md` |
+
+Uj szabaly: `current/principles/location-retention.md`.
+N2 (LAN-jelenlet) es N3 (melyik eszkoz a telefon) **elesett** — az OwnTracks megoldja.
+
+### A mag megepult (`cli/src/location/`)
+
+⭐ **A kulcs-dontes:** az „otthon van-e?" kerdest **A TELEFON donti el** (OwnTracks-regio,
+`inregions`), nem mi ⇒ **nekunk SOSEM kell az otthon koordinataja**.
+*(Merve: `current/locations.md`-ben csak CIM van, koordinata nincs — es marad is igy.)*
+
+- A szabaly **tipusszinten** kikenyszeritve: a `StoredLocation` union **otthon**-agahoz
+  **nincs is hova** tenni a koordinatat. Nem egy elfelejtheto `if`.
+- Ha a telefon nem kuld regio-infot: `unknown` — ⛔ **NEM `away`** —, es **otthonkent**
+  taroljuk. Egy hianyzo adatpont olcsobb, mint egy olyan, amit sosem lett volna szabad
+  eltarolni.
+- **Teszt: CLI 468/468** (21 uj).
+
+### ⏳ HATRA
+
+1. a **HTTP-vegpont**, ami az OwnTracks-uzenetet fogadja;
+2. **owner-lepes:** az app feltetele + egy `home` regio felvetele;
+3. eldontendo (ram bizva): a pontos tarolasi hely, es hogy mekkora sugar az „otthon" — ez **merendo**.
 
 ---
 
