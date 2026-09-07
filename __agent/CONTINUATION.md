@@ -929,6 +929,26 @@ felvevő **induláskor kiüríti** ⇒ mindkettő gitignore-ban.
 Doksi: `__documentations/developments/2026-09-07-transplanted-code-never-compiled.md`
 
 
+
+### 🔴 NYITOTT, MÉRT PROBLÉMA — fejlesztés közben a csatorna NÉMA
+
+**Mérve 2026-09-07 17:40:** a Discord-figyelő **18 perce** nem élt, mert az LDP folyamatosan
+újraépít *(minden `cli/src` mentés új kört indít)*, és a szerver **csak a teljes pipeline UTÁN**
+indul újra. A figyelőt a szerver tartja életben ⇒ **amíg fejlesztek, az owner üzenetei nem
+érnek el.**
+
+⚠️ **Ma én rontottam rajta:** +7 lépés (5 review + 2 átemelt-build) ≈ +1 perc körönként.
+A dominancia viszont nem ezé: `client-build` 536 s + `client-test` 377 s ≈ **15 perc**.
+
+⭐ **Nem vész el semmi** — a 12 órás backfill és a `comm audit` lefedi *(ma 32/32 megvolt)*.
+**A késleltetés** a probléma, nem az adatvesztés.
+
+**Irány, ha felvesszük:** a figyelő ne a pipeline végétől függjön — vagy külön felügyelt
+folyamat, ami a build alatt is él, vagy a szerver-újraindítás előrébb hozása.
+⛔ Ez az LDP↔szerver viszonyhoz nyúlna (`ldp-default-runtime.md`) ⇒ **owner-döntés kell**, nem
+csinálom magamtól.
+
+
 ### A következő konkrét lépés
 
 **T-22 / 5. szakasz:** bekötés a hang-csatornára *(`1489036734632034496`)*, **kétirányú

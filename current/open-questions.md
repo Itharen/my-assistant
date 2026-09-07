@@ -666,3 +666,17 @@ próbán mérve)*, és a szerződése **ugyanaz** marad, akárki küld rá. ⇒ 
 eldobott munka, hanem ugyanaz a végpont.
 
 📌 Ez **owner-döntés**: a „saját fejlesztést preferálom" a te elved, én nem írom felül.
+
+## Q-2026-09-07-01 — a figyelő a build alatt is éljen? (process / h)
+
+**Mérve 2026-09-07 17:40:** fejlesztés közben a Discord-figyelő **18 percig** nem élt, mert a
+szerver csak a teljes LDP-pipeline után indul újra, a figyelőt pedig a szerver tartja életben.
+Az üzenetek **nem vesznek el** (12 órás backfill + `comm audit`), de **késnek**.
+
+**A kérdés:** vegyük-e külön, a build alatt is élő folyamatba a figyelőt — vagy maradjon a
+mostani (egyszerűbb, de a build idejére néma) felállás?
+
+⛔ Nem döntöm el magam: az `ldp-default-runtime.md` szerint a szerver a gazda, és ez
+owner-kimondott felépítés.
+
+**Státusz:** open
