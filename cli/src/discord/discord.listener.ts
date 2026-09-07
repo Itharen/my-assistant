@@ -408,6 +408,28 @@ export class DiscordListener {
     // ⛔ Ugyanazt a hangot nem ismerjük fel kétszer: drága, és MÁSODIK tükör-üzenetet küldene.
     if (this.transcribedMessageIds.has(incoming.messageId)) return null;
 
+    // 🔴 A MEMÓRIA-HALMAZ CSAK EZT A FUTÁST VÉDI — az ÚJRAINDÍTÁST NEM.
+    //
+    // Az LDP folyamatosan újraindít; minden indulásnál üres halmazzal kezdünk. Ha a Discord
+    // ezután újraküldi ugyanazt a hangüzenetet *(gateway-ismétlés, újracsatlakozás)*, a
+    // felismerés ÚJRA lefutna — percekig tartó FDP AI-hívás, majd egy **második tükör-üzenet**
+    // az ownernek ugyanarról a hangról.
+    //
+    // > **Owner (2026-09-07):** *„elkerüljük a duplikációkat és ismételt üzenetküldéseket"*
+    //
+    // ⭐ A tartós nyilvántartás *(köteg + archívum)* ezt tudja — csak meg kellett kérdezni.
+    // ⚠️ A sorrend SZÁNDÉKOS: a drága lépés ELŐTT kérdezünk, nem utána.
+    if (await this.bridge.getStore().isKnownMessage(incoming.messageId)) {
+      await this.safeLog({
+        kind: 'note',
+        summary: '[discord/listener] A hangüzenetet MÁR feldolgoztuk egy korábbi futásban — '
+          + 'nem ismerjük fel újra, és nem küldünk második tükröt.',
+        extra: { code: 'MA-DISCORD-VOICE-ALREADY-PROCESSED', messageId: incoming.messageId },
+      });
+
+      return null;
+    }
+
     this.transcribedMessageIds.add(incoming.messageId);
     this.forgetOldestTranscribedIds();
 

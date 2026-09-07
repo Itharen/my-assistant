@@ -592,3 +592,32 @@ Terv: `__agent/plans/voice-control-transplant/hyperplan.plan.md` · feladat: **T
 - 🙋 **ElevenLabs-kulcs**: az owner adja, ha hazaért. ⛔ Én **nem javasoltam** fizetős
   szolgáltatást *(`no-paid-solutions`)* — ez **az ő döntése**, és csak a **kimenő beszéd**
   minőségét érinti. A **felismerés** marad a helyi FDP AI-n, kulcs nélkül.
+
+---
+
+## D) Duplikáció-védelem: kell-e VALÓDI adatbázis? — 2026-09-07
+
+> **Owner (hangüzenetben, 12:21) — SZÓ SZERINT:**
+>
+> *„van valami [issue] azzal kapcsolatban is, hogy egy-egy üzenetet többször feldolgozunk. Ezt
+> mindenképpen kezelnünk kell. A DB-be is kell tárolni, hogy mit dolgoztunk már fel, mit nem,
+> hogy elkerüljük a duplikációkat és ismételt üzenetküldéseket."*
+
+✅ **A hibát megtaláltam és javítottam** — de a *„DB-be is kell tárolni"* részt pontosítani kell.
+
+⭐ **A tartós nyilvántartás MÁR MEGVOLT:** a kézbesítettek archívuma
+*(`~/.config/my-assistant/discord/delivered-inbound.jsonl`)* append-only, túléli az
+újraindítást, és minden feldolgozott üzenet azonosítóját tartalmazza.
+
+🔴 **A hiba nem a tárolás hiánya volt, hanem hogy NEM KÉRDEZTÜK MEG:** az `append()` csak a
+**várakozó köteget** nézte, az archívumot nem. Vagyis amint egy üzenet kiment és archiválódott,
+a védelme **megszűnt** — egy újraküldött Discord-esemény másodszor is bejuttatta.
+
+| ID | Kérdés | Fontosság |
+|---|---|---|
+| `D1` | 🔵 A fájl-alapú archívum **elég**, vagy kifejezetten **Mongo** kell? | `l` |
+
+**Az ajánlásom: maradjon fájl.** Indok: a Discord-réteg végig fájl-alapú *(a köteg is az)*,
+a mérhető hiba **nem a tárolón** múlt, és egy adatbázis-függőség idehozása **több hibalehetőség**
+lenne ugyanazért a garanciáért. ⚠️ Ha viszont a hangüzenet-számok nőnek, az archívum
+végigolvasása üzenetenként lassulni fog — **azt majd mérni kell**, és akkor indexelni.

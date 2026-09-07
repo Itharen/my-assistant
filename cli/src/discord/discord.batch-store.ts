@@ -44,14 +44,43 @@ export class DiscordBatchStore {
    * @returns true, ha ténylegesen bekerült; false, ha duplikátum volt.
    */
   async append(message: DiscordInboundMessage): Promise<boolean> {
-    const pending: DiscordInboundMessage[] = await this.readPending();
-
-    if (pending.some((entry) => entry.messageId === message.messageId)) return false;
+    // 🔴 MÉRT HIÁNY (2026-09-07) — EZ DOLGOZOTT FEL ÜZENETEKET KÉTSZER.
+    //
+    // Itt korábban CSAK a várakozó köteget néztük meg. Az **archívumot nem** — pedig a
+    // már bejuttatott üzenet is „ismert". Vagyis amint egy üzenet kiment és archiválódott,
+    // a védelme MEGSZŰNT: ha a Discord újraküldte az eseményt *(újracsatlakozás, gateway
+    // ismétlés)*, ugyanaz az üzenet **másodszor is bekerült a kötegbe**, és másodszor is
+    // eljutott hozzám.
+    //
+    // > **Owner (2026-09-07, hangüzenetben):** *„van valami [issue] azzal kapcsolatban is,
+    // > hogy egy-egy üzenetet többször feldolgozunk. Ezt mindenképpen kezelnünk kell. […]
+    // > tárolni, hogy mit dolgoztunk már fel, mit nem, hogy elkerüljük a duplikációkat és
+    // > ismételt üzenetküldéseket."*
+    //
+    // ⭐ A TARTÓS NYILVÁNTARTÁS MÁR MEGVOLT — az archívum pontosan ez. A hiba nem az volt,
+    // hogy nem tároltuk, hanem hogy **nem kérdeztük meg**. A javítás ezért nem új tár,
+    // hanem az, hogy MINDKÉT halmazt nézzük.
+    if (await this.isKnownMessage(message.messageId)) return false;
 
     await mkdir(dirname(this.paths.pendingFile), { recursive: true });
     await appendFile(this.paths.pendingFile, `${JSON.stringify(message)}\n`, 'utf-8');
 
     return true;
+  }
+
+  /**
+   * Ismerjük-e MÁR ezt az üzenetet — a várakozók KÖZÖTT vagy a kézbesítettek között?
+   *
+   * ⚠️ MINDKETTŐ kell. Csak a köteget nézve a már kézbesített üzenet „újnak" látszik; csak
+   * az archívumot nézve a még várakozó látszik annak. A duplikáció a két halmaz KÖZÖTTI
+   * résben keletkezett.
+   */
+  async isKnownMessage(messageId: string): Promise<boolean> {
+    const pending: DiscordInboundMessage[] = await this.readPending();
+
+    if (pending.some((entry) => entry.messageId === messageId)) return true;
+
+    return this.hasBeenDelivered(messageId);
   }
 
   /**

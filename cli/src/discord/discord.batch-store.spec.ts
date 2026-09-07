@@ -167,3 +167,56 @@ describe('DiscordBatchStore.applyPendingRefresh', () => {
     expect(await store.readPending()).toEqual([]);
   });
 });
+
+describe('DiscordBatchStore — 🔴 a duplikáció-védelem MINDKÉT halmazra', () => {
+
+  let store: DiscordBatchStore;
+
+  beforeEach(() => {
+    store = makeStore().store;
+  });
+
+  function msg(messageId: string): DiscordInboundMessage {
+    return {
+      messageId: messageId,
+      channelId: 'c',
+      authorId: 'a',
+      authorName: 'itharen',
+      content: 'szia',
+      receivedAt: new Date().toISOString(),
+    };
+  }
+
+  it('a várakozó köteg duplikátumát elutasítja', async () => {
+    expect(await store.append(msg('1'))).toBe(true);
+    expect(await store.append(msg('1'))).toBe(false);
+  });
+
+  it('🔴 a MÁR KÉZBESÍTETT üzenetet is elutasítja — ez dolgozott fel üzeneteket kétszer', async () => {
+    await store.append(msg('1'));
+    await store.commitDelivered(1);
+
+    // A köteg most ÜRES, az üzenet az archívumban van. Korábban ITT `true` jött vissza,
+    // mert az `append` csak a köteget nézte — így egy újraküldött Discord-esemény
+    // másodszor is bejuttatta ugyanazt az üzenetet.
+    expect(await store.readPending()).toEqual([]);
+    expect(await store.append(msg('1'))).toBe(false);
+  });
+
+  it('`isKnownMessage` mindkét halmazt látja', async () => {
+    await store.append(msg('varakozo'));
+    await store.append(msg('kezbesitett'));
+    await store.commitDelivered(1);
+
+    expect(await store.isKnownMessage('varakozo')).toBe(true);
+    expect(await store.isKnownMessage('kezbesitett')).toBe(true);
+    expect(await store.isKnownMessage('ismeretlen')).toBe(false);
+  });
+
+  it('a valóban új üzenetet változatlanul beengedi', async () => {
+    await store.append(msg('1'));
+    await store.commitDelivered(1);
+
+    expect(await store.append(msg('2'))).toBe(true);
+  });
+});
