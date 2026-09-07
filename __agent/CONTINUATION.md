@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 18:05
+**Utoljára frissítve:** 2026-09-07 18:22
 
 ---
 
@@ -990,6 +990,42 @@ megszólal** — ezt magamtól nem tudom előidézni. Runtime-ig igazolt: a lust
 523/523 teszt zöld.
 
 
+
+---
+
+## ✅ 2026-09-07 18:20–18:22 — A FELVÉTEL ÉLESBEN ELINDULT + T-41 FELTÁRVA
+
+### 🎙️ A hang-lánc a VALÓDI futásidőben végigment (az utolsó lépésig)
+
+Action-log: **`MA-VOICE-JOINED` 18:13:14** → **`MA-VOICE-RECORDING-STARTED` 18:13:21**.
+⇒ A lusta betöltés **7 mp** volt *(nem 19,5 — meleg OS-cache; a 19,5 s a hideg mérés)*.
+⏳ Már csak **valódi beszéd** hiányzik; azt magamtól nem tudom előidézni.
+
+### 🔍 T-41 feltárás — `current/leads/2026-09-07-exploration.md`
+
+⛔ **Nem építettem meg semmit** (`uncertain-requests.md`).
+
+**A legfontosabb, amit találtam:** ⚠️ **a feladat sorrendje ellentmond az owner ugyanaznapi
+korrekciójának.** A kérés *„támogatás meg pályázat meg sales"*-szel kezd; néhány órával később
+viszont: *„Előre kell venni a mikromunkák és hackaton szerű megjelenéseket"*
+(`mvp-focus.md`). ⇒ A feladat a **legalacsonyabb prioritású** osztállyal indul. Nem javítottam
+ki magamtól — jelöltem.
+
+**Egy időzített tétel:** DIMOP Plusz-1.2.6, KKV digitalizáció, 3–12 M Ft, budapesti benyújtás
+2026-09-01-től, határidő **2026-10-27**. ⚠️ **UNVERIFIED** — pályázatíró cégek összefoglalóiból,
+nem a hivatalos kiírásból. ⛔ Cselekvés előtt `palyazat.gov.hu`.
+
+**Forrás-jegyzék** hackathonra (aggregátorok, mert az egyedi kiírás **később** jelenik meg):
+`crafthub.events` · `dev.events` · `hu.allhackathons.com` · `gdg.community.dev`.
+⚠️ Mérve: **őszi kiírást nem találtam** — csak 2026 tavaszit. Pont ezért kell figyelő.
+
+**Javaslat az EGY funkcióra:** `ma leads sweep` = forrás-jegyzék → **határidős lista** Discordra.
+⛔ Nem része: automatikus jelentkezés, pályázatírás, bármi kifelé kommunikálás.
+
+🙋 **3 owner-kérdés felvéve:** `Q-2026-09-07-02` *(mi a mikromunka)* · `-03` *(van-e jogosult
+céged)* · `-04` *(hackathon: pénzdíj vagy láthatóság)*.
+
+
 ### A következő konkrét lépés
 
 **T-22 / 5. szakasz:** bekötés a hang-csatornára *(`1489036734632034496`)*, **kétirányú
@@ -1025,7 +1061,14 @@ mondja. ⛔ Nem kaparom tovább: két ellentmondó válasz után a forrás megb�
 
 ### A következő konkrét lépés
 
-⏳ **T-22 ÉLŐ PRÓBA:** az owner megszólal a `honnie-place` hang-csatornában, és megnézzük,
-bekerül-e az átirat a kötegbe. ⛔ Magamtól nem tudom előidézni.
-**Amit közben figyelni kell** az action-logban: `MA-VOICE-RECORDING-STARTED` *(elindult-e a
-felvétel a belépés után)*, majd `MA-VOICE-SPEECH-QUEUED` / `MA-VOICE-SPEECH-DROPPED`.
+⏳ **KÉT DOLOG VÁR AZ OWNERRE, addig egyikkel sem tudok haladni:**
+
+1. **T-22 élő próba** — megszólal a `honnie-place`-ben. A lánc a felvétel-indításig igazolt
+   (`MA-VOICE-RECORDING-STARTED` 18:13:21); a következő várt nyom
+   `MA-VOICE-SPEECH-QUEUED` / `MA-VOICE-SPEECH-DROPPED`.
+2. **T-41** — a három kérdés (`Q-2026-09-07-02/03/04`). ⭐ Amire **külön rábólintás** elég és
+   fejlesztést sem igényel: a **DIMOP hivatalos kiírásának** megnézése — az ablak most nyitva.
+
+⛔ **Nem indítok új nagy fejlesztést, amíg ez a kettő nyitva van** — mindkettő a meglévő munka
+LEZÁRÁSA, és az előrébb való, mint egy új front (`core-substantive-work-first` szellemében:
+a félkész dolog befejezése az érdemi munka).

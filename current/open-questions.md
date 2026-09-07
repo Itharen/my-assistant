@@ -680,3 +680,24 @@ mostani (egyszerűbb, de a build idejére néma) felállás?
 owner-kimondott felépítés.
 
 **Státusz:** open
+
+## Q-2026-09-07-02 — mi számít „mikromunkának"? (life / h)
+
+A T-41 (lehetőség-figyelő) nem tud forrást választani enélkül: freelance megbízás, nyílt
+bounty, rövid tanácsadás — **teljesen más piacok**, más figyelendő helyekkel.
+
+**Státusz:** open · Feltárás: `current/leads/2026-09-07-exploration.md`
+
+## Q-2026-09-07-03 — van jogosult céged a KKV-pályázatokra? (life / h)
+
+A DIMOP Plusz-1.2.6 típusú kiírások **céghez** kötöttek. Ha a jelenlegi konstrukcióddal nem
+vagy jogosult, a „támogatás/pályázat" osztály egésze tárgytalan, és a figyelő sem kell rá.
+
+**Státusz:** open · Feltárás: `current/leads/2026-09-07-exploration.md`
+
+## Q-2026-09-07-04 — hackathonnál pénzdíj vagy láthatóság a cél? (life / m)
+
+Más eseményeket érdemes figyelni a kettőhöz. A `mvp-focus.md` szerint **mindkettő** számít
+(„reklámnak és pénznek"), de a sorrend eldönti, mit emelünk ki.
+
+**Státusz:** open · Feltárás: `current/leads/2026-09-07-exploration.md`

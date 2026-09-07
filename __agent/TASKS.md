@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 18:05
+**Utoljára frissítve:** 2026-09-07 18:22
 
 ---
 
@@ -75,7 +75,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 | T-44 | 🤝 | 📅 **AI Summit nap 2 terve** | owner 14:44 átadta a nap 1 eredményét egy másik sessionből | ⭐ **AZ OWNER LETÖLTÖTTE** (16:13) — a beküldési út most készült el (Discord-csatolmány VAGY `__agent/inbox/`). ⏸️ A 8-i program magától **nincs publikálva** (3 forrás mérve). Ami publikált (AI Trends), az **egy Expert tétel kivételével** mind alacsony prioritás ⇒ a reggeli kimaradás igazolt. A besorolási kritériumok készen állnak: `current/events/2026-09-07-ai-summit-budapest.md` |
 | T-45 | 🤖 | 🔍 **A review-eszköz (`dc rev`) bekötve — a találatok levitele** | **Bekötve ma**: CI/CD 12→13 lépés (`dc-review-relay`), LDP 17→22 (cli/server/client/relay/ext), mind `fatal: false`. ⚠️ **Eddig SEHOL nem futott.** Mérve: **2110 találat** (cli 1429 / server 364 / client 252 / relay 38 / ext 27), ~56 s. Mérés: `__documentations/developments/2026-09-07-review-tool-cicd-wiring.md` | a **relay 38** találatával kezdeni *(ez a legkisebb, és ez fut a CI/CD-ben)*. ⛔ Az átemelt CCAP-kód 280 találata **nem munkalista** (`transplant-not-rewrite`). A `fatal: true`-vá tétel **külön owner-döntés** |
 | T-46 | 🤖 | 📥 **Discord-csatolmány fogadása** | **Megépítve**, 503/503 — `cli/src/discord/discord.file-intake.ts`. Eddig a fájl **némán elveszett** (szöveg nélkül elutasítva, szöveggel leesett az üzenetről). Most `__agent/inbox/`-ba mentődik | ⚠️ **élő próbára vár**: az owner holnapi summit-programja lesz az első valódi csatolmány. Addig NEM ✅ |
-| T-41 | 🤖 | **Agent a támogatásokra / pályázatokra / sales-lehetőségekre** | owner 2026-09-07 13:30: *„van egy csomó támogatás meg pályázat meg sales lehetőség amire rá kéne állítani egy agent-et"* — ⚠️ illeszkedik az **MVP = pénzkeresés** fókuszhoz | felderítés: milyen forrásokat figyeljen, és mi a kimenet |
+| T-41 | 🤝 | **Agent a támogatásokra / pályázatokra / hackathonokra / mikromunkára** | 🔍 **FELTÁRVA** (`current/leads/2026-09-07-exploration.md`): forrás-jegyzék osztályonként, ⚠️ a feladat sorrendje **ellentmond** a saját ugyanaznapi korrekciódnak *(hackathon+mikromunka ELŐRE)*, és találtam **egy időzített tételt**: DIMOP Plusz-1.2.6, ~2026-10-27-ig — ⚠️ **unverified**, hivatalos kiírás kell | ⏸️ **3 owner-kérdés** (Q-2026-09-07-02/03/04). Javaslat az EGY funkcióra: `ma leads sweep` = **határidős lista**, semmi több |
 | T-22 | 🤖 | 🔴 **Voice control ÁTEMELÉSE a régi CCAP-ból** *(nagy)* — **ELŐREVÉVE** | 🟢 **6/6 szakasz megépítve.** A bent-ülés **ÉLŐBEN igazolt** (a figyelő maga lépett be, 3× `MA-VOICE-JOINED`). A felvétel bekötve: átemelt felvevő → WAV → **a mi STT-nk** → híd → köteg. 523/523 | ⏳ **ÉLŐ PRÓBA:** az owner beszél a `honnie-place`-ben. ⛔ Magamtól nem tudom előidézni — a felvevő csak valódi megszólalásra indul |
 | T-10 | 🤖 | 🔴 **Sikertelen STT újrapróbálása** | **megépítve**, 474/474 teszt — `cli/src/stt/stt.retry-queue.ts` | ⚠️ **élő próbára vár**: a következő sikertelen felismerésnél derül ki. Addig NEM ✅ |
 
