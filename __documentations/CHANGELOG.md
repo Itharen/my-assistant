@@ -4,6 +4,43 @@
 
 ---
 
+## Helyzet-kovetes: a MAGJA kesz (OwnTracks) — 2026-09-07
+
+Az owner dontese utan (N1 = OwnTracks, N4 = allithato gyakorisag, N5 = az otthonit nem
+taroljuk) elkeszult a **adatvedelmi szempontbol kritikus mag**. A HTTP-vegpont meg hatra van.
+
+### ⭐ A tervezesi dontes, ami mindent egyszerusit
+
+**Az „otthon van-e?" kerdest A TELEFON donti el**, nem mi: az OwnTracks appban felvett
+*regio* (waypoint) alapjan a telefon az `inregions` mezoben kuldi.
+
+Harom egyideju elonye van:
+1. ⛔ **Nekunk SOSEM kell az otthon koordinataja** — igy el sem tudjuk szivarogtatni.
+   *(Merve: `current/locations.md`-ben csak CIM van, koordinata nincs — es marad is igy.)*
+2. A „mekkora sugar az otthon" kerdes a telefonra kerul, ahol amugy is pontosabb.
+3. Nem kell kulso geokodolo szolgaltatas (`no-paid-solutions`).
+
+### A szabaly TIPUSSZINTEN van kikenyszeritve
+
+A `StoredLocation` egy union: az **otthon** aghoz **nincs is hova** tenni a koordinatat.
+Igy a „ne taroljuk az otthonit" nem egy `if`-en mulik, amit el lehet felejteni.
+
+### Az OVATOS irany, ahol szamit
+
+- Ha a telefon **nem kuld** regio-informaciot, az `unknown` — ⛔ **NEM `away`**. A ketto
+  osszemosasa azt jelentene, hogy egy **hianyzo mezo** miatt elkezdenenk tarolni az otthoni
+  koordinatat, vagyis csendben megsertenenk a szabalyt.
+- Az `unknown`-t **otthonkent** taroljuk (koordinata nelkul): egy hianyzo adatpont olcsobb,
+  mint egy olyan, amit sosem lett volna szabad eltarolni.
+- A lejarat **allithato**, de nem vegtelen. Az `home` bejegyzesek nem jarnak le (nincs bennuk
+  erzekeny adat, viszont a napi ritmus latszik beloluk).
+- Ertelmezhetetlen idobelyegnel **nem torlunk** — bizonytalansagbol nem semmisitunk meg adatot.
+
+Teszt: CLI **468/468** (21 uj).
+⏳ Hatra: a HTTP-vegpont, ami az OwnTracks-uzenetet fogadja.
+
+---
+
 ## Atveteli nyugta: „megvan, dolgozom" — 2026-09-07
 
 > **Owner:** *„Nah most csak nem jelez a discord »typing« (lejart) vagy nem jutotttak el ezek
