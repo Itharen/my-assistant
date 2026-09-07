@@ -19,10 +19,27 @@
 // ennyivel tovább lenne néma. Ezért csak a **sikeres belépés után**, a háttérben töltjük be.
 
 import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import type { VoiceConnection } from '@discordjs/voice';
 
 import { transcribeAudio } from '../stt/stt.client.js';
 import { VoiceChannelBridge } from './voice-channel-bridge.js';
+import { VoiceDropProbe, type VoiceDropObservation } from './voice-drop-probe.js';
+
+/**
+ * A felvevő `recordings` könyvtára.
+ *
+ * ⚠️ MÉRT ÉRTÉK, nem feltételezés: az átemelt `CV_Recording_ControlService` a saját, **privát**
+ * `recordingsDir` mezőjét `path.join(process.cwd(), 'recordings')`-ként számolja
+ * *(`cv-recording.control-service.ts:34`)* — ugyanezt kell képeznünk, mert a mezőt kívülről nem
+ * lehet lekérdezni, és ⛔ az átemelt kódhoz nem nyúlunk, hogy kiadja (`transplant-not-rewrite`).
+ *
+ * 📌 Ha ez valaha elcsúszik, a szonda **üres könyvtárat** lát, és ezt `onProbeError`-ként
+ * jelenti — nem némán téved.
+ */
+export function resolveRecordingsDir(): string {
+  return join(process.cwd(), 'recordings');
+}
 
 /** Amit az átemelt felvevőből használunk — ⚠️ MÉRT felület, nem feltételezett. */
 export interface TransplantedRecorder {
@@ -59,6 +76,8 @@ export interface VoiceRecordingResult {
   started: boolean;
   detail: string;
   remedy?: string;
+  /** 🔍 Az élő szonda — a tölcsér bármikor lekérdezhető róla (`probe.funnel`). */
+  probe?: VoiceDropProbe;
 }
 
 /** Egy elkészült felvétel feldolgozásának kimenetele — a naplózáshoz és a teszthez. */
@@ -189,6 +208,18 @@ export async function startVoiceRecording(params: {
   onHandled?: (outcome: RecordingHandled) => void;
   /** 🔴 Minden ERZEKELT megszolalasnal hivodik — ez teszi lathatova a nema eldobast. */
   onSpeechAttempt?: (stats: SpeechAttemptStats) => void;
+  /**
+   * 🔍 Minden NÉMÁN ELDOBOTT felvételnél hívódik — másodpercben megadva, mennyi hang veszett el.
+   *
+   * ⭐ Ez válaszolja meg azt, amit a `onSpeechAttempt` NEM tudott: hogy a hiányzó megszólalás
+   * beleolvadt-e egy futó felvételbe *(nem veszteség)*, vagy a felvevő beszéd-validációja
+   * dobta ki *(veszteség)*. Részletek: `voice-drop-probe.ts`.
+   */
+  onSpeechDropped?: (observation: VoiceDropObservation) => void;
+  /** A szonda saját hibái. ⚠️ Sosem fatálisak — a megfigyelés nem buktathatja meg a felvételt. */
+  onProbeError?: (detail: string) => void;
+  /** Tesztelhetőség: kész szonda átadása. */
+  probe?: VoiceDropProbe;
 }): Promise<VoiceRecordingResult> {
   if (!params.ownerUserId) {
     return {
@@ -202,15 +233,29 @@ export async function startVoiceRecording(params: {
   const stats: SpeechAttemptStats = { detected: 0, delivered: 0 };
   const load: typeof loadTransplantedRecorder = params.loadRecorder ?? loadTransplantedRecorder;
 
+  // 🔍 A NÉMA ELDOBÁS MÉRŐSZALAGJA — a WAV-fájlok életciklusát figyeli, kívülről.
+  // ⛔ Megfigyelés, nem módosítás: az átemelt felvevő nem is tud róla.
+  const probe: VoiceDropProbe = params.probe ?? new VoiceDropProbe({
+    recordingsDir: resolveRecordingsDir(),
+    ownerUserId: params.ownerUserId,
+    onDrop: (observation: VoiceDropObservation): void => params.onSpeechDropped?.(observation),
+    onProbeError: (detail: string): void => params.onProbeError?.(detail),
+  });
+
   try {
     const recorder: TransplantedRecorder = await load();
 
     await recorder.initializeRecordingsDirectory();
 
+    // ⭐ CSAK a könyvtár létrehozása UTÁN indul: különben az első körök hiába jelentenének
+    // „nem olvasható könyvtár"-t egy olyan állapotról, ami egy pillanat múlva rendben lesz.
+    probe.start();
+
     recorder.onWavFileReadyForProcessing = (data: { userId: string; filename: string }): void => {
       // ⛔ `void`-olt: az átemelt kód SZINKRON hívja ezt a hookot, tehát ígéretet nem adhatunk
       // vissza neki. A hibát itt kell elkapni, különben `unhandledRejection` lenne belőle.
       stats.delivered += 1;
+      probe.markDelivered(data.filename);
 
       void handleFinishedRecording({
         userId: data.userId,
@@ -241,11 +286,16 @@ export async function startVoiceRecording(params: {
       if (userId !== params.ownerUserId) return;
 
       stats.detected += 1;
+      probe.markSpeechStart();
       params.onSpeechAttempt?.({ ...stats });
     });
 
-    return { started: true, detail: 'A hang-csatorna felvétele elindult.' };
+    return { started: true, detail: 'A hang-csatorna felvétele elindult.', probe: probe };
   } catch (error: unknown) {
+    // ⚠️ A szonda NEM maradhat futva egy elbukott felvétel mellett: üres könyvtárat mintavételezne
+    // a végtelenségig, és a napló tele lenne értelmetlen sorokkal.
+    probe.stop();
+
     return {
       started: false,
       detail: `A felvétel indítása ELBUKOTT: ${error instanceof Error ? error.message : String(error)}`,

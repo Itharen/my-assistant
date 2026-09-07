@@ -11,14 +11,53 @@
 
 ---
 
-## 📊 STATUS — 2026-09-07 18:05
+## 📊 STATUS — 2026-09-07 22:44
+
+> ⛔ **A KORÁBBI, 18:05-ös STATUS TÚLÁLLÍTOTT.** „6/6 szakasz megépítve" ⇒ a lánc **össze van
+> kötve**, de az **átviteli arány ~1%** volt: az owner végigbeszélt egy beszélgetést, és
+> **egyetlen** mondat jutott át (owner, 22:08). ⭐ Az első sikeres példány a lánc
+> összekötöttségét igazolja — az **átviteli arányról semmit nem mond**.
 
 | | |
 |---|---|
-| **Fázis** | 🟢 **6. szakasz MEGÉPÍTVE** — a felvétel bekötve; ⏳ **élő próbára vár** (kell hozzá, hogy az owner beszéljen) |
-| **Haladás** | **6/6 szakasz megépítve** — a bent-ülés ÉLŐBEN igazolt, a felvétel még nem |
-| **Teszt** | CLI **523/523** zöld *(+9 híd, +10 jelenlét, +10 felvétel)*; a fő build **érintetlen** |
-| **Következő lépés** | ⏳ **ÉLŐ PRÓBA** — az owner beszél a `honnie-place`-ben, és megnézzük, bekerül-e a kötegbe |
+| **Fázis** | 🟡 **A lánc él, az ÁTVITELI ARÁNY ismeretlen** — most épült meg a mérőeszköz, ami megmondja |
+| **Az 1. owner-követelmény** *(mérd ki, hol vész el)* | ✅ **MEGÉPÍTVE** — `voice-drop-probe.ts`. ⏳ Az élő adat az owner beszédére vár |
+| **A 2. owner-követelmény** *(MINDEN átirat a hang-csatornába)* | 🟡 a tükör célpontja már a hang-csatorna; a „minden" a mérés után dől el |
+| **A 3. owner-követelmény** *(🔊 hangjelzések, mint a CCAP-ban)* | 🔴 **nincs** — a `voice-output` modul már át van emelve, csak be kell kötni |
+| **Teszt** | CLI **550/550** zöld *(+14 szonda)*; fő `tsc` zöld; a transzplantált build emittál |
+| **Következő lépés** | 🔊 **3. követelmény: hangjelzések** — a `voice-output` bekötése (érzékelés / feldolgozás / eldobás / kész). ⛔ A szűrő-küszöbhöz NEM nyúlunk, amíg nincs élő mérési adat |
+
+### 🔍 A MÉRŐESZKÖZ, ami 22:44-kor megépült — és MIÉRT nem volt elég a régi számláló
+
+A 22:08-as megszólalás-számláló (`MA-VOICE-SPEECH-DETECTED`) két pontot mért: hány
+`speaking.start` jött, és hány jutott el a feldolgozó hookig. ⚠️ **A különbségük két,
+gyökeresen eltérő dolgot mos össze:**
+
+1. a megszólalás **beleolvadt egy már futó felvételbe** — ez **NEM veszteség**
+   *(a felvevő `wavUserStreams.has(userId)` ágon tér vissza korán)*;
+2. a felvevő **eldobta a kész WAV-ot** *(`handleStreamEnd` → `!hasSpeechActivity` →
+   `scheduleFileDeletion`)* — ez az **igazi**, és teljesen néma veszteség.
+
+⇒ Egy „12 észlelt / 3 eljutott" szám tehát **semmit nem dönt el**. Küszöböt állítani rá
+találgatás lett volna (`core-no-guessing`).
+
+⭐ **AMI ELDÖNTI: maga a WAV-fájl.** A felvevő megszólalásonként nyit egyet a `recordings`
+könyvtárban, és ha eldobja, **törli**. A könyvtár figyelése így pontosan a hiányzó információt
+adja — és a **fájlméret** átváltható: 48 kHz · 2 csatorna · 16 bit ⇒ **192 000 bájt/másodperc**.
+
+📌 Ezért a jelentés már nem „eldobott 1 fájlt", hanem **„eldobott 3,4 másodperc beszédet"**
+(`MA-VOICE-SPEECH-DROPPED-SILENTLY`, `lostAudioSeconds`).
+
+⛔ **MEGFIGYELÉS, NEM MÓDOSÍTÁS** — az átemelt kódhoz nem nyúltunk; a szonda kívülről,
+a fájlrendszerből dolgozik (`transplant-not-rewrite`).
+
+**Három saját hiba, amit a review-körök fogtak meg:**
+
+| # | A hiba | Miért számít |
+|---|---|---|
+| 1 | a szonda **minden** beszélő felvételét mérte | egy belépő idegen hangja „elveszett ownerhangként" jelent volna meg — ⭐ **a hazudó mérés rosszabb, mint a mérés hiánya** |
+| 2 | a **kétszer** jelzett kézbesítés kétszer könyvelődött | az átemelt kód **két helyről** hívja a hookot ⇒ túl rózsás tölcsér |
+| 3 | a `stop()` **nem állította le** a szondát | egy `stop()`→`start()` páros KÉT mintavételezőt hagyott volna ugyanazon a könyvtáron ⇒ **duplázott** veszteség-szám |
 
 ### 🎙️ A 6. SZAKASZ — a lánc, és ami benne DÖNTÉS
 

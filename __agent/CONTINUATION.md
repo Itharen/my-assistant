@@ -1572,3 +1572,63 @@ mondja. ⛔ Nem kaparom tovább: két ellentmondó válasz után a forrás megb�
 ⛔ **Nem indítok új nagy fejlesztést, amíg ez a kettő nyitva van** — mindkettő a meglévő munka
 LEZÁRÁSA, és az előrébb való, mint egy új front (`core-substantive-work-first` szellemében:
 a félkész dolog befejezése az érdemi munka).
+
+
+---
+
+## ✅ 2026-09-07 22:33–22:44 — DEV: A MÉRŐESZKÖZ MEGÉPÜLT (T-22, 1. követelmény)
+
+> **Owner-átadás (22:30):** a fejlesztési munka a DEV sessioné. Folyamatvezérlő:
+> `__agent/DEV-HANDOFF.md`.
+
+### 🔍 Az ELSŐ dolog, amit megmértem: a régi számláló NULLA adatot gyűjtött
+
+`MA-VOICE-SPEECH-DETECTED` valódi bejegyzés: **0 db**. *(A `grep`-találatok a saját
+parancsaim visszhangjai voltak a naplóban.)* A `cli/recordings/` könyvtár **üres**, a felvétel
+22:15 / 22:21 / 22:27-kor elindult ⇒ az owner azóta **nem beszélt**. A mérés tehát nem
+„rossz" volt, hanem **nem volt mit mérnie**.
+
+### 🔴 DE: a számláló így is ALKALMATLAN lett volna a kérdés eldöntésére
+
+Két pontot mért (`detected` / `delivered`), és a különbségük **két, gyökeresen eltérő dolgot
+mos össze**:
+
+1. a megszólalás **beleolvadt egy futó felvételbe** *(`wavUserStreams.has(userId)` → korai
+   return)* — **nem veszteség**;
+2. a felvevő **eldobta a kész WAV-ot** *(`handleStreamEnd` → `!hasSpeechActivity` →
+   `scheduleFileDeletion`)* — **ez az igazi, néma veszteség**.
+
+⇒ „12 észlelt / 3 eljutott" **nem dönt el semmit**. Küszöböt állítani rá találgatás lett volna.
+
+### ⭐ A DÖNTŐ ESZKÖZ: a WAV-fájl életciklusa (`cli/src/voice/voice-drop-probe.ts`)
+
+A felvevő megszólalásonként **nyit** egy fájlt, és ha eldobja, **törli**. A könyvtár kívülről
+figyelése pontosan a hiányzó információt adja — és a **méret** átváltható:
+48 kHz · 2 csatorna · 16 bit ⇒ **192 000 bájt/másodperc**.
+
+📌 A jelentés így már nem „eldobott 1 fájlt", hanem **„eldobott 3,4 másodperc beszédet"**
+(`MA-VOICE-SPEECH-DROPPED-SILENTLY`, `lostAudioSeconds` + `reason`).
+
+⛔ **Megfigyelés, nem módosítás** — az átemelt kódhoz nem nyúltam (`transplant-not-rewrite`).
+A `recordingsDir`-t ugyanúgy képezem (`process.cwd()/recordings`), mert a mező privát; ha ez
+valaha elcsúszik, a szonda **jelenti** (`MA-VOICE-PROBE-ERROR`), nem némán téved.
+
+### 🔴 HÁROM SAJÁT HIBA, amit a review-körök fogtak meg
+
+| # | A hiba | Miért számít |
+|---|---|---|
+| 1 | a szonda **minden** beszélő felvételét mérte | egy belépő idegen hangja „elveszett ownerhangként" jelent volna meg — ⭐ **a hazudó mérés rosszabb, mint a mérés hiánya** |
+| 2 | a **kétszer** jelzett kézbesítés kétszer könyvelődött | az átemelt kód **két helyről** hívja a hookot (`:848`, `:928`) ⇒ túl rózsás tölcsér |
+| 3 | a `stop()` **nem állította le** a szondát | `stop()`→`start()` ⇒ KÉT mintavételező ugyanazon a könyvtáron ⇒ **duplázott** veszteség-szám |
+
+### Teszt
+
+**CLI 550/550 zöld** *(+14 új: 12 szonda + 2 a javításokra)* · fő `tsc` zöld ·
+transzplantált build emittál *(a `BodyInit` hiba az átemelt fában ELŐZŐLEG IS ott volt —
+nem ez a change-set okozta; a JS elkészül)*.
+
+### ⏭️ A következő lépés
+
+🔊 **3. követelmény: hangjelzések** — a `voice-output` modul már át van emelve
+(`cli/src/_modules/voice-output/`), csak be kell kötni: érzékelés / feldolgozás / eldobás / kész.
+⛔ A szűrő-küszöbhöz **nem nyúlok**, amíg nincs élő mérési adat — az lenne a találgatás.

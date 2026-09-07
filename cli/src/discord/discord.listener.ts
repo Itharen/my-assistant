@@ -56,6 +56,7 @@ import {
   type RecordingHandled,
   type SpeechAttemptStats,
 } from '../voice/voice-channel-recorder.js';
+import type { VoiceDropObservation, VoiceDropProbe } from '../voice/voice-drop-probe.js';
 import { transcribeAudio } from '../stt/stt.client.js';
 import { composeMirrorMessage } from '../stt/stt.mirror.js';
 import {
@@ -201,6 +202,9 @@ export class DiscordListener {
   /** 🔊 A hang-csatornai jelenlét — owner: „mindig ülj bent amikor megy a my assistant". */
   private readonly voicePresence: VoiceChannelPresence = new VoiceChannelPresence();
 
+  /** 🔍 Az élő eldobás-szonda — a `stop()`-nak le KELL állítania (különben duplán mérne). */
+  private dropProbe: VoiceDropProbe | null = null;
+
 
 
   constructor(private readonly bridge: DiscordBridge = new DiscordBridge()) {}
@@ -331,6 +335,12 @@ export class DiscordListener {
 
     this.typing?.stop();
     this.typing = null;
+
+    // 🔍 A SZONDÁT IS LE KELL ÁLLÍTANI. ⚠️ Enélkül egy `stop()` → `start()` páros UGYANARRA a
+    // könyvtárra KÉT mintavételezőt tenne: mindkettő jelentené ugyanazt az eldobást, és a
+    // „mennyi hang veszett el" szám **duplázódna**. Egy hazudó mérés rosszabb, mint a semmi.
+    this.dropProbe?.stop();
+    this.dropProbe = null;
 
     this.voicePresence.leave();
 
@@ -501,6 +511,36 @@ export class DiscordListener {
           },
         });
       },
+      // 🔍 A NEMA ELDOBAS — masodpercben. Ez valaszolja meg az owner 22:08-as kerdeset:
+      // „beszeltem, beszeltem… leginkabb semmi nem ment at". A `detected - delivered` kulonbseg
+      // ezt NEM tudta megmondani, mert osszemosta az osszeolvadt megszolalast a valodi
+      // veszteseggel (`voice-drop-probe.ts`).
+      onSpeechDropped: (observation: VoiceDropObservation): void => {
+        void this.safeLog({
+          kind: 'error',
+          summary: `[discord/listener] MA-VOICE-SPEECH-DROPPED-SILENTLY: `
+            + `${observation.lostAudioSeconds} mp hang ELVESZETT (${observation.reason}).`,
+          extra: {
+            code: 'MA-VOICE-SPEECH-DROPPED-SILENTLY',
+            filename: observation.filename,
+            lostAudioSeconds: observation.lostAudioSeconds,
+            maxSizeBytes: observation.maxSizeBytes,
+            lifetimeMs: observation.lifetimeMs,
+            reason: observation.reason,
+            remedy: observation.reason === 'discarded-by-recorder'
+              ? 'A felvevő beszéd-validációja (minSpeechDuration / speechThreshold / ZCR) dobta ki. '
+                + 'A küszöb csak ELÉG MÉRÉS UTÁN állítható — és MELLÉ, nem az átemelt kódba.'
+              : 'A felvétel a fejlécen túl üres volt — itt tényleg nem volt mit felismerni.',
+          },
+        });
+      },
+      onProbeError: (detail: string): void => {
+        void this.safeLog({
+          kind: 'error',
+          summary: `[discord/listener] MA-VOICE-PROBE-ERROR: ${detail}`,
+          extra: { code: 'MA-VOICE-PROBE-ERROR' },
+        });
+      },
       onHandled: (outcome: RecordingHandled): void => {
         void this.safeLog({
           kind: outcome.queued ? 'note' : 'error',
@@ -526,6 +566,11 @@ export class DiscordListener {
         ...(result.remedy ? { remedy: result.remedy } : {}),
       },
     });
+
+    // ⚠️ A KORÁBBI szondát mindenképp leállítjuk, mielőtt az újat eltesszük — egy
+    // újracsatlakozás különben két mintavételezőt hagyna ugyanazon a könyvtáron.
+    this.dropProbe?.stop();
+    this.dropProbe = result.probe ?? null;
   }
 
   /**
