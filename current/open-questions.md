@@ -701,3 +701,14 @@ Más eseményeket érdemes figyelni a kettőhöz. A `mvp-focus.md` szerint **min
 („reklámnak és pénznek"), de a sorrend eldönti, mit emelünk ki.
 
 **Státusz:** open · Feltárás: `current/leads/2026-09-07-exploration.md`
+
+## Q-2026-09-07-05 — jó-e a 2 karakter/mp küszöb a bukott felismerésre? (STT / m)
+
+A bukott STT-t mostantól a **hanghossz ↔ átirat-hossz arány** fogja meg
+(`stt.transcript-guard.ts`). A küszöb **2 karakter/másodperc**, ≥4 mp hangnál — ez
+**assziszens-választás**, nem mérés. A magyar beszéd ~10–15 karakter/mp, tehát ez nagyon
+megengedő; lehet, hogy szigorúbb kellene.
+
+**Ami eldönti:** néhány valódi eset. Ha átcsúszik egy bukott felismerés, feljebb vesszük.
+
+**Státusz:** open · Kapcsolódó: `current/stt-mishearings.md`

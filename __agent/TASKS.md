@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 18:41
+**Utoljára frissítve:** 2026-09-07 20:39
 
 ---
 
@@ -71,6 +71,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 
 | # | Ki | Feladat | Hol tart | Következő lépés |
 |---|---|---|---|---|
+| T-47 | 🙋 | 💼 **Bérszámfejtés — rákérdezni a jelenléti ívekre** | Felírva az organizerbe (`org:task:6a9f04ab482367e7f6420c8f`, prio **112**). Owner 20:32: a bérszámfejtés **csúszik** a szokásoshoz képest | **az owner dolga** — neki kell írnia a bérszámfejtésnek |
 | T-43 | 🤝 | 📍 **Saját mobil-app a helyzet-küldéshez** *(OwnTracks helyett)* | owner 15:03: *„Jobban preferálom a saját fejlesztéseket... mobil app fejlesztési patternjeink is vannak"* — ⚠️ ő maga sorolta fel az árát: telepítés, auto-update, location sharing | **L1/L2 owner-döntés** nyitva: OwnTracks most + saját app később, vagy egyből saját? ⭐ A relay **kész**, és a szerződése azonos marad, akárki küld rá |
 | T-44 | 🤝 | 📅 **AI Summit nap 2 terve** | 🟢 **AZ IDŐBEOSZTÁS KÉSZ — program NÉLKÜL is.** Megvan a hiányzó horgony: a rendezvény **18:00-kor zár** ⇒ visszaszámolva indulás + készülődés-kezdés *(`current/events/2026-09-07-ai-summit-budapest.md`)*. ⚠️ A zárás **aggregátorból**, nem hivatalos. ⏸️ A részletes program továbbra sem publikált | 🙋 **EGY bemenet kell:** hánykor akar ott lenni → időzített emlékeztető a készülődés kezdetére |
 | T-45 | 🤖 | 🔍 **A review-eszköz (`dc rev`) bekötve — a találatok levitele** | **Bekötve ma**: CI/CD 12→13 lépés (`dc-review-relay`), LDP 17→22 (cli/server/client/relay/ext), mind `fatal: false`. ⚠️ **Eddig SEHOL nem futott.** Mérve: **2110 találat** (cli 1429 / server 364 / client 252 / relay 38 / ext 27), ~56 s. Mérés: `__documentations/developments/2026-09-07-review-tool-cicd-wiring.md` | a **relay 38** találatával kezdeni *(ez a legkisebb, és ez fut a CI/CD-ben)*. ⛔ Az átemelt CCAP-kód 280 találata **nem munkalista** (`transplant-not-rewrite`). A `fatal: true`-vá tétel **külön owner-döntés** |

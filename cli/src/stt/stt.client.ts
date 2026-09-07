@@ -38,6 +38,13 @@ export async function transcribeAudio(params: {
   filename: string;
   contentType?: string;
   confidenceThreshold?: number;
+  /**
+   * A hangfájl hossza másodpercben, ha a forrás megadja (a Discord küldi).
+   *
+   * ⭐ MIÉRT SZÁMÍT: enélkül a bukott felismerést csak a szöveg hosszából lehetne sejteni —
+   * és a mért eset (9 mp hang → „Köszönöm") pontosan azt csúsztatta át. Az arány a jel.
+   */
+  audioDurationSecs?: number;
 }): Promise<SttResult> {
   const startedAt: number = Date.now();
   const threshold: number = params.confidenceThreshold ?? DEFAULT_CONFIDENCE_THRESHOLD;
@@ -85,7 +92,10 @@ export async function transcribeAudio(params: {
     // A CCAP-implementáció mindkét alakot kezelte — átvesszük, mert a szolgáltatás
     // verziói eltérhetnek.
     const text: string = (raw.result?.text ?? raw.text ?? '').trim();
-    const verdict = inspectTranscript(text);
+    const verdict = inspectTranscript(
+      text,
+      params.audioDurationSecs === undefined ? {} : { audioDurationSecs: params.audioDurationSecs },
+    );
 
     return {
       ok: true,

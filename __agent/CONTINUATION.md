@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 18:41
+**Utoljára frissítve:** 2026-09-07 20:39
 
 ---
 
@@ -1052,6 +1052,49 @@ esemény = egy fájl; nem nyitottam újat)*.
 készülődés kezdetére — a telefontöltéssel együtt, ami a készülődés ELEJÉN indul.
 
 
+
+---
+
+## 🔴 2026-09-07 20:33–20:39 — ELVESZETT OWNER-ÜZENET, ÉS AMI MEGFOGTA VOLNA
+
+Az owner hazaérve elaludt, és 4 hangüzenettel jelentkezett. A **2. üzenete (9 mp) átirata
+mindössze `„Köszönöm"` lett** — a tartalma **elveszett**.
+
+⚠️ **És nem a rendszer vette észre, hanem ŐK.** A 4. üzenetében ugyanabban a körben leírta a
+mintát:
+
+> *„általában amikor hibásan dolgozódik föl, akkor csak ennyi lesz benne, mint most az előbb,
+> hogy köszönöm, meg thank you, meg you."*
+
+### Amiért átcsúszott
+
+A `stt.transcript-guard.ts` hossz-küszöbe **3 karakter** volt. A `„Köszönöm"` **8** ⇒ átment.
+📌 A tell nem a rövidség volt, hanem az **ARÁNYTALANSÁG**: 9 mp hang → 8 karakter.
+
+### A javítás
+
+⭐ **Arány-ellenőrzés:** karakter/hangmásodperc, küszöb **2**, csak **≥4 mp** hangnál. A Discord
+küldi a hosszt (`durationSecs`), át van vezetve a `transcribeAudio`-ig.
+⭐ **Csupasz töltelék-szó** felismerése — ⛔ **pontos egyezésre**, nem részszövegre: ezek valódi
+szavak, amiket tényleg mond.
+
+### ⛔ Amit visszavettem magamtól
+
+Először felvettem az `igen`-t és az `ok`-ot is a listára. **Egy korábbi, szándékos döntést védő
+teszt elbukott** (`accepts a short but meaningful answer`) — helyesen. Az owner konkrétan a
+`köszönöm / thank you / you` hármat nevezte meg; az `igen`/`ok` **más osztály** (valódi rövid
+válasz). ⇒ Kivettem.
+
+📌 **A tanulság:** a saját listám túlnyúlt azon, amit ő mért — és a **régi teszt fogta meg**.
+A bukott felismerésből jövő „igen"-t úgyis az arány-ellenőrzés kapja el, ha hosszú a hang.
+
+**Egyéb ebből a körből:** a bérszámfejtés-kérdés felírva az organizerbe (T-47, prio 112,
+`org:task:6a9f04ab482367e7f6420c8f`) · a minta rögzítve `current/stt-mishearings.md`-ben ·
+a küszöb megkérdőjelezve `Q-2026-09-07-05`.
+
+529/529 teszt zöld.
+
+
 ### A következő konkrét lépés
 
 **T-22 / 5. szakasz:** bekötés a hang-csatornára *(`1489036734632034496`)*, **kétirányú
@@ -1087,7 +1130,10 @@ mondja. ⛔ Nem kaparom tovább: két ellentmondó válasz után a forrás megb�
 
 ### A következő konkrét lépés
 
-⏳ **HÁROM DOLOG VÁR AZ OWNERRE, addig egyikkel sem tudok haladni:**
+⏳ **NÉGY DOLOG VÁR AZ OWNERRE, addig egyikkel sem tudok haladni:**
+
+-1. 🔴 **AZ ELVESZETT ÜZENET ÚJRAKÜLDÉSE** (2026-09-07 20:32, 9 mp) — a tartalmát senki nem
+    ismeri. Kértem Discordon.
 
 0. **T-44 / holnap** — ⭐ **a legidőérzékenyebb**: hánykor akar ott lenni a summiton?
    Egyetlen szám, és abból megy az időzített készülődés-emlékeztető.

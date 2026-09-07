@@ -663,6 +663,8 @@ export class DiscordListener {
         audio: download.bytes,
         filename: attachment.name,
         ...(attachment.contentType ? { contentType: attachment.contentType } : {}),
+        // ⭐ A Discord megadja a hangüzenet hosszát — ez az arány-ellenőrzés bemenete.
+        ...(attachment.durationSecs === undefined ? {} : { audioDurationSecs: attachment.durationSecs }),
       });
     } finally {
       this.sttInFlight = false;
@@ -876,6 +878,7 @@ export class DiscordListener {
           audio: audio,
           filename: entry.filename,
           ...(entry.contentType ? { contentType: entry.contentType } : {}),
+          ...(entry.durationSecs === undefined ? {} : { audioDurationSecs: entry.durationSecs }),
         });
       } finally {
         this.sttInFlight = false;

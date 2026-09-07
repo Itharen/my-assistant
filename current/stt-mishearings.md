@@ -108,3 +108,36 @@ kell kérdezni. *(Így jártam el a kulcsokról szóló üzenetnél.)*
 - `cli/src/stt/stt.mirror.ts` — a tükör-üzenet
 - `cli/src/discord/discord.voice-message.ts` — a kötegbe kerülő jelölés
 - `__documentations/dev/FDP_AI_STT.md` — a szolgáltatás mért szerződése
+
+---
+
+## 🔴 2026-09-07 20:32 — A BUKOTT FELISMERÉS FELISMERHETŐ MINTÁJA (owner mérése)
+
+> **Szó szerint:** *„az STT transkript hibákhoz felírhatnád, hogy általában amikor hibásan
+> dolgozódik föl, akkor csak ennyi lesz benne, mint most az előbb, hogy köszönöm, meg thank
+> you, meg you."*
+
+⭐ **Ez nem félrehallás, hanem ÖSSZEOMLÁS:** a felismerés nem rosszul érti a mondatot, hanem
+**összeomlik egyetlen töltelék-szóra**, és a tartalom **teljesen elvész**.
+
+**A minta:** `köszönöm` · `thank you` · `you` *(és nyelvtani rokonaik)* — **a TELJES átirat
+ennyi**.
+
+### ⚠️ Miért nem elég a szó-lista
+
+Ezek **valódi szavak, amiket az owner tényleg mond**. Ezért:
+- ⛔ **nem** részszöveg-keresés — csak akkor gyanús, ha az **egész** átirat ennyi;
+- ⛔ **nem** kerül a listára az `igen` és az `ok` — azok **valódi rövid válaszok**, más osztály.
+  *(Amikor egyszer mégis felvettem őket, egy korábbi, szándékos döntést védő teszt bukott el.)*
+
+### ⭐ A JOBB JEL: hanghossz ↔ átirat-hossz ARÁNY
+
+**A mért eset:** **9 másodperc** hangból *„Köszönöm"* = **8 karakter**.
+A korábbi hossz-küszöb (3 karakter) ezt **átengedte**, és az üzenet **elveszett** — az owner
+csak azért vette észre, mert ő maga ismerte fel a mintát.
+
+⇒ A tell nem a rövidség, hanem az **aránytalanság**. Beépítve:
+`cli/src/stt/stt.transcript-guard.ts` — küszöb **2 karakter/másodperc**, csak **≥4 mp** hangnál.
+
+⚠️ A 2 karakter/mp **assziszens-választás, nem owner-adat** *(a magyar beszéd ~10–15 karakter/mp;
+ez szándékosan nagyon megengedő)*. Felülvizsgálandó: `open-questions.md`.
