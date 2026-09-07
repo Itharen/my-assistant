@@ -58,6 +58,7 @@ import {
 } from '../voice/voice-channel-recorder.js';
 import type { VoiceDropObservation, VoiceDropProbe } from '../voice/voice-drop-probe.js';
 import { MissedSpeechReporter } from '../voice/voice-missed-speech.js';
+import { VoiceCuePlayer } from '../voice/voice-cues.js';
 import { transcribeAudio } from '../stt/stt.client.js';
 import { composeMirrorMessage } from '../stt/stt.mirror.js';
 import {
@@ -209,6 +210,9 @@ export class DiscordListener {
   /** 🔇 A kiesés-jelentő — ami NEM jutott át, az is látszik a hang-csatornában. */
   private missedSpeech: MissedSpeechReporter | null = null;
 
+  /** 🔊 A hangjelzések — aki BESZEL, az nem a kepernyot nezi (owner, 21:49). */
+  private cues: VoiceCuePlayer | null = null;
+
 
 
   constructor(private readonly bridge: DiscordBridge = new DiscordBridge()) {}
@@ -352,6 +356,9 @@ export class DiscordListener {
     // kuldes elott, es az owner utolso, at nem jutott megszolalasai NEMAN vesznenek el.
     await this.missedSpeech?.stop();
     this.missedSpeech = null;
+
+    this.cues?.detach();
+    this.cues = null;
 
     this.voicePresence.leave();
 
@@ -518,6 +525,23 @@ export class DiscordListener {
       },
     });
 
+    // 🔊 HANGJELZESEK. Owner 21:49: „voltak hangvisszajelzesek… hallottad, hogy mit mondtam,
+    // erted, hogy mit mondtam". ⭐ Aki BESZEL, az nem a kepernyot nezi: a szoveges tukor
+    // UTOLAG igazol, a hang KOZBEN mond valamit. A ketto nem helyettesiti egymast.
+    // ⛔ A transzplantalt `playSound` NEM hasznalhato: sajat CCAP-kapcsolatot epitene
+    // (`CCAP_MasterService`), ami nalunk nem letezik — ezert az adapter MELLE kerult.
+    this.cues?.detach();
+    this.cues = new VoiceCuePlayer({
+      onError: (detail: string): void => {
+        void this.safeLog({
+          kind: 'error',
+          summary: `[discord/listener] MA-VOICE-CUE-FAILED: ${detail}`,
+          extra: { code: 'MA-VOICE-CUE-FAILED' },
+        });
+      },
+    });
+    this.cues.attach(connection);
+
     const result = await startVoiceRecording({
       connection: connection,
       ownerUserId: (process.env['MA_DISCORD_USER_ID'] ?? '').trim(),
@@ -527,6 +551,10 @@ export class DiscordListener {
       // annak egy százaléka lett aztán transzkriptálva". Enelkul sem o, sem en nem tudjuk,
       // HANY megszolalas veszett el — es a szuro allitgatasa puszta talalgatas lenne.
       onSpeechAttempt: (stats: SpeechAttemptStats): void => {
+        // 🔊 „HALLAK" — ez a legkorabbi pont, ahol barmit mondhatunk. ⛔ A fek miatt nem
+        // szolal meg minden mondatnal; ez SZANDEKOS (`voice-cues.ts`).
+        void this.cues?.play('heard');
+
         void this.safeLog({
           kind: 'note',
           summary: `[discord/listener] 🎙️ Megszólalás érzékelve — ${stats.detected} észlelt / `
@@ -565,6 +593,7 @@ export class DiscordListener {
         // 🔇 ⛔ AZ URES FAJLT NEM JELENTJUK AZ OWNERNEK: ott tenyleg nem volt beszed, es a
         // „nem jutott at" uzenet ilyenkor zaj lenne — pont a lathatosagot rontana.
         if (observation.reason !== 'empty-file') {
+          void this.cues?.play('dropped');
           this.missedSpeech?.note({
             kind: 'discarded-by-recorder',
             seconds: observation.lostAudioSeconds,
@@ -591,6 +620,11 @@ export class DiscordListener {
             ...(outcome.missed ? { missed: outcome.missed } : {}),
           },
         });
+
+        // 🔊 A KIMENETEL HANGJA — az owner ebbol tudja, folytathatja-e, vagy ismetelnie kell.
+        if (outcome.queued) void this.cues?.play('understood');
+        else if (outcome.missed === 'not-understood') void this.cues?.play('unsure');
+        else if (outcome.missed === 'recognition-failed') void this.cues?.play('error');
 
         // 🔇 Ami nem jutott at, az is LATSZIK — a hang-csatornaban, osszevonva.
         if (outcome.missed) this.missedSpeech?.note({ kind: outcome.missed });

@@ -1714,3 +1714,79 @@ csak zaj lenne.
 elkezdted a feldolgozást, eldobtad azt az üzenetet, folyik az üzenet, megjött az üzenet"*.
 A `voice-output` modul **már át van emelve** (`cli/src/_modules/voice-output/`) — ⛔ nem írjuk
 újra, csak bekötjük.
+
+
+---
+
+## ✅ 2026-09-07 23:00–23:05 — DEV: 🔊 A HANGJELZÉSEK MEGVANNAK (T-22, 3. követelmény)
+
+> **Owner (21:49):** *„voltak hangvisszajelzések, kis ilyen-olyan printy-pringy hangok a
+> CCAP-ban… hallottad, hogy mit mondtam, érted, hogy mit mondtam."*
+
+### 🔴 AMI KIDERÜLT: a transzplantált `playSound` NEM használható — és miért
+
+Mérve, a hívási lánc végigolvasásával:
+
+```
+playSound → playAudioFile → ensureVoiceConnection
+          → CV_Connection_ControlService.createVoiceConnection(settings.ccap.useVoiceChannel)
+          → CCAP_MasterService.getInstance() + a CCAP saját `discordServer`-e
+```
+
+⇒ **Saját, CCAP-specifikus hang-kapcsolatot építene** egy olyan Discord-kliensből, ami nálunk
+**nem létezik** — miközben nekünk **már van** kapcsolatunk a `VoiceChannelPresence`-ből, és egy
+csatornába kétszer belépni nem lehet.
+
+⛔ Az átemelt kódot nem írjuk át ⇒ az adapter **MELLÉ** került: `cli/src/voice/voice-cues.ts`
+a **meglévő** kapcsolatunkon játszik, ugyanazzal a `@discordjs/voice`-szal.
+
+### ⭐ AMIT VISZONT ÁTEMELTÜNK: MAGUK A HANGOK
+
+🔴 **A hangfájlok NEM voltak a repóban** — az átemelés a kódot hozta, az assetet nem
+*(mérve: `git ls-files` → nulla `.mp3`)*. Megvannak viszont az eredeti CCAP-ban
+(`LIVE-projects/ccap/discord-bot/src/_assets/sounds/`, 33 fájl).
+
+Átmásolva **beszédes néven**, `cli/src/_assets/sounds/` alá (164 kB, 5 fájl) — a hosszak
+`ffprobe`-bal **mérve**, nem szemre válogatva:
+
+| Esemény | Fájl | Eredeti | Hossz |
+|---|---|---|---|
+| 🎙️ hallak, elkezdtem | `cue-heard.mp3` | `typing.mp3` | 0,44 s |
+| ✅ megvan, átment | `cue-understood.mp3` | `11L-subtle,_warm,_mallow…` | 2,09 s |
+| 🎚️ a felvevő eldobta | `cue-dropped.mp3` | `skip.mp3` | 0,84 s |
+| ❓ nem értettem | `cue-unsure.mp3` | `hmmm.mp3` | 2,64 s |
+| ❌ hiba | `cue-error.mp3` | `error.mp3` | 3,32 s |
+
+⛔ A `whoosh.mp3` **4,68 s** — kimaradt: egy jelzés, ami hosszabb, mint amire reagálni kell,
+útban van.
+
+### ✅ FUTÁSIDŐBEN IGAZOLVA (nem csak típus-szinten)
+
+| Mit | Eredmény |
+|---|---|
+| az útvonal-feloldás | `…/cli/src/_assets/sounds` — **mind az 5 fájl megtalálva** |
+| ffmpeg-dekódolás | `createAudioResource` → **7816 opus-bájt**, `prism` FFmpeg **7.0** |
+
+📌 Ez azért kellett külön, mert a **zöld típus-ellenőrzés már egyszer elfedte** a hiányt
+*(17:38: „70 fájl bent van" — de soha nem fordult le)*.
+
+### ⚠️ EGY KOCKÁZAT, AMIT NEM TIPPELEK MEG — hangszóró-visszacsatolás
+
+A jelzés a hang-csatornába szól ⇒ az owner **hangszórójából** is megszólal, és a mikrofonja
+**visszaveheti** — pont abba a láncba, aminek a veszteségét mérjük. A `cue-heard` a
+legérzékenyebb: az **beszéd közben** szól.
+
+🩹 **Amit tettem helyette:** 🔇 `MA_VOICE_CUES=off` azonnali kikapcsoló (kód nélkül) + ⏱️
+3 másodperces fék két jelzés között. ❓ Két kérdés felvéve: **Q-2026-09-07-07** (jó-e a
+hozzárendelés) és **Q-2026-09-07-08** (fejhallgató-e).
+
+### Teszt
+
+**CLI 575/575 zöld** *(+11 jelzés-teszt)* · fő `tsc` zöld.
+
+### ⏭️ A következő lépés
+
+⏳ **ÉLŐ MÉRÉS** — mind a három követelmény megépült, de az **átviteli arány** csak akkor
+mérhető, ha az owner **beszél** a `honnie-place`-ben. Akkor derül ki:
+`speechStarts → filesOpened → filesDelivered → filesDropped (mp)`.
+⛔ **A szűrő-küszöbhöz addig nem nyúlok** — az lenne a találgatás.

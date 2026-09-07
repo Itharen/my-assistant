@@ -725,3 +725,45 @@ karakter voltak — egyiket sem olvasta el. A korábbi, elolvasottak 400–500 k
 lesznek olvasatlan üzenetek.
 
 **Státusz:** open · Kapcsolódó: `current/principles/discord-message-style.md`
+
+---
+
+## Q-2026-09-07-07 — jó-e a hangjelzések hozzárendelése? (voice / m)
+
+**Státusz:** `open` · **Felvéve:** 2026-09-07 23:03 · **Kategória:** voice
+
+Kérted a CCAP-os hangvisszajelzéseket: *„kis ilyen-olyan printy-pringy hangok… hallottad, hogy
+mit mondtam, érted, hogy mit mondtam."* ⭐ A hangokat **átemeltem az eredeti CCAP-ból** — de azt
+**nem mondtad meg, melyik hang mit jelentsen**, ezért ezt én döntöttem el. Ez az **én
+választásom**, nem a tiéd:
+
+| Esemény | Hang | Eredeti CCAP-fájl | Hossz |
+|---|---|---|---|
+| 🎙️ hallak, elkezdtem | `cue-heard` | `typing.mp3` | 0,44 s |
+| ✅ megvan, átment | `cue-understood` | `11L-subtle,_warm,_mallow…` | 2,09 s |
+| 🎚️ a felvevő eldobta | `cue-dropped` | `skip.mp3` | 0,84 s |
+| ❓ hallottam, nem értettem | `cue-unsure` | `hmmm.mp3` | 2,64 s |
+| ❌ hiba | `cue-error` | `error.mp3` | 3,32 s |
+
+⭐ **A csere olcsó:** elég a `cli/src/_assets/sounds/` alatti fájlt kicserélni, a kód nem
+változik. A `whoosh.mp3` szándékosan kimaradt — **4,68 s**, hosszabb, mint amire reagálni kell.
+
+**Amit várok:** jó így, vagy melyiket cseréljem melyikre.
+
+---
+
+## Q-2026-09-07-08 — fejhallgatót használsz a hang-csatornában? (voice / h)
+
+**Státusz:** `open` · **Felvéve:** 2026-09-07 23:03 · **Kategória:** voice
+
+🔴 **Miért fontos, és miért nem tippelem meg:** a hangjelzés a hang-csatornába szól, tehát a
+**te hangszóródból** is megszólal. Ha nem fejhallgatót használsz, a **saját mikrofonod
+visszaveheti** — és akkor a jelzés maga jelenne meg „megszólalásként" pont abban a láncban,
+aminek a veszteségét most mérjük. A `cue-heard` a legérzékenyebb: az **beszéd közben** szól.
+
+**Amit már megtettem, hogy ne legyen belőle baj:**
+- 🔇 **Azonnali kikapcsolás kód nélkül:** `MA_VOICE_CUES=off` a `.env`-ben.
+- ⏱️ **Fék:** két jelzés között legalább 3 másodperc.
+
+**Amit várok:** fejhallgató vagy hangszóró. Ha hangszóró, javaslom a `cue-heard` kikapcsolását
+(vagy az egész jelzés-készletét), amíg nem mérjük meg, hogy tényleg visszahallatszik-e.
