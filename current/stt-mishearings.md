@@ -146,3 +146,8 @@ ez szándékosan nagyon megengedő)*. Felülvizsgálandó: `open-questions.md`.
 
 Az owner maga jelezte: *„a CCLP tipikus félrehallás, ilyenkor a CCAP-ról beszélek."*
 ⇒ A `CCLP` minden előfordulása **CCAP**-ként olvasandó.
+
+## 2026-09-08 — `olvast` ≈ **olvasd**
+
+Az owner jelezte: *„Ez is egy tipikus félrehallás amúgy, nem is értem miért. Olvast > olvasd"*.
+⇒ Felszólító módú `olvasd` helyett gyakran `olvast` jön az átiratban.

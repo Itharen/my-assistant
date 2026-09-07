@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-08 01:36
+**Utoljára frissítve:** 2026-09-08 01:50
 
 ---
 
@@ -1751,6 +1751,43 @@ szigoritott szabalyom szerint. ⇒ A `DEV-HANDOFF.md`-be irtam.
 nelkul ad at munkat, es a dev ugyis frissen olvassa minden ebredeskor.
 
 **STT-felrehallas rogzitve:** `CCLP` ≈ **CCAP** *(az owner maga jelezte)*.
+
+
+
+---
+
+## 🙋 2026-09-08 01:38 — A JOVAHAGYANDO DOLOG MAGA MEGY KI (uj szabaly)
+
+> *„Olvasd fel a leveltervezetet nekem! Ilyenkor, amikor valami elfogadando dolog van, akkor azt
+> mindig ki kell irni, el kell magyarazni referenciaktol mentesen, ne vard, hogy en megnyitogatok
+> dolgokat."*
+
+**A hibam:** jovahagyast kertem a berszamfejtesnek szolo levelre, es **fajl-utvonalra mutattam**.
+🔴 **Telefonrol az nem elerheto** ⇒ dontest kertem olyasmirol, amit **nem tudott megnezni**.
+
+⭐ **A dontes koltsege NALAM van, nem nala.** Kiirni egy levelet nekem nehany sor; neki megnyitni
+egy fajlt a telefonjan **tobb lepes, mint amennyit egy jovahagyas megér** — ezert nem fog
+megtortenni. A dontes nem azert marad el, mert nehez, hanem mert **kenyelmetlen elerni**.
+
+📌 Ugyanannak a csaladnak a tagja, mint a *„nem olvastam, hosszu uzeneteket irsz"*: az uzenet akkor
+er valamit, ha a **fogado oldalan** is hasznalhato.
+
+**Rogzitve:** `current/principles/approval-must-be-self-contained.md` + `ENTRY.md` **§5c**.
+**A level teljes szoveggel kiment** Discordra.
+
+### ⚠️ Amit a tervezet mellol kiemeltem — sajat nyitott tetel
+
+**Nem tudjuk, hogyan erkezik a berszamfejtes:** a GEOK-tol **2026-06-01 ota nincs e-mail-nyom**.
+Mas postafiok? Portal? Papir? ⇒ Amig ez nem tiszta, a **csuszast csak akkor vesszuk eszre, ha az
+owner szol** — automatikus „megjott-e mar?" ellenorzes nem epitheto.
+
+**STT-felrehallasok rogzitve:** `CCLP` ≈ **CCAP** · `olvast` ≈ **olvasd**.
+
+### 🛠️ Eszkoz-buktato, amit ma megoldottam
+
+A `node cli/bin/ma.js` **elszall**, ha az LDP epp `rimraf`-olta a `dist`-et.
+⭐ **Megkerulo ut, ami mukodik:** `cd cli && npx tsx src/main.ts comm say --file …` — a forrasbol fut,
+`dist` nelkul. *(Ma ketszer akadtam el emiatt.)*
 
 
 ### A következő konkrét lépés

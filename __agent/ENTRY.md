@@ -290,6 +290,24 @@ becsatornázva a workflow szabályok")*, nem egyszeri tévedést — és igaza v
 
 ---
 
+## 5c. 🙋 AMIT JÓVÁ KELL HAGYNIA, AZT KI KELL ÍRNI
+
+> **Owner (2026-09-08 01:38):** *„amikor valami elfogadandó dolog van, akkor azt mindig ki kell
+> írni, el kell magyarázni referenciáktól mentesen, ne várd, hogy én megnyitogatok dolgokat."*
+
+🔴 **MÉRT HIBA:** jóváhagyást kértem egy levélre, és **fájl-útvonalra mutattam**. Telefonról az
+nem elérhető ⇒ a kérésem **megválaszolhatatlan** volt.
+
+**A jóváhagyandó dolog MAGA megy ki** — teljes szöveggel, az üzenetben.
+⛔ TILOS: fájl-útvonal · dokumentum-hivatkozás · szekció-név · *„a részletek ott vannak"*.
+
+⭐ **A döntés költsége nálam van, nem nála.** Kiírni néhány sor; neki megnyitni egy fájlt a
+telefonján több lépés, mint amennyit a jóváhagyás megér — ezért **nem fog megtörténni**.
+
+Kanonikus: `current/principles/approval-must-be-self-contained.md`.
+
+---
+
 ## 6. AMI SOSEM MARADHAT EL
 
 - 🚫 **Nem találgatsz.** Hiányzó tudás ⇒ `❓ NYITOTT` + `current/open-questions.md`.
