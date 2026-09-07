@@ -672,6 +672,7 @@ megfogalmazása lesz a referencia.
 | `current/principles/product-selection-ambiguity.md` | **Univerzális hard rule:** bizonytalan vagy többváltozatos terméknél nincs találgatás/kosármódosítás; user-egyeztetés + a választás tartós feljegyzése kötelező |
 | `current/principles/fit-system.md` | Fit zóna: séta + Gellért-hegy edzés szabályok, heti horgonyok (szombat/péntek tilalmak) |
 | `current/principles/health-system.md` | Health zóna: napi 3× arc-mosás workflow + anti-deferral stratégia |
+| `current/principles/task-tracking.md` | 📋 **HARD RULE**: minden feladat FAJLBAN (`__agent/TASKS.md`), harom allapottal (nyitott/folyamatban/lezart). A `✅` csak IGAZOLAS utan. Owner: *„ne sikkadhassanak el soha a feladatok"* |
 | `current/principles/fdp-ai-never-restart.md` | ⛔ **HARD RULE**: az FDP AI szolgáltatáshoz (port 38321) SOHA nem nyúlunk — nincs újraindítás/leállítás/modell-unload. Olvasás és használat szabad. Owner: *„Ahhoz soha ne nyúlj!"* |
 | `current/principles/no-paid-solutions.md` | **Univerzális hard rule**: SOHA ne ajánlj fizetős megoldást — ha létezik, lefejlesztjük magunknak |
 | `current/principles/build-it-ourselves.md` | **Univerzális default**: build-it-ourselves stance, FOSS / saját script preferred a heavy 3rd-party tooling helyett |

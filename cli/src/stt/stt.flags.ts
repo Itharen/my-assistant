@@ -74,7 +74,7 @@ export function collectFlags(text: string): TranscriptFlags {
 export function describeFlags(flags: TranscriptFlags): string {
   const parts: string[] = ['🎙️ gépi átirat'];
 
-  if (flags.looksTruncated) parts.push('⚠️ MONDAT KÖZBEN VÉGET ÉR — hiányozhat a vége');
+  if (flags.looksTruncated) parts.push('⚠️ GYANÚS TAGOLÁS — hiányozhat a vége, VAGY rossz helyen a pont');
 
   if (flags.mishearings.length > 0) {
     const hints: string = flags.mishearings

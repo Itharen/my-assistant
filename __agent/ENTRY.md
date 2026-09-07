@@ -200,6 +200,7 @@ Minden érdemi kör **végén**, mielőtt kilépsz:
 
 | # | Mit | Hova |
 |---|---|---|
+| **0** | 🔴 **A feladatok állapota** — nyitott / folyamatban / **lezárt** | `__agent/TASKS.md` *(owner: „ne sikkadhassanak el soha a feladatok")* |
 | 1 | Mi történt, mi a következő lépés | `__agent/CONTINUATION.md` |
 | 2 | Állapot-váltás, ha volt | `__agent/STATUS.md` |
 | 3 | A user új szabálya / preferenciája — **szó szerint** | `current/principles/` |

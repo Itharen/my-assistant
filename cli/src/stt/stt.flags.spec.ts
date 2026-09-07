@@ -53,8 +53,14 @@ describe('collectFlags + describeFlags', () => {
     expect(describeFlags(collectFlags('barmi.'))).toContain('gépi átirat');
   });
 
-  it('a csonkolast KIEMELTEN jelzi', () => {
-    expect(describeFlags(collectFlags('valami ami nem fejezodik be es'))).toContain('MONDAT KÖZBEN');
+  it('a gyanus tagolast KIEMELTEN jelzi', () => {
+    // ⚠️ A szoveg SZANDEKOSAN nem allitja, hogy hianyzik a vege: az owner megerositette
+    // (2026-09-07), hogy egy ilyen esetben valojaban a PONT kerult rossz helyre. A ket ok
+    // kulonbozo, a helyes reakcio viszont ugyanaz — visszakerdezni.
+    const text = describeFlags(collectFlags('valami ami nem fejezodik be es'));
+
+    expect(text).toContain('GYANÚS TAGOLÁS');
+    expect(text).toContain('rossz helyen a pont');
   });
 
   it('a felrehallast a VALOSZINU eredetivel egyutt mutatja', () => {

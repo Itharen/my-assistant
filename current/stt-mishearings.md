@@ -45,14 +45,41 @@ rendszerre is illik?* Ha igen, a szövegkörnyezet dönt — és ha az sem egyé
 
 ---
 
-## 🔴 MÉRT PROBLÉMA: az átirat ELVÁGÓDHAT
+## 🔴 KORREKCIÓ (owner, 2026-09-07 12:03): NEM csonkolás volt — ROSSZ HELYEN A PONT
 
-**2026-09-07:** egy **32 másodperces** üzenet átirata **mondat közben** ért véget
-(*„…az ENV-be generált kulcsokat. **Ehhez**"* — 263 karakter). A 14 másodperces üzenet
-ugyanakkor **teljes** volt.
+> **Owner:** *„A kulcsokról mondott mondatomnak amúgy volt vége, az volt a vége, hogy állítsd
+> majd be a kulcsokat ehhez, csak a transzkript rossz helyre tette a pontot."*
 
-⚠️ **Ez nem félrehallás, hanem HIÁNY** — és sokkal veszélyesebb: a félrehallás *látszik*,
-a hiányzó vég **nem**. Egy csonka utasítás úgy néz ki, mint egy teljes.
+⇒ A *„…generált kulcsokat. **Ehhez**"* **nem elvágott** mondat volt: a felismerés a **pontot
+tette rossz helyre**, és így a mondat közepe végnek látszott.
+
+⭐ **Ez egy KÜLÖN, alattomosabb hibaosztály, mint a félrehallás:** minden **szó** helyes lehet,
+mégis **mást jelent**, mert a **tagolás** rossz. A szó-szintű ellenőrzés ezt **nem fogja meg**.
+
+✅ **A gyakorlati kezelés viszont VÁLTOZATLANUL helyes:** a „mondat közben ér véget" flag
+ilyenkor is bejelez, és a helyes reakció ugyanaz — **visszakérdezni, nem cselekedni**.
+*(Így is jártam el; az owner megerősítette a hiányzó részt.)*
+
+⚠️ **Amit viszont pontosítani kell:** a flag szövege **ne állítsa**, hogy hiányzik a vége —
+csak azt, hogy **a tagolás gyanús**. A kettő nem ugyanaz, és a rossz diagnózis rossz irányba
+küldi a keresést.
+
+---
+
+## ⚠️ De az átirat tényleg EL IS VESZHET — más okból, MÉRVE
+
+**2026-09-07, mérés az akció-naplóból:** **16 sikeres** felismerés mellett **2 hangüzenet
+teljesen elveszett** — mindkettő *„A felismerés 5 perc után sem fejeződött be"* hibával.
+
+⇒ Ez **nem tagolás és nem félrehallás, hanem HIÁNY**: a tartalom **soha nem jutott el hozzám**.
+Az owner is észrevette: *„Volt pár voice message ami nem került feldolgozásra"*.
+
+🔴 **Az ok a RAM**, és az owner ehhez külön szabályt adott *(2026-09-07 12:05)*:
+> *„Sok párhuzamos munka folyik ezért a RAM usage folyton fluktuál. Ezt nem kell megoldani,
+> csak azt ahogy alkalmazkodunk ehhez az issue-hoz."*
+
+⇒ ⛔ **A RAM-ot NEM optimalizáljuk.** A feladat az **alkalmazkodás**: újrapróbálás később,
+amikor a terhelés úgyis változik. → `__agent/TASKS.md` **T-10**.
 
 **Amit tenni kell:** ha egy átirat **mondat közben ér véget** *(nincs záró írásjel, kötőszóval
 vagy névelővel végződik)*, azt **JELEZNI kell**, és ⛔ **nem szabad cselekedni rá** — vissza
