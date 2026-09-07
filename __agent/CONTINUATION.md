@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-08 01:05
+**Utoljára frissítve:** 2026-09-08 01:36
 
 ---
 
@@ -1690,6 +1690,67 @@ egyetlen friss commitja **mas sessione** *(review-crusade)*. Az esemenyszam **va
 A DEV suru commitjai **suru LDP-ciklusokat** valtanak ki ⇒ a Discord-figyelo **gyakrabban esik ki**
 *(most 7 perc)*. ⇒ A **BFR-MYASSISTANT-001** *(make-before-break restart)* a delegalassal
 **fontosabb lett**, nem kevesbe.
+
+
+
+---
+
+## 🔴 2026-09-08 01:36 — HELYREIGAZITAS: az FDP NEM allt meg nemán. AZ EN OLVASASOM VOLT HIBAS.
+
+**Amit az elozo korben allitottam:** *„1016 esemeny, aztan SEMMI — nincs AGENT_BUS bejegyzes."*
+**A valosag:** irt is, commitolt is *(`015847e`)*, es a penzugyi jelentest is leszallitotta 23:34-kor.
+
+### ⭐ AZ OKOM — es ez sajat, mert reprodukalhato
+
+`tail -30 __agent/AGENT_BUS.md` — **egy 133 kB-os fajl VEGET** neztem.
+⚠️ Az `AGENT_BUS.md` **„legujabb FELUL"** rendezesu: a valasza a **90. sorban** volt.
+
+📌 **Az ara nem elmeleti:** kuldtem egy **folosleges, visszavonhatatlan, koltseges** promptot —
+pontosan az a §7.1 hibaminta, amit a sajat referencia-fajlomba irtam le ket oraja.
+
+🩹 **Javitva:** `ENTRY.md` **4d** lepes — ⛔ **`tail` TILOS** az AGENT_BUS-ra;
+`grep -n '^## \[' | head -3`, es onnan olvasd.
+
+### ⚠️ A masik oldal is jelzett egy SZERKEZETI hibat — jogosan
+
+Az FDP kimerte: a fajl **elso ~3,8 kB-ja fejlec + sema-leiras**, tehat aki **csonkolt olvasassal**
+nezi *(preview / `head` / meret-limit)*, az **a pelda-bejegyzesig sem jut el**, es ugyanazt latja,
+mintha nem lenne uj bejegyzes. *(Ugyanez ert engem a `CONTINUATION.md`-nel: 103 kB → 2 kB preview.)*
+
+**Harom javaslata** *(magatol nem epitette meg — nem az o repoja)*: kulon `AGENT_BUS-ENTRIES.md` ·
+offsettel olvasas · rovid `AGENT_BUS-LATEST.md`. ⏸️ **Nyitott** — a 2. mar be van vezetve nalam
+mint olvasasi szabaly; az 1./3. szerkezeti valtoztatas lenne.
+
+### ✅ Amit az FDP leszallitott
+
+| Feladat | Allapot |
+|---|---|
+| Penzugyi helyzetkep | ✅ kesz *(⚠️ a fajlt a megadott neven NEM talaltam — rakerdezek, nem allitom, hogy lattam a szamokat)* |
+| Berszamfejtes: feltaras + level-tervezet | ✅ kesz |
+| A level **KIKULDESE** | 🔴 **owner-jovahagyasra var** — `fdp-assistant/__documentations/payroll-communication.md` |
+
+⭐ **Nem adat- es nem hozzaferes-hiany** — a konyvelesi adatokhoz hozzafert.
+
+---
+
+## 🔊 2026-09-08 01:31 — ELO HANG-TESZT: a jelzesek MENNEK, ket hiba
+
+⭐ **Az owner HALLJA a hangokat** — a DEV jelzes-retege mukodik.
+
+| # | Hiba |
+|---|---|
+| 1 | 🔴 a **feldolgozas-hang a beszed ELEJEN** szol, nem a vegen *(a feldolgozas akkor indul, amikor abbahagyja)* |
+| 2 | 🔴 **nincs konzol-kimenet** — *„meg mindig nem latom a konzolban azt, amit a CCAP-ban anno"* |
+
+⚠️ A ketto ugyanarra mutat: **nem tudja kovetni, mi tortenik a hangjaval.** A hang jelzi, hogy
+*valami* tortenik; a konzol mondana meg, hogy *mi*.
+
+⛔ **Promptot NEM kuldtem:** a DEV sora **nem volt ures** (`KULDHETO: False`) — a sajat, ket oraja
+szigoritott szabalyom szerint. ⇒ A `DEV-HANDOFF.md`-be irtam.
+⭐ **Ezzel kiderult, hogy a handoff-fajl a PROMPT-MENTES CSATORNANK**: sorbaallas nelkul, koltseg
+nelkul ad at munkat, es a dev ugyis frissen olvassa minden ebredeskor.
+
+**STT-felrehallas rogzitve:** `CCLP` ≈ **CCAP** *(az owner maga jelezte)*.
 
 
 ### A következő konkrét lépés

@@ -141,3 +141,8 @@ csak azért vette észre, mert ő maga ismerte fel a mintát.
 
 ⚠️ A 2 karakter/mp **assziszens-választás, nem owner-adat** *(a magyar beszéd ~10–15 karakter/mp;
 ez szándékosan nagyon megengedő)*. Felülvizsgálandó: `open-questions.md`.
+
+## 2026-09-08 — `CCLP` ≈ **CCAP**
+
+Az owner maga jelezte: *„a CCLP tipikus félrehallás, ilyenkor a CCAP-ról beszélek."*
+⇒ A `CCLP` minden előfordulása **CCAP**-ként olvasandó.

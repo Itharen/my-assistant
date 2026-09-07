@@ -66,6 +66,28 @@ alapja megvan, csak be kell kötni. ⛔ **Ne írd újra.**
 Az **1.** előbb van, mint a szűrő bármilyen állítgatása: most a kidobott mondat **némán** tűnik
 el, és küszöböt állítani mérés nélkül **találgatás** (`core-no-guessing`).
 
+
+---
+
+## 🔴 2026-09-08 01:31 — ÉLŐ TESZT: KÉT HIBA (owner mérése)
+
+⭐ **A hangjelzések MENNEK** — az owner hallja őket. Ez a te munkád eredménye.
+
+> **Owner szó szerint:** *„most már elkezdtem hangokat hallani, de a typing hangot hallom ami a
+> feldolgozást jelzi, illetve kéne jelezze. **De akkor hallom, amikor elkezdek beszélni, nem pedig
+> amikor abbahagyom.**"*
+
+| # | Hiba | Mi a helyes |
+|---|---|---|
+| **1** | 🔴 A **typing/feldolgozás** hang a beszéd **KEZDETÉN** szól | A feldolgozás akkor indul, amikor a megszólalás **VÉGET ÉR** ⇒ a jelzésnek is ott a helye. A kezdetnél legfeljebb egy **más** jelzés indokolt *(„hallak")* — de az nem ugyanaz a hang |
+| **2** | 🔴 **Nincs konzol-kimenet** | *„Még mindig nem látom a konzolban azt, amit a CCAP-ban anno, miközben beszéltem."* A folyamatos szöveges visszajelzés **hiányzik** — az action-log nem látszik neki |
+
+⚠️ **A kettő ugyanarra a hiányra mutat:** nem tudja **követni**, mi történik a hangjával.
+A hang jelzi, hogy *valami* történik; a konzol mondaná meg, hogy *mi*.
+
+📌 **Ez NEM prompton át érkezett** — a sorod nem volt üres, ezért ide írom. A handoff-fájlt
+úgyis frissen olvasod minden ébredéskor; ez a **prompt-mentes csatorna** közöttünk.
+
 ---
 
 ## 3. Build és teszt
