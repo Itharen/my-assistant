@@ -15,12 +15,21 @@ function healthy(overrides: Partial<SystemPulseSnapshot> = {}): SystemPulseSnaps
     discord: { state: 'alive', ageMs: 45_000, botTag: 'Honnie#6234', processedCount: 3 },
     presence: { state: 'alive', ageMs: 30_000, idleState: 'active' },
     pendingInbound: 0,
+    sttRetryPending: 0,
     lastOutboundAgeMs: 8 * 60_000,
     ...overrides,
   };
 }
 
 describe('composePulseLine', () => {
+
+  it('🎙️ KIÍRJA, ha hang vár újrapróbálásra — ez pontosan az az állapot, ami némán veszít', () => {
+    expect(composePulseLine(healthy({ sttRetryPending: 2 }))).toContain('2 hang újrapróbálásra vár');
+  });
+
+  it('nullánál NEM foglal helyet — a nulla nem hír', () => {
+    expect(composePulseLine(healthy())).not.toContain('újrapróbálásra');
+  });
 
   it('egyetlen sor — a konzolon ez a lényeg', () => {
     expect(composePulseLine(healthy())).not.toContain('\n');

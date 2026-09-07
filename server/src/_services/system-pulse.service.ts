@@ -68,6 +68,15 @@ export interface SystemPulseSnapshot {
   };
   /** Hány beérkezett üzenet vár még átadásra. */
   pendingInbound: number;
+  /**
+   * 🎙️ Hány hangüzenet vár ÚJRAPRÓBÁLÁSRA.
+   *
+   * 🔴 MIÉRT KERÜLT A PULZUSBA (owner, 2026-09-07: *„nem ártana valami kezelés, figyelés"*):
+   * a várakozó hang **tartalma még nem jutott el hozzám**. Ez pontosan az az állapot, ami
+   * kívülről ÚGY NÉZ KI, mintha minden rendben volna — és 2026-09-07-én így veszett el
+   * két üzenet. Ha a soron áll valami, azt LÁTNI kell.
+   */
+  sttRetryPending: number;
   /** Mikor ment ki az utolsó üzenet. `undefined` = még soha. */
   lastOutboundAgeMs?: number;
 }
@@ -83,6 +92,8 @@ export function composePulseLine(pulse: SystemPulseSnapshot): string {
     `💬 Discord ${describeDiscord(pulse.discord)}`,
     `🏠 jelenlét ${describePresence(pulse.presence)}`,
     `📬 ${describeInbox(pulse.pendingInbound)}`,
+    // Csak akkor foglal helyet, ha VAN mit mondania — a nulla nem hir.
+    ...(pulse.sttRetryPending > 0 ? [`🎙️ ${pulse.sttRetryPending} hang újrapróbálásra vár`] : []),
     `↩ kimenő ${pulse.lastOutboundAgeMs === undefined ? '— még soha' : formatAge(pulse.lastOutboundAgeMs)}`,
   ];
 
@@ -154,6 +165,7 @@ export function collectPulse(now: Date = new Date()): SystemPulseSnapshot {
     discord: readDiscordHeartbeat(now),
     presence: readNewestPresenceSample(now),
     pendingInbound: countPendingInbound(),
+    sttRetryPending: countSttRetryPending(),
     lastOutboundAgeMs: readLastOutboundAge(now),
   };
 }
@@ -254,6 +266,24 @@ function readLastSample(file: string): { timestampMs: number; idleState?: string
 /** A Discord-tár gyökere. A CLI ugyanide ír (`discord.batch-store.ts`). */
 function resolveDiscordStoreDir(): string {
   return path.join(homedir(), '.config', 'my-assistant', 'discord');
+}
+
+/**
+ * Hány hang vár újrapróbálásra.
+ *
+ * ⚠️ A `.json` leírókat számoljuk, nem a `.bin`-eket: a leíró a tétel létezésének a jele,
+ * a hang önmagában lehet árva maradék is.
+ */
+function countSttRetryPending(): number {
+  try {
+    const dir: string = path.join(path.dirname(resolveDiscordStoreDir()), 'stt-retry');
+
+    if (!existsSync(dir)) return 0;
+
+    return readdirSync(dir).filter((name: string): boolean => name.endsWith('.json')).length;
+  } catch {
+    return 0;
+  }
 }
 
 function countPendingInbound(): number {

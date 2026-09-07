@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 12:35
+**Utoljára frissítve:** 2026-09-07 12:48
 
 ---
 
@@ -71,6 +71,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 
 | # | Ki | Feladat | Hol tart | Következő lépés |
 |---|---|---|---|---|
+| T-10 | 🤖 | 🔴 **Sikertelen STT újrapróbálása** | **megépítve**, 474/474 teszt — `cli/src/stt/stt.retry-queue.ts` | ⚠️ **élő próbára vár**: a következő sikertelen felismerésnél derül ki. Addig NEM ✅ |
 | T-01 | 🤖 | **Relay deploy — devops/gateway** | a relay váza kész (39345), Overseer-regisztráció kész | `fdp-devops/nginx/confs/my-assistant-relay.conf` az art-tarot minta szerint |
 | T-02 | 🤖 | **Relay deploy — SSL** | — | `webhook/ssl-config.json` bejegyzés: `test.my-assistant-relay.futdevpro.hu` |
 | T-03 | 🤖 | **Relay deploy — CI/CD** | — | `pipeline.cicd.config.json`: **CSAK a relayt** buildelje/deployolja |
@@ -105,8 +106,7 @@ a darabolás **kikapcsolható marad**, ha rontana.
 
 | # | Ki | Feladat | Miért | Forrás |
 |---|---|---|---|---|
-| T-10 | 🤖 | 🔴 **Sikertelen STT ÚJRAPRÓBÁLÁSA** | **MÉRVE: 2 hangüzenet ELVESZETT** (5 perces timeout, 16 sikeres mellett). Ma nincs újrapróbálás ⇒ a tartalom véglegesen elveszik. | owner 12:00 + saját mérés |
-| T-12 | 🤖 | **Figyelés/riasztás a sikertelen feldolgozásokra** | *„nem ártana valami kezelés, figyelés"* | owner 12:00 |
+| T-12 | 🤖 | **Figyelés/riasztás a sikertelen feldolgozásokra** | *„nem ártana valami kezelés, figyelés"* — ⚠️ a T-10 sora már **szól**, ha végleg feladja; ami HIÁNYZIK: a **várakozó sor láthatósága** *(konzol-pulzus + `comm doctor`)* | owner 12:00 |
 
 ### Egyéb
 

@@ -79,7 +79,22 @@ Az owner is észrevette: *„Volt pár voice message ami nem került feldolgozá
 > csak azt ahogy alkalmazkodunk ehhez az issue-hoz."*
 
 ⇒ ⛔ **A RAM-ot NEM optimalizáljuk.** A feladat az **alkalmazkodás**: újrapróbálás később,
-amikor a terhelés úgyis változik. → `__agent/TASKS.md` **T-10**.
+amikor a terhelés úgyis változik.
+
+### ✅ MEGÉPÍTVE (2026-09-07): `cli/src/stt/stt.retry-queue.ts`
+
+A hang mostantól **nem vész el** egy sikertelen felismeréstől:
+
+- 🔴 a **BÁJTOKAT** tesszük el, nem a Discord-URL-t *(az aláírt link lejárna)*
+- ⏳ a próbálkozás **2 → 5 → 15 → 45 perc** múlva ismétlődik, összesen **5 próba**
+- ⭐ **egyszerre SOHA nem fut két felismerés** — ez maga az alkalmazkodás: az újrapróbáló
+  nem tetézheti azt a RAM-csúcsot, ami ellen létezik
+- ✅ a **későn** felismert szöveg ugyanúgy a **kötegbe** kerül, mintha elsőre sikerült volna
+- 🔴 ha **5 próba után sem sikerül**, azt az owner **megkapja** — a néma eldobás pontosan úgy
+  néz ki, mintha meg sem érkezett volna az üzenet
+
+⚠️ **A gyanús átirat NEM kerül a sorra.** Az nem múló zavar, hanem maga az eredmény —
+újrapróbálva ugyanazt a hallucinációt kapnánk, csak sokadszorra.
 
 **Amit tenni kell:** ha egy átirat **mondat közben ér véget** *(nincs záró írásjel, kötőszóval
 vagy névelővel végződik)*, azt **JELEZNI kell**, és ⛔ **nem szabad cselekedni rá** — vissza

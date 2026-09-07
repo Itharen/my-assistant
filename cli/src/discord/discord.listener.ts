@@ -44,6 +44,12 @@ import {
 } from './discord.voice-message.js';
 import { transcribeAudio } from '../stt/stt.client.js';
 import { composeMirrorMessage } from '../stt/stt.mirror.js';
+import {
+  MAX_ATTEMPTS,
+  SttRetryQueue,
+  composeGiveUpMessage,
+  type SttRetryEntry,
+} from '../stt/stt.retry-queue.js';
 
 /**
  * Milyen sűrűn nézzük meg, hogy a köteg kiküldhető-e.
@@ -160,6 +166,23 @@ export class DiscordListener {
    * addigra már MEGTÖRTÉNT volna. Ezért itt, a drága lépés ELŐTT szűrünk.
    */
   private readonly transcribedMessageIds: Set<string> = new Set();
+
+  /**
+   * 🔴 A hangok, amiket nem sikerült felismerni — hogy NE VESSZENEK EL.
+   *
+   * MÉRVE 2026-09-07: 2 hangüzenet veszett el véglegesen, mert nem volt újrapróbálás.
+   */
+  private readonly retryQueue: SttRetryQueue = new SttRetryQueue();
+
+  /**
+   * Fut-e ÉPP egy felismerés.
+   *
+   * ⭐ EZ AZ ALKALMAZKODÁS MAGA. Az owner szerint a RAM-ingadozást nem megoldani kell, hanem
+   * alkalmazkodni hozzá — ez a jelző gondoskodik arról, hogy SOHA ne induljon két felismerés
+   * egyszerre. Különben az újrapróbáló pont a legrosszabb pillanatban tetézné a terhelést,
+   * ami ellen létezik.
+   */
+  private sttInFlight: boolean = false;
 
 
 
@@ -428,11 +451,29 @@ export class DiscordListener {
       return null;
     }
 
-    const result = await transcribeAudio({
-      audio: download.bytes,
-      filename: attachment.name,
-      ...(attachment.contentType ? { contentType: attachment.contentType } : {}),
-    });
+    this.sttInFlight = true;
+
+    let result;
+
+    try {
+      result = await transcribeAudio({
+        audio: download.bytes,
+        filename: attachment.name,
+        ...(attachment.contentType ? { contentType: attachment.contentType } : {}),
+      });
+    } finally {
+      this.sttInFlight = false;
+    }
+
+    // 🔴 A SZOLGÁLTATÁS BUKOTT (időtúllépés, hálózat, hibás válasz) → A HANG ELTEHETŐ.
+    // Ez az a pont, ahol 2026-09-07-én 2 hangüzenet VÉGLEG elveszett. Most nem veszik el:
+    // eltesszük a bájtokat, és később — más terhelés mellett — újrapróbáljuk.
+    //
+    // ⚠️ CSAK a bukást tesszük el, a GYANÚS ÁTIRATOT NEM: az utóbbi nem múló zavar, hanem
+    // maga az eredmény. Újrapróbálva ugyanazt a hallucinációt kapnánk, csak sokadszorra.
+    if (!result.ok) {
+      await this.queueForRetry(incoming, attachment, download.bytes, result.detail);
+    }
 
     // ⭐ A TÜKÖR MINDIG MEGY — sikernél, bizonytalanságnál és bukásnál is. Ez az egyetlen
     // pont, ahol az owner MÉG A CSELEKVÉS ELŐTT elkaphatja a félreértést.
@@ -545,6 +586,174 @@ export class DiscordListener {
         extra: { code: 'MA-DISCORD-MIRROR-FAILED', messageId },
       });
     }
+  }
+
+  /**
+   * Egy sikertelen felismerés hangjának eltevése későbbre.
+   *
+   * Hibát SOHA nem dob: ha maga az eltevés bukik, azt naplózzuk — de a tükör-üzenet
+   * (ami ekkor még hátravan) nem maradhat el miatta.
+   */
+  private async queueForRetry(
+    incoming: IncomingDiscordMessage,
+    attachment: DiscordAttachment,
+    audio: Uint8Array,
+    failure: string,
+  ): Promise<void> {
+    try {
+      const entry: SttRetryEntry | null = await this.retryQueue.enqueue({
+        messageId: incoming.messageId,
+        channelId: incoming.channelId,
+        authorId: incoming.authorId,
+        authorName: incoming.authorName,
+        filename: attachment.name,
+        ...(attachment.contentType ? { contentType: attachment.contentType } : {}),
+        ...(attachment.durationSecs === undefined ? {} : { durationSecs: attachment.durationSecs }),
+        audio: audio,
+        failure: failure,
+      });
+
+      await this.safeLog({
+        kind: 'note',
+        summary: entry
+          ? `[discord/listener] A hangüzenet ELTÉVE újrapróbálásra (${MAX_ATTEMPTS - 1} próba van hátra) — ${failure}`
+          : `[discord/listener] MA-DISCORD-VOICE-NO-RETRY: nincs több próbálkozási lépcső — ${failure}`,
+        extra: { code: 'MA-DISCORD-VOICE-QUEUED-FOR-RETRY', messageId: incoming.messageId, queued: entry !== null },
+      });
+    } catch (err: unknown) {
+      await this.safeLog({
+        kind: 'error',
+        summary: '[discord/listener] MA-STT-RETRY-ENQUEUE-FAILED: a hangot NEM sikerült eltenni '
+          + `újrapróbálásra, ezért VÉGLEG elveszhet — ${err instanceof Error ? err.message : String(err)}`,
+        extra: { code: 'MA-STT-RETRY-ENQUEUE-FAILED', messageId: incoming.messageId },
+      });
+    }
+  }
+
+  /**
+   * ⏳ EGY esedékes újrapróbálás — a kiküldési körből hívva.
+   *
+   * A három kapu, ami előtte áll, mind ugyanazt szolgálja: **ne mi legyünk a RAM-csúcs**.
+   *   1. fut-e épp felismerés (`sttInFlight`),
+   *   2. esedékes-e egyáltalán valami (`takeDue`),
+   *   3. körönként **legfeljebb egy** tétel.
+   *
+   * Hibát SOHA nem dob: az újrapróbáló nem döntheti meg a figyelőt.
+   */
+  private async runDueRetry(): Promise<void> {
+    if (this.sttInFlight) return;
+
+    try {
+      const entry: SttRetryEntry | null = await this.retryQueue.takeDue();
+
+      if (!entry) return;
+
+      const audio: Uint8Array | null = await this.retryQueue.readAudio(entry.messageId);
+
+      if (!audio) {
+        // A leíró megvan, a hang nincs — ebből már sosem lesz átirat. NEM hallgatjuk el.
+        await this.retryQueue.remove(entry.messageId);
+        await this.safeLog({
+          kind: 'error',
+          summary: '[discord/listener] MA-STT-RETRY-AUDIO-MISSING: a leíró megvan, de a hang '
+            + 'nincs meg — ebből a tételből már nem lesz átirat.',
+          extra: { code: 'MA-STT-RETRY-AUDIO-MISSING', messageId: entry.messageId },
+        });
+        await this.sendMirror(composeGiveUpMessage(entry), entry.messageId);
+
+        return;
+      }
+
+      this.sttInFlight = true;
+
+      let result;
+
+      try {
+        result = await transcribeAudio({
+          audio: audio,
+          filename: entry.filename,
+          ...(entry.contentType ? { contentType: entry.contentType } : {}),
+        });
+      } finally {
+        this.sttInFlight = false;
+      }
+
+      if (!result.ok || result.suspicious) {
+        await this.handleRetryFailure(entry, result.suspicionReason ?? result.detail);
+
+        return;
+      }
+
+      await this.deliverRetriedTranscript(entry, result.text);
+    } catch (err: unknown) {
+      await this.safeLog({
+        kind: 'error',
+        summary: '[discord/listener] MA-STT-RETRY-FAILED: váratlan hiba az újrapróbálás közben — '
+          + `${err instanceof Error ? err.message : String(err)}`,
+        extra: { code: 'MA-STT-RETRY-FAILED' },
+      });
+    }
+  }
+
+  /** Egy újrapróbálás bukása: vagy továbblépünk a következő lépcsőre, vagy SZÓLUNK. */
+  private async handleRetryFailure(entry: SttRetryEntry, failure: string): Promise<void> {
+    const updated: SttRetryEntry | null = await this.retryQueue.recordFailure(entry.messageId, failure);
+
+    if (updated) {
+      await this.safeLog({
+        kind: 'note',
+        summary: `[discord/listener] Az újrapróbálás (${updated.attempts}/${MAX_ATTEMPTS}) sem sikerült — `
+          + `következő: ${updated.nextAttemptAt}`,
+        extra: { code: 'MA-STT-RETRY-RESCHEDULED', messageId: entry.messageId, attempts: updated.attempts },
+      });
+
+      return;
+    }
+
+    // 🔴 ITT VESZIK EL A TARTALOM. Ez NEM maradhat némán — az owner különben azt hiszi,
+    // tudom, amit mondott.
+    await this.safeLog({
+      kind: 'error',
+      summary: `[discord/listener] MA-STT-RETRY-GIVEN-UP: ${MAX_ATTEMPTS} próba után feladtam — `
+        + `a hangüzenet tartalma elveszett. Utoljára: ${failure}`,
+      extra: { code: 'MA-STT-RETRY-GIVEN-UP', messageId: entry.messageId },
+    });
+    await this.sendMirror(composeGiveUpMessage({ ...entry, lastFailure: failure }), entry.messageId);
+  }
+
+  /**
+   * ⭐ A CÉL: a későn felismert szöveg ugyanúgy a KÖTEGBE kerül, mintha elsőre sikerült volna.
+   *
+   * ⚠️ A tükör csak azt mondja meg az ownernek, hogy megvan. Ha itt megállnánk, a tartalom
+   * **hozzám** még mindig nem jutna el — vagyis a sor a cél előtt egy lépéssel bukna el.
+   */
+  private async deliverRetriedTranscript(entry: SttRetryEntry, text: string): Promise<void> {
+    const transcript: string = composeTranscriptForBatch({
+      transcript: text,
+      ...(entry.durationSecs === undefined ? {} : { durationSecs: entry.durationSecs }),
+    });
+
+    await this.bridge.enqueue({
+      messageId: entry.messageId,
+      authorId: entry.authorId,
+      authorName: entry.authorName,
+      channelId: entry.channelId,
+      content: transcript,
+      receivedAt: new Date().toISOString(),
+    });
+
+    await this.retryQueue.remove(entry.messageId);
+    await this.safeLog({
+      kind: 'note',
+      summary: `[discord/listener] ✅ Az újrapróbálás SIKERÜLT — a ${entry.attempts}. próba után `
+        + `megvan a szöveg (${text.length} karakter), és a kötegbe került.`,
+      extra: { code: 'MA-STT-RETRY-SUCCEEDED', messageId: entry.messageId, attempts: entry.attempts },
+    });
+    await this.sendMirror(
+      `✅ **Megvan a hangüzenet, amit korábban nem tudtam felismerni.**\n`
+        + `*(a ${entry.attempts}. próbálkozásra sikerült)*\n\n${text}`,
+      entry.messageId,
+    );
   }
 
   /**
@@ -699,6 +908,10 @@ ${spoken}`
   private startFlushLoop(): void {
     this.flushTimer = setInterval((): void => {
       void this.flushTick();
+      // ⏳ Ugyanez a ketyegés viszi az STT-újrapróbálást is — nem kell külön időzítő.
+      // ⭐ Külön időzítő azt is jelentené, hogy KÉT dolog indíthatna felismerést egymásról
+      // nem tudva; így viszont egyetlen ütem van, és a `sttInFlight` egy helyen véd.
+      void this.runDueRetry();
     }, FLUSH_TICK_MS);
 
     // Az időzítő ne tartsa életben a folyamatot önmagában.
