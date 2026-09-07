@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 13:48
+**Utoljára frissítve:** 2026-09-07 13:54
 
 ---
 
@@ -113,6 +113,7 @@ a darabolás **kikapcsolható marad**, ha rontana.
 |---|---|---|---|---|
 | T-20 | 🤝 | **Mikromunkák + hackathon előrevétele** | *„Reklámnak és pénznek"* — ⚠️ ez **kétfelé bomlik**: a *prioritás-átállítás az organizerben* **élet-feladat**, az viszont, hogy én ezt **felvessem és kövessem**, rendszer-feladat | owner 10:25 |
 | T-23 | 🤖 | **LDP működés Bedrockba** | | owner 2026-09-06 |
+| T-42 | 🤝 | 🤖 **Saját robot építése** | owner 2026-09-07 13:51: *„eddig vágyálomnak tűnt de a mai ai summit után neki kéne állni... Tök egyszerű gagyik voltak a robotok..."* — ⚠️ a summit **mérése** változtatta meg a megítélést: amit ott látott, az a vártnál egyszerűbb volt | owner 13:51 |
 
 ---
 
