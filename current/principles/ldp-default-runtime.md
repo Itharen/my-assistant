@@ -83,3 +83,41 @@ egyetlen belépési pont (`dc ldp`), ami alatt minden más automatikusan él.
 - `current/principles/error-handling.md` — a csendes elhalás tiltása
 - `__documentations/ARCHITECTURE.md` — a szerver felügyelt szolgáltatásai
 - `__documentations/dev/DISCORD_BOT_SETUP.md` §6b — ki futtatja a figyelőt
+
+---
+
+## 🔴 MINDEN WORKFLOW-TRIGGERKOR ELLENŐRIZNI KELL, HOGY FUT-E
+
+> **Owner, 2026-09-07 — SZÓ SZERINT:**
+>
+> *„a workflow triggerekkor ellenőrizned kellene mindig h fut e a my assistant LDP"*
+
+**Ez a belépési pont NULLADIK lépése** (`__agent/ENTRY.md` §1), az idő-mérés ELŐTT.
+
+### Miért ez az első
+
+Az LDP alatt **minden** él: a szerver, a Discord-figyelő, a jelenlét-figyelő, a konzol-pulzus.
+Ha nem fut, **nem csak a build áll** — a **csatorna is néma**, és az owner üzenetei sehova nem
+érkeznek meg. ⇒ Ilyenkor **minden további ellenőrzés félrevezető**: a „nincs új üzenet" nem
+azt jelenti, hogy nem írt, hanem azt, hogy **nem látjuk**.
+
+### ⚠️ A fájl megléte NEM bizonyíték
+
+A `logs/live-dev-pipeline/status.json` a lemezen marad akkor is, ha a folyamat **rég meghalt** —
+fájl-alapon tehát „fut"-nak látszana. Ezért az ellenőrzés a benne lévő **PID-et is megnézi**
+(`process.kill(pid, 0)`).
+
+🔴 Ez pontosan az a hibaosztály, ami a **jelenlét-figyelőt 112 napig halottan tartotta**:
+a konfiguráció megléte nem azonos a működéssel.
+
+### Hogyan
+
+```bash
+ma comm doctor      # az ELSŐ sora az LDP — 4 állapot:
+                    #   ✅ fut · 🟡 elavult (él, de beragadhatott)
+                    #   🔴 HALOTT (a fájl megvan, a folyamat nem) · 🔴 sosem futott
+```
+
+Ha nem fut: **`dc ldp`**, saját terminálablakban — és **csak utána** bármi más.
+
+Kód: `cli/src/comm/comm.ldp-check.ts` *(7 teszt, köztük a halott-PID eset)*.

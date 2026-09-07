@@ -26,7 +26,8 @@ export interface CommCheck {
   /** Stabil azonosító — script és napló ezt használja. */
   id: string;
   /** Melyik csatornához/rétegbe tartozik. */
-  area: 'ccap' | 'discord' | 'speaker' | 'presence';
+  /** ⭐ Az `ldp` SZANDEKOSAN elol: ha az nem fut, alatta semmi nem fut. */
+  area: 'ldp' | 'ccap' | 'discord' | 'speaker' | 'presence';
   /** Ember-olvasható cím. */
   label: string;
   status: CommCheckStatus;

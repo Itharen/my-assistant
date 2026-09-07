@@ -20,9 +20,15 @@ import { summarizeChecks, type CommCheck, type CommDoctorReport } from './comm.m
 /** Ennyi perc után tekintjük elavultnak a jelenlét-mérést. */
 const PRESENCE_STALE_MINUTES: number = 10;
 
+import { readLdpStatus } from './comm.ldp-check.js';
+
 export async function runCommDoctor(options: { projectRoot?: string } = {}): Promise<CommDoctorReport> {
   const projectRoot: string = options.projectRoot ?? resolveProjectRoot();
   const checks: CommCheck[] = [];
+
+  // ⭐ AZ LDP AZ ELSO (owner, 2026-09-07). Ha az nem fut, alatta SEMMI nem fut — a szerver,
+  // a figyelok es a csatorna sem —, tehat minden tovabbi ellenorzes felrevezeto lenne.
+  checkLdp(projectRoot, checks);
 
   const ccap: CcapApiClient = new CcapApiClient();
   await checkCcapAndIdentity(ccap, checks);
@@ -36,6 +42,37 @@ export async function runCommDoctor(options: { projectRoot?: string } = {}): Pro
   await checkAwakeSource(checks);
 
   return summarizeChecks(checks, new Date().toISOString());
+}
+
+// --- LDP (a default futtatasi mod) -----------------------------------------
+
+/**
+ * Fut-e az LDP?
+ *
+ * > **Owner (2026-09-07):** *„a workflow triggerekkor ellenorizned kellene mindig h fut e a
+ * > my assistant LDP"*
+ *
+ * ⚠️ A `status.json` MEGLETE nem bizonyitek — a fajl a lemezen marad akkor is, ha a folyamat
+ * reg meghalt. Ezert a `readLdpStatus` a benne levo `pid`-et is megnezi.
+ */
+function checkLdp(projectRoot: string, checks: CommCheck[]): void {
+  const statusFile: string = join(projectRoot, 'logs', 'live-dev-pipeline', 'status.json');
+  const status = readLdpStatus(statusFile);
+  const statusByState: Record<string, CommCheck['status']> = {
+    running: 'ok',
+    stale: 'degraded',
+    dead: 'broken',
+    absent: 'broken',
+  };
+
+  checks.push({
+    id: 'ldp-running',
+    area: 'ldp',
+    label: 'LDP fut-e (a default futtatasi mod)',
+    status: statusByState[status.state] ?? 'unknown',
+    detail: status.detail,
+    ...(status.remedy ? { remedy: status.remedy } : {}),
+  });
 }
 
 // --- CCAP + önazonosítás ---------------------------------------------------

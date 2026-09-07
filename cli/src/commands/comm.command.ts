@@ -31,6 +31,7 @@ const STATUS_ICON: Record<CommCheckStatus, string> = {
 };
 
 const AREA_LABEL: Record<CommCheck['area'], string> = {
+  ldp: 'LDP',
   ccap: 'CCAP',
   discord: 'Discord',
   speaker: 'Hangszóró',

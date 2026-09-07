@@ -115,12 +115,25 @@ KEZDETÉN megy ki**, nem induláskor (`current/inventory/personal-items.md`).
 
 | # | Lépés | Parancs / fájl |
 |---|---|---|
+| **0** | 🔴 **FUT-E AZ LDP?** — MINDEN trigger legelső lépése | `ma comm doctor` **első sora**. ⚠️ Ha nem fut: **alatta SEMMI nem fut** (szerver, figyelők, csatorna) ⇒ `dc ldp`, és csak utána bármi más |
 | 1 | **Mennyi az idő, milyen nap?** ⏰ **ÉS MINDEN további időpont-állítás előtt ÚJRA** | `date "+%Y-%m-%d %H:%M %A"` — ⛔ tilos korábbi mérésből extrapolálni (`time-must-be-measured.md`) |
 | 2 | **Itthon van? Ébren van?** | `ma comm doctor` (jelenlét + ébrenlét sor) |
 | 3 | **Írt valamit?** | `__agent/USER_INPUT.md` `[NEW]` · Discord-köteg |
 | 4 | **Tartozom válasszal?** | `ma comm doctor` válasz-kötelezettség sora |
 | 5 | **Félbehagytam valamit?** | `__agent/STATUS.md` · `__agent/CONTINUATION.md` |
 | 6 | **Mi esedékes?** | `ma status digest` (organizer + lokál, hiteles kivonat) |
+
+> 🔴 **AZ LDP-ELLENŐRZÉS OWNER-SZABÁLY (2026-09-07):** *„a workflow triggerekkor ellenőrizned
+> kellene mindig h fut e a my assistant LDP"*
+>
+> ⭐ **Miért ez az ELSŐ, és miért nem elég ránézni a fájlra:** az LDP a default futtatási mód,
+> és **alatta él minden** — a szerver, a Discord-figyelő, a jelenlét-figyelő, a konzol-pulzus.
+> Ha nem fut, nem csak a build áll: **a csatorna is néma**, és az üzenetek sehova nem érkeznek.
+> Ilyenkor **minden további ellenőrzés félrevezető**.
+>
+> ⚠️ A `status.json` **megléte nem bizonyíték** — a fájl a lemezen marad akkor is, ha a
+> folyamat rég meghalt. A `comm doctor` ezért a benne lévő **PID-et is megnézi**.
+> *(Ugyanaz a hibaosztály, ami a jelenlét-figyelőt 112 napig halottan tartotta.)*
 
 ⚠️ **Az interakciók között eltelhet 1-2 nap.** Ne feltételezd, hogy folyamatos a session —
 a 1. lépés ezért nem formalitás.
