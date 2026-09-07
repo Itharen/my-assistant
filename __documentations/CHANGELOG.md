@@ -4,6 +4,32 @@
 
 ---
 
+## A koteg a CCAP SORAT is megvarja — 2026-09-07
+
+> **Owner, elesben eszreveve:** *„latom, hogy message queue-ba kerultek az uzeneteim es nem
+> lett megvarva, hogy a session-od vegezzen (ha running vagy van message a queue-ban akkor
+> csak gyujtunk)"*
+
+🔴 **A res, amit ez bezar:** a `decideFlush` eddig **csak** a `isBusyProcessing`-et nezte.
+De a session lehet ugy „nem foglalt", hogy a CCAP soraban **mar all** egy tetel — es ilyenkor
+a kuldes nem varakoztat, hanem **beall a sorba**. Az eredmeny **tobb kulon futas**, pont az
+ellenkezoje annak, amiert a kotegeles letezik.
+
+- `decideFlush` uj bemenetei: **`queuedItemCount`** es **`isQueueLocked`** — a CCAP-kliens
+  **mar korabban is visszaadta oket**, csak senki nem hasznalta.
+- Sorrend: biztonsagi szelep -> `isBusyProcessing` -> **sor nem ures** -> **sor zarolt** ->
+  osszegyujtesi ablak -> kuldes.
+- ⚠️ A **biztonsagi szelep felulirja** a tele/zarolt sort is: kulonben egy beragadt sor mellett
+  a koteg **orokre** allna. Teszt orzi.
+
+⭐ **Tanulsag:** a hianyzo adat **mar ott volt a kezunkben** (`queuedItemCount`) — nem meresi,
+hanem **felhasznalasi** hiany volt. Az owner elesben vette eszre, amit a tesztek nem: a tesztek
+azt ellenoriztek, amit a fuggveny NEZ, nem azt, amit nezni KELLENE.
+
+Teszt: CLI **419/419** (4 uj).
+
+---
+
 ## A koteg-prompt megmutatja az uzenetek KORAT — 2026-09-07
 
 > **Owner:** *„Ezeket a discord inputjaimat, lehet hasznos lenne ellatni timestamp-el"*

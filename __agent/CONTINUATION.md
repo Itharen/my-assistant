@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 10:02
+**Utoljára frissítve:** 2026-09-07 10:07
 
 ---
 
@@ -14,7 +14,7 @@
 active_plan: __agent/plans/discord-two-way-hyperplan/hyperplan.plan.md
 state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
-tests: "CLI 415/415 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
+tests: "CLI 419/419 + szerver 42/42 zold; tipusellenorzes zold; lint 0 hiba; comm doctor 10 zold / 1 reszleges (2026-09-07 09:07)"
 owner_available: false        # AI Summiton (elindult 07:45); Discordon ir
 blocked_on_owner: "Nyitott kerdesek H/I/J/K/L/M - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak), M3 (az idegen interfood-osszefesules commitolhato-e). [M1 LEZARVA: megjavitva.]"
 ```
@@ -113,8 +113,13 @@ kuldenie egyet. Az egysegtesztek a tiszta reszeket fedik, az STT elo probaja meg
 
 A monitor **el es friss**, de azt meri, hogy **van-e input EZEN a gepen** — NEM azt, hogy az
 owner hol van. Az indulasa (07:45) utan **ket** aktiv mintat mert, az egyiket **09:15:33-kor**
-(5 mp-es input), jiggler nelkul. ⇒ Megerositi az owner sajat otletet: **a telefon a halozaton**
-kell masodlagos jelnek. ❓ Nyitott: ki generalta a 09:15-os inputot.
+(5 mp-es input), jiggler nelkul. ⇒ Megerositi az owner sajat otletet: **a telefon a halozaton** kell masodlagos jelnek.
+
+✅ **A 09:15-os input REJTELYE MEGOLDVA** — az owner valaszolt: *„most megint tavvezereltem
+kicsit"*. Tehat **tavoli hozzaferes** generalta az inputot.
+🔴 **Ez MEGEROSITI a merest, nem cafolja:** az input-idle **soha nem fogja** megmondani, hogy
+hol van — a **tavvezerles pont ugy nez ki, mintha a gepnel ulne**. ⇒ A masodlagos jel
+(telefon a halozaton) nem kenyelmi kerdes, hanem **szukseges**.
 
 ---
 
@@ -157,6 +162,27 @@ nem tunik fel, hogy egy keres kozben **elavult**.
 - a **kezbesites ideje** is kiirodik (kulon sor) — enelkul nincs mihez viszonyitani;
 - friss uzenetnel (< 2 perc) nincs jelzes, hogy ne legyen zaj.
 - Teszt: **CLI 415/415** (6 uj).
+
+---
+
+## ✅ 2026-09-07 10:07 — a koteg a CCAP SORAT is megvarja
+
+> Owner (elesben eszreveve): *„latom, hogy message queue-ba kerultek az uzeneteim es nem lett
+> megvarva, hogy a session-od vegezzen (ha running vagy van message a queue-ban akkor csak
+> gyujtunk)"*
+
+🔴 **A res:** a `decideFlush` **csak** a `isBusyProcessing`-et nezte. A session lehet ugy „nem
+foglalt", hogy a CCAP soraban **mar all** egy tetel — ilyenkor a kuldes nem varakoztat, hanem
+**beall a sorba**, es **kulon futas** lesz belole.
+
+- uj bemenetek: `queuedItemCount` + `isQueueLocked` — **mar korabban is elerhetok voltak** a
+  CCAP-kliensbol, csak senki nem hasznalta oket;
+- a **biztonsagi szelep felulirja** oket, kulonben egy beragadt sor mellett a koteg orokre allna;
+- **CLI 419/419** (4 uj teszt).
+
+⭐ **Tanulsag:** a hianyzo adat **mar a kezunkben volt** — nem meresi, hanem **felhasznalasi**
+hiany. A tesztek azt ellenoriztek, amit a fuggveny NEZ, nem azt, amit nezni KELLENE. Ilyet a
+sajat review-korom nem talal meg; az owner elesben igen.
 
 ---
 

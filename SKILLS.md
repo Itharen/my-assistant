@@ -338,6 +338,26 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
   RAM mellett 5 perc alatt sem futott le; közvetlenül utána ugyanaz a fájl **77,6 mp**.
   Owner: *„90% usage felett várakozik"*.
 
+### Mikor megy ki a koteg — a felteteles sor (`decideFlush`)
+
+> **Owner (2026-09-07):** *„ha running vagy van message a queue-ban akkor csak gyujtunk"*
+
+```
+1. biztonsagi szelep (a legregebbi tetel tul reg var)  -> KULD, foglaltsag ellenere is
+2. a session dolgozik                                   -> gyujtunk
+3. a CCAP soraban MAR ALL egy tetel                     -> gyujtunk   <- ez hianyzott
+4. a sor ZAROLT                                         -> gyujtunk   <- ez is
+5. az osszegyujtesi ablak meg tart                      -> gyujtunk
+   kulonben                                             -> KULD, EGY promptban
+```
+
+- 🔴 **Mert hiany (2026-09-07):** a dontes **csak** a `isBusyProcessing`-et nezte. Van egy res:
+  a session eppen nem „dolgozik", de a CCAP soraban **mar all** egy tetel. Ilyenkor a kuldes
+  nem varakoztat, hanem **beall a sorba** — vagyis **kulon futas** lesz belole, pont az
+  ellenkezoje annak, amiert a kotegeles letezik. Az owner ezt **elesben vette eszre**.
+- ⚠️ A **biztonsagi szelep** a tele/zarolt sort is felulirja — kulonben egy beragadt sor mellett
+  a koteg **orokre** allna.
+
 ### A koteg-prompt idobelyege ES KORA (`discord.batch-composer.ts`)
 
 > **Owner-otlet (2026-09-07):** *„Ezeket a discord inputjaimat, lehet hasznos lenne ellatni

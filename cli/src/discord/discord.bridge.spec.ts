@@ -23,7 +23,7 @@ function ageSeconds(seconds: number): string {
 
 describe('decideFlush', () => {
   it('does not flush an empty batch', () => {
-    const decision = decideFlush({ pending: [], isBusyProcessing: false, now: NOW, config: CONFIG });
+    const decision = decideFlush({ pending: [], isBusyProcessing: false, queuedItemCount: 0, now: NOW, config: CONFIG });
 
     expect(decision.shouldFlush).toBe(false);
     expect(decision.pendingCount).toBe(0);
@@ -33,6 +33,7 @@ describe('decideFlush', () => {
     const decision = decideFlush({
       pending: [message({ receivedAt: ageSeconds(60) })],
       isBusyProcessing: true,
+      queuedItemCount: 0,
       now: NOW,
       config: CONFIG,
     });
@@ -48,6 +49,7 @@ describe('decideFlush', () => {
         message({ messageId: 'b', receivedAt: ageSeconds(30) }),
       ],
       isBusyProcessing: false,
+      queuedItemCount: 0,
       now: NOW,
       config: CONFIG,
     });
@@ -60,6 +62,7 @@ describe('decideFlush', () => {
     const decision = decideFlush({
       pending: [message({ receivedAt: ageSeconds(2) })],
       isBusyProcessing: false,
+      queuedItemCount: 0,
       now: NOW,
       config: CONFIG,
     });
@@ -72,6 +75,7 @@ describe('decideFlush', () => {
     const decision = decideFlush({
       pending: [message({ receivedAt: ageSeconds(16 * 60) })],
       isBusyProcessing: true,
+      queuedItemCount: 0,
       now: NOW,
       config: CONFIG,
     });
@@ -155,5 +159,65 @@ describe('composeBatchPrompt — idobelyeg es KOR', () => {
     const prompt = composeBatchPrompt([aged('szia', 'nem-datum')], new Date('2026-09-07T09:30:00+02:00'));
 
     expect(prompt).toContain('szia');
+  });
+});
+
+describe('decideFlush — a CCAP SORA is szamit (owner, 2026-09-07)', () => {
+
+  // Owner: "latom, hogy message queue-ba kerultek az uzeneteim es nem lett megvarva, hogy a
+  // session-od vegezzen (ha running vagy van message a queue-ban akkor csak gyujtunk)"
+
+  it('🔴 NEM kuld, ha a CCAP soraban mar all egy tetel — akkor sem, ha a session szabad', () => {
+    const decision = decideFlush({
+      pending: [message({ receivedAt: ageSeconds(60) })],
+      isBusyProcessing: false,
+      queuedItemCount: 1,
+      now: NOW,
+      config: CONFIG,
+    });
+
+    expect(decision.shouldFlush).toBe(false);
+    expect(decision.reason).toContain('sorában már áll');
+  });
+
+  it('NEM kuld, ha a sor ZAROLT', () => {
+    const decision = decideFlush({
+      pending: [message({ receivedAt: ageSeconds(60) })],
+      isBusyProcessing: false,
+      queuedItemCount: 0,
+      isQueueLocked: true,
+      now: NOW,
+      config: CONFIG,
+    });
+
+    expect(decision.shouldFlush).toBe(false);
+    expect(decision.reason).toContain('ZÁROLT');
+  });
+
+  it('ures sor + szabad session + elcsendesedes eseten KULD', () => {
+    const decision = decideFlush({
+      pending: [message({ receivedAt: ageSeconds(60) })],
+      isBusyProcessing: false,
+      queuedItemCount: 0,
+      isQueueLocked: false,
+      now: NOW,
+      config: CONFIG,
+    });
+
+    expect(decision.shouldFlush).toBe(true);
+  });
+
+  it('⚠️ a BIZTONSAGI SZELEP a tele sort is felulirja — kulonben orokre allna a koteg', () => {
+    const decision = decideFlush({
+      pending: [message({ receivedAt: ageSeconds(9999) })],
+      isBusyProcessing: true,
+      queuedItemCount: 5,
+      isQueueLocked: true,
+      now: NOW,
+      config: CONFIG,
+    });
+
+    expect(decision.shouldFlush).toBe(true);
+    expect(decision.reason).toContain('Biztonsági szelep');
   });
 });

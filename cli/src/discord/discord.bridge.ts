@@ -34,6 +34,21 @@ import {
 export function decideFlush(params: {
   pending: DiscordInboundMessage[];
   isBusyProcessing: boolean;
+  /**
+   * Hány tétel áll MÁR a CCAP sorában.
+   *
+   * > **Owner-észrevétel (2026-09-07):** *„látom, hogy message queue-ba kerültek az üzeneteim
+   * > és nem lett megvárva, hogy a session-öd végezzen (ha running vagy van message a
+   * > queue-ban akkor csak gyűjtünk)"*
+   *
+   * 🔴 MÉRT HIÁNY, EZ JAVÍTJA: a döntés eddig **csak** a `isBusyProcessing`-et nézte. Van egy
+   * rés a kettő között: a session épp nem „dolgozik", de a CCAP sorában **már áll** egy tétel.
+   * Ilyenkor a küldés nem várakoztat, hanem **beáll a sorba** — vagyis több külön futás lesz
+   * belőle, pont az ellenkezője annak, amiért a kötegelés létezik.
+   */
+  queuedItemCount: number;
+  /** Zárolt-e a CCAP sora. Zárolt sorba küldeni ugyanaz a hiba, mint tele sorba. */
+  isQueueLocked?: boolean;
   now: Date;
   config?: DiscordBatchConfig;
 }): DiscordFlushDecision {
@@ -62,6 +77,26 @@ export function decideFlush(params: {
       shouldFlush: false,
       reason: `A session dolgozik — gyűjtünk tovább (${pendingCount} tétel vár), `
         + 'hogy egy futásba minél több infó kerüljön.',
+      pendingCount,
+    };
+  }
+
+  // ⭐ Owner-szabály: „ha running VAGY van message a queue-ban, akkor csak gyűjtünk".
+  // A sorba küldés nem várakoztatás — az üzenet beáll a sorba, és külön futás lesz belőle.
+  if (params.queuedItemCount > 0) {
+    return {
+      shouldFlush: false,
+      reason: `A CCAP sorában már áll ${params.queuedItemCount} tétel — gyűjtünk tovább `
+        + `(${pendingCount} tétel vár). Küldeni most annyit tenne, hogy beállunk a sorba, `
+        + 'és külön futás lenne belőle.',
+      pendingCount,
+    };
+  }
+
+  if (params.isQueueLocked) {
+    return {
+      shouldFlush: false,
+      reason: `A CCAP sora ZÁROLT — gyűjtünk tovább (${pendingCount} tétel vár).`,
       pendingCount,
     };
   }
@@ -109,6 +144,8 @@ export class DiscordBridge {
     return decideFlush({
       pending,
       isBusyProcessing: runtime.isBusyProcessing,
+      queuedItemCount: runtime.queuedItemCount,
+      isQueueLocked: runtime.isQueueLocked,
       now,
       config: this.config,
     });
@@ -161,6 +198,8 @@ export class DiscordBridge {
       const decision: DiscordFlushDecision = decideFlush({
         pending,
         isBusyProcessing: runtime.isBusyProcessing,
+        queuedItemCount: runtime.queuedItemCount,
+        isQueueLocked: runtime.isQueueLocked,
         now,
         config: this.config,
       });
