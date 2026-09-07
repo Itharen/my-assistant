@@ -332,7 +332,9 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
   jutnak el hozzám"*. (A jelenlét-figyelő 112 napig volt halott, mert nem volt ilyen jel.)
 - **Discord-köteg kézi kiküldése:** `ma comm flush [--force]`. Normál üzemben **nem kell** — a
   figyelő magától küld; ez a diagnosztikai/kényszerített út. A köteg **csak igazolt átadás után** ürül.
-- **Kimenő üzenet:** `ma comm say --text "…"` — 2000 karakter fölött **sorhatáron** darabol, és
+- **Kimenő üzenet:** ⭐ **`ma comm say --file <út>`** — EZ AZ AJÁNLOTT ÚT. A szöveg fájlból jön, tehát a shell/burkoló **nem tudja elvágni**. 🔴 **Mért ok (2026-09-07):** Windowson az `npx`/`cmd` burkoló a többsoros `--text` argumentumot **az első újsornál levágta**, és a rendszer minden szintje sikert jelentett rá — a napi kommunikáció ~90%-a így veszett el.
+  ⭐ **Küldés után VISSZAOLVAS** és hosszt hasonlít: `verifiedIntact` + `verifyDetail`. ⚠️ `verifiedIntact: false` esetén a `sent: true` **NEM siker**.
+- Rövid, egysoros üzenethez marad a `--text`. A 2000 karakteres korlát fölött **sorhatáron** darabol, és rögzíti a kimenő naplót (ebből dönt a válasz-kötelezettség és a „gépel…” jelzés).
   rögzíti a kimenő naplóba. Erre épül a **válasz-kötelezettség** ellenőrzése: ha az utolsó
   bejuttatott bejövő üzenet ÚJABB, mint az utolsó kimenő válasz, a `ma comm doctor` `degraded`-et
   jelez — mert a leggyakoribb csendes hiba az, hogy csak a sessionben válaszolok.

@@ -78,7 +78,7 @@ csatorna áll — és a felfedezés pillanatában az owner **27 perccel az indul
 
 ---
 
-## 5. A végleges javítás — TEENDŐ
+## 5. A végleges javítás — ✅ **KÉSZ (2026-09-07 07:50)**
 
 | # | Mit | Miért |
 |---|---|---|
@@ -88,6 +88,20 @@ csatorna áll — és a felfedezés pillanatában az owner **27 perccel az indul
 
 > **Owner (2026-09-07):** *„Lehet, hogy vissza is se kéne ellenőrizni időnként, hogy
 > sikerülhet-e infókat átadni a Discordon, miután megtörtént."*
+
+---
+
+### ✅ Élő igazolás
+
+```
+ma comm say --file E:/tmp/m12.txt
+  -> sent: true
+     verifiedIntact: true
+     verifyDetail: "Megérkezett hiánytalanul (348 karakter)."
+```
+
+Egy **többsoros** üzenet ment át **hiánytalanul** — pontosan az, ami reggel csonkolódott.
+Az új `cli/src/discord/discord.delivery-check.ts` tiszta függvény, **7 teszttel**, köztük a **valós csonkolási eset reprodukciója**. Teszt-állás: **352/352 zöld**.
 
 ---
 
