@@ -1,0 +1,231 @@
+{
+  "_comment": "my-assistant CI/CD — ⛔ CSAK A RELAYT buildeli es deployolja. Owner (2026-09-07): 'A cicd csak ezt kell buildelje és deploy-olja.' A cli/ a szerver es a client SZANDEKOSAN kimarad: azok a RAVEN gepen, LDP alatt futnak (`current/principles/ldp-default-runtime.md`), es a my-assistant szerver kivulrol NEM elerheto. Egy 'buildeljuk be azt is, hatha kell' lepes itt nem semleges: a szerver deployja pont azt a hatart lepne at, amit az owner huzott.",
+  "name": "My Assistant Relay CI/CD Pipeline",
+  "outputDir": "./logs/cicd-pipeline",
+  "timing": {
+    "stepTimeout": "10m",
+    "teeMaxRuntime": "10m",
+    "stepCooldown": "1s"
+  },
+  "log": {
+    "runtimeMaxBytes": 5242880,
+    "trimCheckEveryN": 1000
+  },
+  "versionBump": {
+    "enabled": true,
+    "targetPackage": "../relay/package.json",
+    "buildOverflow": 100000,
+    "minorOverflow": 1000
+  },
+  "report": {
+    "fileName": "cicd-report.json",
+    "includeLogTail": true,
+    "logTailLines": 10000,
+    "includeStepLogs": true
+  },
+  "steps": [
+    {
+      "label": "discord-start",
+      "command": "dc ci-dn-s '{\"appName\":\"My Assistant Relay\",\"appEmoji\":\"📡\",\"commitMessage\":\"$COMMIT_MESSAGE\",\"branchName\":\"$GITHUB_REF_NAME\",\"author\":\"$GITHUB_ACTOR\",\"runNumber\":\"$GITHUB_RUN_NUMBER\",\"runId\":\"$GITHUB_RUN_ID\",\"repository\":\"$GITHUB_REPOSITORY\",\"eventName\":\"$GITHUB_EVENT_NAME\",\"eventDateTime\":\"$EVENT_DATETIME\"}'",
+      "fatal": false,
+      "discord": {
+        "hide": true
+      },
+      "condition": {
+        "envSet": [
+          "DISCORD_WEBHOOK_ID"
+        ]
+      }
+    },
+    {
+      "_comment": "A privat @futdevpro/* csomagokhoz (fsm-dynamo, nts-dynamo) NPM_TOKEN kell. ⭐ A token a CI-HOSZTON el — a Docker-kepbe SOHA nem kerul be, es .npmrc SEM keszul rola (`core-no-npmrc`).",
+      "label": "pre-flight",
+      "type": "pre-flight-check",
+      "fatal": true,
+      "discord": {
+        "emoji": "🔐",
+        "name": "Pre-flight Check",
+        "group": "preflight",
+        "groupName": "Pre-flight Check",
+        "groupEmoji": "🔐"
+      },
+      "settings": {
+        "requiredEnvVars": [
+          "NPM_TOKEN"
+        ]
+      }
+    },
+    {
+      "label": "install-relay",
+      "command": "cd relay && pnpm i --frozen-lockfile",
+      "fatal": true,
+      "discord": {
+        "hide": true
+      }
+    },
+    {
+      "label": "relay-build",
+      "command": "cd relay && npm run build-base",
+      "fatal": true,
+      "discord": {
+        "emoji": "🏗️",
+        "name": "Relay Build",
+        "group": "relay-build-test",
+        "groupName": "Relay Build and Test",
+        "groupEmoji": "🏗️"
+      }
+    },
+    {
+      "label": "relay-test",
+      "command": "cd relay && npx jasmine --config=spec/support/jasmine.json",
+      "fatal": true,
+      "discord": {
+        "emoji": "🧪",
+        "name": "Relay Tests",
+        "group": "relay-build-test"
+      }
+    },
+    {
+      "label": "relay-lint",
+      "command": "cd relay && npm run lint",
+      "fatal": false,
+      "discord": {
+        "emoji": "🧹",
+        "name": "Relay Lint",
+        "group": "relay-build-test"
+      }
+    },
+    {
+      "_comment": "🔴 EZ A LEPES TESZI LEHETOVE, HOGY A DOCKERFILE NE TELEPITSEN. A `.npmrc` letrehozasa globalis HARD RULE szerint TILOS (`core-no-npmrc`) — egy build-stage-ben irt /root/.npmrc a tokent egy image-retegbe sutne. Ezert a privat csomagokat a CI-HOSZT szedi le (ahol a jogosultsag amugy is el), itt metszunk prod-ra, es a kepbe mar csak a KESZ node_modules kerul. ⚠️ A metszes a tesztek UTAN all: elotte a dev-fuggosegek (jasmine, typescript) meg kellenek.",
+      "label": "prune-prod",
+      "command": "cd relay && pnpm prune --prod",
+      "fatal": true,
+      "discord": {
+        "hide": true
+      },
+      "condition": {
+        "branchMatch": [
+          "master",
+          "release/*"
+        ],
+        "allPassed": [
+          "relay-build",
+          "relay-test"
+        ]
+      }
+    },
+    {
+      "label": "docker-login",
+      "command": "echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin",
+      "fatal": true,
+      "discord": {
+        "hide": true
+      },
+      "condition": {
+        "branchMatch": [
+          "master",
+          "release/*"
+        ],
+        "envSet": [
+          "DOCKER_HUB_USERNAME",
+          "DOCKER_HUB_PASSWORD"
+        ]
+      }
+    },
+    {
+      "_comment": "A build-context a `./relay` — a Dockerfile is ott lakik, es CSAK MASOL (Path B). Az image-nev egyezik a devops compose-eban levovel: futdevpro/my-assistant-relay.",
+      "label": "docker-build",
+      "type": "docker-build",
+      "fatal": true,
+      "discord": {
+        "emoji": "🐳",
+        "name": "Docker Build",
+        "group": "deploy",
+        "groupName": "Deploy",
+        "groupEmoji": "🚀"
+      },
+      "condition": {
+        "branchMatch": [
+          "master",
+          "release/*"
+        ],
+        "allPassed": [
+          "relay-build",
+          "relay-test",
+          "prune-prod"
+        ],
+        "envSet": [
+          "DOCKER_HUB_REGISTRY"
+        ]
+      },
+      "settings": {
+        "context": "./relay",
+        "registry": "$DOCKER_HUB_REGISTRY",
+        "imageName": "my-assistant-relay",
+        "versionSource": "./relay/package.json",
+        "tags": [
+          "latest"
+        ],
+        "releaseTags": [
+          "release"
+        ],
+        "skipIfPublished": true,
+        "noCache": true
+      }
+    },
+    {
+      "label": "deploy",
+      "command": "fdp deploy-service --services my-assistant-relay --webhook-url https://test-webhook.futdevpro.hu --webhook-secret $WEBHOOK_SECRET",
+      "fatal": false,
+      "discord": {
+        "emoji": "🚀",
+        "name": "Deploy",
+        "group": "deploy"
+      },
+      "condition": {
+        "branchMatch": [
+          "master",
+          "release/*"
+        ],
+        "allPassed": [
+          "docker-build"
+        ],
+        "envSet": [
+          "WEBHOOK_SECRET"
+        ]
+      }
+    },
+    {
+      "label": "pipeline-report",
+      "command": "fdp pipeline-report --report ./logs/cicd-pipeline/cicd-report.json --server-dir ./relay --overseer-secret $OVERSEER_SECRET_KEY --branch $GITHUB_REF_NAME",
+      "fatal": false,
+      "always": true,
+      "discord": {
+        "emoji": "📊",
+        "name": "Build Report"
+      },
+      "condition": {
+        "envSet": [
+          "OVERSEER_SECRET_KEY"
+        ]
+      }
+    },
+    {
+      "_comment": "⚠️ A `--config` a `.dynamo/` alatti VALODI utat adja meg. Az organizer ugyanitt `./pipeline.cicd.config.json`-t ir, de ott a fajl szinten a `.dynamo/`-ban van — vagyis az az ut nem letezik. Mivel a lepes `fatal: false`, ez ott csendben degradal. Nem masoltam at a hibat.",
+      "label": "discord-result",
+      "command": "fdp pipeline-notify --report ./logs/cicd-pipeline/cicd-report.json --config ./.dynamo/pipeline.cicd.config.json --app-name \"My Assistant Relay\" --app-emoji 📡 --webhook-id $DISCORD_WEBHOOK_ID --webhook-token $DISCORD_WEBHOOK_TOKEN --server-dir ./relay",
+      "fatal": false,
+      "retryOnFail": 2,
+      "retryDelaySec": 5,
+      "always": true,
+      "discord": {
+        "hide": true
+      },
+      "condition": {
+        "envSet": [
+          "DISCORD_WEBHOOK_ID"
+        ]
+      }
+    }
+  ]
+}
