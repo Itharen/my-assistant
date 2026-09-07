@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-07 20:57
+**Utoljára frissítve:** 2026-09-07 21:12
 
 ---
 
@@ -143,6 +143,7 @@ rendszer-feladataim**, amiknek a kulcsa nála van.
 
 | # | Feladat | Igazolás |
 |---|---|---|
+| ✅ | ✂️ **Rövidség-őr — a hosszú üzenet nem megy ki** | Owner 21:06: *„nem olvastam, hosszú üzeneteket írsz"*. ⚠️ A szabály **már létezett** — nem tartott vissza. Most **gépi korlát**: 400 karakter / 8 sor, `--long`-gal felülbírálható. 535/535, élesben igazolva (514 karakter blokkolva) |
 | ✅ | 🔴 **Az automatikus action-log hookok NEM FUTOTTAK** — két ok | Mérve: **2026-08-28…09-06 között NULLA** hook-bejegyzés, közben 400-600 sor/nap kézi. (1) BOM nélküli `.ps1` + em dash ⇒ a **Windows PowerShell 5.1** nem parse-olta *(a hook `powershell`-lel indul, nem `pwsh`-sal)*; (2) elavult `cli/build/main.js` útvonal *(valódi: `cli/dist/cli/src/main.js`)*. **Javítva mindkettő**, a hook azóta ír. Doksi: `__documentations/developments/2026-09-07-action-log-hooks-were-dead.md` |
 | ✅ | **Duplikált feldolgozás javítva** *(owner 12:21)* | 481/481 + **regresszió-teszt**: az `append()` addig CSAK a várakozó köteget nézte, az archívumot nem ⇒ a kézbesített üzenet védelme megszűnt. Most **mindkét halmazt** nézi (`isKnownMessage`), és a **hangfelismerés is** ellenőrzi a drága lépés ELŐTT |
 | ✅ | **C-33 Discord-hangüzenet → STT → tükör** | **élőben**, az owner valódi hangüzeneteivel (16 sikeres felismerés) |

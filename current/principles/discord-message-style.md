@@ -112,3 +112,49 @@ struktúrát keres benne, és zajt talál.
 
 - [[discord-first-output]] — **hova** megy az info
 - [[message-delivery-reliability]] — a „sent: true" ≠ „megkapta"
+
+---
+
+## 🔴 2026-09-07 21:06 — A SZABÁLY NEM ELÉG, GÉPI KORLÁT KELL
+
+> **Owner, szó szerint:** *„Én nem olvastam, hogy mit írtál, kicsit hosszú üzeneteket írsz, ezt
+> valahogy javítanunk kéne, hogy ilyenkor Discordon tömörebben fogalmazzál, mind itt, mind a
+> Voice-on."*
+
+⚠️ **Ez a fájl MÁR létezett, és már kimondta, hogy rövid legyek.** Mégis hosszú üzeneteket
+küldtem — és **el sem olvasta őket**. ⇒ Az írott szabály önmagában **nem tartott vissza**.
+
+📌 **A tanulság, ami túlmutat ezen:** *ami nem mérhető, azt nem tartom be.* Ha egy szabály
+betartása csak a szándékomon múlik, előbb-utóbb elcsúszik — nem rosszindulatból, hanem mert
+minden egyes üzenetnél újra el kell dönteni.
+
+### Amit ezért beépítettem
+
+`cli/src/discord/discord.brevity-guard.ts` — a küldés **ELŐTT** ítél:
+
+| Korlát | Érték |
+|---|---|
+| karakter | **400** |
+| sor | **8** |
+
+A `ma comm say` a limit fölött **NEM küld**, hanem visszaadja, mit kell tenni. Tudatos
+felülbírálás: `--long`.
+
+⛔ **NEM csonkol.** A levágott üzenet félreérthető; a hosszú üzenet **átfogalmazandó**.
+
+⚠️ **A 400/8 assziszens-választás, nem owner-adat** — ő számot nem mondott. A mérés, amiből
+indultam: a 2026-09-07 20:33-as és 20:55-ös üzeneteim **~1100 és ~1200 karakter** voltak, és
+egyiket sem olvasta el; a korábbi, elolvasott üzenetek 400–500 körül mozogtak.
+Felülvizsgálandó: `open-questions.md`.
+
+### ⚠️ A HANGRA IS VONATKOZIK
+
+*„mind itt, mind a Voice-on"* — a hang-csatornában elmondott válasz **ugyanígy** rövid legyen.
+Ott ráadásul rosszabb a helyzet: a hangot **nem lehet átugrani vagy visszapörgetni**, mint egy
+szöveges bekezdést.
+
+### Az igazi kár
+
+Nem a hossz, hanem a **csend**: egy el nem olvasott üzenet pontosan úgy néz ki, mintha meg sem
+írtam volna — de közben **én azt hiszem, tájékoztattam**. Ugyanaz a hibaosztály, mint amikor a
+köteg a fájlban maradt: **a feladó szemszögéből minden rendben van**.

@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-07 20:57
+**Utoljára frissítve:** 2026-09-07 21:12
 
 ---
 
@@ -1135,6 +1135,35 @@ háttérben NEM tud helyet küldeni** *(platform-korlát — ezért létezik az 
 
 ⇒ T-41 átkeretezve: **owner-vezérelt agent-építés**, nem az én munkám. A mai feltárás
 **kiindulásként megmarad**. ⛔ Agentet magamtól nem indítok — nincs jóváhagyva.
+
+
+
+---
+
+## 🔴 2026-09-07 21:06 — „EL SEM OLVASTAM" — a hosszú üzenet = NULLA üzenet
+
+> *„Én nem olvastam, hogy mit írtál, kicsit hosszú üzeneteket írsz… tömörebben fogalmazzál,
+> mind itt, mind a Voice-on."*
+
+⚠️ **A `discord-message-style.md` MÁR létezett**, és már kimondta, hogy rövid legyek. Mégis
+~1100 és ~1200 karakteres üzeneteket küldtem, és **egyiket sem olvasta el**.
+
+📌 **A tanulság:** *ami nem mérhető, azt nem tartom be.* Ha egy szabály betartása csak a
+szándékomon múlik, minden egyes üzenetnél újra el kell dönteni — és előbb-utóbb elcsúszik.
+
+⭐ **Az igazi kár nem a hossz, hanem a CSEND:** az el nem olvasott üzenet pontosan úgy néz ki,
+mintha meg sem írtam volna — de **én azt hiszem, tájékoztattam**. Ugyanaz a hibaosztály, mint
+amikor a köteg a fájlban maradt: **a feladó szemszögéből minden rendben**.
+
+**Beépítve:** `cli/src/discord/discord.brevity-guard.ts` — **400 karakter / 8 sor**, a küldés
+ELŐTT. A `ma comm say` a limit fölött **nem küld**, hanem megmondja, mit tegyek.
+Tudatos felülbírálás: `--long`. ⛔ **Nem csonkol** — a levágott üzenet félreérthető.
+
+⚠️ **A hangra is vonatkozik** *(„mind itt, mind a Voice-on")* — ott rosszabb: a hangot nem lehet
+átugrani vagy visszapörgetni.
+
+⚠️ A 400/8 **assziszens-választás** (`Q-2026-09-07-06`). Élesben igazolva: 514 karakter blokkolva.
+535/535 teszt zöld.
 
 
 ### A következő konkrét lépés

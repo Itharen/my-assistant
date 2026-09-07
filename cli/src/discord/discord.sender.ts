@@ -11,6 +11,7 @@ import { Client, GatewayIntentBits, type TextBasedChannel } from 'discord.js';
 
 import { verifyDelivery, type DeliveredMessage } from './discord.delivery-check.js';
 import { recordOutbound, type OutboundKind } from './discord.reply-tracker.js';
+import { inspectBrevity } from './discord.brevity-guard.js';
 
 /** A Discord üzenet-hossz korlátja. E fölött darabolunk. */
 const DISCORD_MAX_MESSAGE_CHARS: number = 2000;
@@ -47,6 +48,14 @@ export async function sendDiscordMessage(
    * ⛔ A nyugta NEM torli a valasz-kotelezettseget — lasd `OutboundKind`.
    */
   kind: OutboundKind = 'reply',
+  /**
+   * ✂️ Átengedi a rövidség-őrt.
+   *
+   * ⚠️ TUDATOS DÖNTÉS legyen, ne alapértelmezés: az owner **el sem olvasta** a hosszú
+   * üzeneteimet (2026-09-07). Aki ezt igazra állítja, azt állítja, hogy ez az üzenet
+   * megéri a kockázatot.
+   */
+  allowLong: boolean = false,
 ): Promise<DiscordSendResult> {
   const token: string = (process.env['MA_DISCORD_BOT_TOKEN'] ?? '').trim();
   const channelId: string = (process.env['MA_DISCORD_CHANNEL_ID'] ?? '').trim();
@@ -54,6 +63,19 @@ export async function sendDiscordMessage(
 
   if (!trimmed) {
     return { sent: false, partCount: 0, detail: 'Üres üzenetet nem küldünk.', remedy: 'Adj meg szöveget.' };
+  }
+
+  // ✂️ RÖVIDSÉG-ŐR. ⛔ A küldés ELŐTT, mert utána már nincs mit tenni: az owner vagy elolvassa,
+  // vagy nem. A `reply`/`ack` fajtára egyaránt vonatkozik — a nyugta pláne legyen rövid.
+  const brevity = inspectBrevity(trimmed);
+
+  if (!allowLong && !brevity.acceptable) {
+    return {
+      sent: false,
+      partCount: 0,
+      detail: `TÚL HOSSZÚ — nem küldtem el. ${brevity.reason}`,
+      ...(brevity.remedy ? { remedy: brevity.remedy } : {}),
+    };
   }
 
   if (!token || !channelId) {

@@ -712,3 +712,16 @@ megengedő; lehet, hogy szigorúbb kellene.
 **Ami eldönti:** néhány valódi eset. Ha átcsúszik egy bukott felismerés, feljebb vesszük.
 
 **Státusz:** open · Kapcsolódó: `current/stt-mishearings.md`
+
+## Q-2026-09-07-06 — jó-e a 400 karakter / 8 sor korlát a Discord-üzenetre? (process / m)
+
+A rövidség-őr (`discord.brevity-guard.ts`) 400 karakternél és 8 sornál állít meg. Ez
+**assziszens-választás**: az owner számot nem mondott, csak azt, hogy *„nem olvastam, hosszú"*.
+
+**A mérés, amiből indultam:** a 2026-09-07 20:33 és 20:55 közötti üzeneteim ~1100 és ~1200
+karakter voltak — egyiket sem olvasta el. A korábbi, elolvasottak 400–500 körül mozogtak.
+
+**Ami eldönti:** ha a 400 túl szűk, folyton `--long`-ot kell használnom; ha túl bő, továbbra is
+lesznek olvasatlan üzenetek.
+
+**Státusz:** open · Kapcsolódó: `current/principles/discord-message-style.md`
