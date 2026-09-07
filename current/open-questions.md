@@ -448,6 +448,22 @@
 
 ---
 
+## L) Több session / több agent 🔀 (2026-09-07)
+
+> Owner: *„mennyire tűri jelenleg a rendszer azt, hogy össze-vissza különféle sessionökből
+> beszélgessek veled. Gondoltam rá, hogy egy Codex sessionből is megpróbálnálak…"*
+> Mérés + részletek: `__documentations/dev/MULTI_SESSION.md`
+
+| ID | Kérdés | Miért kell | Fontosság | Status |
+|---|---|---|---|---|
+| `Q-2026-09-07-L1` | **Megépítsem a címke-alapú session-feloldást?** *(konfigba `label: "My Assistant"`, a `ccs-…` helyett)* | 🔴 Enélkül a Discord-kézbesítés attól függ, KI indította az LDP-t. Ha te indítod egy sima terminálból, elbukik. | **h** | open |
+| `Q-2026-09-07-L2` | **Ha több CC session fut, melyik „az" asszisztens?** A címke dönt — de mi legyen, ha kettőnek is ugyanaz a címkéje? | ütközés-feloldás kell, különben véletlenszerű, melyikbe megy az üzenet | **m** | open |
+| `Q-2026-09-07-L3` | **Codex is írhat Discordra?** *(`ma comm say`-jel technikailag tud)* Ha igen, jelölje-e meg magát, hogy tudd, melyikünk írt? | különben nem tudod, kivel beszélsz | **m** | open |
+| `Q-2026-09-07-L4` | **Kell-e zárolás a közös állapot-fájlokra?** *(`STATUS.md`, `CONTINUATION.md`)* Vagy elég a „egyszerre egy agent írjon" megállapodás? | párhuzamos írásnál csendes felülírás a kockázat | **m** | open |
+| `Q-2026-09-07-L5` | **Ébredés-küszöb:** hány óra tétlenség után számítson „aludtam"-nak? *(az én javaslatom 3 óra — nem a te adatod)* | ez indítja a napindítást; rossz küszöbnél vagy elmarad, vagy fölöslegesen fut | **m** | open |
+
+---
+
 ## K) Üzenet-kézbesítés megbízhatósága 📮 (2026-09-07)
 
 > Owner: *„az üzeneteid nem mindig jutnak el hozzám, illetve lehet, hogy el-elúsznak, amit

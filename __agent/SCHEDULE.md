@@ -20,14 +20,25 @@ Mindkettőt FRISSEN olvasd be. A kör végén frissítsd a tudást és a szabál
 (ENTRY §5), hogy ne vesszen el a kontextus-kompaktálás során.
 ```
 
-### 2️⃣ Napi reggeli ütemezés — **06:30**, EGYSZER naponta
+### 2️⃣ Napindítás — ⚠️ NEM órához kötve
 
-**Üzenet:**
+> 🔴 **KORREKCIÓ (owner, 2026-09-07 06:30):** *„alapvetően teljesen máskor fogok majd minden
+> nap kelni, úgyhogy a napindítás azt majd valami eseményhez kell kötni, de például ez az
+> esemény lehet az, hogy az első aktivitás érzékelés miután aludtam."*
+>
+> ⇒ **A korábbi 06:30-as fix ütemezés ELAVULT.** ⛔ Ne állítsd be.
+
+**A napindítás TRIGGERE: az ÉBREDÉS-ESEMÉNY**, amit a jelenlét-mérésből olvasunk ki:
 
 ```
-NAPINDÍTÁS. Belépési pont: __agent/ENTRY.md §0 — ELSŐ lépés a rendszer újraindítása,
-utána a napi áttekintés. Állapot: __agent/CONTINUATION.md. Mindkettőt FRISSEN olvasd be.
+hosszú tétlen/üres szakasz  →  az ELSŐ aktív minta  =  ÉBREDÉS
 ```
+
+Ezt **nem külön ütemezés** végzi, hanem a **60 perces fő kör**: minden körben megnézi, volt-e
+ébredés-esemény az előző kör óta, és ha igen, **azzal kezd**. Így nincs második ütemezés,
+amit karban kellene tartani — és a napindítás **akkor** fut, amikor tényleg felkeltél.
+
+📌 A felismerés részletei és a küszöb: `__agent/ENTRY.md` §0.
 
 ---
 
@@ -52,15 +63,18 @@ ami tényleg lefut, többet ér, mint egy okos, ami elromlik.**
 
 ---
 
-## Miért kell a KÜLÖN reggeli trigger
+## Miért NEM kell külön reggeli trigger
 
-A 60 perces körben a „napindítás" **elveszne** — egy lenne a huszonnégyből. Pedig a nap első
-köre **más**: ekkor kell újraindítani a rendszert, és ekkor kell végigvenni, mi jön ma.
+Eredetileg egy fix 06:30-as triggert javasoltam. **Az owner ezt felülírta** *(2026-09-07)*:
+a kelése napról napra máshova esik, tehát egy naptári időpont **rendszeresen rossz** lenne —
+vagy órákkal az ébredés előtt fut, vagy jóval utána.
 
-⚠️ **Az ütemezett 06:30 nem azonos az ébredéseddel** *(csúszó ciklus — `sleep-system.md`)*.
-Az `ENTRY.md §0` ezt kezeli: ha még alszol, a napindítás **elvégzi a technikai részt**
-(újraindítás, adat-frissítés), de **nem szól** — a napi áttekintés az **ébredés utáni** első
-körben megy ki.
+⇒ **Egyetlen ütemezés van: a 60 perces kör.** Az ébredés **esemény**, nem időpont; a kör
+minden alkalommal megnézi, történt-e — és ha igen, a napindítással kezd.
+
+⭐ **Miért jobb:** egy ütemezés helyett nulla plusz karbantartás, és a napindítás
+**pontosan akkor** történik, amikor értelme van. *(A régi fix időpont ráadásul pont az ellen
+hatott, amit a `sleep-system.md` rögzít: a ciklus csúszik.)*
 
 ---
 

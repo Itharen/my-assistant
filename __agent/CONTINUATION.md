@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-06
+**Utoljára frissítve:** 2026-09-07 06:35
 
 ---
 
@@ -16,7 +16,7 @@ state: building
 review_gate: "MINDKET SZAKASZRA TELJESULT 2026-09-06 — 1. szakasz 8 kor / 11 javitas; figyelo 7 kor / 10 javitas; mindkettonel az utolso KETTO tiszta"
 tests: "CLI 345/345 + szerver 28/28 zold; comm doctor 10 zold / 0 hibas (2026-09-07 06:26)"
 owner_available: false        # "most nem vagyok a gépnél… majd ha hazaértem"
-blocked_on_owner: "NINCS technikai. A jelenlet-figyelo ELOBEN IGAZOLT (a szerver inditotta 2026-09-07 01:30). Marad: a nyitott kerdesek H/I/J/K szekcioi - kiemelten a kepesseg-jovahagyasok (J1/J2) es az idobeosztas 8 preferenciaja (I1-I8)."
+blocked_on_owner: "Nyitott kerdesek H/I/J/K/L - kiemelten: L1 (cimke-alapu session-feloldas: EPITSEM-E MEG), J1/J2 (kepesseg-jovahagyasok), I1-I9 (idobeosztas-preferenciak)."
 ```
 
 **Owner-utasítás (2026-09-06):** *„kezd el ennek a Hyperplan-nek a lefejlesztését, és amíg a
@@ -47,6 +47,16 @@ végére nem érsz, addig tartsd magad mozgásban a Schedule Wake-up-pal"*.
 | MP-7 a tick maga (Daytime/Nighttime) | ✅ **KÉSZ száraz futásig**, élő adaton, 10/10 teszt zöld | nem |
 
 ---
+
+## ⏭️ A KÖVETKEZŐ MUNKA (owner indulasa utan, ~07:45)
+
+🔴 **L1 — cimke-alapu session-feloldas.** A Discord-bejuttatas jelenleg a
+`CLAUDE_CODE_SESSION_ID` env-valtozon mulik, ami az LDP-t INDITO folyamattol oroklodik
+(bizonyitva: `env -u CLAUDE_CODE_SESSION_ID ma ccap whoami` -> `MA-CCAP-NO-SESSION-ID-ENV`).
+Javitas: konfigba a session **cimkeje** (`My Assistant`), es a feloldas sorrendje
+env -> cimke -> leiro hiba. Reszletek: `__documentations/dev/MULTI_SESSION.md`.
+⚠️ Kod-modositas = ~23 perces LDP-ujraepites, alatta all a Discord-csatorna - ezert csak
+akkor, amikor az owner mar nincs otthon / nem var uzenetet.
 
 ## A következő konkrét lépés
 

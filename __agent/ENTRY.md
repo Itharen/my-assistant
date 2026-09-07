@@ -28,7 +28,37 @@
 
 > **Owner (2026-09-07):** *„Reggel nem ártana egy újraindítás ELSŐNEK"*
 
-Ha ez a nap első futása *(vagy a napi 06:30-as trigger hívott)*:
+### Hogyan ismerd fel, hogy ÉBREDÉS történt
+
+> **Owner (2026-09-07):** *„alapvetően teljesen máskor fogok majd minden nap kelni, úgyhogy a
+> napindítás azt majd valami eseményhez kell kötni, de például ez az esemény lehet az, hogy az
+> első aktivitás érzékelés miután aludtam."*
+
+⛔ **A napindítás NEM naptári időponthoz kötött.** A trigger az **ébredés-esemény**:
+
+```
+server/activity-monitor/data/YYYY-MM-DD.jsonl
+   … idleState: "idle" / nincs minta   ← alvás (hosszú szakasz)
+   … idleState: "active"               ← ⭐ EZ AZ ELSŐ AKTÍV MINTA = ÉBREDÉS
+```
+
+**A felismerés menete minden körben:**
+
+1. Olvasd a jelenlét-mintákat *(a nap-váltás miatt az előző napi fájlt is)*.
+2. Keresd meg az **utolsó aktív** mintát és az azt megelőző **tétlen/üres szakasz** hosszát.
+3. Ha az a szakasz **≥ 3 óra**, és az ébredés az **előző kör óta** történt → **NAPINDÍTÁS**.
+4. Naplózd, melyik időbélyeget vetted ébredésnek — így utólag ellenőrizhető.
+
+⚠️ **A 3 órás küszöb ASSZISZTENS-JAVASLAT, nem owner-adat** — egy 3 órás szünet már nem
+kávészünet, de a pontos érték megerősítendő *(`open-questions.md` I-9)*. ⛔ Ne kezeld tényként.
+
+⚠️ **A gép kikapcsolása is „üres szakasz"** — nincs minta. Ezt ugyanúgy alvásnak vesszük;
+ha tévedünk, a napindítás fölöslegesen fut le egyszer, ami olcsó hiba. A fordítottja
+*(sosem fut le)* a drága.
+
+---
+
+Ha ez a nap első futása *(vagy ébredés-eseményt észleltél)*:
 
 | # | Lépés | Miért |
 |---|---|---|

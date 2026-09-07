@@ -125,6 +125,7 @@ Ezek `current/open-questions.md` **I) szekció** alatt is szerepelnek.
 | I-6 | **Mire kell figyelni indulás előtt?** *(pl. vízcsap, ablak, töltő, kulcs)* | ez a „mire figyeljek oda" a te szavaiddal |
 | I-7 | **Mennyivel korábban szóljak?** A készülődés-kezdésnél, vagy előtte is egy „fél óra múlva indulsz" jelzéssel? | ez a riasztás alakja |
 | I-8 | **Éjjel is szóljak** egy másnap kora reggeli eseményről, vagy csak ébredés után? | ütközik az alvás-ciklussal |
+| I-9 | **Hány óra tétlenség után számít „aludtam"-nak?** *(javaslatom: 3 óra — megerősítendő)* | ez indítja a napindítást és a napi áttekintést |
 
 ---
 
