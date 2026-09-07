@@ -104,7 +104,7 @@ Elv: `current/principles/message-delivery-reliability.md`.
 | # | Képesség | Státusz | Megjegyzés |
 |---|---|---|---|
 | C-33 | **Voice üzenet olvasása** (STT) | 📝 **javaslat** | Hangüzenet → **saját STT (FDP AI**, fut a gépen) → ⭐ **TÜKÖR-ÜZENET** vissza (lássa, jól értettem-e) → utána válasz + feldolgozás |
-| C-34 | **Beszélgetés voice channelen** | 📝 **javaslat** | kétirányú hang a Discord voice channelen |
+| C-34 | **Beszélgetés voice channelen** | 📝 **javaslat** | ⭐ **VAN KÉSZ FORRÁS**: a régi `ccap/discord-bot` `_modules/voice/` (37 fájl, ~6681 sor) — belépés → hangmagasság/hangerő alapú beszéd-detektálás → STT → OUTOFCONTEXT/NOISE szűrés → **hang-alapú állapot-visszajelzés**. Kilépési pont: `reviewResult()`. Doksi: `__documentations/dev/VOICE_CONTROL_REFERENCE.md` |
 | C-35 | **STT/TTS kiemelese a regi CCAP-bol** | 📝 **javaslat** | ⚠️ **UJRAGONDOLANDO**: a TTS **mar fut** az FDP AI-ban (`/api/v1/audio/speech`) — lehet, hogy nem kiemelni kell, hanem **hasznalni** |
 
 > ✅ **AZ FDP AI AZONOSITVA (2026-09-07 07:19, MERVE):** `ccap/speech-recognition`, Flask/Python, **port 38321**, CUDA (RTX PRO 6000), 74 vegpont.

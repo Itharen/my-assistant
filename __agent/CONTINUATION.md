@@ -334,3 +334,10 @@ ezekre mutat — egy friss session elhiheti, hogy semmi nem készült el, és **
 
 ⚠️ **Minden fejlesztés után KÖTELEZŐ** a `post-development-verification.md` négy ellenőrzése.
 📌 **Az LDP eredményét** a `logs/live-dev-pipeline/status.json` + `output.log` adja.
+
+### 📥 Beérkezett munkacsomagok (owner, 2026-09-07 07:38) — a fenti sor UTÁN
+
+| Feladat | Forrás / állapot |
+|---|---|
+| **Voice control átemelése** *(nagy!)* | ✅ forrás megtalálva és MÉRVE: `ccap` (a RÉGI) `/discord-bot/src/_modules/voice/` — 37 fájl, ~6681 sor. Kilépési pont: `cv-result-review.control-service.ts` → `reviewResult()`. ⛔ NEM a `ccap-revisioned`. ⛔ ElevenLabs kihagyandó (fizetős) → a saját FDP AI (38321). Doksi: `__documentations/dev/VOICE_CONTROL_REFERENCE.md`. ⚠️ Külön tervet igényel. Organizer: `org:task:6a9e4f0a482367e7f641e628` |
+| **GoPrint — póló** | emlékeztető hazafelé (ma vagy holnap). Organizer: `org:task:6a9e4f09482367e7f641e621` |
