@@ -1,4 +1,5 @@
 import {
+  classifyRecordingOutcome,
   handleFinishedRecording,
   startVoiceRecording,
   type RecordingHandled,
@@ -233,5 +234,35 @@ describe('voice-channel-recorder', () => {
       expect(seen.length).toBe(1);
       expect(seen[0]!.fromOwner).toBe(false);
     });
+  });
+});
+
+describe('classifyRecordingOutcome — három kimenetel, három kód', () => {
+  it('✅ a kötegbe került felvétel: QUEUED', () => {
+    expect(classifyRecordingOutcome({
+      fromOwner: true, transcribed: true, queued: true, detail: 'ok',
+    })).toBe('MA-VOICE-SPEECH-QUEUED');
+  });
+
+  it('🔴 az owner beszélt, de nem lett belőle semmi: DROPPED (ez a VESZTESÉG)', () => {
+    expect(classifyRecordingOutcome({
+      fromOwner: true, transcribed: false, queued: false, missed: 'not-understood', detail: 'x',
+    })).toBe('MA-VOICE-SPEECH-DROPPED');
+
+    expect(classifyRecordingOutcome({
+      fromOwner: true, transcribed: false, queued: false, missed: 'recognition-failed', detail: 'x',
+    })).toBe('MA-VOICE-SPEECH-DROPPED');
+  });
+
+  it('⚪ a DUPLIKÁTUM nem veszteség — és nem is QUEUED', () => {
+    expect(classifyRecordingOutcome({
+      fromOwner: true, transcribed: true, queued: false, detail: 'Ezt a szegmenst már feldolgoztuk.',
+    })).toBe('MA-VOICE-SPEECH-SKIPPED');
+  });
+
+  it('⚪ az IDEGEN beszélő sem veszteség', () => {
+    expect(classifyRecordingOutcome({
+      fromOwner: false, transcribed: false, queued: false, detail: 'Nem az owner beszélt.',
+    })).toBe('MA-VOICE-SPEECH-SKIPPED');
   });
 });

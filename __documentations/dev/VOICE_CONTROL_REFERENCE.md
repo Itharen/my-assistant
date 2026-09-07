@@ -105,3 +105,98 @@ keret rajta.
 - `__agent/capabilities/CATALOG.md` — **C-34** (voice channel), **C-33** (voice üzenet),
   **C-35** (STT/TTS)
 - ⚠️ Ez **nagy** munkacsomag *(~6 700 sor)* — külön tervet igényel, nem egy menetben megy.
+
+---
+
+## 8. 🔊 A HANG-LÁNC MEGÉPÜLT ÁLLAPOTA — 2026-09-07 23:05
+
+> Ez a szakasz a **tényleges, kódban lévő** állapotot írja le. A fenti 1–7. szakasz az
+> átemelés **előtti** feltárás — történeti értékű, nem elavult, de nem is ez a jelenlegi kép.
+
+### 8.1 A lánc
+
+```
+hang-kapcsolat (VoiceChannelPresence)
+   → ÁTEMELT CCAP-felvevő (CV_Recording_ControlService)   ⛔ változatlan
+   → kész WAV
+   → a MI STT-nk (transcribeAudio → FDP AI)
+   → VoiceChannelBridge → Discord-köteg + tükör-szöveg a HANG-csatornába
+```
+
+### 8.2 A három megfigyelő, ami MELLÉ került *(az átemelt kód érintetlen)*
+
+| Fájl | Mit ad | Napló-kód |
+|---|---|---|
+| `cli/src/voice/voice-drop-probe.ts` | 🔍 a WAV-életciklus figyelése ⇒ **hány MÁSODPERC** hang veszett el némán | `MA-VOICE-SPEECH-DROPPED-SILENTLY` · `MA-VOICE-PROBE-ERROR` |
+| `cli/src/voice/voice-missed-speech.ts` | 🔇 ami nem jutott át, az is **látszik** a hang-csatornában — **összevont** jelentésben | `MA-VOICE-MISSED-REPORT-FAILED` |
+| `cli/src/voice/voice-cues.ts` | 🔊 **hangjelzések** a CCAP eredeti hangjaival | `MA-VOICE-CUE-FAILED` |
+
+### 8.2b A kimenetel-kódok — három kimenetel, három kód
+
+| Kód | Mit jelent | Veszteség? |
+|---|---|---|
+| `MA-VOICE-SPEECH-QUEUED` | bekerult a kotegbe | ✅ nem |
+| `MA-VOICE-SPEECH-DROPPED` | az owner beszélt, de nem lett belőle semmi | 🔴 **IGEN** |
+| `MA-VOICE-SPEECH-SKIPPED` | duplikátum, vagy nem az owner beszélt | ⚪ nem |
+
+🔴 **MIÉRT KELL A HARMADIK.** Korábban **minden** `queued: false` `DROPPED`-ként naplózódott —
+beleértve a duplikátumot és az idegen beszélőt. Egyik sem veszteség, mégis annak látszott volna,
+és **épp azt a mérést rontotta volna el**, amiért az egész készült. ⛔ A visszaút sem jó: a
+duplikátumot `QUEUED`-nak nevezni azt állítaná, hogy bekerult a kotegbe — pedig nem.
+Az osztályozás ezért **tesztelt függvényben** áll: `classifyRecordingOutcome`.
+
+### 8.3 A tölcsér — ez válaszolja meg, hogy „hol vész el a beszéd"
+
+```
+speechStarts  →  filesOpened  →  filesDelivered
+   (speaking     (WAV nyílt;      (eljutott a
+    .start)       a különbség      feldolgozó
+                  BELEOLVADÁS,     hookig)
+                  nem veszteség)        ↓
+                                   filesDropped + lostAudioSeconds
+```
+
+⚠️ **A `detected − delivered` önmagában NEM veszteség** — összemossa a beleolvadt megszólalást
+a valódi eldobással. Ezért kellett a fájl-szintű mérés.
+
+### 8.4 Hangjelzések — a hozzárendelés és a kockázata
+
+A hangok a CCAP eredetijei (`LIVE-projects/ccap/discord-bot/src/_assets/sounds/`), a
+`cli/src/_assets/sounds/` alá másolva. A hosszak `ffprobe`-bal mérve.
+
+| Esemény | Fájl | Eredeti | Hossz |
+|---|---|---|---|
+| 🎙️ hallak, elkezdtem | `cue-heard.mp3` | `typing.mp3` | 0,44 s |
+| ✅ megvan, átment | `cue-understood.mp3` | `11L-subtle,_warm,_mallow…` | 2,09 s |
+| 🎚️ a felvevő eldobta | `cue-dropped.mp3` | `skip.mp3` | 0,84 s |
+| ❓ nem értettem | `cue-unsure.mp3` | `hmmm.mp3` | 2,64 s |
+| ❌ hiba | `cue-error.mp3` | `error.mp3` | 3,32 s |
+
+⚠️ **HANGSZÓRÓ-VISSZACSATOLÁS.** A jelzés az owner hangszórójából is megszólal, és a mikrofonja
+**visszaveheti** — pont abba a láncba, aminek a veszteségét mérjük. A `cue-heard` a
+legérzékenyebb: az **beszéd közben** szól.
+🔇 **Kikapcsolás kód nélkül:** `MA_VOICE_CUES=off` · ⏱️ fék: 3 s két jelzés között.
+❓ Nyitott: `Q-2026-09-07-07` (hozzárendelés) · `Q-2026-09-07-08` (fejhallgató-e).
+
+### 8.5 ⛔ Amihez NEM nyúlunk, és miért
+
+- **Az átemelt felvevő** (`cli/src/_modules/voice/`) — `transplant-not-rewrite`.
+- **A szűrő-küszöbök** (`speechThreshold: 0.008` · `minSpeechDuration: 100` · ZCR-sávok,
+  `cv-voice-recording.const.ts` / `cv-speech-analysis.const.ts`) — ⛔ **amíg nincs élő mérési
+  adat**, az állítgatásuk találgatás (`core-no-guessing`).
+- **A transzplantált `playSound`** — mérve: saját CCAP-kapcsolatot építene
+  (`CCAP_MasterService`), ami nálunk nem létezik.
+
+### 8.6 Környezeti változók
+
+| Változó | Mire |
+|---|---|
+| `MA_DISCORD_GUILD_ID` + `MA_DISCORD_VOICE_CHANNEL_ID` | hova lépjen be a bot |
+| `MA_DISCORD_USER_ID` | 🔴 **csak az owner hangja** megy tovább |
+| `MA_VOICE_CUES` | `off` ⇒ némák a hangjelzések (alapértelmezés: be) |
+
+### 8.7 Build-buktató, ami már megfogott minket
+
+⚠️ A fő `tsc` **önmagában nem elég**: az átemelt fa külön projekt
+(`tsconfig.transplanted.json` + `scripts/transplanted-build-fix.ts`). Enélkül a `_modules`
+**futásidőben nem létezik**, és a zöld típus-ellenőrzés **elfedi** a hiányt.

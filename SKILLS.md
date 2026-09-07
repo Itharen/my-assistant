@@ -372,6 +372,34 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
 - Bukásnál **visszaesik** a csatorna-küldésre; részleges bukásnál külön jelzi, hogy az átirat
   **csonkán** látszik.
 
+### 🔊 Hang-csatorna — a három megfigyelő (T-22, 2026-09-07)
+
+A lánc: hang-kapcsolat → **átemelt CCAP-felvevő** → WAV → a mi STT-nk → köteg + tükör.
+⛔ Az átemelt kódhoz **nem nyúlunk** — mindhárom eszköz **mellé** került.
+
+| Fájl | Mit ad |
+|---|---|
+| `voice-drop-probe.ts` | 🔍 a WAV-életciklus figyelése ⇒ **hány MÁSODPERC** beszéd veszett el némán |
+| `voice-missed-speech.ts` | 🔇 ami nem jutott át, az is **látszik** a hang-csatornában — **összevonva** |
+| `voice-cues.ts` | 🔊 **hangjelzések** a CCAP eredeti hangjaival |
+
+- ⭐ **Miért nem elég a `detected − delivered`:** összemossa a **beleolvadt** megszólalást
+  *(nem veszteség)* a felvevő **eldobásával** *(veszteség)*. A fájl-szintű mérés választja szét.
+- 🔇 **`MA_VOICE_CUES=off`** — a hangjelzések azonnali kikapcsolása kódmódosítás nélkül
+  *(hangszóró-visszacsatolás esetére)*. Fék: 3 s két jelzés között.
+- 🔍 **A mérés kiolvasása** a naplóból:
+  ```bash
+  grep MA-VOICE-SPEECH-DROPPED-SILENTLY __agent/log/actions/$(date +%F).jsonl
+  grep MA-VOICE-SPEECH-QUEUED __agent/log/actions/$(date +%F).jsonl
+  ```
+- ⚠️ **BUKTATÓ:** a fő `tsc` önmagában **nem elég** — az átemelt fa külön projekt:
+  ```bash
+  cd cli && npx tsc -p tsconfig.transplanted.json && npx tsx scripts/transplanted-build-fix.ts
+  ```
+  Enélkül a `_modules` **futásidőben nem létezik**, és a zöld típus-ellenőrzés **elfedi**.
+
+Részletek: `__documentations/dev/VOICE_CONTROL_REFERENCE.md` §8.
+
 ### Kezbesitesi ertesito — „most ment el neked X uzenet" (`discord.receipt.ts`)
 
 > **Owner-KORREKCIO (2026-09-07 10:29):** *„Nem kell folyton irni, hogy megvannak az

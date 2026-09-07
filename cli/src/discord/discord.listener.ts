@@ -52,8 +52,10 @@ import {
   readVoicePresenceConfig,
 } from '../voice/voice-channel-presence.js';
 import {
+  classifyRecordingOutcome,
   startVoiceRecording,
   type RecordingHandled,
+  type RecordingOutcomeCode,
   type SpeechAttemptStats,
 } from '../voice/voice-channel-recorder.js';
 import type { VoiceDropObservation, VoiceDropProbe } from '../voice/voice-drop-probe.js';
@@ -608,13 +610,16 @@ export class DiscordListener {
         });
       },
       onHandled: (outcome: RecordingHandled): void => {
+        // ⚠️ HAROM KIMENETEL, HAROM KOD — az osztalyozas TESZTELT fuggvenyben all
+        // (`classifyRecordingOutcome`), mert ezt mar ketszer elrontottam.
+        const outcomeCode: RecordingOutcomeCode = classifyRecordingOutcome(outcome);
+
         void this.safeLog({
-          kind: outcome.queued ? 'note' : 'error',
-          summary: outcome.queued
-            ? `[discord/listener] 🎙️ Hang-csatorna: ${outcome.detail}`
-            : `[discord/listener] MA-VOICE-SPEECH-DROPPED: ${outcome.detail}`,
+          kind: outcomeCode === 'MA-VOICE-SPEECH-DROPPED' ? 'error' : 'note',
+          summary: `[discord/listener] ${outcomeCode === 'MA-VOICE-SPEECH-QUEUED' ? '🎙️ Hang-csatorna:' : `${outcomeCode}:`} `
+            + `${outcome.detail}`,
           extra: {
-            code: outcome.queued ? 'MA-VOICE-SPEECH-QUEUED' : 'MA-VOICE-SPEECH-DROPPED',
+            code: outcomeCode,
             fromOwner: outcome.fromOwner,
             transcribed: outcome.transcribed,
             ...(outcome.missed ? { missed: outcome.missed } : {}),

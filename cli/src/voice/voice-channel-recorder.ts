@@ -98,6 +98,32 @@ export interface RecordingHandled {
 }
 
 /**
+ * A felvétel kimenetelének OSZTÁLYOZÁSA — három kimenetel, három kód.
+ *
+ * 🔴 MÉRT SAJÁT HIBA, ezért van kiemelve és tesztelve: eredetileg **minden** `queued: false`
+ * `MA-VOICE-SPEECH-DROPPED`-ként naplózódott — beleértve a **duplikátumot** *(a híd már
+ * feldolgozta)* és az **idegen beszélőt**. Egyik sem veszteség, mégis veszteségnek látszott
+ * volna, és épp azt a mérést rontotta volna el, amiért az egész készült.
+ *
+ * ⛔ A visszaút sem jó: a duplikátumot `QUEUED`-nak nevezni azt állítaná, hogy bekerült a
+ * kötegbe — pedig nem. Ezért kap **saját, harmadik** kódot.
+ */
+export type RecordingOutcomeCode =
+  /** ✅ Bekerült a kötegbe. */
+  | 'MA-VOICE-SPEECH-QUEUED'
+  /** 🔴 VESZTESÉG: az owner beszélt, de nem lett belőle semmi. */
+  | 'MA-VOICE-SPEECH-DROPPED'
+  /** ⚪ Se nem siker, se nem veszteség: duplikátum, vagy nem az owner beszélt. */
+  | 'MA-VOICE-SPEECH-SKIPPED';
+
+export function classifyRecordingOutcome(outcome: RecordingHandled): RecordingOutcomeCode {
+  if (outcome.queued) return 'MA-VOICE-SPEECH-QUEUED';
+  if (outcome.missed !== undefined) return 'MA-VOICE-SPEECH-DROPPED';
+
+  return 'MA-VOICE-SPEECH-SKIPPED';
+}
+
+/**
  * Az átemelt felvevő lusta betöltése.
  *
  * ⚠️ Külön függvény, hogy a teszt **ne** töltse be a valódi, 19,5 s-es modul-gráfot.

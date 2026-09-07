@@ -4,6 +4,35 @@
 
 ---
 
+## 🔊 HANG-CSATORNA: a néma eldobás MÉRHETŐ — 2026-09-07 23:05 (T-22)
+
+Az owner 22:08-as korrekciója után: *„beszéltem, beszéltem, tulajdonképpen annak egy százaléka
+lett transzkriptálva… fingom nincs, hogy mi ment át, mi nem."* — három követelmény, három kör.
+
+**1️⃣ A MÉRÉS** (`voice-drop-probe.ts`) — a 22:08-as megszólalás-számláló **nem döntött el
+semmit**: a `detected − delivered` különbség összemossa a **beleolvadt** megszólalást a valódi
+eldobással. ⭐ A döntő eszköz maga a **WAV-fájl**: a könyvtár kívülről figyelése megmondja, mi
+tűnt el hook nélkül, és a **méret** átváltható (192 000 bájt/mp) ⇒ *„eldobott 3,4 másodperc
+beszédet"*, nem *„eldobott 1 fájlt"*.
+
+**2️⃣ A LÁTHATÓSÁG** (`voice-missed-speech.ts`) — a sikertelen felismerés eddig **teljes csendet**
+adott, tehát a *„nem értettem"* és a *„meg sem hallottam"* megkülönböztethetetlen volt. ⭐ Nem
+üzenet minden hibáról *(az eldobás ma a többség ⇒ spam)*, hanem **összevont** jelentés
+darabszámmal és másodperccel, három megkülönböztetett okkal.
+
+**3️⃣ A HANGJELZÉSEK** (`voice-cues.ts`) — a CCAP **eredeti hangjaival**. ⚠️ A transzplantált
+`playSound` nem volt használható: saját CCAP-kapcsolatot építene (`CCAP_MasterService`), ami nálunk
+nem létezik ⇒ az adapter **mellé** került. A hangfájlok **nem voltak a repóban** — az átemelés a
+kódot hozta, az assetet nem. Futásidőben igazolva: útvonal + **ffmpeg-dekódolás** (7816 opus-bájt).
+
+- 🔇 `MA_VOICE_CUES=off` — hangszóró-visszacsatolás esetére, kódmódosítás nélkül.
+- ⛔ **A szűrő-küszöbökhöz nem nyúlunk**, amíg nincs élő mérési adat — az találgatás lenne.
+- ⏳ **Az átviteli arány még méretlen:** ahhoz az ownernek beszélnie kell a `honnie-place`-ben.
+
+CLI **575/575** zöld. Részletek: `__documentations/dev/VOICE_CONTROL_REFERENCE.md` §8.
+
+---
+
 ## HELYZET-RELAY: a lánc lezárva + 👂 hangüzenet-nyugtázás — 2026-09-07
 
 **Relay-lánc (T-01…T-04)** — gateway-conf, SSL-domain, CI/CD-config + Dockerfile, és a
