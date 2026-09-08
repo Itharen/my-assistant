@@ -8,7 +8,7 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-08 06:12
+**Frissítve:** 2026-09-08 07:10
 
 ## Ma
 
@@ -25,6 +25,8 @@ A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
 4. 📧 **Belenézhetek a postafiókba?** *(feladó + tárgy + darabszám, tartalom nélkül)*
 5. 📱 **Helyzet-app v1** — belevágjunk? *(Capacitor, saját app)*
 6. 👤 **A GPT-s infócsomagja magáról** — várom, emlékeztetni kell rá
+7. 🔓 **Képesség-jóváhagyás** — ⚠️ **25 ⏳ / 1 ✅**: az üresjárati sávom gyakorlatilag ÜRES.
+   Javasolt hármas: **C-13** feladat-kezelés · **C-10** státusz-kivonat · **C-19** alvás-ciklus
 
 ## 🤝 Akiknek kiadtam
 

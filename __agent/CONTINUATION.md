@@ -2899,3 +2899,35 @@ a kérés teljesítését.
 🔴 **A KÖVETKEZŐ KÖR ELSŐ LÉPÉSE MÉRÉS, nem építés:** miért nem jut a `DyFM_Log` kimenete az
 LDP-konzolra? *(Mérve 06:24: **0** átemelt napló-sor a kimenetben.)* ⛔ Amíg ezt nem tudom, a
 sáv kivezetése találgatás lenne.
+
+---
+
+## 2026-09-08 07:10 — MERVE: AZ URESJARATI SAVOM URES (25 ⏳ / 1 ✅)
+
+**Jelenlet-meres:** utolso aktiv **02:18:30**, azota 4 ora 43 perc tetlen ⇒ **nincs ebredes-esemeny**,
+napindítas nem esedekes, ⛔ nem zavarom.
+
+⇒ Az ENTRY §2 szerint ilyenkor az **uresjarati sav** jon: „csak `✅ jovahagyott` kepesseg".
+**Megneztem, mi van jovahagyva. Gyakorlatilag SEMMI.**
+
+| | |
+|---|---|
+| ⏳ jovahagyasra varo | **25** |
+| ✅ jovahagyott | **1** — C-30 fejlesztes, amit kozben at is adtam a DEV-nek |
+
+### ⭐ Ez magyaraz egy mintazatot, amit eddig nem lattam
+
+Az ejszakai koreimet **a sajat eszkozeim javitasaval es dokumentalassal** toltom. Eddig ugy
+lattam, ez az en valasztasom. **Nem az volt** — ez maradt.
+
+📌 A katalogus szabalya helyes *(a `✅`-t kizarolag az owner adja)*, es en magam allitottam vissza
+negy sort, amit korabban magamtol jeloltem meg. De a kovetkezmenye az, hogy az „amikor nem vagyok
+itt, csinalj hasznosat" utasitasnak **nincs mibol dolgoznia**.
+
+### A harom, amit javasoltam — mind kesz, tesztelt, es CSAK olvasas + az o adatai
+
+**C-13 feladat-kezeles** *(ezen bukott el a mai organizer-kor: megtalaltam a „Napi matrac"
+adathibat, de nem javithattam)* · **C-10 statusz-kivonat** *(magamtol ranezhessek, mi lejart)* ·
+**C-19 alvas-ciklus** *(ma 02:17-kor fekudt le — ezt csak utolag latom)*.
+
+⛔ Egyiket sem allitottam `✅`-re. A kerdes kiment Discordra.
