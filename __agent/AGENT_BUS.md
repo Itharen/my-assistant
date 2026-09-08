@@ -87,6 +87,60 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [ACTED] AGB-2026-09-08-03 — ✅ A LEVÉL KIMENT a bérszámfejtőnek — 2026-09-08 11:08:26
+**From:** fdp-assistant
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-09-08T11:12+02:00
+
+# ✅ KIMENT. 2026-09-08 **11:08:26**-kor. Nem blokkol semmi.
+
+| | |
+|---|---|
+| **Címzett** | `geokberek@gmail.com` (Geokbérek) |
+| **Tárgy** | `Jelenléti ívek – 2026. augusztus` |
+| **Feladó** | `"FutDevPro Kft." <contact@futdevpro.hu>` |
+| **SMTP-válasz** | `250 2.0.0 … mail accepted for delivery` — **elfogadva**, elutasítás nélkül |
+| **messageId** | `<fd8dc699-98f5-3957-3142-20d936b439d7@futdevpro.hu>` |
+| **Sent-mappa** | `INBOX.Sent Items`, **uid 161** |
+
+**Ez ment ki — szó szerint az owner szövege, változatlanul:**
+
+```
+Sziasztok,
+
+az augusztusi jelenléti ívek megérkeztek? (vagy spam-be kerültem? 😬)
+
+Köszi,
+```
+
+**Nem csak a küldő-parancs állítja.** Visszaolvastam a postafiókból (`uid 161`): a címzett, a tárgy és a
+**karakterre azonos** törzs megvan, az emoji is épen (`f0 9f 98 ac`). Technikailag `--body-file`-lal küldtem,
+nem `--text`-tel, hogy az emoji ne sérüljön a shell-escape-en; dry-run után éles.
+
+### ⚠️ Egy dolog, amit tudnod kell — aláírás nélkül ment
+
+Az owner szövege `Köszi,`-vel zárul. A `feedback-log.md:230` hard rule szerint a user-adta szöveg
+**változatlanul** megy, és nem bővíthetem önkényesen — **ezért nem tettem alá aláírást** *(a korábbi
+ívküldő leveleink „Ronnie J / FDP AI Assistant / Future Development Program Kft." aláírással mentek)*.
+⛔ **Utólag nem pótolható, csak új levéllel.** Ha kell, szólj, és küldök egyet.
+
+### Hol tartunk most
+
+| Feladat | Állapot |
+|---|---|
+| Pénzügyi helyzetkép | ✅ **KÉSZ** |
+| Bérszámfejtés — feltárás + nyilvántartás | ✅ **KÉSZ** |
+| Bérszámfejtés — a levél kiküldése | ✅ **KÉSZ** — kiment 11:08:26 |
+| A 2026-08-as bérszámfejtés megérkezése | ⏳ **GEOK-válaszra várunk** *(külső fél)* |
+
+**Wakeup:** nem indítottam újra. A maradék **kizárólag külső félen** áll (GEOK válasza), amit egy
+ébredés sem tud előrébb vinni — `core-wakeup-state-file` („a hurok csak addig fut, amíg van munka").
+⏰ **Mi indítaná újra:** ha **2026-09-10-ig** nincs se GEOK-válasz, se bérszámfejtés — az túllépi a mért
+leghosszabb átfutást is (2026-01: 10-e), és onnantól owner elé viendő. Szólj, és felveszem a fonalat.
+
+---
+
 ## [OPEN] AGB-2026-09-08-02 — 🛑 A wakeup-hurkot LEZÁRTAM (szabály szerint) — 1 „mehet" kell az ownertől
 **From:** fdp-assistant
 **To:** chat
