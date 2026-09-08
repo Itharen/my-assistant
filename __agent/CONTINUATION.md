@@ -3410,3 +3410,91 @@ escape-ekkel. Ez ugyanaz a hiba-osztály, mint a korábbi négy heredoc-baleset.
 - **Commitolva + pusholva:** `203d3f9` *(make-before-break)* · `b579506` *(konzol-zaj)*
 - **BFR-MYASSISTANT-001:** ✅ lezárva, átmozgatva a `BEDROCK-FRS-RESOLVED.md`-be
 - **Új alapelv:** `current/principles/ldp-make-before-break.md` *(ikerfájlokba bevezetve, szinkron OK)*
+
+
+---
+
+## 🔴 2026-09-08 10:26–10:45 — A MAKE-BEFORE-BREAK ÉLESBEN: ELINDULT, ELTÖRT, MEGJAVÍTVA
+
+### 1. A jó hír: a config már a 10:12-es körben életbe lépett
+
+⭐ **Nem kellett volna LDP-újraindítás** ahhoz, hogy a váltás megtörténjen — a korábbi
+állításom (*„a `dc ldp` a configot indításkor olvassa"*) **pontatlan volt**. A mérés:
+
+| Folyamat | PID | Indult |
+|---|---|---|
+| **launcher** *(a látható ablak)* | 73688 | szept. 6. |
+| **wrapper** *(a pipeline)* | 282804 | **ma 10:12** |
+
+⇒ A **wrapper** ciklusonként újraindul, és **maga olvassa be a configot**
+*(`pipeline-entry.script.ts:98`)*. A 10:12-es kör már a detached ágat futtatta:
+
+```
+[ldp] ▶ detached server spawned (PID: 43248)
+[ldp] server ready (PID: 43248)
+```
+
+### 2. 🔴 A ROSSZ HÍR: a szerver EL SEM INDULT — és ezt én okoztam
+
+```
+TypeError [ERR_INVALID_ARG_TYPE]: The "paths[0]" argument must be of type string.
+  at App.getStaticClientSettings (server/src/app.server.ts:195)
+  Application start failed
+```
+
+**Az ok:** a szerver-wrapper a belépőt **`require()`-rel** tölti be *(CommonJS)*. A mi
+szerverünk viszont **ESM**, és **26 helyen** támaszkodik az `import.meta`-ra *(12 szerver +
+14 CLI)*. CJS-interopon át az `import.meta.dirname` **`undefined`**.
+
+⚠️ **Ezt a kockázatot a bevezetéskor felmértem — és ROSSZUL ítéltem meg.** A `cwd`-t
+megvizsgáltam, a **betöltési módot** nem. **~25 perc kiesés**, az én számlámra.
+
+### 3. 🔴 A LEGSÚLYOSABB RÉSZ: a „ready" HAZUDOTT
+
+`[ldp] server ready (PID: 43248)` — miközben a naplóban `Application start failed`.
+A készenlét **csak a folyamat életét** nézte, azt nem, hogy az **alkalmazás** elindult-e.
+⇒ **A hamis „ready" fedte el 22 percig, hogy a szerver halott.**
+
+📌 Pontosan az a hibaosztály, amit ma már négyszer leírtam: **egy mező NEVE nem a jelentése.**
+
+### 4. 🩹 A JAVÍTÁS — és miért NEM a 26 hely átírása
+
+⛔ **26 hívási hely átírása nem megoldás** — az az `import.meta`-t száműzné egy ESM
+kódbázisból egy betöltési részlet kedvéért.
+
+⭐ **Helyette CJS shim** *(`server/scripts/ldp-entry.cjs`)*: a wrapper **ezt** `require()`-eli,
+ez pedig **dinamikus `import()`-tal** tölti be az igazi ESM belépőt ⇒ a **valódi ESM-betöltőn**
+megy át, tehát az `import.meta` **érintetlen**.
+
+✅ **A commit ELŐTT igazolva** — a szabad porton, pontosan úgy, ahogy a wrapper tölt:
+`"my-assistant Server" started successfully` + `listening on 0.0.0.0:39335`.
+
+### 5. 🩹 És betömtem a lyukat, ami elfedte
+
+- `/api/healthz` mostantól visszaadja a **`process.pid`**-et *(schemaVersion 1 → 2)*
+- a config kapott **`healthUrl`**-t ⇒ a wrapper a **spawn-olt PID-hez hasonlítja** a választ,
+  **30 mp-es hurokban** *(`waitForExpectedPid`)*
+
+⇒ Egy **halott alkalmazás többé nem látszik `ready`-nek**.
+
+### 6. Az LDP újraindítva *(owner-utasításra, és tényleg kellett)*
+
+A szerver halott volt, a `restartPending` 13 percig nem fordult ciklusba. Leállítva a wrapper
++ launcher, törölve az árva őrző-fájl, `dc ldp` **új, látható ablakban** *(launcher pid
+132436, 10:34)*.
+
+### ⏳ Ami MÉG NINCS igazolva
+
+| Tétel | Mi igazolná | Állapot 10:41 |
+|---|---|---|
+| a szerver felébred a shimmel | `"started successfully"` a `server.log`-ban + `[voice] MA-VOICE-JOINED` | ⏳ a pipeline még `dc-review-cli`-nél tart |
+| **a valódi make-before-break** | a **KÖVETKEZŐ** körben `serverAdopted: true`, és a szerver **végig él** a STEPS alatt | ⏳ ehhez két teljes kör kell |
+| a színes sáv | **beszéd** a csatornában | ⏳ |
+
+⚠️ **A mostani kör még NEM bizonyítja a make-before-break-et:** hideg indulásnál nincs mit
+örökbe fogadni. Az igazi bizonyíték a **következő** kör `serverAdopted: true`-ja.
+
+### Állapot
+
+- **Teszt:** CLI **710/710** · szerver **82/82** · fordítás zöld
+- **Commitolva + pusholva:** `fae9789` *(CJS shim)* · `f7a5b9d` *(igaz készenlét)*
