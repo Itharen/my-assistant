@@ -369,3 +369,60 @@ nem — és a következő kör **újra elvégzi a kész munkát**.
   ≠ működik.)* A hang-lánchoz **átviteli arány** kell, nem egyetlen zöld eset.
 - ⛔ Ne küldj üzenetet az ownernek — **az az én csatornám**. Neked a repóba kell írnod.
 - ⛔ Ne indíts más CC sessiont.
+
+---
+
+## 2026-09-08 12:15 — 3 tétel: 1 piros lépés + a hang-felolvasás + BFR-pointer
+
+### 1. 🔴 `tsc-transplanted` PIROS — típus-regresszió, NEM viselkedés-hiba
+
+**Mérve 2026-09-08 11:56** (`logs/live-dev-pipeline/status.json`):
+
+```
+src/_modules/voice/_services/cv-audio-classification.api-service.ts(224,9): error TS2769
+  Type 'Buffer<ArrayBufferLike>' is not assignable to type 'BodyInit'.
+```
+
+⭐ **A kimenet ATTÓL MÉG ELKÉSZÜL** — ellenőriztem: `dist/cli/src/_modules/` **létezik**, a
+`main.js` friss (11:56). A `noEmitOnError` szándékosan ki van kapcsolva, tehát **futásidőben
+semmi nem hiányzik**. ⇒ ⛔ **Nem tűzoltás**, de a lépés pirosan hagyása **zajt csinál**, és
+elrejtheti a következő, valódi hibát.
+
+**Ami tudható az okról:** a `cli/tsconfig.transplanted.json` fejlécében dokumentáltan ezt a
+pontos hibát oldotta meg a `"lib": ["es6","es2022","dom"]` — és a `lib` **most is ott van**.
+⇒ A hiba **visszajött**, tehát a környezet változott alatta. A leggyanúsabb a
+**TypeScript 5.7+ / `@types/node`** változás, ahol a `Buffer<ArrayBufferLike>` már nem
+illeszkedik az `ArrayBufferView<ArrayBuffer>`-re. ⚠️ **Ez hipotézis — mérd meg**, ne hidd el.
+
+🔴 **KÖTELEZŐ KORLÁTOK:**
+- ⛔ **A lépést kikapcsolni TILOS.** Owner 2026-09-08 08:24: *„Semmilyen tesztet, semmilyen
+  ellenőrzést, semmilyen reviewt ne kapcsolj ki. NEEE!"*
+- ⛔ **Az átemelt kódhoz ne nyúlj**, ha elkerülhető (`transplant-not-rewrite`). A fájl saját
+  fejléce mondja ki az irányt: *„A különbséget ott oldjuk fel, ahol nem árt: a konfigurációban."*
+- ✅ Ha a konfiguráció tényleg nem elég, a **legkisebb, viselkedés-azonos** call-site változtatás
+  jöhet — de akkor **írd le a `hyperplan`-ben, miért nem ment configból**.
+
+### 2. 🔊 T-59 — felolvasás, amikor bent ül a hang-csatornában
+
+> **Owner, 2026-09-08 08:02:** *„amikor itt vagyok a Discordon, be vagyok lépve melléd a Voice
+> Channel-re, akkor jó lenne, ha az üzeneteid majd **felolvasásra kerülnének**. És ezt vehetjük
+> egy kicsit **közvetlenebbre**… ez a **legmegbízhatóbb módja** annak, hogy kommunikáljunk"*
+
+**Három al-igény, mind az övé, szó szerint:**
+
+1. **Felolvasás**, ha bent ül *(és csak akkor)*.
+2. **TTS-szöveggé alakítás:** *„van egy csomó minta és szövegpattern, amit át kéne majd
+   konvertáljunk… mert át kell alakítani az egyszerűbb kódjeleket, mint például a **nyíl**, vagy
+   az **egyenlőség jel**, stb. Ezeket majd ki kell írni a szöveggeneráláshoz, hogy szépen fel
+   legyenek olvasva."* ⚠️ Nálam **emoji- és nyíl-sűrű** a szöveg — ez nem apró tétel.
+3. **Válasz-korreláció:** *„simán előfordulhat, hogy mondasz valamit… és én arra reagálok neked,
+   de közben te már rég messze jársz… Ezért majd fontos lesz, hogy ezeket vissza tud azonosítani,
+   **anélkül, hogy túl sok infót raknánk ezekbe az átkötésekbe**."*
+
+⏳ **Előfeltétel nála:** ElevenLabs kulcs + hang — 07:56-kor jelezte, hogy beállítja.
+
+### 3. 📄 BFR leadva — az LDP-t NE próbáld helyben megkerülni
+
+`__documentations/BEDROCK-FRS.md` → **`BFR-MYASSISTANT-001`** (`@futdevpro/cli-dynamo`,
+**critical**): make-before-break újraindítás. Az owner **kifejezetten ezt kérte** (10:48).
+⛔ Ne építs helyi kerülőutat, és ⛔ **egyetlen LDP-lépést se vegyél ki** — a hossz nem a hiba.

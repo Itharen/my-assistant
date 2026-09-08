@@ -197,3 +197,46 @@ A korlátok 1200 karakter / 40 sor, és csak **figyelmeztetnek**.
 📌 **A meta-tanulság:** két körrel korábban azt írtam, *„ami nem mérhető, azt nem tartom be"* —
 és erre **rossz dolgot tettem mérhetővé**. A mechanikus kapu csak akkor segít, ha a **helyes
 mennyiséget** méri. A rossz metrika **aktívan árt**.
+
+---
+
+## 🔴 2026-09-08 — ÚJRA, harmadszor: a DARABSZÁM a baj, nem a hossz
+
+> **Owner, 2026-09-08 09:14 (szó szerint):** *„Aj, Istenem olyan nehéz megtalálni bármit a
+> rengeteg, rengeteg **spam** üzeneted között, annyi **szar** üzenetet küldtél. Olyan kurva nehéz
+> megtalálni bármilyen infót belőle...... Ez még mindig **ugyanaz a sztori**, amit amúgy korábban
+> is mondtam, hogy ha rengeteg üzenetet adsz, akkor kurvára nem fogok tudni kiolvasni belőle
+> semmit. Sokkal **fókuszáltabban** kell információkat átadjál, és **megfelelő ütemben**. A sok
+> koncentrált információ ugyanúgy haszontalan."*
+
+> **Owner, 2026-09-08 07:04:** *„Minél többet írsz, annál kevesebb infó fog átjönni nekem. Minél
+> többet írsz, annál kevesebb dolgot fogok elolvasni."*
+
+### ⚠️ Ez a HARMADIK kör ugyanerről — ezért nem stílus-kérés, hanem RENDSZERHIBA nálam
+
+| Kör | Mit mondott | Mit értettem félre |
+|---|---|---|
+| 2026-09-07 20:xx | *„kicsit hosszú üzeneteket írsz"* | ⇒ **karakter-korlátot** vezettem be |
+| 2026-09-07 21:45 | *„ahelyett küldesz 10 kicsit, ami hülyeség"* | ⇒ visszavontam a korlátot, **de a darabszámot nem néztem** |
+| **2026-09-08 09:14** | *„rengeteg spam üzenet… nem tudok kiolvasni belőle semmit"* | ⇒ **a kereshetőség** a valódi kár |
+
+🔴 **A tényleges kár nem az olvasási idő — hanem hogy a JÓ üzenet ELVÉSZ a rosszak között.**
+Ő nem „túl sokat olvas", hanem **keres**, és nem találja. Minden fölösleges üzenetem **rontja a
+korábbi hasznosak megtalálhatóságát**. ⇒ Egy fölösleges üzenet **nem semleges**, hanem **negatív**.
+
+### ⭐ „Megfelelő ütemben" — az ÜTEM önálló követelmény
+
+Nem elég **helyes** és **tömör**: a **darabszám időegységre** is számít. Több igaz, hasznos
+üzenet egymás után ugyanúgy **spam**.
+
+### A szűrő küldés előtt — mindhárom kell
+
+```
+1. TARTALOM  ── következik ebből számára TEENDŐ vagy DÖNTÉS?     ⛔ ha nem → nem küldöm
+2. ÜTEM      ── küldtem már neki üzenetet az elmúlt körben?       ⛔ ha igen → összevonom
+3. KERESHETŐ ── ha 3 nap múlva EZT keresi, megtalálja?            ⛔ ha nem → átírom
+```
+
+📌 **Az alapértelmezés a NEM-KÜLDÉS.** Az üzenet a kivétel, amit indokolni kell — nem fordítva.
+Ami nem éri el a küszöböt, az a **repóba** megy *(`STATE-NOW.md`, `TASKS.md`)*, ahol **kereshető**
+és nem takar el semmit.
