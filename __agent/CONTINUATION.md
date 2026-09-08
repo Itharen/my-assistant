@@ -2931,3 +2931,66 @@ adathibat, de nem javithattam)* · **C-10 statusz-kivonat** *(magamtol ranezhess
 **C-19 alvas-ciklus** *(ma 02:17-kor fekudt le — ezt csak utolag latom)*.
 
 ⛔ Egyiket sem allitottam `✅`-re. A kerdes kiment Discordra.
+
+
+---
+
+## 🔍 2026-09-08 07:13–07:30 — DEV: a SÁV megvan; a diagnózis kész, az építés owner-döntésre vár
+
+### 🔴 ELŐSZÖR: a saját 06:24-es mérésem ÉRVÉNYTELEN volt
+
+Azt állítottam, hogy *„az LDP-kimenetben NULLA sor van a beszéd-feldolgozásról"*.
+⛔ **Ez nem bizonyított semmit.** Az LDP-logok **rotálódnak**, és 07:13-kor a két fájl együtt
+csak a **06:37–07:13** ablakot fedte — az owner beszéde **01:29–01:35**-kor volt.
+⇒ Olyan ablakban grepeltem, ahol **eleve nem hangzott el semmi**.
+
+📌 **Ugyanaz a hiba, amit EGY NAPPAL KORÁBBAN magam írtam le:** *„a »mértem« önmagában nem elég
+— milyen körülmények között mértem, az is a mérés része."* Leírtam, és megismételtem.
+
+### ⭐ A SÁV LÉTEZIK, BE VAN KAPCSOLVA, ÉS PONTOSAN AZ, AMIT AZ OWNER KÉRT
+
+`cv-analysis.control-service.ts:33` — `_logCompactAudioAnalysis`:
+🟢 zöld `|` ha beszédnek ismerte fel · 🟡 sárga a határeseten · 🔴 piros egyébként.
+**Keretenként** hívódik, `compactAudioAnalysisLog = true`, és `\r`-rel **helyben rajzol**.
+
+⇒ ⛔ **Nem megépíteni kell. Már megvan.**
+
+### ✅ És a naplózás sem néma — mérve
+
+A `DyFM_Log`-ot közvetlenül meghívva a `log`/`info`/`warn`/`error` **mind megjelent**,
+ANSI-színekkel. ⇒ A korábbi „a konzol néma" következtetés **alaptalan volt**.
+
+### 🔴 AMI VISZONT ELRONTJA — három mért ok
+
+1. **A stdout nem terminál** (`isTTY: undefined` csővezetéken) ⇒ a `\r` nem rajzol felül.
+2. **A log-fájlban olvashatatlan**: `\r`-ek, `\n` nélkül ⇒ egyetlen hatalmas sor.
+3. ⭐ **A közbeékelődő sor összerontja** — kísérlettel igazolva: a 60 mp-enkénti pulzus-sor
+   **ráragad** a sáv sorára, majd a következő rajzolás **felülírja a pulzust**:
+   `🎤 Audio Analysis: |||||🫀 07:15 · fut 2p │ …`
+
+### ⛔ MIÉRT NEM JAVÍTOTTAM MAGAMTÓL
+
+A sávot az **átemelt kód** írja ⇒ a rendering módosítása tiltott (`transplant-not-rewrite`).
+⚠️ És a kézenfekvő megkerülés sem járható: mérve a két írás **két KÜLÖN FOLYAMATBÓL** jön —
+a sáv a **figyelőből** (`pid 299872`), a pulzus az **LDP/szerverből** (`pid 286248`).
+⇒ A szerver **nem tudhatja**, hogy a figyelő épp sávot rajzol. Az ütközés **szerkezeti**.
+
+### 🙋 OWNER-DÖNTÉS — hova menjen a sáv
+
+| Opció | Mit jelent | Ár |
+|---|---|---|
+| **A)** saját ablak a figyelőnek | a sáv **tiszta**, semmi nem ékelődik be | egy ablakkal több |
+| **B)** a pulzus költözik (pl. kliensre) | a konzolon **csak** a sáv marad | a pulzust máshol kell nézni |
+| **C)** marad, ahogy van | percenként egyszer megtörik | ingyen |
+
+⭐ **Ajánlás: (A)** — a sáv **folyamatos** jelzés, a pulzus **pillanatkép**; a kettő
+természeténél fogva nem fér meg egy sorban.
+⛔ Egyik opció sem igényli az átemelt kód módosítását.
+
+### ⏳ Amit NEM állítok
+
+A sáv **élő** megjelenését nem láttam — ahhoz beszéd kell. Azt igazoltam, hogy a **kód létezik
+és be van kapcsolva**, a naplózás **eljut a stdout-ra**, és a rendering **ütközik**. Azt ⛔ **nem**
+állítom, hogy tudom, mit lát az owner a saját ablakában.
+
+📄 Kanonikus: `__documentations/developments/2026-09-08-live-colour-bar-diagnosis.md`
