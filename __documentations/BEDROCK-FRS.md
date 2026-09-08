@@ -128,3 +128,39 @@ az üzenetek órákkal később érnek célba, és az owner addig válasz nélk�
 
 *(a bedrock-agent tölti ki)*
 
+
+---
+
+#### ⚠️ MÉRÉS-KIEGÉSZÍTÉS 2026-09-08 16:13 — nem csak a szerver esik ki, hanem a **CLI is**
+
+Az eredeti leírás a **szerver** kieséséről szól. Élő mérés közben kiderült, hogy a kár **tágabb**:
+
+```
+$ ma action-log emit …
+cli bootstrap failed: Cannot find module '…/cli/dist/cli/src/main.js'
+```
+
+**Állapot ugyanekkor** (`logs/live-dev-pipeline/status.json`): `phase: tsc-cli`,
+`pipelineComplete: false`, `serverRunning: true`.
+
+🔴 **Az ok:** a ciklus **`rimraf-cli-dist`-tel KEZD** — letörli a `dist`-et, és csak a
+`tsc-cli` végén áll helyre. Ebben az ablakban **minden**, ami a `dist`-ből fut, halott:
+
+| Ami kiesik | Következmény |
+|---|---|
+| `ma comm say` | ⛔ **nem tudok üzenni az ownernek** |
+| `ma comm doctor` · `ma status digest` | ⛔ a diagnosztika sem fut |
+| **Discord-figyelő** *(`ma comm listen`)* | ⛔ a beérkező üzenetek sem érkeznek |
+| `ma action-log emit` | ⛔ a naplózás is kiesik — **még a hiba sem naplózható** |
+
+⭐ **Ez a `serverRunning: true` melletti csendes vakfolt:** az állapotfájl szerint „a szerver
+fut", és ez **igaz is** — miközben a **kommunikációs csatorna teljes eszközkészlete** nem
+elérhető. ⇒ Egy `serverRunning`-alapú ellenőrzés **nem** fogja meg ezt az ablakot.
+
+📌 **Amit ez hozzátesz a kéréshez:** a make-before-break **nem elég**, ha csak a szerver-
+folyamatra vonatkozik. A **build kimenete** (`dist`) is make-before-break kell legyen —
+**új könyvtárba fordítunk, és csak készen cserélünk**, ahelyett hogy a régit **előre**
+letörölnénk. *(`rimraf` → build → atomi csere.)*
+
+⚠️ **Ez a mérés az eredeti kérést NEM váltja fel, hanem BŐVÍTI** — a prioritás változatlanul
+**critical**.
