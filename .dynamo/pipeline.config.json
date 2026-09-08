@@ -84,6 +84,7 @@
     },
     {
       "_comment": "🔊 AZ ÁTEMELT CCAP-KÓD BUILDJE. 🔴 2026-09-07-ig `noEmit: true` volt ⇒ a 70 átemelt fájlból JS SOHA nem keszult, tehat futasidoben NEM LETEZETT — a tipus-ellenorzes zold volt, es ez elfedte. ⚠️ `fatal: false`: az atemelt kodnak vannak tipus-hibai, amiket az owner-korlat miatt NEM javitunk (`transplant-not-rewrite`); a `tsc` ilyenkor is emital.",
+      "_comment": "2026-09-09 OTA ZOLD: a ket `Buffer` -> `BodyInit` hiba feloldva a `cli/types/transplanted-fetch.d.ts`-ben (tipus-szintu tulterheles), az ATEMELT KODHOZ NEM NYULTUNK. A `fatal: false` SZANDEKOSAN marad: ha egy jovobeli @types/node bump ujra elrontja, az nem allithatja meg a fejlesztest, mert a forrast az owner-korlat miatt nem javithatjuk. ⚠️ De mostantol MINDEN piros itt VALODI REGRESSZIO — korabban allando zaj volt.",
       "label": "tsc-transplanted",
       "command": "cd cli && npx tsc -p tsconfig.transplanted.json",
       "fatal": false

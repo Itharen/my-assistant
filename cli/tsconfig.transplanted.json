@@ -54,6 +54,10 @@
     "lib": ["es6", "es2022", "dom"]
   },
   "include": [
+    // ⭐ A `fetch`-torzs `Buffer`-tulterhelese — a forrashoz NEM nyulunk, a kornyezetet
+    // igazitjuk. Reszletek a fajl fejleceben. ⛔ A sajat kodunkra NEM vonatkozik: csak ez
+    // a tsconfig huzza be.
+    "types/transplanted-fetch.d.ts",
     "src/_modules/**/*.ts",
     "src/_collections/**/*.ts",
     "src/_enums/**/*.ts"
