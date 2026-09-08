@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { mkdir, open, rename, rm } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 import { promisify } from 'node:util';
 
 const execFileAsync = promisify(execFile);
@@ -191,6 +192,12 @@ export async function writeMirrorAtomically(outputPath: string, mirror: Organize
     try {
       await handle.writeFile(`${JSON.stringify(mirror, null, 2)}\n`, { encoding: 'utf8' });
       await handle.sync();
+    } catch (writeErr) {
+      // 🔴 A `finally`-beli `close()` MAGA IS DOBHAT — es akkor AZ a hiba jutna ki, ez pedig
+      // elveszne. Vagyis a valodi ok (tele a lemez, jogosultsag) helyett egy lezarasi hibat
+      // latnank. Ezert az eredeti hibat MEG A LEZARAS ELOTT rogzitjuk.
+      reportSwallowedFailure('stocks.mirror.write', writeErr);
+      throw writeErr;
     } finally {
       await handle.close();
     }

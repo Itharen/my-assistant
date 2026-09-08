@@ -103,8 +103,11 @@ export async function logAction(entry: ActionLogEntry): Promise<void> {
 
     const line = JSON.stringify(out) + '\n';
     await fs.appendFile(path.join(root, `${day}.jsonl`), line, { encoding: 'utf8' });
-  } catch {
-    // Swallow — logging must not break workflows.
+  } catch (err) {
+    // A naplozas nem torhet meg workflow-t, ezert nem dobunk tovabb. De a NEMASAG mas kerdes:
+    // egy elveszett bejegyzes epp azt a nyomot tunteti el, amiert a naplo letezik.
+    process.stderr.write(`[action-log] MA-ACTION-LOG-APPEND-FAIL: ${String(err)}
+`);
   }
 }
 
@@ -131,7 +134,9 @@ export function logActionSync(entry: ActionLogEntry): void {
     if (entry.session) out.session = entry.session;
     if (entry.extra && Object.keys(entry.extra).length > 0) out.extra = entry.extra;
     fsSync.appendFileSync(path.join(root, `${day}.jsonl`), JSON.stringify(out) + '\n', { encoding: 'utf8' });
-  } catch {
-    // Swallow.
+  } catch (err) {
+    // Ugyanaz, mint az aszinkron valtozatban: nem dobunk, de nyomot hagyunk.
+    process.stderr.write(`[action-log] MA-ACTION-LOG-APPEND-SYNC-FAIL: ${String(err)}
+`);
   }
 }

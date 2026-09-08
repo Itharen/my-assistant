@@ -163,6 +163,43 @@ describe('TranscriptLedger — a tárolás', () => {
         ledger.recordFailed(failedInput(), join(root, 'nincs-ilyen.bin'), now),
       ).toBeResolved();
     });
+
+    describe('⭐ ha az ÁTNEVEZÉS bukik (kötetek közti mozgatás, `EXDEV`)', () => {
+
+      /** Olyan nyilvántartás, amiben az átnevezés MINDIG elbukik — ezt a fallback fogja el. */
+      function ledgerWithBrokenRename(): TranscriptLedger {
+        return new TranscriptLedger({ root: root }, async (): Promise<void> => {
+          const error: NodeJS.ErrnoException = new Error('EXDEV: cross-device link not permitted');
+
+          error.code = 'EXDEV';
+          throw error;
+        });
+      }
+
+      it('🔴 a hang AKKOR IS megmarad — másolással', async (): Promise<void> => {
+        // ⚠️ Enélkül a T-68 legfontosabb ígérete (a visszamenőleges feloldás) NÉMÁN szűnne
+        // meg abban a pillanatban, amikor a sor és a nyilvántartás külön kötetre kerül.
+        const source: string = join(root, 'forras.bin');
+
+        await writeFile(source, Buffer.from([7, 7, 7]));
+        await ledgerWithBrokenRename().recordFailed(failedInput(), source, now);
+
+        const entry = await ledger.get('1546863401903587359');
+        const kept: string | null = entry ? ledger.audioPathOf(entry) : null;
+
+        expect(kept).not.toBeNull();
+        expect(await readFile(kept as string)).toEqual(Buffer.from([7, 7, 7]));
+      });
+
+      it('⛔ a forrás a másolás után is elkerül — nem marad ott, ahol a sor törölné', async (): Promise<void> => {
+        const source: string = join(root, 'forras.bin');
+
+        await writeFile(source, Buffer.from([7]));
+        await ledgerWithBrokenRename().recordFailed(failedInput(), source, now);
+
+        expect(existsSync(source)).toBeFalse();
+      });
+    });
   });
 
   describe('a feloldatlanok munkalistája', () => {

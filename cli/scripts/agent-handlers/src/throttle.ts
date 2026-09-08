@@ -34,13 +34,19 @@ async function read(): Promise<ThrottleMap> {
     if (errno.code === 'ENOENT') return {};
     // Parse error / perm: stderr emit (strukturált), fallback empty (UX preserve)
     const msg: string = err instanceof Error ? err.message : String(err);
-    try {
-      process.stderr.write(
-        `[throttle] MA-THROTTLE-READ-FAIL: ${msg} (file=${throttleFilePath()})\n`,
-      );
-    } catch {
-      // last-resort stderr unwritable — documented swallow per error-handling.md
-    }
+
+    // ⭐ MÉRVE (2026-09-09, Node 22): a `process.stderr.write` **még lezárt fd-vel sem dob** —
+    // az `EPIPE` aszinkron `error` eseményként érkezik, nem kivételként. Az itt korábban álló
+    // „végső esély" `try/catch` tehát olyat védett, ami **nem történhet meg**, cserébe viszont
+    // létrehozott egy VALÓDI néma ágat.
+    //
+    // ⚠️ Ez NEM jelenti azt, hogy minden ilyen védelem fölösleges: ahol a belső írás
+    // `JSON.stringify`-t is végez (`action-log.client.ts`), ott egy körkörös hivatkozás
+    // valóban dobhat — ezért ott a védelem MEGMARADT. Itt csak szöveget fűzünk össze.
+    process.stderr.write(
+      `[throttle] MA-THROTTLE-READ-FAIL: ${msg} (file=${throttleFilePath()})\n`,
+    );
+
     return {};
   }
 }

@@ -178,7 +178,18 @@ export function buildFailedEntry(
  */
 export class TranscriptLedger {
 
-  constructor(private readonly paths: TranscriptLedgerPaths = resolveTranscriptLedgerPaths()) {}
+  /**
+   * @param paths a nyilvantartas helye.
+   * @param moveAudio a hang atmozgatasa — ⭐ CSAK a TESZT cseréli le.
+   *
+   * ⚠️ Miert van seam: a masolas-fallback (`EXDEV`) elso agat nem lehet valodi fajlrendszeren
+   * elohivni ugy, hogy a masodik ag meg mukodjon. Enelkul epp az az ag maradna teszteletlen,
+   * amelyik az ELVESZETT HANGOT menti meg — vagyis a T-68 legfontosabb igerete.
+   */
+  constructor(
+    private readonly paths: TranscriptLedgerPaths = resolveTranscriptLedgerPaths(),
+    private readonly moveAudio: (from: string, to: string) => Promise<void> = rename,
+  ) {}
 
   /** Egy bejegyzés beolvasása. `null`, ha nincs. */
   async get(messageId: string): Promise<TranscriptLedgerEntry | null> {
@@ -296,7 +307,7 @@ export class TranscriptLedger {
    */
   private async keepAudio(sourcePath: string, targetPath: string): Promise<boolean> {
     try {
-      await rename(sourcePath, targetPath);
+      await this.moveAudio(sourcePath, targetPath);
 
       return true;
     } catch (renameErr) {

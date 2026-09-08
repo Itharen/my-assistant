@@ -126,9 +126,12 @@ export async function logAction(entry: ActionLogEntry): Promise<LogActionResult>
     // nincs hova logolni → documented silent fallback (utolsó láncszem).
     try {
       process.stderr.write(`[action-log] WRITE FAILED: ${JSON.stringify(error)}\n`);
-    } catch {
-      // Documented swallow: stderr unwritable. No further channel exists.
-      // Result is still returned so the caller can react.
+    } catch (stderrErr) {
+      // 🔴 A VÉGSŐ LÁNCSZEM: még a `stderr` sem írható (lezárt tty), tehát naplózni tényleg
+      // nincs hova. ⛔ De a némaság így sem az egyetlen lehetőség: a hibát beletesszük a
+      // VISSZAADOTT eredménybe, tehát a hívó látja, hogy **két külön dolog** bukott el —
+      // maga az írás, ÉS a bukás jelzése is. Enélkül a második teljesen láthatatlan volt.
+      error.details = { ...(error.details ?? {}), stderrFailure: String(stderrErr) };
     }
     return { ok: false, error };
   }

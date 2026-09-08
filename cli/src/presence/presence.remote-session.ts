@@ -24,6 +24,7 @@ import { existsSync } from 'node:fs';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 
 /** Egy távoli munkamenet ideje. A `endedAt` hiánya = MÉG NYITVA. */
 export interface RemoteSessionInterval {
@@ -136,7 +137,9 @@ export async function readRemoteSessions(
     for (const name of names) {
       try {
         withTimes.push({ name, mtimeMs: (await stat(join(logDir, name))).mtimeMs });
-      } catch {
+      } catch (err) {
+        // A fajl eltunhetett ket muvelet kozott (`ENOENT`) — vart eset.
+        reportSwallowedFailure('presence.remote-session.statLog', err, ['ENOENT']);
         continue;
       }
     }
@@ -150,13 +153,18 @@ export async function readRemoteSessions(
     for (const file of recent) {
       try {
         sessions.push(...parseRemoteSessions(await readFile(join(logDir, file.name), 'utf-8')));
-      } catch {
+      } catch (err) {
+        reportSwallowedFailure('presence.remote-session.readLog', err, ['ENOENT']);
         continue;
       }
     }
 
     return sessions;
-  } catch {
+  } catch (err) {
+    // ⚠️ Az ures lista azt allitja, hogy „nem volt tavoli munkamenet". Ha valojaban olvasni
+    // sem tudtuk, az MAS — es ez a kulonbseg a jelenlet-kovetes egesz alapja.
+    reportSwallowedFailure('presence.remote-session.list', err, ['ENOENT']);
+
     return [];
   }
 }

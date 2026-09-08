@@ -2,6 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { basename, isAbsolute, resolve } from 'node:path';
 import type { DownloadObject, FetchMessageObject, ImapFlow, MessageStructureObject } from 'imapflow';
 
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 import { describeEmailError, EmailToolError } from './email-error.js';
 import { isGmailEmailAccount } from './email-account.config.js';
 import { fetchGmailAttachments } from './email-gmail-attachment.service.js';
@@ -155,6 +156,12 @@ export async function fetchEmailAttachments(options: EmailAttachmentFetchOptions
         matchedMessages: messages.length,
         messages: messages,
       };
+    } catch (err) {
+      // A hiba a hivoe (a `finally` ettol fuggetlenul elengedi a mailbox-zarat) — de a KERET
+      // eddig nyomtalan volt: nem derult ki, hogy a csatolmany-gyujtes MELYIK szakaszan
+      // szakadt meg, csak az, hogy „nem jott csatolmany".
+      reportSwallowedFailure('email.attachment.collect', err);
+      throw err;
     } finally {
       lock.release();
     }

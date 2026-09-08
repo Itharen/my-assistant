@@ -1,3 +1,5 @@
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+
 import { getEmailGoogleAccessToken } from './email-google-oauth.service.js';
 import { EmailToolError } from './email-error.js';
 
@@ -57,7 +59,11 @@ export async function gmailApiRequest<T>(
     try {
       const payload = await response.json() as { error?: { status?: string; message?: string } };
       reason = payload.error?.status ?? 'api_error';
-    } catch {
+    } catch (parseErr) {
+      // ⚠️ A Gmail hiba eseten HTML-t is kuldhet (kvota-lap, bejelentkezteto). Az
+      // `invalid_error_response` helyes jelzes — de eddig NEM derult ki, hogy a valasz
+      // egyaltalan nem JSON volt, csak annyi, hogy „valami baj van".
+      reportSwallowedFailure('email.gmail-api.parseErrorBody', parseErr);
       reason = 'invalid_error_response';
     }
     throw new EmailToolError('MA-EMAIL-GMAIL-API', 'Gmail API request failed.', {

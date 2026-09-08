@@ -108,8 +108,12 @@ export async function handleNotifyDiscord(action: NotifyDiscordAction): Promise<
     let respBody: string = '';
     try {
       respBody = await res.text();
-    } catch {
-      // body-read hiba nem kritikus — status-code önmagában elég a diagnózishoz
+    } catch (err) {
+      // A valasz-torzs olvasasa nem kritikus — a status-code onmagaban eleg a diagnozishoz.
+      // De ha EZ hasal el, akkor a hibauzenetunk a leghasznosabb reszet veszti el, es a
+      // nema valtozatban ugy tunt, mintha a szolgaltatas ures torzset kuldott volna.
+      process.stderr.write(`[notify-discord] MA-HTTP-BODY-READ-FAIL: ${String(err)}
+`);
     }
     await logAction({
       actor: 'agent',

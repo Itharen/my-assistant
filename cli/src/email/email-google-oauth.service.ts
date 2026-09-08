@@ -6,6 +6,7 @@ import { dirname, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 import {
   resolveEmailAccountIdentity,
   resolveEmailGoogleOAuthConfig,
@@ -86,6 +87,12 @@ export async function authorizeEmailGoogleAccount(account: string): Promise<Emai
   let code: string;
   try {
     code = await listener.code;
+  } catch (err) {
+    // A `finally` ettol fuggetlenul lezarja a figyelot. ⚠️ De a keret eddig nyomtalan volt:
+    // az engedelyezes megszakadasa (a felhasznalo elutasitotta, idotullepes) ugyanugy
+    // nezett ki, mint egy halozati hiba — pedig a teendo teljesen mas.
+    reportSwallowedFailure('email.oauth.awaitCode', err);
+    throw err;
   } finally {
     listener.close();
   }
@@ -160,9 +167,13 @@ export async function getEmailGoogleAuthStatus(account: string): Promise<EmailGo
     throw new EmailToolError('MA-EMAIL-OAUTH-PROVIDER', 'OAuth status is only available for Gmail accounts.');
   }
   let clientConfigured: boolean = true;
+
   try {
     resolveEmailGoogleOAuthConfig();
-  } catch {
+  } catch (err) {
+    // ⚠️ Itt a kivetel a VART valasz: „nincs beallitva". ⛔ De ha az ok mas (serult fajl,
+    // jogosultsag), a hasznalo ugyanazt latna — „allitsd be" —, holott a beallitas MEGVAN.
+    reportSwallowedFailure('email.oauth.resolveConfig', err);
     clientConfigured = false;
   }
   const tokenPath: string = emailGoogleTokenPath(account);
@@ -353,7 +364,10 @@ function openSystemBrowser(url: string): void {
         ? spawn('open', [url], { detached: true, stdio: 'ignore' })
         : spawn('xdg-open', [url], { detached: true, stdio: 'ignore' });
     child.unref();
-  } catch {
-    // A teljes URL mindig ki van írva; a kézi megnyitás működő fallback.
+  } catch (err) {
+    // A teljes URL mindig ki van irva, tehat a kezi megnyitas mukodo fallback — a hiba
+    // nem all utjaba semminek. De rogzul: fejlesztoi kornyezetben ez arulja el, hogy a
+    // rendszer bongeszo-inditasa nem mukodik.
+    reportSwallowedFailure('email.oauth.openSystemBrowser', err);
   }
 }

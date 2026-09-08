@@ -13,6 +13,7 @@ import { existsSync } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 import { isRemoteAt, readRemoteSessions } from './presence.remote-session.js';
 
 /** Ennyi percen belüli aktív mérés jelenti azt, hogy a gépénél van. */
@@ -158,7 +159,11 @@ function parseSample(line: string): PresenceSample | null {
       idleSeconds,
       processName: typeof parsed['processName'] === 'string' ? parsed['processName'] : '',
     };
-  } catch {
+  } catch (err) {
+    // A `null` azt jelenti: „ez a sor nem ertelmezheto". Ha SOK ilyen van, akkor a
+    // jelenlet-adat hianyzik — es a nema valtozatban ez „nem volt a gepnel"-nek latszott.
+    reportSwallowedFailure('presence.reader.parseSample', err);
+
     return null;
   }
 }

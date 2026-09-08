@@ -8,6 +8,7 @@ import type {
 import { simpleParser } from 'mailparser';
 import type { AddressObject, Attachment, ParsedMail } from 'mailparser';
 
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 import { EmailToolError } from './email-error.js';
 import { isGmailEmailAccount } from './email-account.config.js';
 import { listGmailMessages, readGmailMessages } from './email-gmail-reader.service.js';
@@ -144,6 +145,11 @@ export async function listEmailMessages(options: EmailListOptions): Promise<Emai
         returned: messages.length,
         messages: messages,
       };
+    } catch (err) {
+      // A hiba a hivoe (a `finally` elengedi a zarat) — de a keret eddig nyomtalan volt:
+      // nem derult ki, hogy a postafiok-olvasas MELYIK szakaszan szakadt meg.
+      reportSwallowedFailure('email.reader.withMailbox', err);
+      throw err;
     } finally {
       lock.release();
     }
@@ -243,6 +249,11 @@ export async function readEmailMessages(options: EmailReadOptions): Promise<Emai
         returned: messages.length,
         messages: messages,
       };
+    } catch (err) {
+      // A hiba a hivoe (a `finally` elengedi a zarat) — de a keret eddig nyomtalan volt:
+      // nem derult ki, hogy a postafiok-olvasas MELYIK szakaszan szakadt meg.
+      reportSwallowedFailure('email.reader.withMailbox', err);
+      throw err;
     } finally {
       lock.release();
     }

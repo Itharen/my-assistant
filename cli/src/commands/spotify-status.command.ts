@@ -8,6 +8,7 @@ import {
   listDevices,
 } from '../spotify/spotify.client.js';
 import { ok, makeRequestId, writeEnvelope } from '../output/envelope.js';
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 
 interface SpotifyDiagnostic {
   configured: boolean;
@@ -51,6 +52,10 @@ export async function runSpotifyDiagnostic(): Promise<SpotifyDiagnostic> {
       devices,
     };
   } catch (err) {
+    // ⚠️ A `tokenValid: false` HATAROZOTT allitas — pedig lehet, hogy csak a Spotify volt
+    // elerhetetlen. A napló megkulonbozteti a ketto kozott.
+    reportSwallowedFailure('commands.spotify-status', err);
+
     return {
       configured: true,
       tokenValid: false,

@@ -41,6 +41,29 @@ export function defaultConfigPath(): string {
   return resolve(here, '..', '..', 'config', 'spotify.json');
 }
 
+/**
+ * A konfiguracio betoltesenek bukasa.
+ *
+ * ⚠️ Az `ENOENT` VART eset: elso futaskor meg nincs beallitas — ez nem hiba. ⛔ Minden mas
+ * (serult JSON, jogosultsag) VISZONT az, es a nema valtozatban „nincs beallitva"-kent
+ * jelent volna meg, ami teljesen mas teendot javasol a hasznalonak.
+ */
+function reportSpotifyConfigLoadFailure(err: unknown, filePath: string): void {
+  const errno: NodeJS.ErrnoException = err as NodeJS.ErrnoException;
+
+  if (errno.code === 'ENOENT') {
+    return;
+  }
+  const msg: string = err instanceof Error ? err.message : String(err);
+
+  void logAction({
+    kind: 'error',
+    summary: `[spotify] MA-SPOTIFY-CONFIG-LOAD-FAIL: ${msg}`,
+    ref: filePath,
+    extra: { code: 'MA-SPOTIFY-CONFIG-LOAD-FAIL', file: filePath, error: msg, errnoCode: errno.code },
+  });
+}
+
 export async function loadConfig(path?: string): Promise<SpotifyConfig | null> {
   const p = path ?? defaultConfigPath();
   try {
@@ -55,17 +78,11 @@ export async function loadConfig(path?: string): Promise<SpotifyConfig | null> {
       expiresAt: parsed.expiresAt,
     };
   } catch (err) {
-    // ENOENT first-run silent OK; egyéb (parse, perm) strukturált log.
-    const errno: NodeJS.ErrnoException = err as NodeJS.ErrnoException;
-    if (errno.code !== 'ENOENT') {
-      const msg: string = err instanceof Error ? err.message : String(err);
-      void logAction({
-        kind: 'error',
-        summary: `[spotify] MA-SPOTIFY-CONFIG-LOAD-FAIL: ${msg}`,
-        ref: p,
-        extra: { code: 'MA-SPOTIFY-CONFIG-LOAD-FAIL', file: p, error: msg, errnoCode: errno.code },
-      });
-    }
+    // A dontes — mi VART es mi HIBA — a jelentoben van, nem itt egy `if`-ben. Az `if`-be
+    // zart naplozas ugyanis azt jelenti, hogy a MASIK ag nema marad, es epp az a masik ag
+    // a varatlan hiba (serult JSON, jogosultsag).
+    reportSpotifyConfigLoadFailure(err, p);
+
     return null;
   }
 }

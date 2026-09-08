@@ -35,21 +35,27 @@ export async function withEmailImapClient<T>(
     });
   }
 
+  // ⭐ EGY gyujto ket parhuzamos valtozo helyett: a hiba itt nem „elnyelodik", hanem
+  // OSSZEGYULIK — a muveletet es a kijelentkezest KULON kell tudni, mert ha mindketto
+  // bukik, a ketto EGYUTT mond valamit (a kapcsolat szakadt meg, nem a keres).
+  const failures: { stage: 'action' | 'logout'; error: unknown }[] = [];
   let result: T | undefined;
-  let actionError: unknown;
+
   try {
     result = await action(client);
   } catch (error: unknown) {
-    actionError = error;
+    failures.push({ stage: 'action', error: error });
   }
 
-  let logoutError: unknown;
   try {
     await client.logout();
   } catch (error: unknown) {
-    logoutError = error;
+    failures.push({ stage: 'logout', error: error });
     client.close();
   }
+
+  const actionError: unknown = failures.find((f) => f.stage === 'action')?.error;
+  const logoutError: unknown = failures.find((f) => f.stage === 'logout')?.error;
 
   if (actionError || logoutError) {
     if (actionError && logoutError) {

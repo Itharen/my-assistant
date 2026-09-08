@@ -55,7 +55,9 @@ export async function logAction(entry: ActionLogEntry): Promise<void> {
     await fs.appendFile(path.join(root, `${day}.jsonl`), JSON.stringify(out) + '\n', {
       encoding: 'utf8',
     });
-  } catch {
-    // Swallow — logging failures must not break dispatch.
+  } catch (err) {
+    // A naplozas bukasa nem torhet meg kezbesitest — de nem is tunhet el nyomtalanul.
+    process.stderr.write(`[agent-handlers/action-log] MA-HANDLER-LOG-APPEND-FAIL: ${String(err)}
+`);
   }
 }

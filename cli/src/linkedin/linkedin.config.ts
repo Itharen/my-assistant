@@ -3,6 +3,7 @@ import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { mkdir, open, readFile, rename, rm, stat } from 'node:fs/promises';
 
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 import { LinkedInToolError } from './linkedin.error.js';
 import {
   LINKEDIN_CONFIG_SCHEMA_VERSION,
@@ -83,6 +84,12 @@ export async function writeJsonAtomically(path: string, value: unknown): Promise
     try {
       await handle.writeFile(`${JSON.stringify(value, null, 2)}\n`, { encoding: 'utf8' });
       await handle.sync();
+    } catch (writeErr) {
+      // 🔴 A `finally`-beli `close()` MAGA IS DOBHAT — es akkor AZ a hiba jutna ki, ez pedig
+      // elveszne. Vagyis a valodi ok (tele a lemez, jogosultsag) helyett egy lezarasi hibat
+      // latnank. Ezert az eredeti hibat MEG A LEZARAS ELOTT rogzitjuk.
+      reportSwallowedFailure('linkedin.config.write', writeErr);
+      throw writeErr;
     } finally {
       await handle.close();
     }

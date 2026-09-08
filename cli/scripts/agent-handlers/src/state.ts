@@ -72,8 +72,11 @@ export async function updateTickState(
         // Stale lock — remove and retry once.
         try {
           await fs.unlink(lock);
-        } catch {
-          // ignore
+        } catch (err) {
+          // A zar mar eltunhetett kozben — vart eset. Barmi mas viszont azt jelenti, hogy a
+          // zar BENN RAGAD, es a kovetkezo iras 5 masodpercet var feleslegesen.
+          process.stderr.write(`[agent-handlers/state] MA-STATE-STALE-LOCK-UNLINK-FAIL: ${String(err)}
+`);
         }
         const fd = await fs.open(lock, 'wx');
         await fd.close();
@@ -88,11 +91,20 @@ export async function updateTickState(
     const merged: AgentTickState = { ...current, ...patch, schemaVersion: 1 };
     await fs.writeFile(file, JSON.stringify(merged, null, 2) + '\n', 'utf8');
     return merged;
+  } catch (err) {
+    // A hiba a hivoe (a `finally` elengedi a zarat) — de eddig nem derult ki, hogy AZ IRAS
+    // bukott-e el vagy a beolvasas: mindketto „nem frissult az allapot"-nak latszott.
+    process.stderr.write(`[agent-handlers/state] MA-STATE-WRITE-FAIL: ${String(err)}
+`);
+    throw err;
   } finally {
     try {
       await fs.unlink(lock);
-    } catch {
-      // ignore
+    } catch (unlockErr) {
+      // ⛔ Ha a zar nem tunik el, a KOVETKEZO iras ragad be 5 masodpercre — ez a nema
+      // valtozatban okozatlan lassulaskent jelentkezett volna.
+      process.stderr.write(`[agent-handlers/state] MA-STATE-LOCK-RELEASE-FAIL: ${String(unlockErr)}
+`);
     }
   }
 }

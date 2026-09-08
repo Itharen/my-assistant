@@ -25,7 +25,10 @@ export function describeEmailError(error: unknown): string {
   try {
     const serialized: string | undefined = JSON.stringify(error);
     return serialized ?? 'Unknown email-tool error';
-  } catch {
-    return 'Unserializable email-tool error';
+  } catch (serializeErr) {
+    // ⛔ NEM naplozunk es NEM dobunk: ez a fuggveny epp azt csinalja, hogy hibat ir le —
+    // ha o maga dobna vagy naplozna, a hivo hibakezelese vegtelen korbe futna. ⭐ Helyette
+    // az OKOT betesszuk a VISSZAADOTT szovegbe: igy a hiany ott latszik, ahol a leiras.
+    return `Unserializable email-tool error (${String(serializeErr)})`;
   }
 }
