@@ -13,7 +13,7 @@
 
 | ID | Cím | Target | Prio | Státusz |
 |----|-----|--------|------|---------|
-| BFR-MYASSISTANT-001 | LDP: make-before-break szerver-újraindítás | `@futdevpro/cli-dynamo` | **critical** ⬆️ | 🔵 pending |
+| BFR-MYASSISTANT-001 | LDP: make-before-break szerver-újraindítás | `@futdevpro/cli-dynamo` | **critical** ⬆️ | 🟢 available-fixed — a kepesseg mar letezik (`entry`), a csapda mostantol NEM nema |
 
 ## Státusz-legenda
 
@@ -59,8 +59,6 @@
   `ma comm audit` **utólag** felderíti a hiányt *(ma 32/32 megvolt)* — de a **késleltetést** nem
   szünteti meg.
 
-  **── Bedrock response ──** _(a bedrock-agent tölti)_
-  - <státusz-frissítés / pointer: commit-hash, package-verzió, meglévő API neve / "use X instead">
 
 -->
 
@@ -69,7 +67,7 @@
 ### BFR-MYASSISTANT-001 — LDP: a régi szerver csak akkor álljon le, amikor az új TÉNYLEG indulhat
 
 - **Target:** `@futdevpro/cli-dynamo` (`dc ldp`)
-- **Status:** 🔵 pending
+- **Status:** 🟢 available-fixed — a kepesseg mar letezik (`entry`), a csapda mostantol NEM nema
 - **Raised:** 2026-09-07
 - **Priority:** high
 - **Need:** Az LDP **make-before-break** újraindítást végezzen: fusson le a teljes pipeline, és a
@@ -109,5 +107,29 @@
 - **Current workaround:** nincs. A kiesés minden ciklusban megtörténik; a hatását a 12 órás
   Discord-backfill és a `ma comm audit` **utólag** fedi fel, de nem előzi meg.
 
-  **── Bedrock response ──** _(a bedrock-agent tölti)_
   - _(még nincs)_
+
+  **── Bedrock response ──** _(2026-09-08)_
+  - ⭐ **A kepesseg MAR LETEZIK — es pontosan az, amit az owner leirt.** A `serverRestart.entry`
+    mezos **DETACHED** agban a regi szerver a STEPS alatt vegig kiszolgal (adoption), es a csere
+    (kill-twin → spawn) csak a build/test zoldje UTAN tortenik. A kod doksija szo szerint igy
+    fogalmaz: „adopt MINDIG → swap”.
+  - ⚠️ **Ti a LEGACY agon vagytok.** A `.dynamo/pipeline.config.json`-otok:
+    `{ enabled: true, postPipelineCommand: 'npm --prefix server run start-prod' }` — **`entry`
+    nincs**. A legacy agban a szerver a wrapper GYERMEKE, es a watchdog a trigger eszlelesekor
+    AZONNAL `SIGTERM`-et kuld, majd a wrapper kilep; az uj szerver csak a KOVETKEZO pipeline
+    VEGEN indul. ⭐ **Ez pontosan a mert 15–18 perc**, es nem hiba, hanem a legacy ag beepitett
+    tulajdonsaga (a tipus-doksi is kimondja: „Adoption / kill-twin / heartbeat NINCS”).
+  - **A TEENDO NALATOK egyetlen konfig-valtozas:** `postPipelineCommand` helyett `entry`, a
+    szerver belepesi pontjara mutatva (pl. `./build/src/index.js`). Ezzel a Discord-figyelo es a
+    hang-csatornai jelenlet a pipeline alatt is el marad.
+  - **AMIT A BEDROCKBAN JAVITOTTAM** (`cli-dynamo` `1beb939e`, verzio **01.15.294**): a bedrock-hiba
+    nem a hianyzo kepesseg volt, hanem hogy **ez a csapda NEMA**. A pipeline zolden fut, semmi nem
+    jelzi — ti is csak **17 hang-csatorna ledobasbol** vettetek eszre. Mostantol a legacy ag
+    INDULASKOR kimondja: mi tortenik, hogy ez csendes, es hogy az `entry` ad make-before-break
+    ujrainditast. ⭐ A figyelmeztetes nem tilt es nem valtoztat viselkedest — **atiranyit**.
+  - **6 uj spec**, kozte a ti MERT konfiguraciotokkal. Verifikalva: `npx tsc` 0 hiba,
+    **2071 spec / 0 bukas**.
+  - ⭐ **A meresetek dontott.** A „18 perc kieses” + „17 ledobas/nap” + az owner szo szerinti
+    idezete nelkul ez konnyen „tuning-kerdesnek” latszott volna; igy viszont egyertelmu volt, hogy
+    a ket ag kozotti valasztas nem izles kerdese.
