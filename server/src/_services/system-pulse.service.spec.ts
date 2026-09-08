@@ -4,7 +4,12 @@
 // kell derülnie, hogy valami nem stimmel. Ezért a hiba-ágakra legalább annyi teszt jut,
 // mint a boldog útra.
 
-import { composePulseLine, formatAge, SystemPulseSnapshot } from './system-pulse.service.js';
+import {
+  composePulseLine,
+  DISCORD_SLOW_MS,
+  formatAge,
+  SystemPulseSnapshot,
+} from './system-pulse.service.js';
 
 const now: Date = new Date('2026-09-07T09:20:00+02:00');
 
@@ -101,6 +106,52 @@ describe('🔊 hang-szegmens a pulzusban (T-52) — a konzol NÉMA volt beszéd 
     }));
 
     expect(line).not.toContain('\n');
+  });
+});
+
+
+describe('⚠️ AKADOZÓ életjel — a hamis zöld, ami 13 percig takart el egy kiesést', () => {
+
+  it('🔴 2 percnél régebbi életjel MÁR nem sima ✅', () => {
+    // A figyelő PERCENKÉNT ver. 3 perc = három kimaradt ütés — az nem „rendben".
+    const line: string = composePulseLine(healthy({
+      discord: { state: 'alive', ageMs: 3 * 60_000, botTag: 'Honnie#6234' },
+    }));
+
+    expect(line).toContain('AKADOZIK');
+  });
+
+  it('friss életjelnél marad a sima ✅ — ⛔ nem riogatunk', () => {
+    const line: string = composePulseLine(healthy());
+
+    expect(line).not.toContain('AKADOZIK');
+    expect(line).toContain('✅');
+  });
+
+  it('a határon (pontosan 2 perc) még NEM akadozó — szigorúan fölötte', () => {
+    const line: string = composePulseLine(healthy({
+      discord: { state: 'alive', ageMs: DISCORD_SLOW_MS, botTag: 'Honnie#6234' },
+    }));
+
+    expect(line).not.toContain('AKADOZIK');
+  });
+
+  it('a HALOTT állapotot NEM higítja fel — az továbbra is 🔴', () => {
+    // ⚠️ A köztes fokozat nem vehet el a végső állapot súlyjából.
+    const line: string = composePulseLine(healthy({
+      discord: { state: 'stale', ageMs: 12 * 60_000, botTag: 'Honnie#6234' },
+    }));
+
+    expect(line).toContain('HALOTT');
+    expect(line).not.toContain('AKADOZIK');
+  });
+
+  it('az akadozás is KIÍRJA a kort — ne kelljen találgatni', () => {
+    const line: string = composePulseLine(healthy({
+      discord: { state: 'alive', ageMs: 4 * 60_000, botTag: 'Honnie#6234' },
+    }));
+
+    expect(line).toContain('4p');
   });
 });
 

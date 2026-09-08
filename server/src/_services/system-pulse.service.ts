@@ -40,6 +40,18 @@ const FIRST_PULSE_DELAY_MS: number = 20_000;
  */
 export const DISCORD_STALE_MS: number = 5 * 60_000;
 
+/**
+ * Ennyi kor fölött az életjel már **GYANÚS**, de még nem halott.
+ *
+ * 🔴 MÉRT OK (2026-09-08 11:30): a figyelő **percenként** ver. Egy 4 perces életjel tehát
+ * már **három kimaradt ütés** — a pulzus mégis sima `✅`-t írt rá, egészen az 5 perces
+ * halál-határig. ⚠️ Ma ez **13 percig** takart el egy valódi kiesést: a figyelő folyamata
+ * élt, de nem vert, és a konzolon végig `✅` állt.
+ *
+ * ⭐ Két kimaradt ütés a határ: egy elveszett ütés még lehet gép-terhelés, kettő már minta.
+ */
+export const DISCORD_SLOW_MS: number = 2 * 60_000;
+
 /** Ennél régebbi jelenlét-minta esetén nincs érvényes mérésünk. */
 export const PRESENCE_STALE_MS: number = 3 * 60_000;
 
@@ -138,7 +150,12 @@ function describeDiscord(discord: SystemPulseSnapshot['discord']): string {
     ? ''
     : `, ${discord.processedCount} üz`;
 
-  return `✅${tag} (${formatAge(discord.ageMs ?? 0)}${seen})`;
+  // ⚠️ A KÖZTES FOKOZAT. A `stale` (5 perc) az a pont, ahol kimondjuk, hogy HALOTT — de a
+  // figyelő percenként ver, tehát már 2 percnél baj van. A sima `✅` addig azt sugallja,
+  // hogy minden rendben, holott épp NEM ver.
+  const icon: string = (discord.ageMs ?? 0) > DISCORD_SLOW_MS ? '⚠️ AKADOZIK' : '✅';
+
+  return `${icon}${tag} (${formatAge(discord.ageMs ?? 0)}${seen})`;
 }
 
 function describePresence(presence: SystemPulseSnapshot['presence']): string {
