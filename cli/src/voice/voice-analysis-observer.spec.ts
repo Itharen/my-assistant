@@ -99,7 +99,9 @@ describe('attachAnalysisBar — kívülről ülünk rá, az átemelt kód érint
       throw new Error('a sáv elhasalt');
     };
 
-    attachAnalysisBar(analyzer, bar);
+    // ⚠️ NÉMA nyelő: enélkül ez a szándékos hiba a VALÓDI akció-naplóba kerülne — mérve
+    // 2026-09-08, hogy a teszt-suite így 22 hamis üzemi hibát írt a mai napi naplóba.
+    attachAnalysisBar(analyzer, bar, (): void => undefined);
 
     // ⛔ Enélkül egy sáv-hiba MEGÖLNÉ a felvételt — pontosan az a hibaosztály, amit a
     // DEV-HANDOFF kemény korlátként tilt.

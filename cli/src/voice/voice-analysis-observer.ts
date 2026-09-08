@@ -29,6 +29,20 @@ export interface AnalyzerLike {
 /** ⚠️ Egy példányt csak EGYSZER burkolunk — különben minden újracsatlakozás duplázná a sávot. */
 const WRAPPED: WeakSet<object> = new WeakSet();
 
+/** Az ÜZEMI hiba-nyelő: a valódi akció-naplóba ír. ⛔ Tesztből ezt nem használjuk. */
+function defaultBarErrorSink(reason: string): void {
+  try {
+    void logAction({
+      kind: 'error',
+      summary: '[voice] a keretenkénti sáv elhasalt — a felvétel ettől ÉRINTETLEN',
+      extra: { code: 'MA-VOICE-BAR-FAILED', reason: reason },
+    });
+  } catch {
+    // Ha még a naplózás sem megy, a konzol az utolsó esély — de tovább nem dobunk.
+    process.stderr.write('[voice] a sáv naplózása sem sikerült\n');
+  }
+}
+
 /**
  * A burkoló ráültetése egy elemző-példányra.
  *
@@ -38,7 +52,22 @@ const WRAPPED: WeakSet<object> = new WeakSet();
  * módosítson. A **döntési** rész (`classifyFrame`, `renderBar`) külön, tiszta modulban van,
  * és ott is van tesztelve.
  */
-export function attachAnalysisBar(analyzer: AnalyzerLike, bar: VoiceAnalysisBar): boolean {
+export function attachAnalysisBar(
+  analyzer: AnalyzerLike,
+  bar: VoiceAnalysisBar,
+  /**
+   * Hova megy a sáv saját hibája.
+   *
+   * 🔴 MÉRT SZENNYEZÉS (2026-09-08 11:05): alapból a VALÓDI akció-naplóba írtunk, és a
+   * teszt-suite — ami az LDP `cli-test` lépésében **élesben fut** — így **22 hamis
+   * hiba-bejegyzést** tett a mai napi naplóba (`MA-VOICE-BAR-FAILED`, „a sáv elhasalt").
+   *
+   * ⚠️ Ez nem kozmetikai: az akció-napló a **mérés rekordja**. Ha teszt-zaj kerül bele, a
+   * későbbi elemzés **nem létező üzemi hibákat** lát — pont az a fajta hazug adat, ami ellen
+   * az egész naplózás készült.
+   */
+  reportError: (detail: string) => void = defaultBarErrorSink,
+): boolean {
   if (WRAPPED.has(analyzer)) return false;
 
   const original: (buffer: Buffer) => AnalysisFrame = analyzer.analyzeAudio.bind(analyzer);
@@ -51,19 +80,7 @@ export function attachAnalysisBar(analyzer: AnalyzerLike, bar: VoiceAnalysisBar)
       bar.push(result);
     } catch (error: unknown) {
       // ⚠️ Néma elnyelés TILOS (`core-rich-error-handling`) — de a naplózás sem dobhat.
-      try {
-        void logAction({
-          kind: 'error',
-          summary: '[voice] a keretenkénti sáv elhasalt — a felvétel ettől ÉRINTETLEN',
-          extra: {
-            code: 'MA-VOICE-BAR-FAILED',
-            reason: error instanceof Error ? error.message : String(error),
-          },
-        });
-      } catch {
-        // Ha még a naplózás sem megy, a konzol az utolsó esély — de tovább nem dobunk.
-        process.stderr.write('[voice] a sáv naplózása sem sikerült\n');
-      }
+      reportError(error instanceof Error ? error.message : String(error));
     }
 
     return result;
@@ -121,7 +138,7 @@ export async function attachAnalysisBarSafely(params: {
       return false;
     }
 
-    return attachAnalysisBar(analyzer, params.bar);
+    return attachAnalysisBar(analyzer, params.bar, params.onError);
   } catch (error: unknown) {
     params.onError?.(
       'A keretenkénti sáv rákötése elbukott (a felvétel ettől ÉRINTETLEN): '

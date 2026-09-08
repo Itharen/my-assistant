@@ -72,6 +72,7 @@ import {
   type VoiceConnectionEvent,
 } from '../voice/voice-connection-log.js';
 import { VoiceCuePlayer } from '../voice/voice-cues.js';
+import { planVoiceRejoin, type RejoinPlan } from '../voice/voice-rejoin-plan.js';
 import {
   planFeedbackForDrop,
   planFeedbackForOutcome,
@@ -534,6 +535,44 @@ export class DiscordListener {
     if (result.joined) await this.startVoiceRecording(config.channelId);
   }
 
+  /** Hány újra-belépési kísérlet volt az utolsó SIKERES kapcsolat óta. */
+  private voiceRejoinAttempts: number = 0;
+
+  /** A folyamatban lévő újra-belépés időzítője — ⛔ hogy ne induljon kettő. */
+  private voiceRejoinTimer: NodeJS.Timeout | null = null;
+
+  /**
+   * 🔁 Újra-belépés ütemezése kiesés után.
+   *
+   * ⛔ **Nem végtelen:** ha a belépés azért bukik, mert elveszett a jogosultság vagy törölték a
+   * csatornát, a végtelen próbálkozás nem gyógyít — csak zajt termel. A sorozat végén
+   * **kimondjuk, hogy feladtuk**, hogy az owner tudja: innen emberi beavatkozás kell.
+   */
+  private scheduleVoiceRejoin(): void {
+    if (this.voiceRejoinTimer) return;
+
+    const plan: RejoinPlan = planVoiceRejoin(this.voiceRejoinAttempts);
+
+    void this.safeLog({
+      kind: plan.shouldRetry ? 'note' : 'error',
+      summary: `[discord/listener] 🔁 ${plan.detail}`,
+      extra: { code: plan.shouldRetry ? 'MA-VOICE-REJOIN-SCHEDULED' : 'MA-VOICE-REJOIN-GIVEUP' },
+    });
+    process.stdout.write(`[voice] 🔁 ${plan.detail}
+`);
+
+    if (!plan.shouldRetry) return;
+
+    this.voiceRejoinAttempts += 1;
+    this.voiceRejoinTimer = setTimeout((): void => {
+      this.voiceRejoinTimer = null;
+      void this.joinVoiceChannel();
+    }, plan.delayMs);
+
+    // ⛔ A visszalépés-kísérlet nem tarthatja életben a folyamatot leállításkor.
+    this.voiceRejoinTimer.unref?.();
+  }
+
   /**
    * 🔌 EGY KAPCSOLAT-ESEMÉNY RÖGZÍTÉSE — **két helyre**, mért okkal.
    *
@@ -569,7 +608,15 @@ export class DiscordListener {
         joined: true,
         ...(event.channelName ? { channelName: event.channelName } : {}),
       };
+      // ⭐ Sikeres kapcsolat ⇒ tiszta lap: a következő kiesés megint a teljes sorozatot kapja.
+      this.voiceRejoinAttempts = 0;
     }
+
+    // 🔁 KIESÉS UTÁN VISSZA IS KELL LÉPNI. Mérve 2026-09-08: a bot 10:57:54-kor kiesett, és
+    // ⛔ SOHA nem lépett vissza — a csatorna üresen maradt. A naplózás elkapta, a CSELEKVÉS
+    // hiányzott: tudtuk, hogy kiestünk, és nem csináltunk vele semmit.
+    // ⚠️ A szándékos kilépést (`left`) NEM követi újra-belépés — abból épp kifelé tartunk.
+    if (event.kind === 'dropped' || event.kind === 'join-failed') this.scheduleVoiceRejoin();
 
     await this.safeLog({
       kind: line.level,
