@@ -2806,6 +2806,20 @@ ma stt transcript <referencedMessageId>   # mi hangzott el benne
 ma stt retry      <referencedMessageId>   # ha bukott: újrapróbálás a megőrzött hangból
 ```
 
+### ⭐ Ráadás: a `tsc-transplanted` is ZÖLD lett — az átemelt kódhoz nem nyúltam
+
+A handoff ide sorolta a `Buffer` → `BodyInit` hibát is. **A hiba nem a kódban volt:** az
+`@types/node` 22-es sora a `Buffer`-t **generikussá** tette, és az már nem illeszkedik a
+`BodyInit` union egyetlen tagjára sem. Futásidőben helyes — a Node `fetch`-e elfogadja.
+
+⚠️ **Mérve, ez döntötte el a megoldás helyét:** a `lib: [...,"dom"]` — amit a régi bot
+tsconfigja is használt — **önmagában nem elég**, mert az `@types/node` saját globális
+`fetch`-e **árnyékolja** a DOM-belit. Ezért egy külön túlterhelés kellett, egy **csak ehhez a
+tsconfighoz** behúzott `.d.ts`-ben. *(Mérve: a fő buildben a fájl `--listFiles` szerint NEM
+szerepel ⇒ a saját kódunk szigora változatlan.)*
+
+**Pozitív kontroll:** a `.d.ts` elrontásával visszajön a 2 hiba, visszaállítva 0.
+
 ### 🛑 A hurok lezárva
 
 Nincs több DEV-tétel a T-68-on: a maradék **idő- és környezet-kapun** áll *(a give-up
