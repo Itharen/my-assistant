@@ -8,7 +8,7 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-09 00:10
+**Frissítve:** 2026-09-09 00:25
 
 ## Ma
 
@@ -17,9 +17,10 @@ A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
 
 ## 🙋 AMI RÁD VÁR
 
-1. 🔄 **A DEV session `completed`** — 19:12 óta nem él, és **prompttal nem tudom felébreszteni**
-   *(megpróbáltam 00:08-kor, nem vette fel)*. ⇒ **Neked kell újraindítanod**, ha akarod, hogy
-   dolgozzon. A feladata készen áll: `__agent/DEV-HANDOFF.md` (5 piros review-lépés).
+1. ~~**A DEV-et neked kell újraindítanod.**~~ ⛔ **TÉVEDTEM, visszavonva (00:25).** A DEV
+   **fut**, és épp a review-találatokat javítja *(`a279980`: client + browser-extension + relay
+   ZÖLD)*. ⚠️ A promptom **átment**, csak késve indult — én a küldés után **azonnal** néztem meg
+   az állapotot, és a `completed`-ből elhamarkodottan következtettem. ⇒ **Nincs teendőd.**
 2. ✅ **Lezárható az organizerben:** *„LDP működés bevitele a Bedrock-ba"* — a
    `BFR-MYASSISTANT-001` leadva. ⭐ A lezárás **regenerálja az ismétlődéseket**.
 3. 🔓 **Képesség-jóváhagyás** — 25 ⏳ / 1 ✅. Az üresjárati sávom gyakorlatilag üres.
