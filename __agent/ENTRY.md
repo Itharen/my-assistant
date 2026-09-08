@@ -145,6 +145,7 @@ KEZDETÉN megy ki**, nem induláskor (`current/inventory/personal-items.md`).
 | # | Lépés | Parancs / fájl |
 |---|---|---|
 | **0** | 🔴 **FUT-E AZ LDP?** — MINDEN trigger legelső lépése | `ma comm doctor` **első sora**. ⚠️ Ha nem fut: **alatta SEMMI nem fut** (szerver, figyelők, csatorna) ⇒ `dc ldp`, és csak utána bármi más |
+| **0b** | 🔴 **ÉL-E A `ma` CLI?** — mert az LDP futhat ÚGY IS, hogy a CLI halott | Egy tetszőleges `ma` hívás. ⚠️ **MÉRVE 2026-09-08 19:07–20:04 (57 perc):** a `rimraf-cli-dist` törölte a `dist`-et, a `tsc-cli` a **600 mp-es timeoutba** futott és **elbukott** ⇒ a `dist` **sosem épült újra**. Ilyenkor `ma comm say`, `doctor`, `status digest`, `action-log emit` — **mind halott**, miközben a `status.json` `serverRunning: true`-t mutat. ⭐ **Helyreállítás:** `cd cli && npx tsc -p tsconfig.json` *(önállóan **22 mp**)* |
 | 1 | **Mennyi az idő, milyen nap?** ⏰ **ÉS MINDEN további időpont-állítás előtt ÚJRA** | `date "+%Y-%m-%d %H:%M %A"` — ⛔ tilos korábbi mérésből extrapolálni (`time-must-be-measured.md`) |
 | 2 | **Itthon van? Ébren van?** | `ma comm doctor` (jelenlét + ébrenlét sor) |
 | 3 | 🔴 **ÍRT VALAMIT? — KÉT LÉPÉS, mindkettő kötelező** | **(a)** `ma comm history` — a saját tárunk *(🔴 = megérkezett a Discordra, de HOZZÁM MÉG NEM)* · **(b)** `ma comm audit` — **magát a Discord-csatornát** kérdezi le, és összeveti. Nem-nulla kilépési kód = van hiány VAGY nem tudtuk megnézni |

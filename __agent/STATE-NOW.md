@@ -8,7 +8,7 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-08 19:10
+**Frissítve:** 2026-09-08 20:08
 
 ## Ma
 
@@ -27,6 +27,18 @@ A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
 4. 📱 **Helyzet-app v1** — belevágjunk? *(Capacitor, saját app)*
 5. 🔓 **Képesség-jóváhagyás** — ⚠️ **25 ⏳ / 1 ✅**: az üresjárati sávom gyakorlatilag ÜRES.
    Javasolt hármas: **C-13** feladat-kezelés · **C-10** státusz-kivonat · **C-19** alvás-ciklus
+
+## 🔴 A CLI 57 PERCIG HALOTT VOLT (19:07–20:04) — helyreállítva
+
+A `rimraf` törölte a `dist`-et, a `tsc-cli` **602,2 mp**-nél a 600 mp-es timeoutba futott és
+**elbukott** ⇒ a `dist` **sosem épült újra**. Ezalatt `ma comm say` sem ment volna.
+⭐ **Kézzel újraépítve — 22,5 mp alatt.** BFR-be beírva (atomi `dist`-csere).
+
+⚠️ **NEM állítom, hogy a RAM az ok:** az LDP-ben **96,9 %**-nál vágódott ki, kézzel viszont
+**95,2 %**-on **22 mp** alatt lefutott. 1,7 százalékpontra ok-állítást nem építek.
+
+🟢 A **figyelő túlélte** ⇒ a beérkező üzeneteid nem vesztek el. ⚠️ De ha újra kellett volna
+indulnia, **nem tudott volna**.
 
 ## 🎧 T-68 KÉSZ (DEV) — ellenőrizve, de az ÉLES igazolás még hátra van
 
@@ -54,25 +66,10 @@ nem nyúlunk. ⇒ A hangüzenetei továbbra sem értelmeződnek.
 csatorna-hiba magyarázata · 🔴 **1 hangüzenete még mindig feloldatlan** (STT 5 perces
 időtúllépés, 3/5 próba).
 
-## 🔴 A KÉZBESÍTÉSI INCIDENS — javítva, de MÉG NEM IGAZOLVA
+## 📬 Kézbesítés: rögzített cél — de ÉLŐ üzenettel máig nincs igazolva
 
-12:34 és 15:36 között az owner üzenetei a **DEV**-hez mentek. Owner: *„Ha a devnél landol egy
-Discord üzenet, az **kritikus hiba**.”* ⇒ `current/principles/message-routing-must-be-pinned.md`.
-
-**Állapot:** a cél rögzítve *(`__agent/config/owner-message-target.json`)*, a figyelő 16:00 óta a
-javított kódból fut, a feloldás **ellenőrizve** → `ccs-6f25a888-mtp9a8cx`.
-🔴 **DE élő üzenettel még nincs bizonyítva** — az első beérkező owner-üzenet lesz a bizonyíték.
-
-⭐ **Amit a DEV átadott** *(`AGENT_BUS` AGB-2026-09-08-01)*: a hozzá csattant kérések tételesen.
-Mind rögzítve — `focus-support.md` (8 pont), **T-67**, **T-68**, organizer-feladatok.
-
-## ✅ Ma lezárva *(amiért haragudott)*
-
-- ✉️ **Levél KIMENT 11:08:26** — postafiókból visszaolvasva, a szöveg karakterre az övé
-- 📄 **`BFR-MYASSISTANT-001` leadva** (critical) — LDP make-before-break, ő kérte 10:48
-- 📥 **„Elsikkadtak?" ⛔ NEM** — mérve **162** owner-üzenet, **0 üres**, lemezen tárolva
-- 📋 A mai **21 torlódott** üzenet feldolgozva → **T-56…T-63** a `TASKS.md`-ben
-- 💬 **„Spam üzenetek"** → `discord-message-style.md`: a kár, hogy a **JÓ üzenet elvész**
+A DEV-be csattant üzenetek ügye lezárva *(`message-routing-must-be-pinned.md`)*.
+🔴 **15:32 óta nem érkezett tőle szöveges üzenet** ⇒ a javítás **nem bizonyított**.
 
 ## 🤝 Akiknek kiadtam
 
