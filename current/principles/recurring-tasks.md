@@ -361,3 +361,26 @@ határán). Tervezésnél előre 2-3h-ás slot-ot kell lefoglalni.
 
 📌 **Következmény a felvételre:** napi ismétlődő tétel, de az esedékesség-ablak a **hajnali sáv**,
 nem a naptári nap eleje.
+
+---
+
+## 2026-09-08 07:58 — MIÉRT NEM VOLT ISMÉTLŐDŐ A „NAPI MATRAC" — az owner magyarázata
+
+> *„azt hiszem, az a matracos feladat azért nem volt ismétlődő, mert úgy rémlik, hogy az
+> organizerben úgy működik, hogy **akkor jön létre a következő esemény, amikor az előzőt lezártuk**
+> valamilyen úton-módon. De hát ugye azzal, hogy nem lett lezárva és eltelt az ideje… **jeleznie
+> kellett volna, hogy már tegnap, meg tegnapelőtt, meg az előtt sem csináltam meg**."*
+
+⭐ **Tehát nem hiányzó beállítás, hanem LÁNC-SZAKADÁS:** az organizer a következő előfordulást a
+**lezáráskor** hozza létre. ⇒ Egy **le nem zárt** példány **megállítja a sorozatot** — és onnantól
+a szokás **nem is jelenik meg**.
+
+🔴 **A veszélyes rész:** ez pont fordítva működik, mint ahogy hasznos lenne. Aki **abbahagyja** a
+szokást *(tehát nem zárja le)*, az **nem kap több emlékeztetőt** — a rendszer **pont akkor hallgat
+el, amikor a legjobban kellene szólnia**.
+
+📌 **Amit az ownernek látnia kell:** *„ezt tegnap, tegnapelőtt és azelőtt sem csináltad meg"* —
+azaz a **kihagyások számát**, nem egyetlen lejárt tételt.
+
+⚠️ Ez **organizer-viselkedés**, nem a mi hibánk — de a **hiánya-jelzés** a mi dolgunk lehet:
+a lejárt, ismétlődő tételeknél a **kihagyott alkalmak számát** kell mutatni.

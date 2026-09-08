@@ -276,6 +276,60 @@ hang-csatorna a **szerverben** él; a kliens-build/teszt/lint ezekre **semmilyen
 ⛔ **Amíg nem válaszol: ne módosítsd a `pipeline.config.json`-t.** De a `lint-client` timeout
 okát **már most mérheted**.
 
+
+---
+
+## 🔴🔴 2026-09-08 11:10 — AZ LDP: A HELYES MŰKÖDÉS, AZ OWNER SZÓ SZERINTI LEÍRÁSÁVAL
+
+> *„ennek az egész LDP-nek úgy kell működnie, hogy szépen lefut az összes build, az összes teszt,
+> majd a **végén elindítja a szervert**, majd új triggerek érkeznek, és **nem állítja le a
+> szervert**, csak újrafuttatja a buildeket, újrafuttatja a teszteket, és amikor **mindegyiknek a
+> végére ért**, akkor állítja le a szervert, és akkor indítja újra. Tehát tulajdonképpen **nulla
+> kiesés**."*
+
+```
+build + teszt (szerver FUT végig)  →  minden kész  →  [leáll] → [újraindul]
+                                                       ↑ CSAK ITT, és azonnal egymás után
+```
+
+### ⛔⛔ AMIT SOHA NEM SZABAD — ez a legfontosabb sor ebben a fájlban
+
+> *„**Semmit nem vehetsz ki**, hát pont az a lényege az LDP-nek, hogy lefuttatja az **összes**
+> ellenőrzést, **MIELŐTT** újraindítaná a szervert."*
+> *„**Semmilyen tesztet, semmilyen ellenőrzést, semmilyen reviewt ne kapcsolj ki. NEEE!**"*
+
+🔴 **TILOS** lépést kivenni, kikapcsolni, kihagyni vagy feltételessé tenni a gyorsítás kedvéért.
+⛔ A `client-build`, `client-test`, `lint-client`, `dc-review-*` **mind marad**.
+
+📌 **AZ ÉN HIBÁM, amit ez javított:** megmértem, hogy a 21 percből 17,4 a kliens+review, és
+**azt javasoltam, vegyük ki őket**. ⚠️ **Rossz kérdésre válaszoltam:** a baj **nem a 21 perc**,
+hanem hogy a szerver **az elején áll le**. A hossz **nem hiba** — a **kiesés** az.
+
+### 🎯 A tényleges feladat
+
+A szervert **a ciklus VÉGÉN** kell leállítani-újraindítani, nem az elején.
+⚠️ A `serverRestart` csak `enabled` + `postPipelineCommand` — **sorrend-opció nincs** ⇒ ez
+`dc`/Dynamo-oldali viselkedés. ⛔ **Ahhoz nincs engedélyünk.**
+⇒ **Amit itt vizsgálhatsz:** hol áll le valójában a szerver, és van-e a projekt oldaláról bármi,
+ami előrehozza. ⚠️ **Mérd meg, ne tippeld** — a legutóbbi ok-állításom megalapozatlan volt.
+
+🔴 **A `lint-client` 600,0 s-os TIMEOUTJA viszont attól még HIBA** — nem kivenni kell, hanem
+**megjavítani**, hogy ne 10 percig fusson és bukjon el.
+
+---
+
+## 🔊 2026-09-08 11:02 — ÚJ KÖVETELMÉNY: felolvasás a hang-csatornában
+
+> *„amikor itt vagyok a Discordon, be vagyok lépve melléd a Voice Channel-re, akkor jó lenne, ha az
+> **üzeneteid majd felolvasásra kerülnének**. És ezt vehetjük egy kicsit **közvetlenebbre** — tehát
+> ilyenkor nagyobb az esélye annak, hogy átjönnek az infók… ez a **legmegbízhatóbb** módja annak,
+> hogy kommunikáljunk."*
+
+**Amikor az owner BENT VAN a hang-csatornában:** a válaszaim **hangosan is** menjenek ki, és a
+hangnem lehet **közvetlenebb**, mint az írott.
+⭐ A `voice-output` modul **már át van emelve** — az alap megvan.
+⚠️ Feltétel: **csak amikor tényleg bent van** *(a jelenlét a csatornában mérhető)*.
+
 ---
 
 ## 3. Build és teszt
