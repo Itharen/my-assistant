@@ -139,3 +139,39 @@ Ha nem fér bele, akkor **nem most kell elmondani**.
 - `current/principles/discord-message-style.md` — rövid üzenet, egy teendő
 - `current/principles/task-tracking.md` — hol laknak a feladatok
 - `current/principles/working-style.md` — a DoD-ot én mondom ki
+
+---
+
+## 🔗 ÖSSZEVONVA — 2026-09-08 14:10 (SSOT-helyreállítás)
+
+⚠️ **Ugyanerre a kérésre KÉT szabályfájl született**, mert az owner üzenete a DEV sessionbe
+érkezett, az asszisztens pedig ugyanezt a kérést egy másik úton kapta meg. A duplikátum:
+`one-thing-focus.md` — **stale-bannerrel jelölve**, ⛔ nem törölve (`core-stale-doc-marking`).
+
+📌 **Ez a fájl a kanonikus** *(a `CLAUDE.md` alapelv-táblája is erre mutat)*. Alább az, ami a
+duplikátumban **többlet** volt, és ezért ideemelve él tovább.
+
+### 📊 A siker MÉRHETŐ mércéje — és az RAJTAM mérendő
+
+⛔ „Fókuszáltabbnak érzem magam" nem mérce. Ami mérhető:
+
+| Mérés | Cél | Miért ez |
+|---|---|---|
+| Hány **témát** tartalmaz egy neki szóló üzenet | **1** | ez a „te is csapongsz" közvetlen mérőszáma |
+| Hány üzenetet küldök egy körben | **≤1** | a `discord-message-style` mérése: a sok üzenet **elrejti** a jót |
+| Egy kitűzött tétel meddig marad kitűzve | trend | ha rövidül, a módszer nem fog |
+
+🔴 **Az első kettő RÓLAM szól.** Ha azok nem javulnak, a módszer nem működik — függetlenül
+attól, hogy ő mit érez. ⇒ A mérés iránya **nem** az owner viselkedése.
+
+### 📌 „Az én feladataim" — MELYIK feladatok
+
+Az owner zárójeles kiegészítése *(„Most important: a feladatok. Az én feladataim")* az **ÉLET**-feladataira
+vonatkozik *(organizer: háztartás, ügyintézés, egészség)* — ⛔ **nem** a rendszer-feladataimra
+(`__agent/TASKS.md`). A két terminológia szándékosan külön (`task-tracking.md`).
+
+### 🗂️ Élő állapot: `__agent/FOCUS.md`
+
+A „mi van most kitűzve" **fájlban** él, nem a fejemben — különben a kontextus-kompaktálás
+kiejti, és a fókusz-módszer pont a kompaktálásnál bukna el. Az `ENTRY.md` tájékozódási
+lépései közé bekötve (7. lépés).

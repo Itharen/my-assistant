@@ -1,7 +1,8 @@
 # 🎯 FOCUS — egyszerre PONTOSAN egy kitűzött dolog
 
 > 🔴 **Ezt minden körben elolvasom, a `STATE-NOW.md` UTÁN.**
-> A módszer és az indoklás: `current/principles/one-thing-focus.md`.
+> A módszer és az indoklás: **`current/principles/focus-support.md`** *(kanonikus)*.
+> ⚠️ A `one-thing-focus.md` ugyanennek a **duplikátuma**, stale-bannerrel — ne arra hivatkozz.
 > ⭐ Az **első** szabálya engem köt: *„Jelenleg csak rontasz rajta mert **te is csapongsz nagyon**"*.
 
 **Frissítve:** 2026-09-08 13:10

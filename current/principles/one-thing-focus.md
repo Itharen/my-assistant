@@ -1,3 +1,13 @@
+> ⛔ **ELAVULT / STALE (2026-09-08 14:10). Ne ezt használd.**
+> **Friss/kanonikus:** `current/principles/focus-support.md`
+>
+> **Ok:** ugyanarra az owner-kérésre **két fájl** született. Az owner 12:37-es üzenete a **DEV**
+> sessionbe érkezett *(mért kézbesítési hiba — l. `__agent/config/owner-message-target.json`)*,
+> és a DEV megírta a `focus-support.md`-t; az asszisztens ugyanezt a kérést külön úton kapta meg,
+> és megírta ezt. ⚠️ **Nem tartalmi vita** — a `focus-support.md` a teljesebb, és a `CLAUDE.md`
+> alapelv-táblája is arra mutat. Ami itt **többlet** volt *(a mérhető mérce, a `FOCUS.md`
+> élő állapot, és hogy „az én feladataim" az ÉLET-feladatokat jelenti)*, **átemelve** oda.
+
 # 🎯 EGY DOLOG — fókusz-módszer (owner-kérés, 2026-09-08)
 
 > **Owner, 2026-09-08 12:37 (szó szerint):**

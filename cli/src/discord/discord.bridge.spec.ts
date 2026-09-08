@@ -1,3 +1,7 @@
+import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
 import { DiscordBridge, decideFlush } from './discord.bridge.js';
 import { composeBatchPrompt } from './discord.batch-composer.js';
 import { DISCORD_INBOUND_PREFIX, type DiscordInboundMessage } from './discord.models.js';
@@ -267,28 +271,38 @@ describe('DiscordBridge.flush — 🔴 a SORBA ÁLLÍTÁS NEM KÉZBESÍTÉS', ()
         isQueueLocked: false,
       }),
       sendPrompt: async (): Promise<{ queued: boolean; raw: unknown }> => ({ queued: queued, raw: {} }),
-      // a `resolveSelfIdentity` a session-listából párosít a környezeti azonosítóra
+      // ⭐ 2026-09-08 ÓTA: a cél a RÖGZÍTÉSBŐL jön (`__agent/config/owner-message-target.json`),
+      // NEM a `CLAUDE_CODE_SESSION_ID` környezeti változóból. A listát a rögzítés ellenőrzésére
+      // kérdezzük le — a `claudeSessionId`-nak is egyeznie kell, nem csak a `sessionId`-nak.
       listCcSessions: async (): Promise<unknown[]> => ([{ sessionId: 's-1', claudeSessionId: 'cc-teszt' }]),
     };
   }
 
   const old: DiscordInboundMessage[] = [message({ receivedAt: ageSeconds(60) })];
 
-  let savedSessionId: string | undefined;
+  /**
+   * Ideiglenes repó-gyökér a KÉZBESÍTÉSI CÉL rögzítésével.
+   *
+   * 🔴 MÉRT INCIDENS 2026-09-08: az owner üzenetei a DEV sessionbe mentek, mert a cél a
+   * `CLAUDE_CODE_SESSION_ID`-ból jött, a figyelő pedig az LDP alatt fut — annak a sessionnek
+   * a környezetével, amelyik az LDP-t indította. ⇒ A teszt mostantól **fájlt** ír, nem
+   * környezeti változót: pontosan azt a köteléket ellenőrzi, ami éles is érvényes.
+   */
+  let repoRoot: string;
 
-  beforeEach(() => {
-    savedSessionId = process.env['CLAUDE_CODE_SESSION_ID'];
-    process.env['CLAUDE_CODE_SESSION_ID'] = 'cc-teszt';
-  });
-
-  afterEach(() => {
-    if (savedSessionId === undefined) delete process.env['CLAUDE_CODE_SESSION_ID'];
-    else process.env['CLAUDE_CODE_SESSION_ID'] = savedSessionId;
+  beforeEach(async () => {
+    repoRoot = await mkdtemp(join(tmpdir(), 'bridge-target-'));
+    await mkdir(join(repoRoot, '__agent', 'config'), { recursive: true });
+    await writeFile(
+      join(repoRoot, '__agent', 'config', 'owner-message-target.json'),
+      JSON.stringify({ sessionId: 's-1', claudeSessionId: 'cc-teszt', label: 'Teszt' }),
+      'utf-8',
+    );
   });
 
   it('🔴 `queued: true` esetén IS véglegesít — az újraküldés DUPLIKÁCIÓT okozna', async () => {
     const { store, committed } = makeStore(old);
-    const bridge = new DiscordBridge(store as never, makeCcap(true) as never, CONFIG);
+    const bridge = new DiscordBridge(store as never, makeCcap(true) as never, CONFIG, repoRoot);
 
     const result = await bridge.flush({ now: NOW, force: true });
 
@@ -304,7 +318,7 @@ describe('DiscordBridge.flush — 🔴 a SORBA ÁLLÍTÁS NEM KÉZBESÍTÉS', ()
 
   it('igazolt átvételnél viszont véglegesít', async () => {
     const { store, committed } = makeStore(old);
-    const bridge = new DiscordBridge(store as never, makeCcap(false) as never, CONFIG);
+    const bridge = new DiscordBridge(store as never, makeCcap(false) as never, CONFIG, repoRoot);
 
     const result = await bridge.flush({ now: NOW, force: true });
 

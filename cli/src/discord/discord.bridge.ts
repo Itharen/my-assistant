@@ -7,7 +7,8 @@
 // anélkül, hogy Discordot vagy futó CCAP-ot kellene indítani.
 
 import { CcapApiClient } from '../ccap/ccap.api-client.js';
-import { resolveSelfIdentity } from '../ccap/ccap.identity.js';
+import { resolveOwnerMessageTarget } from '../ccap/ccap.owner-target.js';
+import { resolveProjectRoot } from '../utils/project-root.js';
 import { composeBatchPrompt } from './discord.batch-composer.js';
 import { DiscordBatchStore } from './discord.batch-store.js';
 import {
@@ -133,6 +134,13 @@ export class DiscordBridge {
     private readonly store: DiscordBatchStore = new DiscordBatchStore(),
     private readonly ccap: CcapApiClient = new CcapApiClient(),
     private readonly config: DiscordBatchConfig = DEFAULT_BATCH_CONFIG,
+    /**
+     * A repó gyökere — innen olvassuk a KÉZBESÍTÉSI CÉL rögzítését.
+     *
+     * ⭐ Azért paraméter, hogy a teszt saját ideiglenes gyökeret adhasson: a cél-feloldás
+     * a rendszer legcsendesebb hibapontja, ezért tesztelhetőnek KELL lennie.
+     */
+    private readonly repoRoot: string = resolveProjectRoot(),
   ) {}
 
   /** A köteg-tár — a visszamenőleges beolvasás ezen ellenőrzi a már kézbesítetteket. */
@@ -148,7 +156,7 @@ export class DiscordBridge {
   /** A jelenlegi döntés — küldés nélkül. A diagnosztika és a napló ezt mutatja. */
   async inspect(now: Date = new Date()): Promise<DiscordFlushDecision> {
     const pending: DiscordInboundMessage[] = await this.store.readPending();
-    const identity = await resolveSelfIdentity(this.ccap);
+    const identity = await resolveOwnerMessageTarget(this.repoRoot, this.ccap);
     const runtime = await this.ccap.inspectRuntime(identity.sessionId);
 
     return decideFlush({
@@ -201,7 +209,7 @@ export class DiscordBridge {
 
     // Egyszer oldjuk fel — a küldéshez amúgy is kell, és a fölösleges hálózati körök
     // csak további hibalehetőségek lennének a kiküldés útjában.
-    const identity = await resolveSelfIdentity(this.ccap);
+    const identity = await resolveOwnerMessageTarget(this.repoRoot, this.ccap);
 
     if (!params.force) {
       const runtime = await this.ccap.inspectRuntime(identity.sessionId);

@@ -1,0 +1,8 @@
+{
+  "sessionId": "ccs-6f25a888-mtp9a8cx",
+  "claudeSessionId": "3fbced7d-9876-4fd6-8d92-f5b993859748",
+  "label": "My Assistant",
+  "pinnedAt": "2026-09-08T14:05:00+02:00",
+  "pinnedBy": "Honnie (my-assistant)",
+  "reason": "MÉRT INCIDENS 2026-09-08: az owner üzenetei a DEV sessionbe (ccs-d5027942-mtroz7ve) érkeztek, mert a Discord-figyelő az LDP alatt fut, és a CLAUDE_CODE_SESSION_ID-t attól a sessiontől örökölte, amelyik az LDP-t indította. Bizonyíték: a 13:19-es owner-üzenetre a DEV válaszolt (commit ff9113a). A cél mostantól KIFEJEZETT rögzítés, nem process-környezet."
+}

@@ -17,7 +17,13 @@ export type CcapErrorCode =
   | 'MA-CCAP-BAD-RESPONSE'
   | 'MA-CCAP-NO-SESSION-ID-ENV'
   | 'MA-CCAP-SELF-NOT-FOUND'
-  | 'MA-CCAP-PROMPT-FAILED';
+  | 'MA-CCAP-PROMPT-FAILED'
+  // 🔴 A kézbesítési cél rögzítésének hibái — `ccap.owner-target.ts`.
+  // Mért incidens 2026-09-08: az owner üzenetei a DEV sessionbe mentek.
+  | 'MA-CCAP-NO-OWNER-TARGET'
+  | 'MA-CCAP-OWNER-TARGET-INCOMPLETE'
+  | 'MA-CCAP-OWNER-TARGET-GONE'
+  | 'MA-CCAP-OWNER-TARGET-MISMATCH';
 
 export class CcapError extends Error {
   constructor(
