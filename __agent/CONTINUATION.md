@@ -2727,3 +2727,19 @@ ténylegesen `🏠 jelenlét ✅ tétlen (4mp)`-et mutatott.
 ⭐ **A visszavont finding a folyamat SIKERE, nem kudarca** (`core-review-until-clean`): mértem,
 mielőtt állítottam volna — és a hamis riasztás elhalt, mielőtt bárkinek munkát okozott volna.
 ⛔ Nem javítok „biztos, ami biztos" alapon olyat, aminek **nincs mért hatása**.
+
+---
+
+## 2026-09-08 05:15 — STATE-NOW.md: a nagy allapot-fajl mar nem belepo
+
+A `CONTINUATION.md` **148 kB** lett, es ebben a korben **a sajat horgonyomat sem talaltam meg benne**
+*(a beszuras elszallt: „substring not found")*. Ugyanez a hibaosztaly okozta, hogy `tail`-lel nezve
+**tevesen jelentettem**, hogy az FDP asszisztens nem valaszolt.
+
+⭐ **Megoldas:** uj, **2 kB alatti** belepo — `__agent/STATE-NOW.md`. Mindig teljes egeszeben
+beolvashato, tehat **soha nem csonkolodik**. Benne: mi van ma · **mi var az ownerre** · kinek mit
+adtam ki · a nyitott rendszer-gond. Az `ENTRY.md` 5. lepese mostantol ERRE mutat elsokent.
+
+📌 **A tanulsag:** egy allapot-fajl ket dolgot **nem tud egyszerre**: teljes tortenetet orizni ES
+gyors belepo lenni. ⇒ Ketto kell — **archivum** es **belepo**. Ugyanaz a javaslat, amit az FDP tett
+az AGENT_BUS-ra; most a sajat fajlomon vezettem be.
