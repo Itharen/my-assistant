@@ -135,3 +135,46 @@ két különböző állítás.
 - `current/principles/ldp-default-runtime.md` — az LDP a default futtatási mód
 - `__agent/ENTRY.md` §0 — a napindítási újraindítás és a kivétele
 - `current/principles/error-handling.md` — a néma hiba tiltása
+
+---
+
+## 🔴 2026-09-09 00:20 — A HIBA A NÉMASÁGBAN VOLT, NEM A FUNKCIÓBAN
+
+**Az owner élő tesztje a hang-csatornán:** *„ha működik, akkor semmilyen hangvisszajelzést nem
+kapok jelenleg."*
+
+**Ami valójában történt:** a hangjelzések **megvoltak, be voltak kötve, és megpróbáltak
+megszólalni.** A napló ki is írta:
+
+```
+MA-VOICE-CUE-FAILED: A hangfájl NEM található:
+  …\my-assistant\src\_assets\sounds\cue-unsure.mp3
+```
+
+A fájl a **`cli/src/_assets/sounds/`**-ban van. A `resolveSoundsDir()` `process.cwd()`-t
+használt ⇒ **a hangok helye attól függött, KI indította a figyelőt**:
+
+| Indító | `cwd` | Eredmény |
+|---|---|---|
+| szerver (`SupervisedChild`) | `…/my-assistant/cli` | ✅ szólt |
+| kézi `ma comm listen` a gyökérből *(én, 21:15)* | `…/my-assistant` | 🔴 **néma** |
+
+### ⭐ A TANULSÁG — miért nem vettük észre HÁRMAN sem
+
+| Ki | Mit látott | Miért nem tűnt fel |
+|---|---|---|
+| **Az owner** | csend | azt hihette, **meg sem épült** |
+| **Én** | „minden zöld" | a beszéd átment, az átirat elkészült — a **fő út működött** |
+| **A rendszer** | `MA-VOICE-CUE-FAILED` | **naplózta**, csak senki nem **kérdezte meg** |
+
+🔴 **A hiba tökéletesen elrejtőzött**, mert a **mellék-funkció** bukott, miközben a **fő
+funkció** hibátlan volt. Az `onError` nem hallgatott el semmit — a **figyelem** hiányzott.
+
+📌 **Amit ebből viszek:** ha az owner azt mondja *„X nem működik"*, és a fő út mérhetően jó,
+az **első** lépés a **napló célzott lekérdezése X-re** — ⛔ nem a kód olvasása, és ⛔ nem a
+„nálam működik". Ma ez **egyetlen `grep`** volt, és azonnal megadta a választ.
+
+⚠️ **És egy önkritika:** a némaságot **én okoztam** azzal, hogy 21:15-kor a repó gyökeréből
+indítottam a figyelőt kézi tartalékként. A `cwd`-függő útvonal **eleve törékeny volt** — de a
+kiváltó ok az én indításom. ⇒ A javítás nem „az én hibám elfedése", hanem a **törékenység
+megszüntetése**: a `cwd` mostantól **nem számít**.
