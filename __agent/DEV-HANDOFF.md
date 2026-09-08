@@ -239,6 +239,43 @@ kimenetén, ami állapotot jelent. ⚠️ Nem elég a `digest` — a `doctor` é
 időpont-állítás ELŐTT `date`"*. Az UTC-s kiírás ennek a gépi párja: **a kiírt idő is legyen az,
 amit ő lát az óráján.**
 
+
+---
+
+## 🔴 2026-09-08 10:05 — A SZERVER 21 PERCET VÁR, ÉS 82%-A NEM RÁ TARTOZIK
+
+**Mérve egy valódi cikluson** *(`status.json`, lépés-időkkel)*:
+
+| Lépés | Idő | Állapot |
+|---|---|---|
+| `lint-client` | **600,0 s** | 🔴 **FAILED — pontosan a 10 perces `stepTimeoutMs`** ⇒ **TIMEOUTOL** |
+| `dc-review-cli` | 199,1 s | failed *(találatok — nem fatális)* |
+| `client-test` | 119,5 s | ok |
+| `tsc-transplanted` | 48,7 s | failed *(várt)* |
+| `dc-review-client` | 38,9 s | failed |
+| `client-build` | 37,7 s | ok |
+| **ÖSSZESEN** | **1274 s = 21,2 perc** | |
+| ⭐ **ebből kliens + review** | **1043 s = 17,4 perc** | **82%** |
+
+### 🔴 A LEGNAGYOBB EGYETLEN TÉTEL: a `lint-client` TIMEOUTOL
+
+**600,0 s pontosan** = a `stepTimeoutMs` (600000). ⇒ Nem lassú, hanem **elakad**, és **minden
+körben 10 percet éget úgy, hogy közben el is bukik.**
+
+🎯 **Ez az első dolog, amit meg kell nézni:** miért fut 10+ percig az ESLint a kliensen.
+*(Tipp, nem állítás: kimért `node_modules` / `dist` / `.angular` bejárás, vagy egy szabály, ami a
+generált fájlokra is ráfut. ⚠️ Ezt MÉRD, ne tippeld.)*
+
+### 📌 És a szerkezeti felismerés
+
+**A szerver olyasmire vár, amitől nem függ.** A Discord-figyelő, a jelenlét-figyelő és a
+hang-csatorna a **szerverben** él; a kliens-build/teszt/lint ezekre **semmilyen hatással nincs**.
+
+⇒ Nem a „make-before-break" a fő gond — az **csak a maradék 18%-ot** javítaná.
+🙋 **Owner-döntés kiment:** kiszedjük-e a kliens- és/vagy a review-lépéseket az LDP-ből.
+⛔ **Amíg nem válaszol: ne módosítsd a `pipeline.config.json`-t.** De a `lint-client` timeout
+okát **már most mérheted**.
+
 ---
 
 ## 3. Build és teszt

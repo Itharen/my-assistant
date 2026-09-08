@@ -3309,3 +3309,30 @@ ismetlodo, ne csak a leirasaban.
 😴 alszik → semmi · 🚶 nincs itthon → **csak a lenyeg** · 🏠 itthon → normal.
 ⭐ **Az o mondata, amit alapelvve tettem:** *„Minel tobbet irsz, annal kevesebb info fog atjonni
 nekem."* — ez **forditott arany**, nem stilus-keres.
+
+---
+
+## 🔴 2026-09-08 10:05 — A VALODI OK: a szerver 21 percet var, es 82%-a nem ra tartozik
+
+**Owner:** *„el se indul a My Assistant szerver"* — es a figyelo **egy oraja** nem elt.
+
+**Merve egy valodi cikluson:** osszesen **1274 s = 21,2 perc**, ebbol **kliens + review = 1043 s
+(17,4 perc) = 82%**.
+
+🔴 **A legnagyobb egyetlen tetel: `lint-client` = 600,0 s PONTOSAN** — ez a `stepTimeoutMs`
+(600000) ⇒ **TIMEOUTOL es elbukik**. Minden korben **10 perc a semmiert**.
+*(Masodik: `dc-review-cli` 199 s — ezt EN tettem be tegnap.)*
+
+### 📌 A SZERKEZETI FELISMERES
+
+**A szerver olyasmire var, amitol nem fugg.** A Discord-figyelo, a jelenlet-figyelo es a
+hang-csatorna a **szerverben** el; a kliens-build/teszt/lint ezekre **semmilyen hatassal nincs**.
+
+⇒ **NEM a „make-before-break" a fo gond** — az csak a maradek **18%-ot** javitana.
+⚠️ Ez felulirja a korabbi diagnozisomat: a BFR helyes, de **nem ez a nagy tetel**.
+
+🙋 **Ket dontes kiment:** kiszedjuk-e a **kliens**-lepeseket (-17 perc) es/vagy a **review**-kat
+(-4 perc) az LDP-bol. Igennel a szerver ~3 perc alatt indulna, nem 21 alatt.
+
+⛔ Magamtol nem nyultam a `pipeline.config.json`-hoz. A `lint-client` timeout **okanak meresét**
+viszont kiadtam a DEV-nek.
