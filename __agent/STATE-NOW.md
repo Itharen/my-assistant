@@ -8,7 +8,7 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-08 07:10
+**Frissítve:** 2026-09-08 08:05
 
 ## Ma
 
@@ -17,7 +17,7 @@ A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
 
 ## 🙋 AMI RÁ VÁR — ez a legfontosabb lista
 
-1. 📅 **11:00 vagy 13:45?** — három érv a későbbi mellett: kifáradás · a 8–9 pontos tételek mind
+1. 📅 **Mikor indul?** — ÉBREDÉS-RELATÍV tábla kiment (09:45 a váltó). Eredetileg: — három érv a későbbi mellett: kifáradás · a 8–9 pontos tételek mind
    14:00 után · **az előadások visszanézhetők**
 2. ✉️ **Mehet a bérszámfejtés-levél?** *(az ő saját, rövidebb szövege)*
 3. 🗂️ **Napi matrac** napi ismétlődőre? · NZT és OGS kivezethető? · dátumok: **Üzemorvos 09-15**,

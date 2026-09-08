@@ -2994,3 +2994,32 @@ A sáv **élő** megjelenését nem láttam — ahhoz beszéd kell. Azt igazolta
 állítom, hogy tudom, mit lát az owner a saját ablakában.
 
 📄 Kanonikus: `__documentations/developments/2026-09-08-live-colour-bar-diagnosis.md`
+
+---
+
+## ☀️ 2026-09-08 08:05 — EBREDES-RELATIV TERVEZES (uj alapelv)
+
+**A helyzet:** az owner 02:17-kor fekudt le, 08:00-kor meg aludt *(5h44m tetlen)*. Ket erkezesi
+opcio volt nyitva, es a korabbihoz **09:15-kor** kellett volna keszulodnie.
+
+🔴 **A csapda:** egy **fix idopontra** szolo terv **lejar, amig alszik** — es ebredeskor mar csak
+azt latja, hogy elkesett valamirol, amirol nem is dontott.
+
+⭐ **A megoldas, amit bevezettem:** a tervet **nem az orahoz** kotom, hanem az **EBREDESEHEZ**.
+
+```
+❌ „11:00-ra ott kell lenned, tehat 09:15-kor kezdj keszulodni."
+✅ „Ha 09:45 ELOTT ebredsz, mindketto nyitva. Ha utana, a 13:45 a realis."
+```
+
+**A harom elem, ami nelkul nem mukodik:** kuszob-idok *(nem egyetlen idopont)* · **mit veszit**
+az egyes agakon · ⭐ **mit NEM veszit** *(ha visszanezheto, a keses nem veszteseg)*.
+
+⛔ **NEM ebresztettem fel.** Tegnap a faradtsag merhetoen elvitte a napjat, es a delelotti
+eloadasok a sajat ertekelese szerint sem adtak ujat.
+
+📌 **A melyebb tanulsag:** az alvas nem akadaly a tervezesben, hanem **BEMENET**. A csuszo 18/8-as
+ciklusnal egy fix ebresztore epitett terv **eleve hibas** — nem azert, mert rossz a terv, hanem
+mert **rossz a tengelye**.
+
+Kanonikus: `current/principles/wake-relative-planning.md`.
