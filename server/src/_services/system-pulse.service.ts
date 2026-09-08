@@ -77,8 +77,29 @@ export interface SystemPulseSnapshot {
    * két üzenet. Ha a soron áll valami, azt LÁTNI kell.
    */
   sttRetryPending: number;
+  /**
+   * 🔊 A HANG-CSATORNA tölcsére — `undefined`, ha a hang-lánc nem fut.
+   *
+   * 🔴 MIÉRT KERÜLT A PULZUSBA (T-52, owner 2026-09-07 21:47): *„a konzolban nem látom azokat
+   * a visszajelzéseket, amiket anno a CCAP-ban"*. **Megmérve 2026-09-08 04:10:** az LDP
+   * konzol-kimenetében a beszéd-feldolgozásról **NULLA** sor volt — sem az átemelt felvevő
+   * naplói, sem a saját eseményeink nem jutottak oda. Az owner beszélt, és a konzol néma volt.
+   *
+   * ⚠️ A `undefined` és a „csupa nulla" NEM ugyanaz: az előbbi azt jelenti, hogy a hang-lánc
+   * **nem fut**; az utóbbi azt, hogy fut, de **még nem hangzott el semmi**.
+   */
+  voice?: PulseVoiceFunnel;
   /** Mikor ment ki az utolsó üzenet. `undefined` = még soha. */
   lastOutboundAgeMs?: number;
+}
+
+/** A hang-tölcsér számai a pulzushoz. */
+export interface PulseVoiceFunnel {
+  speechStarts: number;
+  filesOpened: number;
+  filesDelivered: number;
+  filesDropped: number;
+  lostAudioSeconds: number;
 }
 
 /**
@@ -94,6 +115,7 @@ export function composePulseLine(pulse: SystemPulseSnapshot): string {
     `📬 ${describeInbox(pulse.pendingInbound)}`,
     // Csak akkor foglal helyet, ha VAN mit mondania — a nulla nem hir.
     ...(pulse.sttRetryPending > 0 ? [`🎙️ ${pulse.sttRetryPending} hang újrapróbálásra vár`] : []),
+    ...describeVoice(pulse.voice),
     `↩ kimenő ${pulse.lastOutboundAgeMs === undefined ? '— még soha' : formatAge(pulse.lastOutboundAgeMs)}`,
   ];
 
@@ -134,6 +156,30 @@ function formatClock(now: Date): string {
 }
 
 /** Kor emberi alakban: `42mp` · `7p` · `2ó 15p`. */
+/**
+ * 🔊 A hang-szegmens — vagy semmi.
+ *
+ * ⭐ HÁROM ÁLLAPOT, és mindhárom mást jelent:
+ *
+ * | Helyzet | Mit ír | Miért |
+ * |---|---|---|
+ * | a hang-lánc **nem fut** | *(semmi)* | nincs miről jelenteni; a hiány nem hír |
+ * | fut, de **nem hangzott el semmi** | *(semmi)* | ⭐ „a nulla nem hír" — ugyanaz az elv, mint a köteg-szegmensnél |
+ * | **volt beszéd** | `🔊 hang 9 → 3 feldolgozva` | ez az, amit az owner hiányolt a konzolról |
+ *
+ * ⚠️ A megszólalás és a felvétel **különbsége NEM veszteség** *(beleolvadás)* — ezért a
+ * szegmens csak a **valódi** eldobást jelöli ⚠️-vel, másodperccel együtt.
+ */
+export function describeVoice(voice: PulseVoiceFunnel | undefined): string[] {
+  if (!voice || voice.speechStarts === 0) return [];
+
+  const lost: string = voice.filesDropped > 0
+    ? ` · ⚠️ ${voice.filesDropped} elveszett (${voice.lostAudioSeconds} mp)`
+    : '';
+
+  return [`🔊 hang ${voice.speechStarts} → ${voice.filesDelivered} feldolgozva${lost}`];
+}
+
 export function formatAge(ms: number): string {
   return formatDuration(ms);
 }
@@ -159,6 +205,10 @@ function formatDuration(ms: number): string {
  * az `absent` — vagyis az ÓVATOS irányba téved. A hamis „minden rendben" lenne a veszélyes.
  */
 export function collectPulse(now: Date = new Date()): SystemPulseSnapshot {
+  // ⚠️ EGYSZER olvassuk ki: két hívás két fájl-olvasás lenne, és ha közben írja a figyelő,
+  // a két eredmény akár el is térhetne egymástól.
+  const voice: PulseVoiceFunnel | undefined = readVoiceFunnel();
+
   return {
     now,
     uptimeMs: Math.round(process.uptime() * 1000),
@@ -166,8 +216,43 @@ export function collectPulse(now: Date = new Date()): SystemPulseSnapshot {
     presence: readNewestPresenceSample(now),
     pendingInbound: countPendingInbound(),
     sttRetryPending: countSttRetryPending(),
+    ...(voice ? { voice: voice } : {}),
     lastOutboundAgeMs: readLastOutboundAge(now),
   };
+}
+
+/**
+ * 🔊 A hang-tölcsér kiolvasása a figyelő ÉLETJELÉBŐL.
+ *
+ * ⭐ Ugyanaz a fájl, amit a Discord-állapothoz is olvasunk — nincs új csatorna, nincs új
+ * hibalehetőség. ⚠️ Hiányzó vagy hibás mező ⇒ `undefined`: a „nem tudom" **nem** nulla.
+ */
+function readVoiceFunnel(): PulseVoiceFunnel | undefined {
+  try {
+    const file: string = resolveListenerHeartbeatFile();
+
+    if (!existsSync(file)) return undefined;
+
+    const parsed = JSON.parse(readFileSync(file, 'utf-8')) as { voice?: unknown };
+    const voice: unknown = parsed.voice;
+
+    if (typeof voice !== 'object' || voice === null) return undefined;
+
+    const record = voice as Record<string, unknown>;
+    const numberOr = (key: string): number =>
+      typeof record[key] === 'number' ? record[key] as number : 0;
+
+    return {
+      speechStarts: numberOr('speechStarts'),
+      filesOpened: numberOr('filesOpened'),
+      filesDelivered: numberOr('filesDelivered'),
+      filesDropped: numberOr('filesDropped'),
+      lostAudioSeconds: numberOr('lostAudioSeconds'),
+    };
+  } catch {
+    // ⚠️ Sérült életjel → nem tudjuk. Az óvatos válasz a hallgatás, nem a hamis nulla.
+    return undefined;
+  }
 }
 
 function readDiscordHeartbeat(now: Date): SystemPulseSnapshot['discord'] {

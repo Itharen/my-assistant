@@ -21,6 +21,46 @@ function healthy(overrides: Partial<SystemPulseSnapshot> = {}): SystemPulseSnaps
   };
 }
 
+describe('🔊 hang-szegmens a pulzusban (T-52) — a konzol NÉMA volt beszéd közben', () => {
+  it('⛔ ha a hang-lánc NEM FUT, nincs szegmens', () => {
+    expect(composePulseLine(healthy())).not.toContain('🔊 hang');
+  });
+
+  it('⛔ ha fut, de NEM HANGZOTT EL SEMMI, sincs szegmens — „a nulla nem hír"', () => {
+    const line: string = composePulseLine(healthy({
+      voice: { speechStarts: 0, filesOpened: 0, filesDelivered: 0, filesDropped: 0, lostAudioSeconds: 0 },
+    }));
+
+    expect(line).not.toContain('🔊 hang');
+  });
+
+  it('✅ ha VOLT beszéd, a konzolon LÁTSZIK — ez hiányzott az ownernek', () => {
+    const line: string = composePulseLine(healthy({
+      voice: { speechStarts: 9, filesOpened: 3, filesDelivered: 3, filesDropped: 0, lostAudioSeconds: 0 },
+    }));
+
+    expect(line).toContain('🔊 hang 9 → 3 feldolgozva');
+    // ⭐ Veszteség nélkül NINCS figyelmeztetés — a 9→3 különbség BELEOLVADÁS, nem veszteség.
+    expect(line).not.toContain('elveszett');
+  });
+
+  it('🔴 a VALÓDI veszteség figyelmeztetést kap, MÁSODPERCCEL', () => {
+    const line: string = composePulseLine(healthy({
+      voice: { speechStarts: 5, filesOpened: 4, filesDelivered: 2, filesDropped: 2, lostAudioSeconds: 4.1 },
+    }));
+
+    expect(line).toContain('⚠️ 2 elveszett (4.1 mp)');
+  });
+
+  it('a szegmens sem tör sort — a pulzus EGY sor marad', () => {
+    const line: string = composePulseLine(healthy({
+      voice: { speechStarts: 5, filesOpened: 4, filesDelivered: 2, filesDropped: 2, lostAudioSeconds: 4.1 },
+    }));
+
+    expect(line).not.toContain('\n');
+  });
+});
+
 describe('composePulseLine', () => {
 
   it('🎙️ KIÍRJA, ha hang vár újrapróbálásra — ez pontosan az az állapot, ami némán veszít', () => {

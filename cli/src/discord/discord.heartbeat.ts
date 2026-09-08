@@ -34,6 +34,36 @@ export interface DiscordHeartbeat {
    * épp most elhalt figyelő életjele percekig „foglaltnak" mutatná a csatornát.
    */
   pid?: number;
+  /**
+   * 🔊 A HANG-CSATORNA pillanatnyi tölcsére — hogy a konzolon LÁTSZÓDJON.
+   *
+   * 🔴 MÉRT HIÁNY (T-52, owner 2026-09-07 21:47): *„a konzolban nem látom azokat a
+   * visszajelzéseket, amiket anno a CCAP-ban"*. **Megmérve 2026-09-08 04:10:** az LDP
+   * konzol-kimenetében a beszéd-feldolgozásról **NULLA** sor van — sem az átemelt felvevő
+   * `DyFM_Log`-jai, sem a saját `MA-VOICE-*` eseményeink nem jutnak oda.
+   *
+   * ⭐ MIÉRT ITT, ÉS NEM ÚJ MECHANIZMUS: a konzolon **már van** egy „mi történik most" sor
+   * *(a pulzus)*, és ez az életjel **már** utazik a figyelőtől a szerverig. Egy új csatorna
+   * csak új hibalehetőség lenne — a meglévő úton viszont ingyen jön a frissesség-ellenőrzés is.
+   *
+   * ⚠️ Opcionális: ha a hang-lánc nem áll fel, a mező **hiányzik** — nem nulla. A kettő nem
+   * ugyanaz, és a pulzus is másképp mutatja.
+   */
+  voice?: DiscordHeartbeatVoice;
+}
+
+/** A hang-tölcsér számai, ahogy az élő szonda látja. */
+export interface DiscordHeartbeatVoice {
+  /** Hány megszólalást érzékelt a Discord. */
+  speechStarts: number;
+  /** Hány felvétel nyílt (a többi beleolvadt egy futóba — ⛔ NEM veszteség). */
+  filesOpened: number;
+  /** Hány jutott el a feldolgozásig. */
+  filesDelivered: number;
+  /** Hány tűnt el némán. */
+  filesDropped: number;
+  /** Mennyi hang veszett el összesen. */
+  lostAudioSeconds: number;
 }
 
 export function resolveHeartbeatPath(userHome: string = homedir()): string {

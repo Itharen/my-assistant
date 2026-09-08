@@ -2651,3 +2651,57 @@ a hipotézis, a mért cáfolat, a három hiba, és amihez **nem** nyúltunk.
 ### Teszt
 
 **CLI 627/627 zöld** *(+5)*.
+
+
+---
+
+## ✅ 2026-09-08 04:10–04:14 — DEV: T-52 — a konzol MÁR NEM NÉMA beszéd közben
+
+### Előbb a mérés — az owner panasza pontos, és most már számmal is
+
+Owner (2026-09-07 21:47): *„a konzolban nem látom azokat a visszajelzéseket, amiket anno a
+CCAP-ban"*. **Megmérve 2026-09-08 04:10**, a valódi LDP-kimeneten:
+
+| Amit kerestem | Találat |
+|---|---|
+| az átemelt felvevő naplói *(`Speaking started`, `WAV felvétel vége`, …)* | **0** |
+| a saját hang-eseményeink *(`MA-VOICE-*`)* | **0** |
+
+⇒ Beszéd közben a konzolon **semmi** nem történik. ⭐ Ami viszont **ott van**: a **pulzus-sor**
+*(`🫀 … │ 💬 Discord ✅ │ 🏠 jelenlét ✅ │ 📬 köteg üres │ ↩ kimenő 7p`)* — a konzol **már
+meglévő** „mi történik most" felülete.
+
+### 🩹 A megoldás: szegmens a MEGLÉVŐ pulzus-sorban
+
+⛔ **Nem új mechanizmus** (`one-function-is-enough`, `core-patterns-first`): a figyelő
+**már ír** életjel-fájlt, a szerver **már olvassa**. A hang-tölcsér ugyanezen az úton utazik —
+nincs új csatorna, nincs új hibalehetőség, és ingyen jön a frissesség-ellenőrzés.
+
+```
+🫀 04:30 · fut 5p │ 💬 Discord ✅ │ 🏠 jelenlét ✅ │ 🔊 hang 9 → 3 feldolgozva · ⚠️ 2 elveszett (4.1 mp)
+```
+
+⭐ **HÁROM állapot, és mindhárom mást jelent:**
+
+| Helyzet | Mit ír | Miért |
+|---|---|---|
+| a hang-lánc **nem fut** | *(semmi)* | a hiány nem hír |
+| fut, de **nem hangzott el semmi** | *(semmi)* | „a nulla nem hír" — a köteg-szegmens elve |
+| **volt beszéd** | `🔊 hang 9 → 3 feldolgozva` | ez hiányzott a konzolról |
+
+⚠️ A megszólalás és a felvétel **különbsége NEM veszteség** *(beleolvadás)* — ezért csak a
+**valódi** eldobás kap ⚠️-t, másodperccel.
+⚠️ A `undefined` és a „csupa nulla" **nem ugyanaz**: az előbbi „nem fut", az utóbbi „fut, de
+csend volt". A pulzus mindkettőt hallgatással kezeli, de a **belső állapot** megkülönbözteti.
+
+### ⚠️ EGY ŐSZINTE KORLÁT — ez NEM valós idejű
+
+A pulzus **60 másodpercenként** frissül, az életjel szintén. ⇒ A konzol-sor a *„mi történt"*
+felülete, **nem** a *„most hallak"* visszajelzés. Az owner szó szerinti kérése
+*(„folyamatos visszajelzést… hogy hallottad, hogy mit mondtam")* a **valós idejű** részt illeti
+— azt a **hangjelzések** (`voice-cues.ts`) és a **hang-csatornás tükör** adják, nem ez.
+📌 Ha ennél sűrűbb konzol-kiírás kell, az **külön mechanizmus** — nem állítom, hogy ez már az.
+
+### Teszt
+
+**Szerver 79/79 zöld** *(+5)* · **CLI 627/627 zöld** · mindkét `tsc` zöld.

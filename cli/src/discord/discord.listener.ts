@@ -60,7 +60,11 @@ import {
 } from '../voice/voice-channel-recorder.js';
 import { composeVoiceChannelEntry } from '../voice/voice-channel-bridge.js';
 import { planRetryDelivery, type RetryDeliveryPlan } from '../stt/stt.retry-delivery.js';
-import type { VoiceDropObservation, VoiceDropProbe } from '../voice/voice-drop-probe.js';
+import type {
+  VoiceDropObservation,
+  VoiceDropProbe,
+  VoiceFunnelStats,
+} from '../voice/voice-drop-probe.js';
 import { VOICE_LOG_CODES } from '../voice/voice-log-codes.js';
 import { MissedSpeechReporter } from '../voice/voice-missed-speech.js';
 import { VoiceCuePlayer } from '../voice/voice-cues.js';
@@ -1585,11 +1589,27 @@ ${spoken}`
 
   /** Egy életjel-frissítés. Sosem dob hibát (a `writeHeartbeat` elnyeli). */
   private async beat(botTag: string): Promise<void> {
+    // 🔊 A HANG-TÖLCSÉR IS UTAZIK — így a konzol-pulzus meg tudja mutatni (T-52).
+    // ⚠️ Ha nincs élő szonda, a mező KIMARAD — nem nullázódik. A „nem fut" és a „fut, de
+    // nem történt semmi" két különböző állapot, és a pulzus is másképp mutatja őket.
+    const funnel: VoiceFunnelStats | undefined = this.dropProbe?.funnel;
+
     await writeHeartbeat({
       updatedAt: new Date().toISOString(),
       botTag,
       processedCount: this.processedCount,
       pid: process.pid,
+      ...(funnel
+        ? {
+          voice: {
+            speechStarts: funnel.speechStarts,
+            filesOpened: funnel.filesOpened,
+            filesDelivered: funnel.filesDelivered,
+            filesDropped: funnel.filesDropped,
+            lostAudioSeconds: funnel.lostAudioSeconds,
+          },
+        }
+        : {}),
     });
   }
 
