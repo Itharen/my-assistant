@@ -8,7 +8,7 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-08 20:52
+**Frissítve:** 2026-09-08 21:35
 
 ## Ma
 
@@ -28,19 +28,7 @@ A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
 5. 🔓 **Képesség-jóváhagyás** — ⚠️ **25 ⏳ / 1 ✅**: az üresjárati sávom gyakorlatilag ÜRES.
    Javasolt hármas: **C-13** feladat-kezelés · **C-10** státusz-kivonat · **C-19** alvás-ciklus
 
-## 🔴 A CLI 57 PERCIG HALOTT VOLT (19:07–20:04) — helyreállítva
-
-A `rimraf` törölte a `dist`-et, a `tsc-cli` **602,2 mp**-nél a 600 mp-es timeoutba futott és
-**elbukott** ⇒ a `dist` **sosem épült újra**. Ezalatt `ma comm say` sem ment volna.
-⭐ **Kézzel újraépítve — 22,5 mp alatt.** BFR-be beírva (atomi `dist`-csere).
-
-⚠️ **NEM állítom, hogy a RAM az ok:** az LDP-ben **96,9 %**-nál vágódott ki, kézzel viszont
-**95,2 %**-on **22 mp** alatt lefutott. 1,7 százalékpontra ok-állítást nem építek.
-
-🟢 A **figyelő túlélte** ⇒ a beérkező üzeneteid nem vesztek el. ⚠️ De ha újra kellett volna
-indulnia, **nem tudott volna**.
-
-## 🎧 T-68 KÉSZ (DEV) — ellenőrizve, de az ÉLES igazolás még hátra van
+## 🎧 T-68 (DEV) — kész, az ÉLES igazolás még hátra van
 
 `ma stt pending | transcript <id> | retry <id>` **működik**. ⭐ A hang **a feladás előtt**
 átkerül a ledgerbe (`~/.config/my-assistant/stt-ledger/`) ⇒ többé nem vesz el.
@@ -54,23 +42,21 @@ félrevezető ⇒ **T-69**. ⭐ Az ellenőrzés **előbb**, a jelentés **utána
 🔴 **Ami változatlanul nyitott:** az STT **5 percenként túllép** — ⛔ az FDP AI-hoz (38321)
 nem nyúlunk. ⇒ A hangüzenetei továbbra sem értelmeződnek.
 
-## 🟡 A HANG-CSATORNA ÉL — de FLAKY, és az ok-állításom HIBÁS VOLT
+## 🔄 GÉP-ÚJRAINDÍTÁS UTÁN — 2026-09-08 21:05, elvégezve
 
-**17:42:47 óta bent van.** ⚠️ **Helyesbítve:** 17:14-kor azt írtam, hogy a **RAM 92,5 %** az ok —
-**nem áll**: a visszalépés **93,9 %**-on történt, tehát **magasabb** terhelésen.
-🔴 Korrelációt írtam okságként — hiányzott a **kontroll-megfigyelés**
-(`measure-the-effect-not-just-the-cause.md`, 3. eset). Az ownernek szóltam (18:05).
+Az owner újraindította a gépet. ⭐ **RAM 97 % → 58 %.**
 
-**Ami igaz marad:** 17:00 óta **2 sikeres / 10 sikertelen** belépés ⇒ **flaky** · a gép
-**11 napja** megy, RAM **93,9 %** ⇒ az újraindítás önmagában indokolt, de **nem ez** a
-csatorna-hiba magyarázata · 🔴 **1 hangüzenete még mindig feloldatlan** (STT 5 perces
-időtúllépés, 3/5 próba).
+| Mit | Állapot |
+|---|---|
+| `dc ldp` | ✅ **elindítva** saját ablakban (21:05) |
+| Discord-figyelő | ✅ **kézi tartalékként felhúzva** (`ma comm listen`) — ⭐ **backfillel behozta** a leállás alatt érkezett üzenetet |
+| Hang-csatorna | ✅ bent ül a `honnie-place`-ben |
+| my-assistant szerver | ⏳ a pipeline **végén** indul — ez a `BFR-MYASSISTANT-001` lényege |
 
-## ✅ Kézbesítés: ÉLŐBEN IGAZOLVA — 20:50:50
-
-Az owner 20:50-es üzenete a **`3fbced7d`** sessionbe érkezett *(az asszisztens)*, nem a DEV-be.
-⇒ A 14:00-kor felfedezett routing-hiba **lezárva**, `message-routing-must-be-pinned.md`.
-⭐ 6,5 óráig „kódban él, de nem bizonyított"-ként vezettem — a bizonyítékhoz **ő** kellett.
+⚠️ **Amit ez megmutatott:** gépindítás után a csatorna **nem áll fel magától** — az LDP előbb
+végigfuttatja a teljes pipeline-t, és a szerver *(vele a figyelő)* csak utána jön. Addig az
+owner üzenetei **nem érnek el**. ⇒ A kézi `ma comm listen` **nem kényelmi lépés**, hanem a
+napindítás része, amíg a make-before-break nincs meg.
 
 ## 🤝 Akiknek kiadtam
 
