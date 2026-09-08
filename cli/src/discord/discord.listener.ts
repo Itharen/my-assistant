@@ -59,6 +59,7 @@ import {
   type SpeechAttemptStats,
 } from '../voice/voice-channel-recorder.js';
 import { composeVoiceChannelEntry } from '../voice/voice-channel-bridge.js';
+import { planRetryDelivery, type RetryDeliveryPlan } from '../stt/stt.retry-delivery.js';
 import type { VoiceDropObservation, VoiceDropProbe } from '../voice/voice-drop-probe.js';
 import { VOICE_LOG_CODES } from '../voice/voice-log-codes.js';
 import { MissedSpeechReporter } from '../voice/voice-missed-speech.js';
@@ -1153,13 +1154,7 @@ export class DiscordListener {
    * ahol beszélt — ugyanaz a hibaosztály, amit a friss átiratnál 21:47-kor már javítottunk.
    */
   private async sendGiveUp(entry: SttRetryEntry, text: string): Promise<void> {
-    if (entry.source === 'voice-channel') {
-      await this.sendToChannel(text, entry.channelId, entry.messageId);
-
-      return;
-    }
-
-    await this.sendMirror(text, entry.messageId);
+    await this.sendByPlan(planRetryDelivery(entry), text, entry.messageId);
   }
 
   /**
@@ -1174,8 +1169,10 @@ export class DiscordListener {
     // ⚠️ Ket dolog lenne HIBAS a hanguzenet-uton: (a) `🎙️ HANGÜZENET`-kent jelolne, elfedve,
     // hogy ELO BESZEDROL van szo *(mas bizonytalansag — a szegmentalas is hibazhat)*;
     // (b) a tukor egy NEM LETEZO uzenetre valaszolna, mert ott a `messageId` a WAV fajlneve.
-    const fromVoiceChannel: boolean = entry.source === 'voice-channel';
-    const transcript: string = fromVoiceChannel
+    // 🗺️ A DÖNTÉS tesztelt fuggvenyben all (`stt.retry-delivery.ts`), mert itt harom
+    // viselkedes ter el a ket forras kozott — es mindharmat el lehetett volna rontani.
+    const plan: RetryDeliveryPlan = planRetryDelivery(entry);
+    const transcript: string = plan.markAs === 'voice-channel'
       ? composeVoiceChannelEntry({ transcript: text, speakerName: entry.authorName })
       : composeTranscriptForBatch({
         transcript: text,
@@ -1198,16 +1195,26 @@ export class DiscordListener {
         + `megvan a szöveg (${text.length} karakter), és a kötegbe került.`,
       extra: { code: 'MA-STT-RETRY-SUCCEEDED', messageId: entry.messageId, attempts: entry.attempts },
     });
-    const mirror: string = fromVoiceChannel
-      ? `✅ **Megvan, amit a hang-csatornában mondtál — korábban nem tudtam felismerni.**\n`
-        + `*(a ${entry.attempts}. próbálkozásra sikerült)*\n\n${text}`
-      : `✅ **Megvan a hangüzenet, amit korábban nem tudtam felismerni.**\n`
-        + `*(a ${entry.attempts}. próbálkozásra sikerült)*\n\n${text}`;
+    const mirror: string = `${plan.headline}\n`
+      + `*(a ${entry.attempts}. próbálkozásra sikerült)*\n\n${text}`;
 
-    // ⭐ ODA megy, ahol elhangzott: a hang-csatornas tetel tukre a HANG-csatornaba, nem a fo
-    // chatbe. (Ugyanaz a hibaosztaly, amit 21:47-kor mar javitottunk a friss atiratnal.)
-    if (fromVoiceChannel) await this.sendToChannel(mirror, entry.channelId, entry.messageId);
-    else await this.sendMirror(mirror, entry.messageId);
+    await this.sendByPlan(plan, mirror, entry.messageId);
+  }
+
+  /**
+   * A tükör kiküldése a TERV szerint.
+   *
+   * ⭐ ODA megy, ahol elhangzott: a hang-csatornás tétel tükre a HANG-csatornába, nem a fő
+   * chatbe. *(Ugyanaz a hibaosztály, amit 21:47-kor a friss átiratnál már javítottunk.)*
+   */
+  private async sendByPlan(plan: RetryDeliveryPlan, text: string, messageId: string): Promise<void> {
+    if (plan.mirror.to === 'channel') {
+      await this.sendToChannel(text, plan.mirror.channelId, messageId);
+
+      return;
+    }
+
+    await this.sendMirror(text, messageId);
   }
 
   /**

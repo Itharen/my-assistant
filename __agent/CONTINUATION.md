@@ -2570,3 +2570,44 @@ szerkesztő-eszközzel írok** — a shell-heredoc ebben a környezetben megbíz
 ### Teszt
 
 **CLI 622/622 zöld** *(+5)* · a transzplantált build változatlanul emittál.
+
+
+---
+
+## ✅ 2026-09-08 03:04–03:08 — DEV: a retry-kézbesítés TESZTELVE + a mérés dokumentálva
+
+### Az ébredés mérése — és egy fontos NEM-állítás
+
+| Kérdés | Mért válasz |
+|---|---|
+| jött-e új beszéd 02:03 óta? | ⚪ **nem** — a tölcsér változatlan (25%, 4 kísérlet) |
+| visszahozott-e valamit az újrapróbálás? | 🔴 **NEM — és nem is hozhatott** |
+| él-e a bekötés? | ✅ dist **02:36** → folyamat **02:36:29** → felvétel **02:40** |
+
+⚠️ **A retry-sor ÜRES, és ezt NEM szabad sikerként olvasni.** A 3 bukott felvétel **01:35-kor**
+volt, a bekötés **02:16-kor** készült el és **02:40-kor** lépett élesbe. ⇒ Azok a felvételek
+**sosem kerültek a sorba**. A javítás **csak a jövőbeli** beszédet védi.
+📌 *(Az üres sor kétféleképp olvasható: „működik" vagy „nem is próbálta". A kettő
+megkülönböztetése itt épp a lényeg — `core-no-guessing`.)*
+
+### A munkacsomag: `stt.retry-delivery.ts`
+
+A késői kézbesítés **elágazása** a figyelő privát metódusában élt — élő Discord-klienst
+igényelt, tehát **szerkezetileg tesztelhetetlen** volt. ⚠️ És épp ott találtam **három**
+viselkedést, amit nyersen bekötve elrontottunk volna.
+
+⇒ Kiemelve tiszta, mellékhatás nélküli döntésbe, **5 teszttel**; a figyelő már csak
+**végrehajt** (`sendByPlan`). A **feladás-üzenet** is ugyanazt a tervet használja — az a
+legfontosabb üzenet az egész sorban *(ott mondjuk ki, hogy a tartalom elveszett)*, tehát az sem
+mehet rossz csatornába.
+
+### 📄 Kanonikus dokumentum a mérésről
+
+`__documentations/developments/2026-09-08-voice-chain-first-live-measurement.md` —
+a hipotézis, a mért cáfolat, a három hiba, és amihez **nem** nyúltunk.
+📌 A `CONTINUATION.md` **állapot-fájl**, nem rekord: a tanulság a dokumentumba való
+(`core-record-learnings`, `core-document-everything`).
+
+### Teszt
+
+**CLI 627/627 zöld** *(+5)*.
