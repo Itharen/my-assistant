@@ -3703,3 +3703,71 @@ lépése **élesben futtatja** a suite-ot, és a megfigyelő a **valódi** `logA
 - **Teszt:** CLI **721/721** · szerver **82/82** · fordítás **tiszta**
 - **Commitolva + pusholva:** `db91e67` · `4a2cfe9`
 - **A make-before-break igazoltan működik** *(185 mp folyamatos kiszolgálás build közben)*
+
+
+---
+
+## ⭐ 2026-09-08 11:29–11:41 — A HANG VISSZA VAN, ÉS EGY ÚJ MEGBÍZHATÓSÁGI HIBA KIDERÜLT
+
+### ✅ A make-before-break TARTJA — több cikluson át
+
+`uptimeSeconds: 2448` *(41 perc)*, **ugyanaz a PID (41304)**, `serverAdopted: true`, miközben a
+pipeline közben **többször** végigfutott. ⇒ Nem egyszeri szerencse: a szerver **folyamatosan
+kiszolgál** a buildek alatt.
+
+⚠️ **Épp ezért** a 11:03–11:15 közti commitjaim *(figyelő-kimenet továbbítás, újra-belépés)*
+**még nincsenek élesben** — a szerver nem cserélődött. A `[Discord-figyelő]` és `[voice]` sorok
+száma a szerver logjában **0**, és ez **nem hiba**, csak még nem járt le a ciklus.
+
+### 🔴 ÚJ, MÉRT HIBA: a felügyelő NEM indította újra a figyelőt
+
+| Mérés | Érték |
+|---|---|
+| a figyelő folyamata meghalt | ~11:30 |
+| a felügyelő újraellenőrzési köze | **60 mp** *(`FOREIGN_RECHECK_MS`)* |
+| eltelt idő figyelő nélkül | **9+ perc** |
+| felügyelő-bejegyzés a naplóban | ⛔ **egy sem** |
+
+⇒ A felügyelő **észre sem vette**. ⚠️ A ok-keresést pont az blokkolta, amit ma javítottam:
+a figyelő kimenete **nem jut sehova**, amíg a továbbítás nincs élesben.
+
+📌 **Ez nyitott tétel** — a következő kör dolga, a telepített diagnosztikával.
+
+### ✅ A hang HELYREÁLLÍTVA — kézzel, a doctor saját javaslatával
+
+A csatorna **10:57:54 óta üres volt (~41 perc)**. Mivel az újra-belépés még nincs élesben, a
+doctor által javasolt **kézi tartalékkal** indítottam újra a figyelőt *(`ma comm listen`, saját
+ablakban)*.
+
+**Eredmény:** `joined: true`, `honnie-place` — és a doctor is ezt mondja:
+`✅ Bent ül a(z) „honnie-place" csatornában.`
+
+⚠️ **Megfigyelés:** a figyelő az indulás után **~2 percig** nem vert *(a hang-lánc hidegindítása
+terhelt gépen)*, és csak utána jelent meg a `voice` mező. Ez ugyanaz a minta, ami reggel
+13 percig tartott — **nem fagyás, hanem lassú indulás**.
+
+### ⚠️ KORREKCIÓ: a „küszöb-ellentmondás" NEM létezett
+
+Korábban azt írtam, hogy a pulzus és a `doctor` küszöbe ellentmond. **Megmérve: nem.**
+Mindkettő **5 perc**, és a logika azonos (`ageMs > STALE` vs. `ageMs <= STALE` ugyanaz).
+Két **különböző pillanatban** mértem, a határ két oldalán. A premisszám téves volt.
+
+🩹 **De volt valódi baj mögötte:** a figyelő **percenként** ver, tehát egy 4 perces életjel már
+**három kimaradt ütés** — a pulzus mégis sima `✅`-t írt rá egészen az 5 perces halál-határig.
+**Ma ez 13 percig takart el egy valódi kiesést.**
+
+⇒ `DISCORD_SLOW_MS = 2 perc` ⇒ `⚠️ AKADOZIK` fokozat. *(Egy kimaradt ütés lehet gép-terhelés,
+kettő már minta.)* A `HALOTT` súlya változatlan.
+
+### Állapot
+
+- **Teszt:** CLI **721/721** · szerver **87/87** · fordítás tiszta
+- **Commitolva + pusholva:** `f5ac570`
+- **Telepítésre vár:** `db91e67` *(figyelő-kimenet)* · `4a2cfe9` *(újra-belépés)*
+
+### ⏳ A következő kör
+
+1. 🔴 **Miért nem indította újra a felügyelő a figyelőt?** — a telepített továbbítással már
+   lesz jele. **Ez a legmagasabb prioritás:** enélkül a figyelő halála **csendes és tartós**.
+2. `[Discord-figyelő]` és `[voice] MA-VOICE-*` sorok megjelenése a szerver logjában.
+3. A színes sáv — **beszéd** kell hozzá.
