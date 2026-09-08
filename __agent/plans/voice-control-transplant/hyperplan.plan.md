@@ -11,7 +11,7 @@
 
 ---
 
-## 📊 STATUS — 2026-09-08 03:08
+## 📊 STATUS — 2026-09-08 05:23
 
 > ⛔ **A KORÁBBI, 18:05-ös STATUS TÚLÁLLÍTOTT.** „6/6 szakasz megépítve" ⇒ a lánc **össze van
 > kötve**, de az **átviteli arány ~1%** volt: az owner végigbeszélt egy beszélgetést, és
@@ -25,7 +25,7 @@
 | **A 2. owner-követelmény** *(MINDEN átirat a hang-csatornába)* | ✅ **MEGÉPÍTVE** — a sikertelen/gyanús/eldobott megszólalás is **látható nyomot** hagy, összevont jelentéssel (`voice-missed-speech.ts`) |
 | **A 3. owner-követelmény** *(🔊 hangjelzések, mint a CCAP-ban)* | ✅ **MEGÉPÍTVE** — 5 jelzés, a CCAP **eredeti hangjaival**; futásidőben igazolva (útvonal + ffmpeg-dekódolás). 🔇 `MA_VOICE_CUES=off` kikapcsoló |
 | **A veszteség kezelése** | ✅ **A BUKOTT FELISMERÉS MÁR NEM VESZ EL** — a `SttRetryQueue` bekötve a hang-csatornára (2→5→15→45 perc), forrás-helyes kézbesítéssel |
-| **Teszt** | CLI **627/627** zöld — unit + 🧭 3 user-journey, **pozitív kontrollal** igazolva; fő `tsc` zöld; a transzplantált build emittál |
+| **Teszt** | CLI **630/630** zöld + szerver **79/79** — unit + 🧭 3 user-journey, **pozitív kontrollal** igazolva; fő `tsc` zöld; a transzplantált build emittál |
 | **Következő lépés** | ⏳ **TÖBB ÉLŐ MINTA** — 4 kísérlet még „kevés minta". A bukott felvételek most már **újrapróbálódnak**, tehát a következő mérés már ezzel együtt jön. ⛔ A szűrő-küszöbökhöz továbbra sem nyúlunk — **mérve nem ott van a hiba** |
 
 ### 🔍 A MÉRŐESZKÖZ, ami 22:44-kor megépült — és MIÉRT nem volt elég a régi számláló
