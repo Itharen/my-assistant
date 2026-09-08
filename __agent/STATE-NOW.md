@@ -8,7 +8,7 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-08 12:20
+**Frissítve:** 2026-09-08 14:20
 
 ## Ma
 
@@ -27,6 +27,20 @@ A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
 4. 📱 **Helyzet-app v1** — belevágjunk? *(Capacitor, saját app)*
 5. 🔓 **Képesség-jóváhagyás** — ⚠️ **25 ⏳ / 1 ✅**: az üresjárati sávom gyakorlatilag ÜRES.
    Javasolt hármas: **C-13** feladat-kezelés · **C-10** státusz-kivonat · **C-19** alvás-ciklus
+
+## 🔴 14:00 — AZ ÜZENETEI A **DEV**-HEZ MENTEK (javítva)
+
+Owner: *„A devnek vannak elküldve az üzeneteim, nem pedig ide neked. TOTAL CHAOS!!”*
+
+**Ok:** a híd a `CLAUDE_CODE_SESSION_ID`-ból vette a címzettet, a figyelő viszont **az LDP alatt
+fut** ⇒ annak a sessionnek a környezetét örökli, amelyik az LDP-t indította.
+**Bizonyíték:** a 13:19-es üzenetére a DEV válaszolt (`ff9113a`).
+
+**Javítva:** `__agent/config/owner-message-target.json` — rögzített cél, **kettős egyezés**,
+⛔ csendes fallback nélkül. CLI **727/727**. ⚠️ A következő LDP-körrel lép életbe.
+⭐ A duplikált fókusz-szabály ennek a **tünete** volt — `focus-support.md` a kanonikus.
+
+🔴 **Ő AZ AI SUMMITON VAN** (13:35) ⇒ ⛔ nincs kérdés, nincs döntés-kérés, max 1-2 mondat.
 
 ## ✅ Ma lezárva *(amiért haragudott)*
 
