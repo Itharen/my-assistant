@@ -8,55 +8,37 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-08 21:35
+**Frissítve:** 2026-09-09 00:10
 
 ## Ma
 
 **2026-09-08, kedd — AI Summit 2. nap.** Az owner ~02:17-kor feküdt le.
 A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
 
-## 🙋 AMI RÁ VÁR — ez a legfontosabb lista
+## 🙋 AMI RÁD VÁR
 
-1. 👤 **Profil megérkezett** → `current/owner/who-is-the-user.md`. ⛔ **NEM kanonizálva** (ő kérte).
-   ❓ **Doc'** a megszólítás? · **szül. 09-15, a 36.** — ⚠️ egy héten belül, ÜTKÖZIK az „Üzemorvos 09-15"-tel
-   · hőérzékenység *(ez magyarázza a hajnali sétát)* · admin: jogosítvány · csótányvédelem · TEÁOR.
-   ⏳ Kéri még: **a cégéről** szóló összeállítást
-2. 🗂️ **Napi matrac** napi ismétlődőre? · NZT és OGS kivezethető? · dátumok: **Üzemorvos 09-15**,
-   **Interfood 09-10**
-3. 📧 **Belenézhetek a postafiókba?** *(feladó + tárgy + darabszám, tartalom nélkül)*
-4. 📱 **Helyzet-app v1** — belevágjunk? *(Capacitor, saját app)*
-5. 🔓 **Képesség-jóváhagyás** — ⚠️ **25 ⏳ / 1 ✅**: az üresjárati sávom gyakorlatilag ÜRES.
-   Javasolt hármas: **C-13** feladat-kezelés · **C-10** státusz-kivonat · **C-19** alvás-ciklus
+1. 🔄 **A DEV session `completed`** — 19:12 óta nem él, és **prompttal nem tudom felébreszteni**
+   *(megpróbáltam 00:08-kor, nem vette fel)*. ⇒ **Neked kell újraindítanod**, ha akarod, hogy
+   dolgozzon. A feladata készen áll: `__agent/DEV-HANDOFF.md` (5 piros review-lépés).
+2. ✅ **Lezárható az organizerben:** *„LDP működés bevitele a Bedrock-ba"* — a
+   `BFR-MYASSISTANT-001` leadva. ⭐ A lezárás **regenerálja az ismétlődéseket**.
+3. 🔓 **Képesség-jóváhagyás** — 25 ⏳ / 1 ✅. Az üresjárati sávom gyakorlatilag üres.
+4. 👤 **A cégedről** szóló összeállítás — te jelezted, hogy kell (a profil-kivonat végén).
 
-## 🎧 T-68 (DEV) — kész, az ÉLES igazolás még hátra van
+## 🔴 5 REVIEW-LÉPÉS PIROS — valódi találatok, nem eszközhiba
 
-`ma stt pending | transcript <id> | retry <id>` **működik**. ⭐ A hang **a feladás előtt**
-átkerül a ledgerbe (`~/.config/my-assistant/stt-ledger/`) ⇒ többé nem vesz el.
-🔴 **De éles hangon még nem bizonyult:** a 19:00:58-as hangüzenete **1/5**-nél tart — a
-ledger csak a **feladáskor** ír, tehát az igazolás az 5. bukott próba után jön.
+`dc-review-server` *(error-wrapping, unique-error-codes)* · `client` *(natív dialógus)* ·
+`relay` *(error-wrapping)* · `browser-extension` *(**néma catch** — zero-tolerance hard rule)* ·
+`cli`. Mellette `tsc-transplanted` *(`Buffer`→`BodyInit`)*.
 
-⚠️ **Saját közeli hiba:** a `pending` „nincs”-ét és a doctor „1 hang vár”-ját **ellentmondásnak**
-néztem, és majdnem defektként jelentettem. Két **külön szakasz** — a kód jó, a **szóhasználat**
-félrevezető ⇒ **T-69**. ⭐ Az ellenőrzés **előbb**, a jelentés **utána**.
+⚠️ **Amíg állandóan piros, a review NEM TUD JELEZNI** — egy új, valódi hiba beleolvad.
+⛔ Kikapcsolni tilos *(owner 08-24: „Semmilyen reviewt ne kapcsolj ki. NEEE!")*. DEV-nek kiadva.
 
-🔴 **Ami változatlanul nyitott:** az STT **5 percenként túllép** — ⛔ az FDP AI-hoz (38321)
-nem nyúlunk. ⇒ A hangüzenetei továbbra sem értelmeződnek.
+## ✅ T-68 — ÉLŐBEN IGAZOLVA (00:00)
 
-## 🔄 GÉP-ÚJRAINDÍTÁS UTÁN — 2026-09-08 21:05, elvégezve
-
-Az owner újraindította a gépet. ⭐ **RAM 97 % → 58 %.**
-
-| Mit | Állapot |
-|---|---|
-| `dc ldp` | ✅ **elindítva** saját ablakban (21:05) |
-| Discord-figyelő | ✅ **kézi tartalékként felhúzva** (`ma comm listen`) — ⭐ **backfillel behozta** a leállás alatt érkezett üzenetet |
-| Hang-csatorna | ✅ bent ül a `honnie-place`-ben |
-| my-assistant szerver | ⏳ a pipeline **végén** indul — ez a `BFR-MYASSISTANT-001` lényege |
-
-⚠️ **Amit ez megmutatott:** gépindítás után a csatorna **nem áll fel magától** — az LDP előbb
-végigfuttatja a teljes pipeline-t, és a szerver *(vele a figyelő)* csak utána jön. Addig az
-owner üzenetei **nem érnek el**. ⇒ A kézi `ma comm listen` **nem kényelmi lépés**, hanem a
-napindítás része, amíg a make-before-break nincs meg.
+A ledgerben **két feloldott** hangüzenet, átirattal együtt
+*(`~/.config/my-assistant/stt-ledger/`)*. ⇒ A „melyik üzenethez melyik transzkript tartozik"
+kérése **működik**, nem csak fixture-ön. A retry-sor üres.
 
 ## 🤝 Akiknek kiadtam
 
