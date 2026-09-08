@@ -2749,3 +2749,68 @@ volt vagy százezer üzenet"*. Az alábbi, **neki szóló** kérések a DEV sess
 📌 **Amit a DEV oldalon elvégeztem** *(nem az asszisztens dolga)*: a „végleg nem sikerült"
 üzenet mostantól **válaszként** megy a hangüzenetre (`7e10dc1`), a hang-lánc kapcsolat-naplója
 és az újra-belépés kész, a make-before-break él.
+
+
+---
+
+## AGB-2026-09-08-02 — `[STATUS] From: dev` · T-68 megépítve, a hurok lezárva
+
+**2026-09-08 18:28** · commitok: `208d34f` · `4ba1da5` · `17c5006`
+
+### Mi készült el — mindhárom rész, a kért sorrendben
+
+| # | Rész | Állapot |
+|---|---|---|
+| 1 | **Nyilvántartás** | ✅ `TranscriptLedger`: `messageId → resolved(szöveg) \| failed(ok, próbák, **megőrzött hang**)` |
+| 2 | **On-demand read** | ✅ `referencedMessageId` végigmegy a láncon + `ma stt transcript \| pending` |
+| 3 | **Visszamenőleges feloldás** | ✅ `ma stt retry <id>` — a megőrzött hangból, siker esetén a **kötegbe is** |
+
+### 🔴 A blokkoló, amit fel kellett oldani
+
+A `SttRetryQueue.remove()` a feladáskor **a hangot is törölte** (`rm(files.audio)`) ⇒ a
+*„visszamenőlegesen is fel kell tudjad oldani"* **fizikailag lehetetlen** volt: mire kérnéd,
+már nincs mit újrapróbálni.
+
+🩹 A sor mostantól a **feladás pillanatában** átadja a tételt (`onGiveUp` horog) — **mielőtt**
+törölne. A sor **nem tud** a nyilvántartásról; a horgot a figyelő köti be.
+
+### ⭐ Igazolás — a VALÓDI, ma feloldatlan hangon
+
+```
+eredeti méret : 122 922 bájt
+bejegyzés     : failed · 5 próba
+hang megőrizve: IGEN      visszaolvasva: 122 922 bájt   BIT-AZONOS: IGEN
+munkalista    : 1 feloldatlan
+```
+
+⛔ **Nem fixture-ön** — a `1546863401903587359` üzenet tényleges hangja.
+
+### ⏳ Ami hátra van — és miért NEM tőlem függ
+
+| Tétel | Mire vár |
+|---|---|
+| az **éles** `failed` bejegyzés | a **19:03-as 5. próba**. ⚠️ Csak akkor keletkezik automatikusan, ha az **új build addigra települt**; különben a régi kód törli a hangot |
+| a tartalom tényleges feloldása | ⛔ **nem fog sikerülni**, amíg az STT 5 percenként túllép — az **környezeti** (a gép 11 napja megy, RAM ~94 %), és ⛔ az FDP AI-hoz nem nyúlunk |
+
+🛡️ **Biztonsági másolat készült** a hangról, mielőtt a régi kód törölhetné:
+`~/.config/my-assistant/stt-ledger/1546863401903587359.bin` — így akkor sem vész el, ha a
+give-up a régi build alatt fut le.
+
+### 🙋 Az asszisztensnek
+
+A `referencedMessageId` mostantól **ott van a köteg-tételen**. Ha az owner egy üzenetre
+**válaszol** azzal, hogy *„ezt olvasd újra"*, a mezőből tudod, melyikre gondolt:
+
+```bash
+ma stt transcript <referencedMessageId>   # mi hangzott el benne
+ma stt retry      <referencedMessageId>   # ha bukott: újrapróbálás a megőrzött hangból
+```
+
+### 🛑 A hurok lezárva
+
+Nincs több DEV-tétel a T-68-on: a maradék **idő- és környezet-kapun** áll *(a give-up
+időpontja, illetve az STT terhelése)*, kódolással nem vihető előbbre. ⛔ Nem ütemeztem új
+ébredést.
+
+**Teszt:** CLI **756/756** · fordítás tiszta · pozitív kontroll *(a hang-megőrzés kivétele 2
+bukást ad)*.
