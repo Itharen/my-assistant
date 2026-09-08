@@ -113,7 +113,16 @@ export function computeNextAttemptAt(attempts: number, now: Date = new Date()): 
 
 export class SttRetryQueue {
 
-  constructor(private readonly paths: SttRetryPaths = resolveSttRetryPaths()) {}
+  constructor(
+    private readonly paths: SttRetryPaths = resolveSttRetryPaths(),
+    /**
+     * 🔴 A FELADÁS PILLANATÁBAN hívódik — **mielőtt** a hang törlődne.
+     *
+     * ⭐ Ez teszi lehetővé a nyilvántartást (T-68): a sor **nem tud** a nyilvántartásról, a
+     * hívó viszont itt átmentheti a hangot, mielőtt véglegesen elveszne.
+     */
+    private readonly onGiveUp?: (entry: SttRetryEntry) => Promise<void>,
+  ) {}
 
   /**
    * Egy sikertelen felismerés felvétele a sorra.
@@ -227,6 +236,15 @@ export class SttRetryQueue {
     const nextAttemptAt: string | null = computeNextAttemptAt(attempts, now);
 
     if (nextAttemptAt === null) {
+      // 🔴 EZ AZ UTOLSÓ PILLANAT, amikor a hang még megvan. A hívó itt mentheti át a
+      // nyilvántartásba — utána a `remove()` VÉGLEG törli (`stt.transcript-ledger.ts`).
+      // ⛔ A horog hibája nem akadályozhatja meg a takarítást: a sor nem ragadhat be.
+      try {
+        await this.onGiveUp?.({ ...entry, attempts: attempts, lastFailure: failure });
+      } catch {
+        // A horog bukását a hívó naplózza; itt a takarítás a fontos.
+      }
+
       await this.remove(messageId);
 
       return null;
@@ -246,6 +264,19 @@ export class SttRetryQueue {
     );
 
     return updated;
+  }
+
+  /**
+   * A tétel HANGJÁNAK útvonala — `null`, ha már nincs meg.
+   *
+   * ⭐ MIÉRT KELL (T-68): a feladáskor a `remove()` **törli a hangot**, és ezzel a
+   * *„visszamenőlegesen is fel kell tudjad oldani"* fizikailag lehetetlenné válik. Ezért a
+   * feladás előtt a hívó **átmentheti** a nyilvántartásba — de csak ha tudja, hol van.
+   */
+  audioPathOf(messageId: string): string | null {
+    const path: string = entryFiles(this.paths.root, messageId).audio;
+
+    return existsSync(path) ? path : null;
   }
 
   /** A tétel eltávolítása — sikeres felismerésnél, vagy amikor feladtuk. */

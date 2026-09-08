@@ -79,6 +79,7 @@ import {
   type VoiceFeedbackPlan,
 } from '../voice/voice-feedback-plan.js';
 import { transcribeAudio } from '../stt/stt.client.js';
+import { TranscriptLedger } from '../stt/stt.transcript-ledger.js';
 import { composeMirrorMessage } from '../stt/stt.mirror.js';
 import {
   MAX_ATTEMPTS,
@@ -208,7 +209,37 @@ export class DiscordListener {
    *
    * MÉRVE 2026-09-07: 2 hangüzenet veszett el véglegesen, mert nem volt újrapróbálás.
    */
-  private readonly retryQueue: SttRetryQueue = new SttRetryQueue();
+  /**
+   * 📒 A hangüzenet ↔ transzkript nyilvántartás (T-68).
+   *
+   * Owner: *„a rendszernek rögzítenie kéne, hogy melyik üzenetekhez melyik transzkript
+   * tartozik… és ilyenkor ezeket majd visszamenőlegesen is fel kell tudjad oldani."*
+   */
+  private readonly ledger: TranscriptLedger = new TranscriptLedger();
+
+  /**
+   * ⭐ A sor a FELADÁS PILLANATÁBAN átadja a tételt — **mielőtt** a hangot törölné.
+   *
+   * 🔴 Enélkül a visszamenőleges feloldás lehetetlen: mérve, a `remove()` a `.bin`-t is
+   * törli, tehát a tartalom véglegesen elvész abban a másodpercben.
+   */
+  private readonly retryQueue: SttRetryQueue = new SttRetryQueue(
+    undefined,
+    async (entry: SttRetryEntry): Promise<void> => {
+      await this.ledger.recordFailed(
+        {
+          messageId: entry.messageId,
+          channelId: entry.channelId,
+          authorName: entry.authorName,
+          filename: entry.filename,
+          ...(entry.durationSecs === undefined ? {} : { durationSecs: entry.durationSecs }),
+          failure: entry.lastFailure ?? '(ismeretlen ok — ez maga is hiba)',
+          attempts: entry.attempts,
+        },
+        this.retryQueue.audioPathOf(entry.messageId),
+      );
+    },
+  );
 
   /**
    * Fut-e ÉPP egy felismerés.
@@ -1064,6 +1095,18 @@ export class DiscordListener {
       extra: { code: 'MA-DISCORD-VOICE-TRANSCRIBED', messageId: incoming.messageId },
     });
 
+    // 📒 A PÁROSÍTÁS RÖGZÍTÉSE (T-68) — a siker is bekerül, nem csak a bukás. Az owner
+    // kérdése *„melyik üzenethez melyik transzkript tartozik"* önmagában érték.
+    await this.recordTranscript({
+      messageId: incoming.messageId,
+      channelId: incoming.channelId,
+      authorName: incoming.authorName,
+      filename: attachment.name,
+      ...(attachment.durationSecs === undefined ? {} : { durationSecs: attachment.durationSecs }),
+      transcript: result.text,
+      attempts: 1,
+    });
+
     return composeTranscriptForBatch({
       transcript: result.text,
       ...(attachment.durationSecs === undefined ? {} : { durationSecs: attachment.durationSecs }),
@@ -1269,6 +1312,26 @@ export class DiscordListener {
     }
   }
 
+  /**
+   * 📒 Egy SIKERES felismerés rögzítése a nyilvántartásba.
+   *
+   * ⛔ **SOHA NEM DOB.** A nyilvántartás **kísérő** funkció: ha elhasal, az nem viheti magával
+   * a kézbesítést. ⚠️ De ⛔ **nem néma**: a bukás naplóba kerül, különben csak annyi látszana,
+   * hogy „hiányzik egy bejegyzés", és senki nem tudná, miért.
+   */
+  private async recordTranscript(input: Parameters<TranscriptLedger['recordResolved']>[0]): Promise<void> {
+    try {
+      await this.ledger.recordResolved(input);
+    } catch (err: unknown) {
+      await this.safeLog({
+        kind: 'error',
+        summary: '[discord/listener] MA-STT-LEDGER-WRITE-FAILED: a transzkript-nyilvántartás '
+          + `írása nem sikerült — ${err instanceof Error ? err.message : String(err)}`,
+        extra: { code: 'MA-STT-LEDGER-WRITE-FAILED', messageId: input.messageId },
+      });
+    }
+  }
+
   /** Egy újrapróbálás bukása: vagy továbblépünk a következő lépcsőre, vagy SZÓLUNK. */
   private async handleRetryFailure(entry: SttRetryEntry, failure: string): Promise<void> {
     const updated: SttRetryEntry | null = await this.retryQueue.recordFailure(entry.messageId, failure);
@@ -1320,6 +1383,18 @@ export class DiscordListener {
     // (b) a tukor egy NEM LETEZO uzenetre valaszolna, mert ott a `messageId` a WAV fajlneve.
     // 🗺️ A DÖNTÉS tesztelt fuggvenyben all (`stt.retry-delivery.ts`), mert itt harom
     // viselkedes ter el a ket forras kozott — es mindharmat el lehetett volna rontani.
+    // 📒 A KÉSŐI siker is a nyilvántartásba kerül — ⭐ és a `firstSeenAt` megmarad, tehát
+    // utólag látszik, MENNYI IDŐ alatt oldódott fel.
+    await this.recordTranscript({
+      messageId: entry.messageId,
+      channelId: entry.channelId,
+      authorName: entry.authorName,
+      filename: entry.filename,
+      ...(entry.durationSecs === undefined ? {} : { durationSecs: entry.durationSecs }),
+      transcript: text,
+      attempts: entry.attempts,
+    });
+
     const plan: RetryDeliveryPlan = planRetryDelivery(entry);
     const transcript: string = plan.markAs === 'voice-channel'
       ? composeVoiceChannelEntry({ transcript: text, speakerName: entry.authorName })
