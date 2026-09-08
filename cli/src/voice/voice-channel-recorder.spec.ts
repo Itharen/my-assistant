@@ -133,6 +133,59 @@ describe('voice-channel-recorder', () => {
       expect(calls).toEqual([]);
     });
 
+    it('🔴 TECHNIKAI bukásnál ELTESSZÜK a hangot — a bájtokkal együtt', async () => {
+      const { bridge } = makeBridge();
+      const queued: { filename: string; failure: string; bytes: number }[] = [];
+
+      await handleFinishedRecording({
+        ...BASE,
+        bridge: bridge,
+        transcribe: makeStt({ ok: false, suspicious: true, text: '', detail: 'időtúllépés' }) as never,
+        read: READ_OK as never,
+        onRecognitionFailed: (info): void => void queued.push({
+          filename: info.filename,
+          failure: info.failure,
+          bytes: info.audio.length,
+        }),
+      });
+
+      expect(queued.length).toBe(1);
+      expect(queued[0]?.bytes).toBeGreaterThan(0);
+      expect(queued[0]?.failure).toContain('időtúllépés');
+    });
+
+    it('⛔ GYANÚS átiratnál viszont NEM tesszük el — ugyanaz a bemenet ugyanazt adná', async () => {
+      const { bridge } = makeBridge();
+      const queued: string[] = [];
+
+      await handleFinishedRecording({
+        ...BASE,
+        bridge: bridge,
+        transcribe: makeStt({ ok: true, suspicious: true, suspicionReason: 'ismétlődő minta' }) as never,
+        read: READ_OK as never,
+        onRecognitionFailed: (info): void => void queued.push(info.filename),
+      });
+
+      // ⭐ A felismerés LEFUTOTT, csak kétes eredményt adott. Az újrapróbálás csak égetné a
+      // szűk erőforrást, és ugyanazt a kétes átiratot adná vissza.
+      expect(queued).toEqual([]);
+    });
+
+    it('⛔ SIKERES felismerésnél sem tesszük el', async () => {
+      const { bridge } = makeBridge();
+      const queued: string[] = [];
+
+      await handleFinishedRecording({
+        ...BASE,
+        bridge: bridge,
+        transcribe: makeStt() as never,
+        read: READ_OK as never,
+        onRecognitionFailed: (info): void => void queued.push(info.filename),
+      });
+
+      expect(queued).toEqual([]);
+    });
+
     it('⭐ a „gyanús" CSAK sikeres felismerésnél jelent „nem értettem"-et', async () => {
       const { bridge } = makeBridge();
 

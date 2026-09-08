@@ -77,6 +77,33 @@ describe('stt.retry-queue', () => {
       expect(entry?.lastFailure).toContain('5 perc');
       expect((await queue.list()).length).toBe(1);
     });
+
+    it('🔊 a FORRÁS is megmarad — ezen múlik a kézbesítés útja', async () => {
+      await queue.enqueue({
+        messageId: 'recording-owner-1.wav',
+        channelId: 'hang-csatorna',
+        authorId: '333',
+        authorName: 'Itharen',
+        filename: 'recording-owner-1.wav',
+        contentType: 'audio/wav',
+        audio: new Uint8Array([9, 9]),
+        failure: 'A felismerés 5 perc után sem fejeződött be.',
+        source: 'voice-channel',
+      });
+
+      const stored = (await queue.list())[0];
+
+      expect(stored?.source).toBe('voice-channel');
+    });
+
+    it('⭐ forrás NÉLKÜL is működik — a lemezen MÁR OTT LÉVŐ bejegyzések nem törnek el', async () => {
+      const entry = await enqueueSample();
+
+      // ⚠️ A hiányzó mező `voice-message`-t jelent; a régi tételek így változatlanul,
+      // a hangüzenet-úton kézbesítődnek tovább.
+      expect(entry?.source).toBeUndefined();
+      expect((await queue.list())[0]?.source).toBeUndefined();
+    });
   });
 
   describe('takeDue', () => {

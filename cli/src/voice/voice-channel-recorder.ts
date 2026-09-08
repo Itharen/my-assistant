@@ -165,6 +165,14 @@ export async function handleFinishedRecording(params: {
   ownerName: string;
   channelId: string;
   bridge: VoiceChannelBridge;
+  /**
+   * 🔴 TECHNIKAI bukásnál hívódik, a hang BÁJTJAIVAL — hogy a hívó eltehesse újrapróbálásra.
+   *
+   * ⚠️ MÉRT HIÁNY (2026-09-08 02:15): a `SttRetryQueue` létezik, de a hang-csatorna útja
+   * **nem használta** — a 3 időtúllépéses felvétel **véglegesen elveszett**, mert a WAV-ot a
+   * felvevő takarítása törli. ⛔ Ez a hívón múlik, ezért kap visszahívást, nem sor-függőséget.
+   */
+  onRecognitionFailed?: (info: { audio: Uint8Array; filename: string; failure: string }) => void;
   transcribe?: typeof transcribeAudio;
   read?: typeof readFile;
 }): Promise<RecordingHandled> {
@@ -217,15 +225,28 @@ export async function handleFinishedRecording(params: {
     // 📌 A mért adat: 3/3 felvétel `„A felismerés 5 perc után sem fejeződött be."` — mind
     // `not-understood`-ként jelent meg. ⛔ Egyik sem volt gyanús átirat; **egyik sem volt átirat.**
     const understoodButDoubtful: boolean = result.ok && result.suspicious;
+    const detail: string = understoodButDoubtful
+      ? `Gyanús átirat — NEM cselekszem rá: ${result.suspicionReason ?? result.detail}`
+      : `A felismerés nem adott használható szöveget: ${result.detail}`;
+
+    // 🔴 A HANG NEM VESZHET EL — de CSAK a technikai bukást érdemes újrapróbálni.
+    //
+    // ⭐ A KÜLÖNBSÉG LÉNYEGES: a `recognition-failed` azt jelenti, hogy a felismerés **le sem
+    // futott** *(időtúllépés, szolgáltatás-hiba)* — a hang ép, és egy későbbi próba, nyugodtabb
+    // gép mellett, jó eséllyel sikerül. A `not-understood` viszont azt jelenti, hogy a
+    // felismerés **lefutott**, csak kétes eredményt adott: ⛔ ugyanazt a bemenetet újra
+    // feldolgozva **ugyanazt a kétes eredményt** kapnánk. Az újrapróbálás ott csak égetné az
+    // amúgy is szűk erőforrást.
+    if (!understoodButDoubtful) {
+      params.onRecognitionFailed?.({ audio: audio, filename: params.filename, failure: detail });
+    }
 
     return {
       fromOwner: true,
       transcribed: false,
       queued: false,
       missed: understoodButDoubtful ? 'not-understood' : 'recognition-failed',
-      detail: understoodButDoubtful
-        ? `Gyanús átirat — NEM cselekszem rá: ${result.suspicionReason ?? result.detail}`
-        : `A felismerés nem adott használható szöveget: ${result.detail}`,
+      detail: detail,
     };
   }
 
@@ -270,6 +291,8 @@ export async function startVoiceRecording(params: {
    * dobta ki *(veszteség)*. Részletek: `voice-drop-probe.ts`.
    */
   onSpeechDropped?: (observation: VoiceDropObservation) => void;
+  /** 🔴 Technikai felismerés-bukásnál — a hang bájtjaival, újrapróbálásra. */
+  onRecognitionFailed?: (info: { audio: Uint8Array; filename: string; failure: string }) => void;
   /** A szonda saját hibái. ⚠️ Sosem fatálisak — a megfigyelés nem buktathatja meg a felvételt. */
   onProbeError?: (detail: string) => void;
   /** Tesztelhetőség: kész szonda átadása. */
@@ -318,6 +341,7 @@ export async function startVoiceRecording(params: {
         ownerName: params.ownerName,
         channelId: params.channelId,
         bridge: bridge,
+        ...(params.onRecognitionFailed ? { onRecognitionFailed: params.onRecognitionFailed } : {}),
       })
         .then((outcome: RecordingHandled): void => params.onHandled?.(outcome))
         .catch((error: unknown): void => {

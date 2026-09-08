@@ -58,7 +58,26 @@ export interface SttRetryEntry {
   queuedAt: string;
   /** Miért bukott legutóbb — ez kerül az owner elé, ha végleg feladjuk. */
   lastFailure: string;
+  /**
+   * 🔊 HONNAN jött a hang — mert a **kézbesítés útja különbözik**.
+   *
+   * 🔴 MÉRT OK (2026-09-08 02:15): a sikeres újrapróbálás
+   * *(a)* `🎙️ HANGÜZENET`-ként teszi a kötegbe, és
+   * *(b)* a tükröt a **forrás-üzenetre válaszolva**, különben a **fő** csatornába küldi.
+   *
+   * ⚠️ Egy **hang-csatornás** felvételnél mindkettő HIBÁS lenne: a `messageId` ott a WAV
+   * **fájlneve**, nem valódi Discord-üzenet *(a válasz nem létező üzenetre menne)*, a jelölés
+   * pedig elfedné, hogy **élő beszédről** van szó — ami más bizonytalanságú, mint egy
+   * újrahallgatható hangüzenet.
+   *
+   * ⭐ A mező **opcionális**, és hiánya `voice-message`-t jelent: a lemezen MÁR OTT LÉVŐ
+   * bejegyzések így változatlanul, helyesen működnek tovább.
+   */
+  source?: SttRetrySource;
 }
+
+/** A hang forrása — a kézbesítés útját dönti el. */
+export type SttRetrySource = 'voice-message' | 'voice-channel';
 
 export interface SttRetryPaths {
   /** A könyvtár, ahol a hangok és a leírásaik állnak. */
@@ -113,6 +132,8 @@ export class SttRetryQueue {
     durationSecs?: number;
     audio: Uint8Array;
     failure: string;
+    /** Honnan jott a hang. Alapertelmezes: `voice-message` (visszafele kompatibilis). */
+    source?: SttRetrySource;
     now?: Date;
   }): Promise<SttRetryEntry | null> {
     const now: Date = params.now ?? new Date();
@@ -132,6 +153,7 @@ export class SttRetryQueue {
       filename: params.filename,
       ...(params.contentType ? { contentType: params.contentType } : {}),
       ...(params.durationSecs === undefined ? {} : { durationSecs: params.durationSecs }),
+      ...(params.source ? { source: params.source } : {}),
       attempts: 1,
       nextAttemptAt: nextAttemptAt,
       queuedAt: now.toISOString(),

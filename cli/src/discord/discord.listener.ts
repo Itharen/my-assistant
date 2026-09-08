@@ -58,6 +58,7 @@ import {
   type RecordingOutcomeCode,
   type SpeechAttemptStats,
 } from '../voice/voice-channel-recorder.js';
+import { composeVoiceChannelEntry } from '../voice/voice-channel-bridge.js';
 import type { VoiceDropObservation, VoiceDropProbe } from '../voice/voice-drop-probe.js';
 import { VOICE_LOG_CODES } from '../voice/voice-log-codes.js';
 import { MissedSpeechReporter } from '../voice/voice-missed-speech.js';
@@ -602,6 +603,12 @@ export class DiscordListener {
         // (`voice-feedback-plan.ts`). Az ures fajlrol pl. szandekosan hallgatunk.
         this.applyVoiceFeedback(planFeedbackForDrop(observation));
       },
+      // 🔴 A HANG NEM VESZHET EL. Merve 2026-09-08 01:35: 3 felvetel bukott 5 perces STT-
+      // idotullepessel, es MIND VEGLEG ELVESZETT — a SttRetryQueue letezett, de a
+      // hang-csatorna utja nem hasznalta. A WAV-ot a felvevo takaritasa torli.
+      onRecognitionFailed: (info: { audio: Uint8Array; filename: string; failure: string }): void => {
+        void this.queueVoiceChannelForRetry(channelId, info);
+      },
       onProbeError: (detail: string): void => {
         void this.safeLog({
           kind: 'error',
@@ -653,6 +660,56 @@ export class DiscordListener {
     // újracsatlakozás különben két mintavételezőt hagyna ugyanazon a könyvtáron.
     this.dropProbe?.stop();
     this.dropProbe = result.probe ?? null;
+  }
+
+  /**
+   * 🔴 Egy hang-csatornas felvetel eltevese ujraprobalasra.
+   *
+   * ⭐ MIERT A MEGLEVO SORBA, es miert nem uj: a `SttRetryQueue` mar viszi a novekvo
+   * varakozasi lepcsoket, a feladas-uzenetet es a `comm doctor` lathatosagat. Egy kulon ut
+   * mindezt UJRA megkovetelne, es minden hibajat kulon kellene megtalalni.
+   *
+   * ⚠️ A `source: 'voice-channel'` NEM diszites: ez donti el, hogy a sikeres ujraprobalas
+   * `🔊 HANGCSATORNA`-kent kerul a kotegbe, es hogy a tukor a HANG-csatornaba megy — nem a
+   * fo chatbe, es nem valaszkent egy nem letezo uzenetre.
+   *
+   * Hibat SOHA nem dob: ha maga az eltevés bukik, azt naploval jelezzuk.
+   */
+  private async queueVoiceChannelForRetry(
+    channelId: string,
+    info: { audio: Uint8Array; filename: string; failure: string },
+  ): Promise<void> {
+    try {
+      const entry: SttRetryEntry | null = await this.retryQueue.enqueue({
+        // ⚠️ A fajlnev az azonosito — megszolalasonkent egyedi, es a sor ugyanezt hasznalja
+        // duplikacio-vedelemre. (Ez NEM Discord-uzenet-azonosito, ezert kell a `source`.)
+        messageId: info.filename,
+        channelId: channelId,
+        authorId: (process.env['MA_DISCORD_USER_ID'] ?? '').trim(),
+        authorName: 'Itharen',
+        filename: info.filename,
+        contentType: 'audio/wav',
+        audio: info.audio,
+        failure: info.failure,
+        source: 'voice-channel',
+      });
+
+      await this.safeLog({
+        kind: 'note',
+        summary: entry
+          ? `[discord/listener] 🔊 A hang-csatornas felvetel ELTEVE ujraprobalasra `
+            + `(${MAX_ATTEMPTS - 1} proba van hatra) — ${info.failure}`
+          : `[discord/listener] MA-VOICE-NO-RETRY: nincs tobb probalkozasi lepcso — ${info.failure}`,
+        extra: { code: 'MA-VOICE-QUEUED-FOR-RETRY', messageId: info.filename, queued: entry !== null },
+      });
+    } catch (err: unknown) {
+      await this.safeLog({
+        kind: 'error',
+        summary: '[discord/listener] MA-VOICE-RETRY-ENQUEUE-FAILED: a hangot NEM sikerult eltenni '
+          + `ujraprobalasra, ezert VEGLEG elveszhet — ${err instanceof Error ? err.message : String(err)}`,
+        extra: { code: 'MA-VOICE-RETRY-ENQUEUE-FAILED', messageId: info.filename },
+      });
+    }
   }
 
   /**
@@ -1025,7 +1082,7 @@ export class DiscordListener {
             + 'nincs meg — ebből a tételből már nem lesz átirat.',
           extra: { code: 'MA-STT-RETRY-AUDIO-MISSING', messageId: entry.messageId },
         });
-        await this.sendMirror(composeGiveUpMessage(entry), entry.messageId);
+        await this.sendGiveUp(entry, composeGiveUpMessage(entry));
 
         return;
       }
@@ -1085,7 +1142,24 @@ export class DiscordListener {
         + `a hangüzenet tartalma elveszett. Utoljára: ${failure}`,
       extra: { code: 'MA-STT-RETRY-GIVEN-UP', messageId: entry.messageId },
     });
-    await this.sendMirror(composeGiveUpMessage({ ...entry, lastFailure: failure }), entry.messageId);
+    await this.sendGiveUp(entry, composeGiveUpMessage({ ...entry, lastFailure: failure }));
+  }
+
+  /**
+   * A FELADÁS-üzenet — oda, ahonnan a hang jött.
+   *
+   * 🔴 Ez a legfontosabb üzenet az egész sorban: itt mondjuk ki, hogy **a tartalom elveszett**.
+   * ⚠️ Ha egy hang-csatornás tételnél a fő chatbe menne, az owner **pont ezt nem látná** ott,
+   * ahol beszélt — ugyanaz a hibaosztály, amit a friss átiratnál 21:47-kor már javítottunk.
+   */
+  private async sendGiveUp(entry: SttRetryEntry, text: string): Promise<void> {
+    if (entry.source === 'voice-channel') {
+      await this.sendToChannel(text, entry.channelId, entry.messageId);
+
+      return;
+    }
+
+    await this.sendMirror(text, entry.messageId);
   }
 
   /**
@@ -1095,10 +1169,18 @@ export class DiscordListener {
    * **hozzám** még mindig nem jutna el — vagyis a sor a cél előtt egy lépéssel bukna el.
    */
   private async deliverRetriedTranscript(entry: SttRetryEntry, text: string): Promise<void> {
-    const transcript: string = composeTranscriptForBatch({
-      transcript: text,
-      ...(entry.durationSecs === undefined ? {} : { durationSecs: entry.durationSecs }),
-    });
+    // 🔊 A HANG-CSATORNAS FELVETEL MASKEPP KEZBESITENDO — merve 2026-09-08 02:15.
+    //
+    // ⚠️ Ket dolog lenne HIBAS a hanguzenet-uton: (a) `🎙️ HANGÜZENET`-kent jelolne, elfedve,
+    // hogy ELO BESZEDROL van szo *(mas bizonytalansag — a szegmentalas is hibazhat)*;
+    // (b) a tukor egy NEM LETEZO uzenetre valaszolna, mert ott a `messageId` a WAV fajlneve.
+    const fromVoiceChannel: boolean = entry.source === 'voice-channel';
+    const transcript: string = fromVoiceChannel
+      ? composeVoiceChannelEntry({ transcript: text, speakerName: entry.authorName })
+      : composeTranscriptForBatch({
+        transcript: text,
+        ...(entry.durationSecs === undefined ? {} : { durationSecs: entry.durationSecs }),
+      });
 
     await this.bridge.enqueue({
       messageId: entry.messageId,
@@ -1116,11 +1198,33 @@ export class DiscordListener {
         + `megvan a szöveg (${text.length} karakter), és a kötegbe került.`,
       extra: { code: 'MA-STT-RETRY-SUCCEEDED', messageId: entry.messageId, attempts: entry.attempts },
     });
-    await this.sendMirror(
-      `✅ **Megvan a hangüzenet, amit korábban nem tudtam felismerni.**\n`
-        + `*(a ${entry.attempts}. próbálkozásra sikerült)*\n\n${text}`,
-      entry.messageId,
-    );
+    const mirror: string = fromVoiceChannel
+      ? `✅ **Megvan, amit a hang-csatornában mondtál — korábban nem tudtam felismerni.**\n`
+        + `*(a ${entry.attempts}. próbálkozásra sikerült)*\n\n${text}`
+      : `✅ **Megvan a hangüzenet, amit korábban nem tudtam felismerni.**\n`
+        + `*(a ${entry.attempts}. próbálkozásra sikerült)*\n\n${text}`;
+
+    // ⭐ ODA megy, ahol elhangzott: a hang-csatornas tetel tukre a HANG-csatornaba, nem a fo
+    // chatbe. (Ugyanaz a hibaosztaly, amit 21:47-kor mar javitottunk a friss atiratnal.)
+    if (fromVoiceChannel) await this.sendToChannel(mirror, entry.channelId, entry.messageId);
+    else await this.sendMirror(mirror, entry.messageId);
+  }
+
+  /**
+   * Egy uzenet EGY KONKRET csatornaba — a hang-csatornas tukrokhoz.
+   *
+   * ⚠️ Hibat sosem dob: a kezbesites bukasat naplozzuk, de a sor tovabb dolgozik.
+   */
+  private async sendToChannel(text: string, channelId: string, messageId: string): Promise<void> {
+    const sent = await sendDiscordMessage(text, 'ack', channelId);
+
+    if (sent.sent) return;
+
+    await this.safeLog({
+      kind: 'error',
+      summary: `[discord/listener] MA-VOICE-RETRY-MIRROR-UNDELIVERED: ${sent.detail}`,
+      extra: { code: 'MA-VOICE-RETRY-MIRROR-UNDELIVERED', messageId: messageId, channelId: channelId },
+    });
   }
 
   /**

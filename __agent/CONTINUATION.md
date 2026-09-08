@@ -2426,3 +2426,55 @@ nyúlj!"*). Az STT lassúsága **nem az én javításom**; amit tehetek, az a **
 ### Teszt
 
 **CLI 617/617 zöld** *(+4)*.
+
+
+---
+
+## ✅ 2026-09-08 02:16 — DEV: a bukott felismerés MÁR NEM VESZ EL (T-22, a mérésből jött csomag)
+
+### Miért ez volt a következő
+
+Az élő adat mutatta meg: 3 felvétel bukott STT-időtúllépéssel, és **mind véglegesen elveszett**.
+A `SttRetryQueue` **létezett** *(„a fel nem ismert hang NEM vész el")*, de mérve: a
+`cli/src/voice/` alatt **nulla** hivatkozás rá — a hang-csatorna útja **nem használta**.
+⇒ A WAV-ot a felvevő takarítása törli, a tartalom visszahozhatatlan.
+
+### 🔴 A bekötés NEM volt „egy sor" — három dolog eltér a hangüzenet-úttól
+
+Mielőtt bekötöttem volna, végigolvastam a **kézbesítési** ágat — és kiderült, hogy nyersen
+bekötve **két hibás viselkedést** kaptunk volna:
+
+| # | Mi lett volna rossz | Miért |
+|---|---|---|
+| 1 | `🎙️ HANGÜZENET`-ként kerül a kötegbe | elfedné, hogy **élő beszédről** van szó — az más bizonytalanságú *(a szegmentálás is hibázhat)* |
+| 2 | a tükör egy **nem létező üzenetre** válaszolna | a hang-csatornánál a `messageId` a **WAV fájlneve**, nem Discord-üzenet |
+| 3 | bukásnál a tükör a **fő chatbe** esne vissza | az owner **pont ott nem látná**, ahol beszélt |
+
+🩹 Ezért az `SttRetryEntry` kapott egy **opcionális `source`** mezőt
+(`voice-message` | `voice-channel`), és a kézbesítés + a **feladás-üzenet** is elágazik rajta.
+⭐ **Opcionális, mert a lemezen MÁR OTT LÉVŐ bejegyzéseknek változatlanul kell működniük** —
+a hiánya `voice-message`-t jelent. Tesztelve.
+
+### ⭐ SZELEKTÍV újrapróbálás — nem minden bukás érdemel újat
+
+| Kimenetel | Újrapróbálás | Miért |
+|---|---|---|
+| `recognition-failed` *(időtúllépés, szolgáltatás-hiba)* | ✅ **igen** | a felismerés **le sem futott**; a hang ép, nyugodtabb gépnél sikerülhet |
+| `not-understood` *(lefutott, de kétes)* | ⛔ **nem** | ugyanaz a bemenet **ugyanazt a kétes eredményt** adná — csak égetné a szűk erőforrást |
+| sikeres | ⛔ nem | nincs mit újrapróbálni |
+
+### ⛔ Amihez nem nyúltam
+
+Az FDP AI-hoz **nem** (`fdp-ai-never-restart`). Az STT lassúsága nem az én javításom — amit
+tehetek, az a **kiesés megelőzése** és az **igaz jelentés**. A meglévő sor növekvő lépcsői
+*(2 → 5 → 15 → 45 perc)* pont erre valók: **a várakozás maga az alkalmazkodás.**
+
+### 🔴 SAJÁT TANULSÁG — a heredoc HARMADSZOR ette meg a backslash-t
+
+Ugyanaz a hiba, mint 00:51-kor. ⛔ **Innentől backslash-t tartalmazó kódot kizárólag
+szerkesztő-eszközzel írok** — a shell-heredoc ebben a környezetben megbízhatatlan.
+📌 Az assert a mentés ELŐTT állt, így a fájl nem sérült — de két kört elvitt.
+
+### Teszt
+
+**CLI 622/622 zöld** *(+5)* · a transzplantált build változatlanul emittál.
