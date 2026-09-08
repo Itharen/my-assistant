@@ -23,7 +23,8 @@ export type CcapErrorCode =
   | 'MA-CCAP-NO-OWNER-TARGET'
   | 'MA-CCAP-OWNER-TARGET-INCOMPLETE'
   | 'MA-CCAP-OWNER-TARGET-GONE'
-  | 'MA-CCAP-OWNER-TARGET-MISMATCH';
+  | 'MA-CCAP-OWNER-TARGET-MISMATCH'
+  | 'MA-CCAP-OWNER-TARGET-ENV-PARTIAL';
 
 export class CcapError extends Error {
   constructor(

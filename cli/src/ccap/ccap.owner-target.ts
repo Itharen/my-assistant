@@ -48,6 +48,61 @@ export interface OwnerMessageTargetConfig {
   reason?: string;
 }
 
+/**
+ * A KÖRNYEZETI VÁLTOZÓS felülbírálás mezőnevei.
+ *
+ * 🔴 OWNER-KÉRÉS (2026-09-08 15:32): *„Az hogy melyik sessiont használjuk ehhez az egy beégetett
+ * illetve legalább egy Environment file-ból tartozó érték kéne legyen."*
+ *
+ * ⭐ MIÉRT KELL A JSON MELLÉ: a repóba commitolt rögzítés **auditálható**, de a session-azonosító
+ * **gép- és futásfüggő** — egy másik gépen vagy egy asszisztens-újraindulás után más. Az `.env`
+ * a hely, ahol az ilyen érték lakik (`pi-env-gitignored`), és **nem kerül a repóba**.
+ *
+ * ⚠️ **A KÖRNYEZET NYER a fájl felett** — ha be van állítva, az a mérvadó.
+ */
+export const OWNER_TARGET_ENV_SESSION_ID: string = 'MA_OWNER_TARGET_SESSION_ID';
+export const OWNER_TARGET_ENV_CLAUDE_SESSION_ID: string = 'MA_OWNER_TARGET_CLAUDE_SESSION_ID';
+export const OWNER_TARGET_ENV_LABEL: string = 'MA_OWNER_TARGET_LABEL';
+
+/**
+ * A fájlból olvasott rögzítés + a környezet ÖSSZEFÉSÜLÉSE. **Tiszta függvény.**
+ *
+ * ⛔ **A FÉL-BEÁLLÍTÁS HIBA, NEM RÉSZLEGES FELÜLBÍRÁLÁS.** Ha csak az egyik azonosító van
+ * megadva, a **kettős egyezés** — ami az egész védelem lényege — elveszne: a `sessionId`
+ * a környezetből, a `claudeSessionId` a fájlból származna, és a kettő **egymástól függetlenül**
+ * mutatna két különböző sessionre. Ilyenkor hangosan bukunk.
+ */
+export function mergeOwnerTargetWithEnv(
+  fromFile: OwnerMessageTargetConfig,
+  env: Record<string, string | undefined>,
+): OwnerMessageTargetConfig {
+  const sessionId: string = (env[OWNER_TARGET_ENV_SESSION_ID] ?? '').trim();
+  const claudeSessionId: string = (env[OWNER_TARGET_ENV_CLAUDE_SESSION_ID] ?? '').trim();
+
+  if (!sessionId && !claudeSessionId) return fromFile;
+
+  if (!sessionId || !claudeSessionId) {
+    throw new CcapError(
+      'MA-CCAP-OWNER-TARGET-ENV-PARTIAL',
+      `A cél-session környezeti felülbírálása HIÁNYOS: `
+        + `${OWNER_TARGET_ENV_SESSION_ID}=${sessionId || '(nincs)'} · `
+        + `${OWNER_TARGET_ENV_CLAUDE_SESSION_ID}=${claudeSessionId || '(nincs)'}.`,
+      `Add meg MINDKETTŐT az \`.env\`-ben, vagy egyiket se. A kettős egyezés a védelem: `
+        + 'fél beállítással két KÜLÖNBÖZŐ sessionre mutatna a két azonosító.',
+      { [OWNER_TARGET_ENV_SESSION_ID]: sessionId, [OWNER_TARGET_ENV_CLAUDE_SESSION_ID]: claudeSessionId },
+    );
+  }
+
+  return {
+    ...fromFile,
+    sessionId: sessionId,
+    claudeSessionId: claudeSessionId,
+    label: (env[OWNER_TARGET_ENV_LABEL] ?? '').trim() || fromFile.label,
+    reason: `${fromFile.reason ?? ''} ⚠️ A sessionId/claudeSessionId KÖRNYEZETI VÁLTOZÓBÓL jön `
+      + `(${OWNER_TARGET_ENV_SESSION_ID}), ami felülírja a fájlban rögzítettet.`.trim(),
+  };
+}
+
 /** A rögzítés beolvasása. @throws CcapError ha hiányzik vagy hiányos. */
 export async function readOwnerTargetConfig(repoRoot: string): Promise<OwnerMessageTargetConfig> {
   const path: string = join(repoRoot, OWNER_TARGET_CONFIG_RELATIVE);
@@ -96,7 +151,11 @@ export async function resolveOwnerMessageTarget(
   client?: CcapApiClient,
 ): Promise<CcapSelfIdentity> {
   const api: CcapApiClient = client ?? new CcapApiClient();
-  const config: OwnerMessageTargetConfig = await readOwnerTargetConfig(repoRoot);
+  // ⭐ A KÖRNYEZET NYER: a fájl az auditálható alap, az `.env` a gép-/futásfüggő felülbírálás.
+  const config: OwnerMessageTargetConfig = mergeOwnerTargetWithEnv(
+    await readOwnerTargetConfig(repoRoot),
+    process.env,
+  );
   const sessions: CcapCcSession[] = await api.listCcSessions();
   const match: CcapCcSession | undefined = sessions.find((s) => s.sessionId === config.sessionId);
 
