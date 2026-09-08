@@ -16,6 +16,7 @@ import { DiscordBridge } from '../discord/discord.bridge.js';
 import { readHeartbeat, type HeartbeatStatus } from '../discord/discord.heartbeat.js';
 import { checkReplyObligation } from '../discord/discord.reply-tracker.js';
 import { MAX_ATTEMPTS, SttRetryQueue, type SttRetryEntry } from '../stt/stt.retry-queue.js';
+import { readVoicePresenceConfig } from '../voice/voice-channel-presence.js';
 import { summarizeChecks, type CommCheck, type CommDoctorReport } from './comm.models.js';
 
 /** Ennyi perc után tekintjük elavultnak a jelenlét-mérést. */
@@ -298,7 +299,7 @@ async function checkDiscordBatch(checks: CommCheck[]): Promise<void> {
  */
 async function checkVoiceChannelPresence(checks: CommCheck[]): Promise<void> {
   try {
-    checks.push(decideVoicePresenceCheck(await readHeartbeat()));
+    checks.push(decideVoicePresenceCheck(await readHeartbeat(), readVoicePresenceConfig() !== null));
   } catch (err: unknown) {
     checks.push({
       id: VOICE_PRESENCE_CHECK_ID,
@@ -325,7 +326,7 @@ export const VOICE_PRESENCE_LABEL: string = 'Bent ül-e a bot a HANG-csatornába
  * 🔴 A LEGFONTOSABB ÁG: `configured && !joined` ⇒ **`broken`**. Ez az az állapot, amiről
  * korábban **semmi** nem szólt: az owner beszélt volna a csatornába, ahol a bot nincs bent.
  */
-export function decideVoicePresenceCheck(status: HeartbeatStatus): CommCheck {
+export function decideVoicePresenceCheck(status: HeartbeatStatus, isConfigured: boolean): CommCheck {
   const label: string = VOICE_PRESENCE_LABEL;
   const base = { id: VOICE_PRESENCE_CHECK_ID, area: 'discord' as const, label };
   const voice = status.heartbeat?.voice;
@@ -340,11 +341,33 @@ export function decideVoicePresenceCheck(status: HeartbeatStatus): CommCheck {
   }
 
   if (!voice) {
+    // 🔴 A MŐ HIÁNYA NEM A KONFIGURÁCIÓ HIÁNYA — mért saját hiba, 2026-09-08 13:02 és 17:06.
+    //
+    // Korábban ez az ág **feltétel nélkül** azt állította, hogy „A hang-csatorna nincs
+    // beállítva” — holott a `.env`-ben mindkét kulcs ott volt, és a bot **be is lépett**.
+    // Az életjel egyszerűen még nem tartalmazta a `voice` blokkot *(friss figyelő-indítás)*.
+    //
+    // ⚠️ A hiba **mindkét irányban** téveszt: egy **valódi kimaradást** is
+    // „nincs beállítva”-ként mutatna — vagyis pont azt fedné el, amiért ez a check készült.
+    //
+    // ⭐ Ezért a döntéshez a **tényleges konfiguráció** kell, nem az életjel hiánya.
+    // (`post-development-verification.md`: egy állapot-mező NEVE nem a jelentése.)
+    if (!isConfigured) {
+      return {
+        ...base,
+        status: 'missing',
+        detail: 'A hang-csatorna nincs beállítva — a figyelő nem is próbál belépni.',
+        remedy: 'Ha kell: MA_DISCORD_GUILD_ID + MA_DISCORD_VOICE_CHANNEL_ID a `.env`-ben.',
+      };
+    }
+
     return {
       ...base,
-      status: 'missing',
-      detail: 'A hang-csatorna nincs beállítva — a figyelő nem is próbál belépni.',
-      remedy: 'Ha kell: MA_DISCORD_GUILD_ID + MA_DISCORD_VOICE_CHANNEL_ID a `.env`-ben.',
+      status: 'unknown',
+      detail: 'A hang-csatorna BE VAN ÁLLÍTVA, de a figyelő még nem jelentett róla — '
+        + 'a bent-ülés most nem állapítható meg.',
+      remedy: 'Általában friss figyelő-indítás: a következő életjel már hozza. '
+        + 'Ha tartósan így marad, nézd meg a `MA-VOICE-JOIN-FAILED` sorokat az akció-naplóban.',
     };
   }
 
