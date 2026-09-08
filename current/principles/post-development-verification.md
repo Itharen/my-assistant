@@ -96,6 +96,40 @@ igazolás **első lépése** annak bizonyítása, hogy a **helyes bemeneten** do
 **saját helyéből** indul (`import.meta.url`, `__dirname`), **elrendezés-függő** — és élesben
 más az elrendezés. A tartós adat helyét **soha ne a kód helyéből** számold.
 
+---
+
+## 🔴 A ZÖLD TESZT ELTAKARJA A BUKOTT FORDÍTÁST (mérve 2026-09-08 08:23)
+
+A `tsc ; jasmine` láncnál a **kilépési kód a LÁNC UTOLSÓ tagjától** jön. Ha a fordítás
+bukik, de a tesztek a **régi `dist`-en** lefutnak, a futás `exit 0`-t ad és
+`„635 specs, 0 failures"`-t — miközben a forrás **le sem fordult**.
+
+**Mért eset:** a `comm.doctor.ts`-ben maradt egy fölösleges `}`. A háttérfutás `exit 0`-t
+jelentett és zöld tesztet — én ezt **zöldnek olvastam**. Közben:
+
+| Ami történt | Amit láttam |
+|---|---|
+| `error TS1128: Declaration or statement expected` | — *(a kimenet közepén, a „0 failures" ELŐTT)* |
+| a tesztek a **korábbi** `dist`-en futottak | `643 specs, 0 failures` ✅ |
+| 🔴 az **LDP FATÁLISAN elszállt** ugyanettől a fájltól | `tsc-cli failed (fatal)` |
+
+⚠️ A legárulkodóbb jel nem a kilépési kód volt, hanem hogy **az LDP haldoklott** — azaz a
+valóság már mondta az igazat, miközben a saját futásom megnyugtatott.
+
+### A szabály
+
+⛔ **A `exit 0` a láncolt build+teszt végén NEM bizonyíték.** Kötelező:
+
+1. A **fordítás kimenetét külön nézd meg** — `grep "error TS"`, ne csak a `tail`-t.
+   *(A `tail -6` pont azt vágja le, ami számít: a fordítási hiba a lista elején áll.)*
+2. Vagy válaszd szét: előbb `tsc`, és **csak zöld fordítás után** `jasmine`.
+3. ⭐ **A teszt-darabszám is jelzés:** ha új tesztet írtál és a szám **nem nőtt**, a te
+   fájlod **le sem fordult**. Ez a legolcsóbb ellenőrzés, és nem hazudik.
+
+📌 **Ugyanaz a hiba-osztály, mint a `ma comm voice-funnel`-nél:** 593 zöld teszt és zöld
+`tsc` mellett a parancs **nem létezett futásidőben**. A zöld jelzés és a **működő rendszer**
+két különböző állítás.
+
 ### Kapcsolódó
 
 - `current/principles/ldp-default-runtime.md` — az LDP a default futtatási mód

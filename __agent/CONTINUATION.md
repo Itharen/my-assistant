@@ -3062,3 +3062,63 @@ a kimenetbe **csonka buildet** adhat, ami rosszabb, mint a lassúság.
 csak nyugodt gépen lehet hitelesen megmérni *(ez a tegnap mért csapda: „mérés build közben
 félrevezet")*. A forrás-változás a munkafában van, a következő kör az **első dolga** a
 teszt-futtatás + commit.
+
+
+---
+
+## ✅ 2026-09-08 08:35 — A DEV-HUROK LEZÁRVA (a maradék owner-kapun áll)
+
+### Amit ez a kör hozott
+
+**Csomag:** a `ma comm doctor` „bent ül-e a bot a HANG-csatornában" ellenőrzése **öt ággal
+futott, nulla teszttel**, és nem is volt exportálva ⇒ szerkezetileg tesztelhetetlen.
+
+🩹 A döntés kiemelve tiszta függvénybe: **`decideVoicePresenceCheck(status) → CommCheck`**,
+**18 teszt** mind az öt ágra. A két ág, ami számít:
+
+| Ág | Mit mond | Miért ez a fontos |
+|---|---|---|
+| `BE VAN ÁLLÍTVA, DE NINCS BENT` | 🔴 `broken` + a **következmény** kimondva | ettől nem beszél az owner egy üres csatornába |
+| régi formátumú életjel | ⚠️ `unknown` — **SOHA nem** „nincs bent" | a **hiányzó mező nem bizonyíték** |
+
+✅ **Pozitív kontroll:** a második ág szándékos elrontása **3 bukást** ad, visszaállítva **0**.
+⇒ A teszt tényleg fog, nem csak zöld.
+
+### 🔴 A kör legfontosabb tanulsága — és egy általam okozott kiesés
+
+A háttérben futó build+teszt **`exit 0`**-t és **„0 failures"**-t jelentett. **Hazudott:** a
+fordítás bukott *(egy maradék `}`)*, a tesztek a **régi `dist`-en** futottak. És ugyanettől a
+fájltól **fatálisan elszállt az LDP** — a `tsc-cli` bukott, a rendszer megállt.
+
+📌 Nem elméleti hiba: **én törtem el a futó rendszert**, és a saját mérésem nyugtatott meg
+róla. A javítás után az LDP **08:27-kor visszajött** *(`tsc-cli ✓ 6.4s`)*.
+
+⇒ Szabályként rögzítve: `current/principles/post-development-verification.md` —
+*„A ZÖLD TESZT ELTAKARJA A BUKOTT FORDÍTÁST"*. A legolcsóbb ellenőrzés, ami **nem hazudik**:
+**ha új tesztet írtál és a darabszám nem nőtt, a fájlod le sem fordult.**
+
+### Miért ÁLL MEG itt a hurok
+
+A wakeup-utasítás szerint *„ha nincs több érdemi tétel, zárd le"*. Végigmérve:
+
+| Maradék tétel | Min áll |
+|---|---|
+| **T-52** — élő, keretenkénti színes sáv | 🙋 **owner-döntés** *(3 opció, a diagnózis kész)* |
+| **Az átviteli arány igazolása** | 🎙️ **owner beszédére vár** — 4 kísérlet még „kevés minta" |
+| **A retry-sor élő visszahozása** | 🎙️ ugyanaz — bekötve, de élesben még nem bizonyított |
+| **Q-2026-09-07-07 / -08** *(jelzés-hozzárendelés, fejhallgató vs. hangszóró)* | 🙋 owner-válasz |
+
+⇒ **Minden maradék tétel owner-kapun vagy élő adaton áll.** Nincs olyan, amit kódolással
+előbbre vihetnék. ⛔ Ezért nem ütemezek újabb ébredést — az üres kör poll lenne.
+
+### 🔁 Mi indítja újra
+
+1. 🙋 **T-52 döntés** *(A / B / C a `2026-09-08-live-colour-bar-diagnosis.md`-ben)* — az (A),
+   „saját ablak a figyelőnek", azonnal megépíthető.
+2. 🎙️ **Új beszéd a hang-csatornában** ⇒ `ma comm voice-funnel` új mintát ad, és **akkor** lesz
+   értelme a következő döntésnek a lánc szűk keresztmetszetéről.
+
+### Állapot
+
+- **Teszt:** CLI **643/643** · szerver **82/82** — fordítás zöld, LDP fut
+- **Commitolva + pusholva:** `394df85` *(minden e körben készült munka bent van)*
