@@ -2873,3 +2873,29 @@ doctor ezt **ki is mondja**, ahelyett hogy hibát vagy rendben-t hazudna.
 ### Teszt
 
 **CLI 635/635 zöld** *(+5)* · **szerver 82/82 zöld** *(+3)*.
+
+### 🔴 KOORDINÁTOR-KORREKCIÓ: a T-52 lezárása TÚLÁLLÍTÁS volt
+
+A koordinátor visszaminősítette 🟡 **RÉSZBEN**-re, és **igaza van**:
+
+> *„a DEV megépítette a szám-összegzést a pulzus-sorban (60 mp-enként, hasznos).
+> ⚠️ De az owner ÉLŐ, keretenkénti, SZÍNES `|` sávot kért — az a döntés **folyamatát** mutatja,
+> nem az eredményét."*
+
+📌 **A különbség lényegi, nem árnyalat.** Amit én építettem, az **utólagos összegzés**: *„9 → 3
+feldolgozva"*. Amit az owner kért, az **élő, keretenkénti** kép arról, hogy a rendszer **épp
+most mit lát** beszédnek. ⭐ Az egyik az **eredményt** mutatja, a másik a **döntést** — és
+hibakereséskor pont a második ér valamit.
+
+⚠️ Az őszinte korlátot magam is leírtam *(„60 mp-enként frissül, ez a »mi történt« felülete,
+nem a »most hallak«")* — **és mégis lezártnak jelöltem**. A korlát kimondása nem helyettesíti
+a kérés teljesítését.
+
+⭐ **Az adat MEGVAN** — mérve az átemelt kódban: `CV_VoiceUtils.visualizeZCR(...)` +
+`CV_voiceRecordingConfig.analysisBarLog: true`, keretenkénti hangerő- és ZCR-sávval
+*(`cv-recording.control-service.ts:708, 801, 813, 869, 896`)*. ⇒ Nem gyártani kell, hanem
+**kivezetni**.
+
+🔴 **A KÖVETKEZŐ KÖR ELSŐ LÉPÉSE MÉRÉS, nem építés:** miért nem jut a `DyFM_Log` kimenete az
+LDP-konzolra? *(Mérve 06:24: **0** átemelt napló-sor a kimenetben.)* ⛔ Amíg ezt nem tudom, a
+sáv kivezetése találgatás lenne.
