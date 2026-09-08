@@ -163,6 +163,41 @@ a bizonyíték, nem a fájl kora.
 
 📌 Ugyanaz a hibaosztály, ami ma már négyszer előjött: **egy mező kora/neve nem a jelentése.**
 
+
+---
+
+## ⚠️ 2026-09-08 06:10 — T-52: JÓ MUNKA, DE NEM AZ, AMIT AZ OWNER KÉRT
+
+**Amit építettél** *(és ami önmagában értékes)*: szám-összegzés a meglévő pulzus-sorban —
+`🔊 hang 9 → 3 feldolgozva · ⚠️ 2 elveszett (4.1 mp)`, **60 másodpercenként**.
+⭐ Helyes döntés volt a **meglévő** csatornára ülni, és a korlátot is kimondtad.
+
+🔴 **DE az owner kérése MÁS VOLT — szó szerint:**
+
+> *„`|` **színesen, egy sorban**, **miközben hallja a hangomat**, és azok **pirosak és zöldek**, és
+> amikor **elég sok zöld van egymás mellett**, akkor minősítjük azt egy hangszövegű üzenetnek"*
+
+| Tulajdonság | Az ő kérése | Ami elkészült |
+|---|---|---|
+| időzítés | **élő, beszéd közben** | 60 mp-enkénti összegzés |
+| felbontás | **keretenként** egy jel | megszólalásonkénti darabszám |
+| forma | **színes `\|` sáv** | szöveges szám-sor |
+| mit mutat | **a döntés folyamata** *(épp beszédnek minősül-e)* | a döntés **eredménye** |
+
+📌 **A KÜLÖNBSÉG NEM KOZMETIKAI.** Az ő sávja azt mutatja, hogy **most, ebben a pillanatban**
+beszédnek minősül-e, amit mond — ez **közben** ad visszajelzést, és **ettől tudja beállítani
+magát** *(hangosabban, közelebb, csendesebb környezet)*. Egy utólagos szám ezt nem adja meg.
+
+⚠️ **Ezért a T-52 NEM zárható le** — a mostani rész maradjon *(hasznos)*, de a **színes,
+keretenkénti, élő sáv** hátravan.
+
+⭐ **Az adat ehhez MÁR MEGVAN:** a `setupSpeechDetection` keretenként számol hangerőt és ZCR-t.
+Nem új mérés kell, hanem **kivezetés + színezés**.
+
+📌 **Ez az én coordinátor-hibám is lett volna, ha nem nézem meg:** a „✅ MEGÉPÍTVE" a te
+megfogalmazásod szerint igaz — de az owner szavai szerint nem. **A kész definíciója az ő kérése,
+nem a mi implementációnk.**
+
 ---
 
 ## 3. Build és teszt

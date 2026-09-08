@@ -8,7 +8,7 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-08 05:15
+**Frissítve:** 2026-09-08 06:12
 
 ## Ma
 
@@ -30,7 +30,7 @@ A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
 
 | Kinek | Mit | Állapot |
 |---|---|---|
-| **DEV** `ccs-d5027942-mtroz7ve` | hang-csatorna (T-22) | dolgozik, sokat szállít |
+| **DEV** `ccs-d5027942-mtroz7ve` | hang-csatorna (T-22) | 630/630 zöld · ⚠️ a T-52-t késznek jelentette, de az owner **színes élő sávját** nem építette meg ⇒ visszanyitva |
 | **FDP** `ccs-e4e4fadf-mtroyj33` | pénzügy + bérszámfejtés | kész — a levél jóváhagyásra vár |
 
 ⚠️ **Küldés előtt mindhárom kell:** `waiting-input` · `busy: false` · **ÜRES SOR**.

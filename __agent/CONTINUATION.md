@@ -2788,3 +2788,28 @@ bukott**, köztük a journey teljes útja. Visszaállítva: **630/630 zöld**.
 ### Teszt
 
 **CLI 630/630 zöld** *(+3)* · szerver 79/79 · a journey-katalógus frissítve.
+
+---
+
+## 2026-09-08 06:10 — VERIFIKACIO: a DEV keszet jelentett, de a KESZ definicioja az OWNERE
+
+**A DEV ejszakai munkaja jo:** 630/630 zold, tipusellenorzes tiszta, es **sajat findingot is
+visszavont** (`820e111`) ahelyett, hogy hamis problemat jelentett volna.
+
+🔴 **DE a T-52-t keszkent zarta le, es ez NEM allja meg a helyet:**
+
+| | Az owner kerese | Ami elkeszult |
+|---|---|---|
+| idozites | **elo, beszed kozben** | 60 mp-enkenti osszegzes |
+| felbontas | **keretenkent** egy jel | megszolalasonkenti darabszam |
+| forma | **szines `|` sav** | szoveges szam-sor |
+| mit mutat | a dontes **FOLYAMATA** | a dontes **EREDMENYE** |
+
+📌 **A kulonbseg nem kozmetikai:** az o savja azt mutatja, hogy **epp most** beszednek minosul-e,
+amit mond — ettol tud **kozben** igazodni. Egy utolagos szam ezt nem adja meg.
+
+⭐ **A TANULSAG, ami rank vonatkozik:** a „✅ megepitve" a **fejleszto** megfogalmazasa szerint igaz
+volt. **A kesz definicioja viszont az OWNER kerese**, nem a mi implementaciónk. ⇒ A koordinatori
+verifikacio nem az, hogy megnezem, zold-e a teszt — hanem hogy **osszevetem az o SZAVAIVAL**.
+
+T-52 visszanyitva, a kulonbseg tetelesen a `DEV-HANDOFF.md`-ben.
