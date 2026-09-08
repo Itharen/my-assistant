@@ -203,6 +203,7 @@ const COMMAND_TREE: Record<string, Record<string, CommandHandler>> = {
   stt: {
     transcript: (args: string[]) => runSttSubcommand('transcript', args),
     pending: (args: string[]) => runSttSubcommand('pending', args),
+    retry: (args: string[]) => runSttSubcommand('retry', args),
   },
   tick: {
     plan: (args: string[]) => runTickSubcommand('plan', args),

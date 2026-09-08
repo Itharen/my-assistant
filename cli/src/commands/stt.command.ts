@@ -12,7 +12,10 @@
 
 import { parseArgs } from 'node:util';
 
+import { DiscordBridge } from '../discord/discord.bridge.js';
+import { composeTranscriptForBatch } from '../discord/discord.voice-message.js';
 import { makeRequestId, ok, writeEnvelope } from '../output/envelope.js';
+import { transcribeAudio } from '../stt/stt.client.js';
 import {
   TranscriptLedger,
   type TranscriptLedgerEntry,
@@ -119,8 +122,135 @@ export async function runSttCommand(subcommand: string, args: string[]): Promise
     return;
   }
 
+  if (subcommand === 'retry') {
+    await runRetry(
+      parsed.positionals.map(String),
+      ledger,
+      requestId,
+      startedAt,
+      parsed.values.pretty === true,
+      parsed.values.json === true,
+    );
+
+    return;
+  }
+
   process.stderr.write(
-    `Ismeretlen stt subcommand: "${subcommand}". Használat: transcript <messageId> | pending\n`,
+    `Ismeretlen stt subcommand: "${subcommand}". `
+    + 'Használat: transcript <messageId> | pending | retry <messageId>\n',
   );
   process.exitCode = 1;
+}
+
+/**
+ * 🔁 VISSZAMENŐLEGES FELOLDÁS — a T-68 harmadik, cél-része.
+ *
+ * > **Owner (2026-09-08 15:31):** *„…és ilyenkor ezeket majd **visszamenőlegesen is fel kell
+ * > tudjad oldani**."*
+ *
+ * ⭐ MIÉRT MŰKÖDIK MOST, ami eddig lehetetlen volt: a nyilvántartás a feladáskor **megőrzi a
+ * hangot** *(1. rész)*. Enélkül a `SttRetryQueue.remove()` már törölte volna, és nem lenne
+ * mit újrapróbálni — pontosan ez veszített el ma egy 30 másodperces hangüzenetet.
+ *
+ * ⚠️ **A siker a KÖTEGBE is bekerül** — különben megvolna a szöveg, de nem jutna el az
+ * asszisztenshez, vagyis a cél előtt egy lépéssel bukna el az egész.
+ */
+async function runRetry(
+  positionals: string[],
+  ledger: TranscriptLedger,
+  requestId: string,
+  startedAt: number,
+  pretty: boolean,
+  asJson: boolean,
+): Promise<void> {
+  const messageId: string = String(positionals[0] ?? '').trim();
+
+  if (!messageId) {
+    process.stderr.write(
+      'Hiányzik az üzenet-azonosító.\n'
+      + 'Használat: ma stt retry <messageId>   (a `ma stt pending` listázza a feloldatlanokat)\n',
+    );
+    process.exitCode = 1;
+
+    return;
+  }
+
+  const entry: TranscriptLedgerEntry | null = await ledger.get(messageId);
+
+  if (!entry || entry.status !== 'failed') {
+    // ⚠️ A „nincs mit újrapróbálni" NEM hiba — de ⛔ nem is maradhat néma.
+    process.stdout.write(`\n⚪ ${!entry
+      ? `Erről az üzenetről (${messageId}) nincs feljegyzés.`
+      : 'Ez az üzenet MÁR fel van oldva — nincs mit újrapróbálni.'}\n\n`);
+
+    return;
+  }
+
+  const audio: Uint8Array | null = await ledger.readAudio(entry);
+
+  if (!audio) {
+    process.stdout.write(
+      `\n⛔ A hang NINCS meg ehhez az üzenethez (${messageId}) — ez a tartalom véglegesen\n`
+      + '   elveszett. A bejegyzés megmarad, hogy legalább a TÉNY látszódjon.\n\n',
+    );
+    process.exitCode = 1;
+
+    return;
+  }
+
+  process.stdout.write(`\n🔁 Újrapróbálom: ${messageId}\n  ${localTimeHeader()}\n`);
+
+  const result = await transcribeAudio({
+    audio: audio,
+    filename: entry.filename,
+    ...(entry.durationSecs === undefined ? {} : { audioDurationSecs: entry.durationSecs }),
+  });
+
+  if (!result.ok || !result.text.trim()) {
+    // 🔴 A bukás NEM írja felül a bejegyzést: a hang MEGMARAD, a következő próba ugyanígy
+    // elindítható. ⛔ Egy sikertelen újrapróbálás nem törölheti a tartalmat.
+    process.stdout.write(
+      `\n🔴 Most sem sikerült: ${result.detail || '(nincs részlet)'}\n`
+      + '   ⭐ A hang MEGMARAD — később újra megpróbálható.\n\n',
+    );
+    process.exitCode = 1;
+
+    return;
+  }
+
+  await ledger.recordResolved({
+    messageId: entry.messageId,
+    channelId: entry.channelId,
+    authorName: entry.authorName,
+    filename: entry.filename,
+    ...(entry.durationSecs === undefined ? {} : { durationSecs: entry.durationSecs }),
+    transcript: result.text,
+    attempts: entry.attempts + 1,
+  });
+
+  // ⭐ A CÉL: a késve feloldott szöveg ELJUT az asszisztenshez, nem csak a nyilvántartásba.
+  // ⚠️ Külön azonosítóval, hogy a köteg duplikátum-szűrője ne dobja el az eredeti mellett.
+  await new DiscordBridge().enqueue({
+    messageId: `${entry.messageId}-retry`,
+    authorId: '',
+    authorName: entry.authorName,
+    channelId: entry.channelId,
+    content: composeTranscriptForBatch({
+      transcript: result.text,
+      ...(entry.durationSecs === undefined ? {} : { durationSecs: entry.durationSecs }),
+    }),
+    receivedAt: new Date().toISOString(),
+    referencedMessageId: entry.messageId,
+  });
+
+  if (asJson) {
+    writeEnvelope(ok('stt.retry', requestId, startedAt, {
+      messageId: entry.messageId,
+      transcript: result.text,
+    }), pretty);
+
+    return;
+  }
+
+  process.stdout.write(`\n✅ FELOLDVA — és a kötegbe is bekerült:\n   „${result.text}"\n\n`);
 }

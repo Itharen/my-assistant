@@ -257,6 +257,24 @@ export class TranscriptLedger {
     await this.write(audioKept ? entry : { ...entry, audioFile: undefined });
   }
 
+  /**
+   * A MEGŐRZÖTT hang beolvasása — ez a visszamenőleges feloldás bemenete.
+   *
+   * `null`, ha a hang nincs meg. ⚠️ Ilyenkor a bejegyzés attól még értékes: megmondja, hogy
+   * **volt** ott tartalom, és hogy **elveszett** — csak újrapróbálni nem lehet.
+   */
+  async readAudio(entry: TranscriptLedgerEntry): Promise<Uint8Array | null> {
+    const path: string | null = this.audioPathOf(entry);
+
+    if (!path) return null;
+
+    try {
+      return await readFile(path);
+    } catch {
+      return null;
+    }
+  }
+
   /** A megőrzött hang teljes útvonala — `null`, ha nincs. */
   audioPathOf(entry: TranscriptLedgerEntry): string | null {
     if (!entry.audioFile) return null;

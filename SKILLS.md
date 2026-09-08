@@ -610,3 +610,33 @@ Discord hanguzenet  ->  szuro (hangot is elfogad)  ->  👂 FUL-REAKCIO  ->  let
 - Terv: `__agent/plans/discord-two-way-hyperplan/` · szabályok:
   `__agent/flows/recurring/hourly-assistant-tick/README.md` · beállítás:
   `__documentations/dev/DISCORD_BOT_SETUP.md`.
+
+### 🎙️ `ma stt` — hangüzenet ↔ transzkript nyilvántartás (T-68)
+
+```bash
+  ma stt pending                  # a FELOLDATLANOK munkalistája — megvan-e még a hang?
+  ma stt transcript <messageId>   # mi hangzott el benne — vagy MIÉRT nem tudjuk
+  ma stt retry <messageId>        # 🔁 VISSZAMENŐLEGES feloldás a megőrzött hangból
+```
+
+**Miért létezik** *(owner, 2026-09-08 15:31)*: *„a rendszernek rögzítenie kéne, hogy melyik
+üzenetekhez melyik transzkript tartozik, illetve melyik üzeneteknek nem sikerült a transzkript,
+és ilyenkor ezeket majd **visszamenőlegesen is fel kell tudjad oldani**."*
+
+🔴 **A mért blokkoló, ami ezt lehetetlenné tette:** a `SttRetryQueue.remove()` a feladáskor a
+**hangot is törölte** ⇒ mire kérnéd, már **nincs mit** újrapróbálni. Most a sor a feladás
+**pillanatában** átadja a hangot a nyilvántartásnak *(`onGiveUp` horog)*.
+
+| Állapot | Mit őrzünk |
+|---|---|
+| ✅ `resolved` | a **szöveget** *(a siker is bekerül — a párosítás önmagában érték)* |
+| 🔴 `failed` | a **hangot** + az okot + a próbaszámot ⇒ **újrapróbálható** |
+
+⭐ **A `retry` a kötegbe is beteszi** a késve feloldott szöveget — különben megvolna, de nem
+jutna el az asszisztenshez.
+
+⚠️ **A `messageId` a válasz-referenciából jön:** ha az owner egy üzenetre **válaszol**, a
+`referencedMessageId` végigmegy a láncon *(Discord → figyelő → köteg)*, és azzal hívható a
+`transcript` / `retry`.
+
+📌 Tárolás: `~/.config/my-assistant/stt-ledger/` — ⛔ nem a repóban *(nyers felhasználói tartalom)*.
