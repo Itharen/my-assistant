@@ -173,7 +173,7 @@ rövidíthető és sosem szűrhető: ha egy szabály szövegére szükség van, 
 fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-global/` = FDP-repóban ·
 `project-internal/` = projekt-workspace-ben · `project-type/` = projekt-típus szerint.
 
-**`global/` — 46 szabaly**
+**`global/` — 47 szabaly**
 
 | ruleId | Cim | Fajl |
 |---|---|---|
@@ -201,6 +201,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `core-nonblocking-cicd` | Never block on CI/CD — pipeline the cycles | `fdp-documentations/rules/global/core-nonblocking-cicd.md` |
 | `core-no-npmrc` | NEVER create `.npmrc` files — in any repo, at any level | `fdp-documentations/rules/global/core-no-npmrc.md` |
 | `core-no-polling` | core-no-polling (global, hard rule) | `fdp-documentations/rules/global/core-no-polling.md` |
+| `core-no-stash` | A félkész munkát NEM tesszük félre — `git stash` TILOS, commitold és told fel | `fdp-documentations/rules/global/core-no-stash.md` |
 | `core-no-work-copies` | A projektek duplikálása TILOS — munkamásolat sehova nem kerülhet | `fdp-documentations/rules/global/core-no-work-copies.md` |
 | `core-observability` | Observability | `fdp-documentations/rules/global/core-observability.md` |
 | `core-owner-decision-self-contained` | Owner decisions must be presented FULLY EXPLAINED — no unresolved references or codes | `fdp-documentations/rules/global/core-owner-decision-self-contained.md` |
@@ -250,7 +251,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `pi-session-docs` | Dated session docs | `fdp-documentations/rules/project-internal/pi-session-docs.md` |
 | `pi-specifications-immutable` | __specifications/ is immutable | `fdp-documentations/rules/project-internal/pi-specifications-immutable.md` |
 
-**`project-type/` — 7 szabaly**
+**`project-type/` — 8 szabaly**
 
 | ruleId | Cim | Fajl |
 |---|---|---|
@@ -260,6 +261,7 @@ fájlból kell **teljes egészében** beolvasni. `global/` = mindenhol · `fdp-g
 | `pt-unity-cli` | Unity CLI — használd előszeretettel minden Unity-projektben | `fdp-documentations/rules/project-type/pt-unity-cli.md` |
 | `pt-unity-master-slave` | Unity: master-slave felépítés + INDULÁSKORI önellenőrzés — a hiba a betöltéskor bukjon ki | `fdp-documentations/rules/project-type/pt-unity-master-slave.md` |
 | `pt-unity-prefab-tree` | Unity: a prefab-fát ELŐRE kell megtervezni — a variáns bázisa write-once | `fdp-documentations/rules/project-type/pt-unity-prefab-tree.md` |
+| `pt-unity-shared-layer-coop` | Unity: a saját repódon belül maradsz — a KÖZÖS réteget viszont KÖZÖSEN fejlesztitek | `fdp-documentations/rules/project-type/pt-unity-shared-layer-coop.md` |
 | `pt-unity-visual-evidence` | Unity: az agent lásson bele a FUTÓ játékba — kép-lekérés minden projektben | `fdp-documentations/rules/project-type/pt-unity-visual-evidence.md` |
 <!-- FDP-FLEET-RULES:END -->
 

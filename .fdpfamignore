@@ -1,0 +1,10 @@
+.git/
+**/node_modules/
+**/dist/
+**/build/
+**/coverage/
+**/.angular/
+**/.cache/
+**/tmp/
+**/temp/
+**/*.log
