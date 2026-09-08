@@ -3122,3 +3122,31 @@ előbbre vihetnék. ⛔ Ezért nem ütemezek újabb ébredést — az üres kör
 
 - **Teszt:** CLI **643/643** · szerver **82/82** — fordítás zöld, LDP fut
 - **Commitolva + pusholva:** `394df85` *(minden e körben készült munka bent van)*
+
+---
+
+## 🌙 2026-09-08 08:48 — „EGESZ ESTE IROGATTAL AMIG ALUDTAM... AMI HULYESEG"
+
+**Igaza van.** 02:25 es 08:05 kozott **~10 uzenetet** kuldtem, mikozben aludt.
+
+🔴 **A HIBA SZERKEZETE:** mindegyik uzenet **kulon-kulon indokolt** volt — meres, talalat,
+javaslat, kerdes. De az **osszeguk egy FAL**, amit ebredeskor egyben kap meg.
+
+📌 **A csapda:** minden dontest **kulon** hoztam meg *(„ez most erdemes-e uzenetnek?")*, es
+mindegyikre kulon igent mondtam. **A halmozodast senki nem merte.** Egy sorozat dontes, ami
+tetelenkent helyes es osszessegeben rossz.
+
+⚠️ **Ez a HARMADIK valtozata ugyanannak:** eloszor a **hossz** futott el, aztan a **darabszam**
+tagolatlansaga, most a **darabszam** maga. ⇒ A mennyiseg **nem az uzenetben** merendo, hanem a
+**fogado oldalan**: *hany dolgot kell elolvasnia, amikor legkozelebb ranez?*
+
+### A szabaly, amit felvettem
+
+**Alvas alatt GYUJTOK.** A talalat es a kerdes a `STATE-NOW.md` „ra var" listajara megy,
+⛔ nem Discordra. Ebredeskor **EGY** osszefoglalo. Kivetel csak a valodi veszhelyzet.
+
+⭐ **A kerdes kuldes elott:** *„ha ezt nem kuldom el, hanem hozzairom a listahoz — veszit vele
+barmit?"* Ha nem: **nem kuldom.**
+
+Kanonikus: `current/principles/sleep-window-batching.md` + `ENTRY.md` §2.
+Az osszefoglalo **egy uzenetben** kiment.

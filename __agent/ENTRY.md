@@ -178,6 +178,27 @@ a 1. lépés ezért nem formalitás.
                                               képességek → válassz egyet és csináld meg
 ```
 
+🌙 **AMÍG ALSZIK: GYŰJTÖK, NEM KÜLDÖK.**
+
+> **Owner (2026-09-08 08:48):** *„egész este írogattál amíg aludtam.... Ami hülyeség..."*
+
+⚠️ **MÉRT HIBA:** 02:25 és 08:05 között **~10 üzenetet** küldtem. Mindegyik **külön-külön
+indokolt** volt — de az összegük **fal**, amit ébredéskor egyben kap meg, és **nem olvas el**.
+
+📌 **A csapda:** minden döntést külön hoztam meg *(„ez most érdemes-e üzenetnek?")*, és mindegyikre
+külön igent mondtam. **A halmozódást senki nem mérte.**
+
+⇒ **Alvás alatt** a találat és a kérdés a **`__agent/STATE-NOW.md` „rá vár" listájára** megy,
+⛔ **nem Discordra**. Ébredéskor **EGY** összefoglaló indul: mi sürgős · mire vár válasz · mi történt.
+🔴 Kivétel csak a valódi vészhelyzet — ami **nem várhat órákat**.
+
+⭐ **A kérdés küldés előtt:** *„ha ezt nem küldöm el, hanem hozzáírom a listához — veszít vele
+bármit?"* Ha nem, **nem küldöm.**
+
+Kanonikus: `current/principles/sleep-window-batching.md`.
+
+---
+
 🔴 **A csendes kör IS naplózandó** (`ma action-log emit`, `kind: note`) — különben nem
 tudjuk megkülönböztetni a „megnéztem, nem volt teendő"-t attól, hogy **le sem futott**.
 
