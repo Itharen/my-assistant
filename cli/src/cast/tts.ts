@@ -11,6 +11,7 @@
 import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts';
 import { Readable } from 'node:stream';
 import { safeCall } from '../utils/safe-call.js';
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 
 export interface TtsOptions {
   text: string;
@@ -49,6 +50,12 @@ export async function fetchTtsMp3(opts: TtsOptions): Promise<Buffer> {
       throw new Error(`TTS returned empty buffer (voice=${voice})`);
     }
     return buffer;
+  } catch (err) {
+    // A hiba a hivoe (a `finally` ettol fuggetlenul lezarja a kapcsolatot) — de a KERET
+    // eddig nyomtalan volt: a hasznalonak csak annyi latszott, hogy „nem szolalt meg",
+    // es nem derult ki, hogy a beszed-szintezis maga bukott el.
+    reportSwallowedFailure('cast.tts.fetchTtsMp3', err);
+    throw err;
   } finally {
     safeCall(() => tts.close(), 'msedge-tts.close');
   }

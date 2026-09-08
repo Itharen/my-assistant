@@ -11,6 +11,8 @@
 // A volume save+restore és a music capture+resume egyaránt KÖTELEZŐ minden hívásnál
 // (lásd current/principles/cast-notifier-defaults.md).
 
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+
 import { fetchTtsMp3 } from './tts.js';
 import { startMp3Server } from './mp3-server.js';
 import { discoverCastDevices, type CastDevice } from './discover.js';
@@ -199,9 +201,17 @@ export async function notify(opts: NotifyOptions): Promise<NotifyResult> {
         port: playDevice.port,
         mediaUrl: serverHandle.url,
       });
+    } catch (err) {
+      // A hibat a hivo kapja (a `finally` ettol fuggetlenul lezarja a szervert) — de a
+      // KERET nem lehet nyomtalan: enelkul csak annyi latszana, hogy „nem szolalt meg",
+      // es nem az, hogy a lejatszas-parancs bukott el.
+      reportSwallowedFailure('cast.orchestrator.playOnCast', err);
+      throw err;
     } finally {
-      await serverHandle.close().catch(() => {
-        /* swallow */
+      await serverHandle.close().catch((closeErr: unknown): void => {
+        // A szerver lezarasa best-effort — de a bukasa MEGSZAMOLHATO: ha ez tartosan
+        // elhasal, portok szivarognak, es a kovetkezo ertesites mar el sem indul.
+        reportSwallowedFailure('cast.orchestrator.mp3Server.close', closeErr);
       });
     }
 
@@ -216,6 +226,11 @@ export async function notify(opts: NotifyOptions): Promise<NotifyResult> {
       volume,
       music,
     };
+  } catch (err) {
+    // ⚠️ A hiba tovabbmegy a hivohoz — de eddig a HANGERO-VISSZAALLITAS es a
+    // ZENE-FOLYTATAS kozott ELVESZETT az OK. A napló-sor mondja meg, MI bukott el.
+    reportSwallowedFailure('cast.orchestrator.speak', err);
+    throw err;
   } finally {
     // 7. Volume RESTORE — best-effort
     if (volume.enabled && volume.saved.length > 0) {
@@ -307,6 +322,9 @@ async function preSnapshotMusic(args: {
       onLog?.('music pre-snapshot: Spotify Web API reports no active playback');
     }
   } catch (err) {
+    // ⚠️ Az `onLog` OPCIONALIS: ha a hivo nem ad at naplozot, ez a hiba NYOMTALANUL tunik el.
+    // A kozos jelento fuggetlen a hivotol — igy a bukas mindenkeppen rogzul.
+    reportSwallowedFailure('cast.orchestrator.preSnapshotMusic', err);
     out.skipped = `spotify api error: ${(err as Error).message}`;
     onLog?.(`music pre-snapshot: ${out.skipped}`);
   }
@@ -383,6 +401,8 @@ async function resumeMusic(args: {
     music.resumeError = `resume failed — "${snap.deviceName}" did not re-register in Spotify Connect even after Spotify Receiver re-launch. This is a known Cast Group limitation; manual recovery: re-cast from Spotify app on phone.`;
     onLog?.(`music resume: ${music.resumeError}`);
   } catch (err) {
+    // Ugyanaz, mint fent: az `onLog` hianyaban a bukas lathatatlan lenne.
+    reportSwallowedFailure('cast.orchestrator.resumeMusic', err);
     music.resumeError = (err as Error).message;
     onLog?.(`music resume: FAILED — ${music.resumeError}`);
   }

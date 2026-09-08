@@ -63,6 +63,29 @@ export function loadPresets(path?: string): PresetSchema {
   }
 }
 
+/**
+ * A mentes elotti visszaolvasas bukasanak jelentese.
+ *
+ * ⚠️ Az `ENOENT` VART eset: az elso futaskor meg nincs fajl, tehat nincs mit megorizni —
+ * ez nem hiba. ⛔ Minden mas (jogosultsag, serult JSON) VISZONT az: a mentes ilyenkor
+ * ELDOBJA a fajl tetejen levo meta-kulcsokat, es enelkul ez nyomtalanul tortenne meg.
+ */
+function reportPresetsReadFailureOnSave(err: unknown, filePath: string): void {
+  const errno: NodeJS.ErrnoException = err as NodeJS.ErrnoException;
+
+  if (errno.code === 'ENOENT') {
+    return;
+  }
+  const msg: string = err instanceof Error ? err.message : String(err);
+
+  void logAction({
+    kind: 'error',
+    summary: `[cast/presets] MA-CAST-PRESETS-READ-FAIL on save: ${msg}`,
+    ref: filePath,
+    extra: { code: 'MA-CAST-PRESETS-READ-FAIL', file: filePath, error: msg, errnoCode: errno.code },
+  });
+}
+
 export async function savePresets(presets: PresetSchema, path?: string): Promise<void> {
   const p = path ?? defaultPresetsPath();
   await fs.mkdir(dirname(p), { recursive: true });
@@ -72,19 +95,9 @@ export async function savePresets(presets: PresetSchema, path?: string): Promise
     const raw = await fs.readFile(p, 'utf-8');
     existing = JSON.parse(raw) as Record<string, unknown>;
   } catch (err) {
-    // ENOENT (first-run, no file yet) elfogadott — silent OK. Bármi más
-    // (parse error, perm) → strukturált log + folytatás (overwrite-megőrzés
-    // nem garantált, de a savePresets feladata végrehajtható).
-    const errno: NodeJS.ErrnoException = err as NodeJS.ErrnoException;
-    if (errno.code !== 'ENOENT') {
-      const msg: string = err instanceof Error ? err.message : String(err);
-      void logAction({
-        kind: 'error',
-        summary: `[cast/presets] MA-CAST-PRESETS-READ-FAIL on save: ${msg}`,
-        ref: p,
-        extra: { code: 'MA-CAST-PRESETS-READ-FAIL', file: p, error: msg, errnoCode: errno.code },
-      });
-    }
+    // A dontes — mi VART es mi HIBA — a jelentoben van, nem itt egy `if`-ben. Igy a keret
+    // egyetlen agan sem tavozhat a hiba ugy, hogy senki nem latta.
+    reportPresetsReadFailureOnSave(err, p);
     existing = {};
   }
   // Meta (`_*`) kulcsokat megtartjuk; data kulcsokat felülírjuk a presets-szel

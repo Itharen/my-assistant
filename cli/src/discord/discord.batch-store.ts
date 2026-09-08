@@ -15,6 +15,7 @@ import { appendFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 import type { DiscordInboundMessage } from './discord.models.js';
 
 export interface DiscordBatchStorePaths {
@@ -192,13 +193,19 @@ export class DiscordBatchStore {
           const parsed = JSON.parse(line) as { messageId?: unknown };
 
           return parsed.messageId === messageId;
-        } catch {
+        } catch (err) {
+          reportSwallowedFailure('discord.batch-store.archiveLineParse', err);
+
           return false;
         }
       });
-    } catch {
-      // Ha az archívum olvashatatlan, inkább ÚJNAK tekintjük: a duplikátum kellemetlen,
-      // az elveszett üzenet viszont sokkal rosszabb.
+    } catch (err) {
+      // Ha az archivum olvashatatlan, inkabb UJNAK tekintjuk: a duplikatum kellemetlen,
+      // az elveszett uzenet viszont sokkal rosszabb. ⛔ De a dontes oka nem tunhet el:
+      // enelkul egy tartosan serult archivum MINDEN uzenetet ujra feldolgoztatna, es
+      // senki nem tudna, miert ismetlodik minden.
+      reportSwallowedFailure('discord.batch-store.isKnownArchived', err);
+
       return false;
     }
   }
@@ -226,7 +233,11 @@ function parseLine(line: string): DiscordInboundMessage | null {
       content: record['content'],
       receivedAt: typeof record['receivedAt'] === 'string' ? record['receivedAt'] : nowIso(),
     };
-  } catch {
+  } catch (err) {
+    // A `null` azt jelenti: „ez a sor nem ertelmezheto". Helyes — de ha SOK ilyen van, akkor
+    // uzenetek tunnek el a kotegbol, es a nema valtozatban ez sehol nem latszott.
+    reportSwallowedFailure('discord.batch-store.parseRecord', err);
+
     return null;
   }
 }

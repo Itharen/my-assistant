@@ -8,6 +8,7 @@ import { existsSync } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 import { CcapApiClient } from '../ccap/ccap.api-client.js';
 import { CcapError } from '../ccap/ccap.error.js';
 import { resolveSelfIdentity } from '../ccap/ccap.identity.js';
@@ -615,8 +616,11 @@ async function findLatestPresenceTimestamp(dataDirectory: string): Promise<Date 
 
         if (!Number.isNaN(date.getTime())) return date;
       }
-    } catch {
-      // Sérült sor — megyünk visszafelé tovább.
+    } catch (err) {
+      // Serult sor — megyunk visszafele tovabb. Ez helyes (a fajl vege csonka lehet, epp
+      // irjak), de ha MINDEN sor serult, akkor „nincs jelenlet-adat"-ot mondanank egy
+      // valodi hiba helyett. A jelentes deduplikalt, tehat nem szemeteli tele a naplot.
+      reportSwallowedFailure('comm.doctor.readNewestSampleTime', err);
     }
   }
 

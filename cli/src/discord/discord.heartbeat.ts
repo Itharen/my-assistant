@@ -12,6 +12,7 @@ import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 
 /** Ennyi idő után tekintjük halottnak a figyelőt. */
 export const HEARTBEAT_STALE_MS: number = 5 * 60_000;
@@ -117,9 +118,11 @@ export async function writeHeartbeat(
   try {
     await mkdir(dirname(path), { recursive: true });
     await writeFile(path, JSON.stringify(heartbeat, null, 2), 'utf-8');
-  } catch {
-    // Szándékosan elnyelve: ha az életjelet nem tudjuk kiírni, a diagnosztika „halott"-nak
-    // fogja látni — ami ÓVATOS irányba téved. Az ellenkezője (hamis „él") lenne a veszélyes.
+  } catch (err) {
+    // A figyelot nem akaszthatja meg: ha az eletjelet nem tudjuk kiirni, a diagnosztika
+    // „halott"-nak fogja latni — ami OVATOS iranyba teved. ⛔ De epp ezert kell nyom:
+    // kulonben egy ELO figyelo tunne halottnak, es senki nem tudna, hogy csak az IRAS bukott.
+    reportSwallowedFailure('discord.heartbeat.write', err);
   }
 }
 
@@ -164,8 +167,11 @@ export async function readHeartbeat(
     };
 
     return { state: ageMs <= HEARTBEAT_STALE_MS ? 'alive' : 'stale', ageMs, heartbeat };
-  } catch {
-    // Sérült fájl → nem tudjuk, él-e. Az óvatos válasz: nem tekintjük élőnek.
+  } catch (err) {
+    // Serult fajl → nem tudjuk, el-e. Az ovatos valasz: nem tekintjuk elonek. ⚠️ Az `absent`
+    // itt „nem tudom"-ot jelent, nem „nincs figyelo" — a kettot csak a naplo kulonbozteti meg.
+    reportSwallowedFailure('discord.heartbeat.read', err);
+
     return { state: 'absent' };
   }
 }

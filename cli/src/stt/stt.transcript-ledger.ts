@@ -33,9 +33,10 @@
 // *(nyers felhasználói tartalom, ugyanaz a megfontolás, mint a `stt-retry`-nál)*.
 
 import { existsSync } from 'node:fs';
-import { mkdir, readFile, readdir, rename, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 
 /** Egy hangüzenet sorsa — ez a nyilvántartás lelke. */
 export type TranscriptStatus =
@@ -187,9 +188,11 @@ export class TranscriptLedger {
 
     try {
       return JSON.parse(await readFile(file, 'utf-8')) as TranscriptLedgerEntry;
-    } catch {
-      // ⚠️ Sérült bejegyzés: úgy kezeljük, mintha nem lenne — ⛔ de NEM töröljük, hogy
-      // kézzel még megnézhető legyen.
+    } catch (err) {
+      // ⚠️ Serult bejegyzes: ugy kezeljuk, mintha nem lenne — ⛔ de NEM toroljuk, hogy
+      // kezzel meg megnezheto legyen. A naplo-sor mondja meg, hogy VAN ott valami.
+      reportSwallowedFailure('stt.transcript-ledger.get', err);
+
       return null;
     }
   }
@@ -244,14 +247,7 @@ export class TranscriptLedger {
     let audioKept: boolean = false;
 
     if (audioSourcePath && existsSync(audioSourcePath)) {
-      try {
-        await rename(audioSourcePath, target);
-        audioKept = true;
-      } catch {
-        // ⚠️ Kötetek közti átnevezés bukhat — másolás nélkül itt nem megyünk tovább, de a
-        // bejegyzést NEM veszítjük el.
-        audioKept = false;
-      }
+      audioKept = await this.keepAudio(audioSourcePath, target);
     }
 
     await this.write(audioKept ? entry : { ...entry, audioFile: undefined });
@@ -270,7 +266,11 @@ export class TranscriptLedger {
 
     try {
       return await readFile(path);
-    } catch {
+    } catch (err) {
+      // ⚠️ A `null` azt jelenti a hivonak: „nincs mit ujraprobalni". Ha valojaban CSAK
+      // olvasni nem tudtuk, a hang MEGVAN — es a kettot csak a naplo kulonbozteti meg.
+      reportSwallowedFailure('stt.transcript-ledger.readAudio', err);
+
       return null;
     }
   }
@@ -282,6 +282,41 @@ export class TranscriptLedger {
     const path: string = join(this.paths.root, entry.audioFile);
 
     return existsSync(path) ? path : null;
+  }
+
+  /**
+   * A HANG ATMENTESE a nyilvantartasba — atnevezessel, es ha az nem megy, MASOLASSAL.
+   *
+   * 🔴 MIERT VAN MASODIK PROBALKOZAS: a `rename` **kotetek kozott nem mukodik** (`EXDEV`).
+   * A retry-sor es a nyilvantartas ma ugyanazon a koteten van, de ez nem garantalt — es ha
+   * egyszer szetvalnak, a korabbi kod NEMAN feladta volna a hang megorzeset. Vagyis pontosan
+   * az a kepesseg szunt volna meg, amiert a T-68 keszult: a visszamenoleges feloldas.
+   *
+   * @returns sikerult-e megorizni a hangot.
+   */
+  private async keepAudio(sourcePath: string, targetPath: string): Promise<boolean> {
+    try {
+      await rename(sourcePath, targetPath);
+
+      return true;
+    } catch (renameErr) {
+      reportSwallowedFailure('stt.transcript-ledger.keepAudio.rename', renameErr);
+    }
+
+    try {
+      // ⚠️ Masolas UTAN torles: ha a torles bukik, a hang meg mindig megvan ket helyen —
+      // az rosszabb, mint egy helyen, de sokkal jobb, mint sehol.
+      await copyFile(sourcePath, targetPath);
+      await rm(sourcePath, { force: true });
+
+      return true;
+    } catch (copyErr) {
+      // ⛔ Itt tenyleg elveszett. A bejegyzes ettol meg elkeszul `audioFile` nelkul: a
+      // „tudjuk, hogy elveszett" tobbet er a semminel.
+      reportSwallowedFailure('stt.transcript-ledger.keepAudio.copy', copyErr);
+
+      return false;
+    }
   }
 
   private async write(entry: TranscriptLedgerEntry): Promise<void> {

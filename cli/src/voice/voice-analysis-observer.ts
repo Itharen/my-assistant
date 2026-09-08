@@ -37,9 +37,11 @@ function defaultBarErrorSink(reason: string): void {
       summary: '[voice] a keretenkénti sáv elhasalt — a felvétel ettől ÉRINTETLEN',
       extra: { code: 'MA-VOICE-BAR-FAILED', reason: reason },
     });
-  } catch {
+  } catch (err) {
     // Ha még a naplózás sem megy, a konzol az utolsó esély — de tovább nem dobunk.
-    process.stderr.write('[voice] a sáv naplózása sem sikerült\n');
+    // ⚠️ Az OKOT is kiírjuk: enélkül a sor csak annyit mondana, hogy „valami nem ment",
+    // és pont a diagnosztika diagnosztikája hiányozna.
+    process.stderr.write(`[voice] a sáv naplózása sem sikerült: ${String(err)}\n`);
   }
 }
 

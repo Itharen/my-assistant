@@ -14,6 +14,7 @@ import { join } from 'node:path';
 
 import { Client, Events, GatewayIntentBits, Partials, type Message } from 'discord.js';
 
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 import { logAction } from '../action-log/action-log.client.js';
 import { DiscordBridge } from './discord.bridge.js';
 import { saveInboxAttachments } from './discord.file-intake.js';
@@ -1061,6 +1062,12 @@ export class DiscordListener {
         // ⭐ A Discord megadja a hangüzenet hosszát — ez az arány-ellenőrzés bemenete.
         ...(attachment.durationSecs === undefined ? {} : { audioDurationSecs: attachment.durationSecs }),
       });
+    } catch (err: unknown) {
+      // ⚠️ Itt nem a felismeres BUKASA jon (azt a `result.ok` viszi), hanem egy VARATLAN
+      // kivetel. Eddig csak a `finally` allt itt, tehat a kivetel a keretbol kiszokott, es
+      // az egesz uzenet-feldolgozas nemán megszakadt — a hang pedig NEM kerult a sorba.
+      reportSwallowedFailure('discord.listener.transcribeAudio', err);
+      throw err;
     } finally {
       this.sttInFlight = false;
     }
@@ -1302,6 +1309,12 @@ export class DiscordListener {
           ...(entry.contentType ? { contentType: entry.contentType } : {}),
           ...(entry.durationSecs === undefined ? {} : { audioDurationSecs: entry.durationSecs }),
         });
+      } catch (err: unknown) {
+        // A kulso `catch` naplozza (`MA-STT-RETRY-FAILED`), de a `sttInFlight` zar miatt ez a
+        // keret sajat jogan is erdekes: enelkul nem derulne ki, hogy a felismero-hivas maga
+        // szallt el, nem az ot koveto kezbesites.
+        reportSwallowedFailure('discord.listener.retry.transcribeAudio', err);
+        throw err;
       } finally {
         this.sttInFlight = false;
       }
@@ -1772,8 +1785,15 @@ ${spoken}`
     } catch (err: unknown) {
       const code: unknown = (err as { code?: unknown })?.code;
 
-      // 10008 = Unknown Message — ez a BIZONYOS torles.
-      return code === 10008 ? { kind: 'deleted' } : { kind: 'unknown' };
+      // 10008 = Unknown Message — ez a BIZONYOS torles, VART eset. Minden mas viszont
+      // „nem tudom": halozat, jogosultsag, tulterheles. ⛔ Eddig mindketto ugyanolyan nema
+      // volt, pedig az elso vegleges tenyt allit, a masodik csak bizonytalansagot.
+      if (code === 10008) {
+        return { kind: 'deleted' };
+      }
+      reportSwallowedFailure('discord.listener.fetchReplyTarget', err);
+
+      return { kind: 'unknown' };
     }
   }
 

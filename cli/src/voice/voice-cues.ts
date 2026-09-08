@@ -48,6 +48,7 @@ import { createReadStream, existsSync } from 'node:fs';
 import { access } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 import {
   AudioPlayerStatus,
   StreamType,
@@ -328,7 +329,12 @@ async function defaultFileExists(path: string): Promise<boolean> {
     await access(path);
 
     return true;
-  } catch {
+  } catch (err) {
+    // A hianyzo fajl VART eset (`ENOENT`) — ez a fuggveny epp ezt kerdezi. De egy
+    // JOGOSULTSAGI hiba mast jelent: a fajl OTT VAN, csak nem erjuk el. A nema `false`
+    // ezt „nincs ilyen hangjelzes"-nek mondta volna, orokre.
+    reportSwallowedFailure('voice.cues.fileExists', err, ['ENOENT']);
+
     return false;
   }
 }

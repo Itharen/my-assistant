@@ -16,6 +16,7 @@
 // konfiguráció megléte nem azonos a működéssel.)*
 
 import { existsSync, readFileSync, statSync } from 'node:fs';
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 
 /** Ennél régebbi állapot-fájl gyanús, még ha a folyamat él is. */
 export const LDP_STATUS_STALE_MS: number = 30 * 60_000;
@@ -53,7 +54,22 @@ export function isProcessAlive(pid: number, killer: (p: number, s: number) => vo
     killer(pid, 0);
 
     return true;
-  } catch {
+  } catch (err) {
+    const code: string | undefined = (err as NodeJS.ErrnoException)?.code;
+
+    // Nincs ilyen folyamat — ez a BIZTOS nemleges valasz.
+    if (code === 'ESRCH') {
+      return false;
+    }
+
+    // ⭐ Az `EPERM` azt jelenti, hogy a folyamat LETEZIK, csak nem kuldhetunk neki jelet.
+    // A korabbi vak `false` ezt „halottnak" mondta — vagyis egy mas jogosultsaggal futo
+    // LDP-t elveszettnek jelentett volna, es ujraindulast surgetett volna feleslegesen.
+    if (code === 'EPERM') {
+      return true;
+    }
+    reportSwallowedFailure('comm.ldp-check.isProcessAlive', err);
+
     return false;
   }
 }

@@ -33,6 +33,7 @@
 import { localTimeHeader } from '../utils/local-time.js';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 
 import { VOICE_LOG_CODES } from './voice-log-codes.js';
 
@@ -172,8 +173,11 @@ export async function buildVoiceFunnelReport(params: {
 
     try {
       raw = await read(resolveActionLogPath(params.projectRoot, day));
-    } catch {
-      // ⚠️ Hiányzó napi fájl NEM hiba: az ablak átívelhet olyan napra, amelyen nem futott semmi.
+    } catch (err) {
+      // ⚠️ Hianyzo napi fajl NEM hiba: az ablak ativelhet olyan napra, amelyen nem futott
+      // semmi (ezert a `ENOENT` a jelentoben vart eset). Egy OLVASASI hiba viszont az — es
+      // a jelentes ilyenkor CSENDBEN kevesebb napbol dolgozna, hamis tolcser-szamokkal.
+      reportSwallowedFailure('voice.funnel-report.readDay', err, ['ENOENT']);
       continue;
     }
 
@@ -188,9 +192,10 @@ export async function buildVoiceFunnelReport(params: {
 
       try {
         entry = JSON.parse(trimmed) as ActionLogLine;
-      } catch {
+      } catch (err) {
         // ⚠️ Egy sérült sor NEM buktathatja meg a jelentést — a napló append-only, és egy
         // félbeszakadt írás utolsó sora csonka lehet. A többi sor adata attól még érvényes.
+        reportSwallowedFailure('voice.funnel-report.parseLine', err);
         continue;
       }
 

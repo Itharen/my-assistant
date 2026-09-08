@@ -20,6 +20,7 @@
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 import { resolveDiscordBatchPaths } from '../discord/discord.batch-store.js';
 import { resolveOutboundLogPath } from '../discord/discord.reply-tracker.js';
 
@@ -182,14 +183,19 @@ export async function readJsonlSafe(path: string): Promise<Record<string, unknow
 
       try {
         out.push(JSON.parse(line) as Record<string, unknown>);
-      } catch {
-        // Egy sérült sor nem némíthatja el a többit.
+      } catch (err) {
+        // Egy serult sor nem nemithatja el a tobbit — de o maga sem lehet nema.
+        reportSwallowedFailure('comm.history.parseLine', err);
         continue;
       }
     }
 
     return out;
-  } catch {
+  } catch (err) {
+    // ⚠️ Az ures lista azt jelentene, hogy „nem tortent semmi". Ha valojaban olvasni sem
+    // tudtuk, az MAS — es pont ezt a kulonbseget kerte szamon az owner a naplon.
+    reportSwallowedFailure('comm.history.readJsonl', err);
+
     return [];
   }
 }

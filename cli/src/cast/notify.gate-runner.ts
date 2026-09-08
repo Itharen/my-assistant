@@ -9,6 +9,7 @@ import { readFile } from 'node:fs/promises';
 import { DiscordBatchStore } from '../discord/discord.batch-store.js';
 import { readPresence } from '../presence/presence.reader.js';
 import { resolvePresenceDataDirectory, resolveProjectRoot } from '../utils/project-root.js';
+import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
 import { evaluatePresenceGate, type PresenceGateDecision } from './notify.presence-gate.js';
 
 /**
@@ -53,8 +54,11 @@ async function findLastDiscordReply(): Promise<Date | undefined> {
     const newest = pending[pending.length - 1];
 
     if (newest) candidates.push(new Date(newest.receivedAt));
-  } catch {
-    // A köteg olvashatatlansága nem akadályozhatja a kapu kiértékelését — a jel egyszerűen hiányzik.
+  } catch (err) {
+    // A koteg olvashatatlansaga nem akadalyozhatja a kapu kiertekeleset — a jel egyszeruen
+    // hianyzik. De a „nincs jel" es a „nem tudtam elolvasni" KULONBOZO allapot: az elso
+    // nyugalom, a masodik hiba. A kapu ugyanugy dont, a naplo viszont megkulonbozteti.
+    reportSwallowedFailure('cast.gate-runner.readPending', err);
   }
 
   const archiveTimestamp: Date | undefined = await readArchiveTail(store.getPaths().archiveFile);
@@ -84,7 +88,9 @@ async function readArchiveTail(archiveFile: string): Promise<Date | undefined> {
         if (!Number.isNaN(date.getTime())) return date;
       }
     }
-  } catch {
+  } catch (err) {
+    reportSwallowedFailure('cast.gate-runner.readArchiveTail', err);
+
     return undefined;
   }
 
