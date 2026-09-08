@@ -1124,10 +1124,21 @@ export class DiscordListener {
      * összekötve marad a hang és az átirata (owner-kérés, 2026-09-07).
      */
     source?: VoiceAcknowledgeTarget,
+    /**
+     * A csatorna, ahonnan a forras-uzenet valo — ⭐ CSAK az ujraprobalasi uton kell.
+     *
+     * 🔴 Ekkor ugyanis a `source` objektum mar NINCS meg (a sor csak azonositokat orzott
+     * meg), es enelkul a tukor „a semmibe" menne: az owner egy VEGLEG-NEM-SIKERULT uzenetet
+     * kap, es nem tudja, MELYIK hanguzenetrol van szo. Merve 2026-09-08 13:48.
+     */
+    channelId?: string,
   ): Promise<void> {
     // ⭐ ELSŐ PRÓBA: válasz a hangüzenetre. Ez az egyetlen mód, ami LÁTHATÓAN összeköti az
     // átiratot a forrásával — és ráadásul olcsóbb is, mert a figyelő kapcsolatát használja.
-    if (source && await this.replyMirror(text, messageId, source)) return;
+    const target: VoiceAcknowledgeTarget | null = source
+      ?? (channelId ? await this.fetchReplyTarget(channelId, messageId) : null);
+
+    if (target && await this.replyMirror(text, messageId, target)) return;
 
     try {
       const sent = await sendDiscordMessage(text);
@@ -1292,7 +1303,7 @@ export class DiscordListener {
    * ahol beszélt — ugyanaz a hibaosztály, amit a friss átiratnál 21:47-kor már javítottunk.
    */
   private async sendGiveUp(entry: SttRetryEntry, text: string): Promise<void> {
-    await this.sendByPlan(planRetryDelivery(entry), text, entry.messageId);
+    await this.sendByPlan(planRetryDelivery(entry), text, entry.messageId, entry.channelId);
   }
 
   /**
@@ -1345,14 +1356,27 @@ export class DiscordListener {
    * ⭐ ODA megy, ahol elhangzott: a hang-csatornás tétel tükre a HANG-csatornába, nem a fő
    * chatbe. *(Ugyanaz a hibaosztály, amit 21:47-kor a friss átiratnál már javítottunk.)*
    */
-  private async sendByPlan(plan: RetryDeliveryPlan, text: string, messageId: string): Promise<void> {
+  private async sendByPlan(
+    plan: RetryDeliveryPlan,
+    text: string,
+    messageId: string,
+    /**
+     * A forras-uzenet csatornaja — ⭐ EZ KELL A VALASZHOZ.
+     *
+     * 🔴 MERT HIANY (owner, 2026-09-08 13:48): *„Adtal egy ilyet de nem tudom mire vonatkozik,
+     * ilyenkor kellene a reply."* Az ujraprobalasnal a forras-uzenet OBJEKTUMA mar nincs
+     * kezben, csak az azonositoja — ezert a tukor sima csatorna-uzenetkent ment ki, es az
+     * owner nem tudta, MELYIK hanguzenetrol van szo.
+     */
+    channelId?: string,
+  ): Promise<void> {
     if (plan.mirror.to === 'channel') {
       await this.sendToChannel(text, plan.mirror.channelId, messageId);
 
       return;
     }
 
-    await this.sendMirror(text, messageId);
+    await this.sendMirror(text, messageId, undefined, channelId);
   }
 
   /**
@@ -1385,6 +1409,37 @@ export class DiscordListener {
    *
    * @returns `true`, ha a válasz-lánc kiment; `false`, ha a hívónak a csatornára kell esnie.
    */
+  /**
+   * A forras-uzenet LEKERESE az azonositoja alapjan — hogy VALASZOLNI tudjunk ra.
+   *
+   * ⛔ SOHA NEM DOB. Ha a lekeres bukik (torolt uzenet, elveszett jogosultsag, halott
+   * kapcsolat), `null`-t adunk, es a hivo sima csatorna-uzenetre valt. ⚠️ A bukas viszont
+   * NEM nema: naplozzuk, kulonben csak annyi latszana, hogy „megint nem valasz jott".
+   */
+  private async fetchReplyTarget(
+    channelId: string,
+    messageId: string,
+  ): Promise<VoiceAcknowledgeTarget | null> {
+    if (!this.client) return null;
+
+    try {
+      const channel = await this.client.channels.fetch(channelId);
+
+      if (!channel || !channel.isTextBased()) return null;
+
+      return await channel.messages.fetch(messageId) as unknown as VoiceAcknowledgeTarget;
+    } catch (err: unknown) {
+      await this.safeLog({
+        kind: 'note',
+        summary: '[discord/listener] MA-DISCORD-REPLY-TARGET-MISSING: a forras-uzenet nem '
+          + `kerheto le, sima csatorna-uzenetre valtok — ${err instanceof Error ? err.message : String(err)}`,
+        extra: { code: 'MA-DISCORD-REPLY-TARGET-MISSING', channelId, messageId },
+      });
+
+      return null;
+    }
+  }
+
   private async replyMirror(
     text: string,
     messageId: string,
