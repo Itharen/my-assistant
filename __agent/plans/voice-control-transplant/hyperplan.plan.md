@@ -11,7 +11,7 @@
 
 ---
 
-## 📊 STATUS — 2026-09-08 01:05
+## 📊 STATUS — 2026-09-08 02:16
 
 > ⛔ **A KORÁBBI, 18:05-ös STATUS TÚLÁLLÍTOTT.** „6/6 szakasz megépítve" ⇒ a lánc **össze van
 > kötve**, de az **átviteli arány ~1%** volt: az owner végigbeszélt egy beszélgetést, és
@@ -20,12 +20,13 @@
 
 | | |
 |---|---|
-| **Fázis** | ✅ **A FEJLESZTŐI RÉSZ LEZÁRVA** — mind a három owner-követelmény megépült és igazolt. ⏳ Ami hátra van, az **nem fejlesztés**: élő mérés |
+| **Fázis** | 🔴 **ÉLŐ ADAT MEGÉRKEZETT (02:03) — ÉS MEGDÖNTÖTTE AZ EREDETI DIAGNÓZIST.** A felvevő szűrője **0**-t dobott el (`lostAudioSeconds: 0`); a szűk keresztmetszet az **STT 5 perces időtúllépése** |
 | **Az 1. owner-követelmény** *(mérd ki, hol vész el)* | ✅ **MEGÉPÍTVE + KIOLVASHATÓ** — `voice-drop-probe.ts` + **`ma comm voice-funnel`** (átviteli arány, kevés-minta jelzéssel) |
 | **A 2. owner-követelmény** *(MINDEN átirat a hang-csatornába)* | ✅ **MEGÉPÍTVE** — a sikertelen/gyanús/eldobott megszólalás is **látható nyomot** hagy, összevont jelentéssel (`voice-missed-speech.ts`) |
 | **A 3. owner-követelmény** *(🔊 hangjelzések, mint a CCAP-ban)* | ✅ **MEGÉPÍTVE** — 5 jelzés, a CCAP **eredeti hangjaival**; futásidőben igazolva (útvonal + ffmpeg-dekódolás). 🔇 `MA_VOICE_CUES=off` kikapcsoló |
-| **Teszt** | CLI **613/613** zöld — unit + 🧭 3 user-journey, **pozitív kontrollal** igazolva; fő `tsc` zöld; a transzplantált build emittál |
-| **Következő lépés** | ⏳ az owner beszél a `honnie-place`-ben → **`ma comm voice-funnel`** *(gördülő 12 óra — átível az éjfélen)*. ⛔ A szűrő-küszöbökhöz addig NEM nyúlunk (`core-no-guessing`) |
+| **A veszteség kezelése** | ✅ **A BUKOTT FELISMERÉS MÁR NEM VESZ EL** — a `SttRetryQueue` bekötve a hang-csatornára (2→5→15→45 perc), forrás-helyes kézbesítéssel |
+| **Teszt** | CLI **622/622** zöld — unit + 🧭 3 user-journey, **pozitív kontrollal** igazolva; fő `tsc` zöld; a transzplantált build emittál |
+| **Következő lépés** | ⏳ **TÖBB ÉLŐ MINTA** — 4 kísérlet még „kevés minta". A bukott felvételek most már **újrapróbálódnak**, tehát a következő mérés már ezzel együtt jön. ⛔ A szűrő-küszöbökhöz továbbra sem nyúlunk — **mérve nem ott van a hiba** |
 
 ### 🔍 A MÉRŐESZKÖZ, ami 22:44-kor megépült — és MIÉRT nem volt elég a régi számláló
 
