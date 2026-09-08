@@ -198,6 +198,47 @@ Nem új mérés kell, hanem **kivezetés + színezés**.
 megfogalmazásod szerint igaz — de az owner szavai szerint nem. **A kész definíciója az ő kérése,
 nem a mi implementációnk.**
 
+
+---
+
+## 🔴 2026-09-08 08:57 — ÉLŐ BIZONYÍTÉK: a build ELVITT egy beszélgetést
+
+**Az owner beszélt a hang-csatornában, és kiestem alóla.** Mérve:
+
+```
+08:52:29  MA-VOICE-JOINED          — bent vagyok
+08:53:58  MA-VOICE-RECORDING-STARTED
+08:56:58  ÚJ LDP-PIPELINE INDULT   → szerver leáll → kiestem
+```
+
+⚠️ **Ez nem elméleti kellemetlenség többé:** elvitt egy **élő** beszélgetést, pont amikor a
+rendszer épp azt csinálta volna, amiért készült.
+
+📌 **És valószínűleg a TE commited indította.** ⇒ A gyors, sűrű commit *(ami helyes, az owner
+kérte)* és az owner **élő használata** most **egymást üti**. A megoldás nem a commit visszafogása,
+hanem a **make-before-break** újraindítás.
+
+🙋 **Owner-kérdés kiment:** hozzányúlhatunk-e a `dc ldp`-hez *(`cli-dynamo`, my-assistanton kívül)*.
+⛔ **Amíg nincs válasz: NE nyúlj hozzá.** Ha igent mond, ez a te feladatod, és a
+`BFR-MYASSISTANT-001` tartalmazza a mérést és a javasolt API-t.
+
+---
+
+## ⏰ 2026-09-08 08:55 — HIBA: a státusz-kivonat UTC-ben írja az időt
+
+> **Owner:** *„minden futásnál a státuszban benne kéne legyen, hogy pontosan mennyi most az idő"*
+
+**Mérve:** a `ma status digest` fejléce `2026-09-08T01:02:38.765Z` volt, amikor **03:02** volt
+helyi idő szerint. ⇒ Az owner **két órával korábbi** időt lát, és ebből téves következtetést von le.
+
+🩹 **Kell:** **helyi idő** (Europe/Budapest), ember-olvasható alakban, **minden** parancs
+kimenetén, ami állapotot jelent. ⚠️ Nem elég a `digest` — a `doctor` és a `voice-funnel` is
+állapotot mutat.
+
+📌 A projekt szabálya amúgy is ez: `current/principles/time-must-be-measured.md` — *„minden
+időpont-állítás ELŐTT `date`"*. Az UTC-s kiírás ennek a gépi párja: **a kiírt idő is legyen az,
+amit ő lát az óráján.**
+
 ---
 
 ## 3. Build és teszt
