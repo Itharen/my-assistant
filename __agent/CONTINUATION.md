@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-08 02:25
+**Utoljára frissítve:** 2026-09-08 03:10
 
 ---
 
@@ -1921,10 +1921,54 @@ asszisztensi munkakra koncentralni, amig fejlesztesi munkakat is vegzel."*
 kupi, es eleg sok minden fludolja"* ⇒ **egyutt** kell beallitani, mit ne kapjon.
 
 
+
+---
+
+## 🗂️ 2026-09-08 03:05 — VISSZA AZ ORGANIZERHEZ (T-55, elso kor)
+
+A sajat jelolesem szerint **ez volt a kor elso dolga** — es helyesen.
+
+**Allapot:** 137 tetel · **5 lejart** · **11 datum nelkuli magas prioritasu**.
+
+### 🔴 ADATHIBA, amit megtalaltam — es amit ez tanit
+
+💪 **„Napi matrac"**: a leirasa *„MINDEN NAP feküdj le a matracra. Ez a kotelezo minimum."* —
+de az **ismetlodese `none`**, hataridovel 2026-05-22-rol.
+
+⇒ Egy **NAPI** kotelezettseg **nem-ismetlodokent** van felveve, ezert **3,5 honapja egyetlen,
+lejart tetelkent** ul a listan ahelyett, hogy minden nap felbukkanna.
+
+📌 **A TANULSAG:** ez a fajta hiba **„az owner lustasagakent" jelenik meg**, pedig **rendszer-hiba**.
+A lista azt sugallja, hogy majusban abbahagyta; a valosagban lehet, hogy csinalja, csak **nincs mit
+kipipalni**. ⇒ Egy elmaradt teteleknel MINDIG megnezendo: **rossz-e a felvetel**, mielott
+elmaradasnak konyvelnem.
+
+⛔ **Nem javitottam magamtol** — ez az o **elet**-feladata (`task-tracking.md`), javaslatkent ment ki.
+
+### 📅 MA (kedd) esedekes
+
+💼 **„Munka — generalasok es esemenyek ellenorzese (kedd)"** — heti sorozat, prio 116, legutobb
+2026-09-01-en jart le. A **csutortoki** parja **2026-08-27** ota lejart *(~2 het)*.
+📌 A ket kulon tetel oka **organizer-korlat** *(„Wave-1 tobb hetkoznapot egy sorozaton nem tud
+tarolni")*, nem rossz felveteI.
+
+### ⭐ A MELYEBB MEGFIGYELES — ezt tartom a kor legfontosabb eredmenyenek
+
+A **11 magas prioritasu tetelnek NINCS DATUMA** — kozottuk az Uzemorvos (118), az
+Interfood-rendeles (115) es a **„Bevetelt kell szereznunk"** (100).
+
+⚠️ **Datum nelkul ezek SOHA nem lesznek „esedekesek"** — csak akkor kerulnek elo, ha valaki
+**ranez a listara**. ⇒ A magas prioritas **onmagaban nem mozdit semmit**; a rendszer csak akkor
+emlekeztet, ha van mihez kotni az emlekeztetot.
+
+🙋 Felajanlottam, hogy kivalasztom a top 3-at es datumot javaslok rajuk.
+
+
 ### A következő konkrét lépés
 
-🥇 **A KÖVETKEZŐ KÖR ELSŐ DOLGA: VISSZA AZ ORGANIZERHEZ (T-55).** Az owner jelezte, hogy
-elsodródtam tőle, és igaza van. ⛔ Ne a hang-csatorna legyen megint az első.
+✅ **T-55 első köre megvolt** — organizer-triage kész, három owner-döntés kiment.
+🥇 **A következő organizer-lépés:** ha jóváhagyja, dátumot adni a top 3 dátumtalan tételnek —
+az a kettő, ami tényleg mozdítana: **Üzemorvos** (118) és **Interfood-rendelés** (115).
 
 ⏳ **AZ OWNERRE VÁR — és a fejlesztés MÁR NEM az én dolgom (22:30 óta):**
 

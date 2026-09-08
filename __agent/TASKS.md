@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-08 02:25
+**Utoljára frissítve:** 2026-09-08 03:10
 
 ---
 
@@ -81,6 +81,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 | T-49 | 🤖 | 🎙️ **A voice-drop oka MEGVAN + FRS felvéve** | **Mérve: 17 ledobás = 17 LDP-restart** (+ a figyelő 18 perces kiesése). Az owner diagnózisa helyes. ✅ **BFR-MYASSISTANT-001** felvéve a bedrock-csatornába (`__documentations/BEDROCK-FRS.md`, `cli-dynamo`, high) — ez a **kanonikus út**, nem idegen repó szerkesztése | ⏸️ bedrock-agent válaszára vár. ⛔ A `dc ldp`-hez magamtól nem nyúlok |
 | T-50 | 🙋 | 📝 **LinkedIn posztok kitétele** | Owner 21:20: *„a LinkedIn posztokat ki kéne tenni, amiket terveztem"* | 🙋 **kérdés nála:** nála vannak megtervezve, vagy nekem kell összeszedni? |
 | T-51 | 🤖 | 📮 **CC-session üzenetküldés — szabályok ADOPTÁLVA** | ✅ `__agent/references/ccap-session-messaging.md`: a 6 HARD szabály (§7), a végpontok, és a **beazonosított ID-k** — 🔴 a fájl tetején a kötelező „a szabályokat MINDIG előbb olvasd el" figyelmeztetéssel. FDP Assistant: `ccs-eb7533f2-msf45rno` | ⛔ küldés **csak owner-jóváhagyással**; a `status` küldés előtt újra lekérdezendő |
+| T-55 | 🤖 | 🗂️ **Vissza az ORGANIZERHEZ** | ✅ **ELSŐ KÖR MEGVOLT** (`current/tasks/organizer-triage-2026-09-08.md`): 137 tétel · 5 lejárt · 11 dátum nélküli magas prio. 🔴 **Adathiba találva:** a „Napi matrac" leírása *„MINDEN NAP"*, de az ismétlődése `none` ⇒ 3,5 hónapja egyetlen lejárt tételként ül | 🙋 **owner-döntések:** napi ismétlődő legyen? · NZT és OGS kivezethető? · adjunk-e dátumot a top 3 dátumtalannak? |
 | T-53 | 🤝 | 👤 **Owner-profil — KI Ő** | ⭐ **Owner 02:09:** *„nincs is neked feljegyzésed arról, hogy én ki vagyok"* — **igaza volt**. Létrehozva: `current/owner-profile.md`, a **biztosan tudott** részekkel; a hiányzók ⛔ **üresen** hagyva | ⏳ **az ő GPT-s infócsomagjára vár** *(02:18: „majd ezt el ne felejtsem odaadni")* ⇒ **emlékeztetni kell rá** |
 | T-54 | 🤝 | 📧 **E-mail-figyelés beállítása** | Owner 02:16: *„csináltunk neked egy e-mailt, ahol elég sok minden át is van irányítva, de ott most elég nagy a kupi, és elég sok minden flúdolja"* | 🙋 **együtt kell beállítani**: mi az, amit ne kapjon folyton |
 | T-55 | 🤖 | 🗂️ **Vissza az ORGANIZERHEZ** | 🔴 **Owner 02:16:** *„mintha ellenél távolodva az organizeres feladatoktól, pedig az fontos kulcspontja lesz itt az asszisztensi munkának"* — **igaza van**: a fejlesztési tűzoltás elvitte a figyelmet | felmérni, mi maradt el az organizer-oldalon, és visszaállni rá |
