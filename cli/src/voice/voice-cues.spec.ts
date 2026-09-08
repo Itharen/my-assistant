@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { VoiceCuePlayer, areCuesEnabled, resolveSoundsDir, type VoiceCue } from './voice-cues.js';
 import type { VoiceConnection } from '@discordjs/voice';
 
@@ -220,5 +222,32 @@ describe('VoiceCuePlayer — hallható visszajelzés a hang-csatornában', () =>
 
   it('a hangok könyvtára a felvevővel AZONOS `process.cwd()`-konvenciót követi', () => {
     expect(resolveSoundsDir().replace(/\\/g, '/')).toContain('/src/_assets/sounds');
+  });
+});
+
+describe('resolveSoundsDir — 🔴 a `cwd` NEM befolyásolhatja (mért hiba, 2026-09-09)', () => {
+
+  // Az owner elo teszten: „semmilyen hangvisszajelzest nem kapok". A naplo:
+  //   MA-VOICE-CUE-FAILED: A hangfajl NEM talalhato: …\my-assistant\src\_assets\sounds\…
+  // A fajl a cli/src/_assets/sounds/-ban van; a keresés a repo GYOKEREBEN tortent, mert a
+  // regi feloldas process.cwd()-t hasznalt — es a cwd attol fuggott, KI inditotta a figyelot.
+
+  it('⭐ ugyanazt adja, bárhonnan is fut — a cwd megváltoztatása NEM számít', () => {
+    const original: string = process.cwd();
+
+    try {
+      const fromHere: string = resolveSoundsDir();
+      process.chdir(dirname(original));
+      const fromParent: string = resolveSoundsDir();
+
+      expect(fromParent).toBe(fromHere);
+    } finally {
+      process.chdir(original);
+    }
+  });
+
+  it('✅ a feloldott könyvtárban TÉNYLEG ott vannak a hangok', () => {
+    // ⛔ Nem eleg, hogy „ad egy utvonalat" — a hiba pont az volt, hogy ADOTT egyet, csak rosszat.
+    expect(existsSync(join(resolveSoundsDir(), 'cue-heard.mp3'))).toBe(true);
   });
 });

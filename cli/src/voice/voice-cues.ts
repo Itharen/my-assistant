@@ -44,9 +44,10 @@
 // nem azt, hogy melyik mit jelentsen. A nevek beszédesek, a csere egy fájlmásolás.
 // Felvéve az `open-questions.md`-be, hogy át tudja hangolni.
 
-import { createReadStream } from 'node:fs';
+import { createReadStream, existsSync } from 'node:fs';
 import { access } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   AudioPlayerStatus,
   StreamType,
@@ -116,8 +117,56 @@ function cueTier(cue: VoiceCue): 'ambient' | 'outcome' {
   return cue === 'heard' ? 'ambient' : 'outcome';
 }
 
-/** A hangok helye. ⚠️ Ugyanaz a `process.cwd()`-konvenció, amit a felvevő is használ. */
+/**
+ * A hangok helye — a MODUL helyéhez képest, ⛔ NEM a `process.cwd()`-hez.
+ *
+ * 🔴 MÉRT HIBA, 2026-09-09 00:17 — az owner élőben tesztelte a hang-csatornát:
+ * *„ha működik, akkor semmilyen hangvisszajelzést nem kapok jelenleg."* A napló megmondta,
+ * miért:
+ *
+ * ```
+ * MA-VOICE-CUE-FAILED: A hangfájl NEM található:
+ *   E:\…\my-assistant\src\_assets\sounds\cue-unsure.mp3
+ * ```
+ *
+ * ⚠️ A fájl a **`cli/src/_assets/sounds/`**-ban van — a keresés a **repó gyökerében** történt.
+ *
+ * **Az ok:** a korábbi `process.cwd()` azt jelentette, hogy a hangok helye attól függött,
+ * **KI INDÍTOTTA a figyelőt**:
+ *
+ * | Indító | `cwd` | Eredmény |
+ * |---|---|---|
+ * | a szerver (`SupervisedChild`) | `…/my-assistant/cli` | ✅ megtalálta |
+ * | kézi `ma comm listen` a repó gyökeréből | `…/my-assistant` | 🔴 **néma** |
+ *
+ * ⭐ **A hiba a NÉMASÁGBAN volt, nem a hangban:** minden más működött *(a beszéd átment, az
+ * átirat elkészült)*, csak épp az owner **semmit nem hallott** — és emiatt azt hihette, hogy
+ * a hang-jelzés meg sem épült. Az `onError` **naplózott**, csak senki nem nézte.
+ *
+ * ⇒ A modul saját helyéből indulunk, és **felfelé keressük** azt a könyvtárat, amiben a
+ * `src/_assets/sounds` létezik. Így a **forrásból** (`cli/src/voice/`) és a **buildből**
+ * (`cli/dist/cli/src/voice/`) is ugyanoda mutat, a `cwd` pedig **nem számít**.
+ */
 export function resolveSoundsDir(): string {
+  const here: string = dirname(fileURLToPath(import.meta.url));
+  let dir: string = here;
+
+  // ⛔ Felfelé lépkedünk a gyökérig — a `cli/` a keresett szint, de a build mélyebben ül,
+  // ezért a MÉLYSÉGET nem égetjük be (az elcsúszna a `outDir` bármely változásán).
+  for (let step = 0; step < 8; step++) {
+    const candidate: string = join(dir, 'src', '_assets', 'sounds');
+
+    if (existsSync(candidate)) return candidate;
+
+    const parent: string = dirname(dir);
+
+    if (parent === dir) break;
+
+    dir = parent;
+  }
+
+  // ⚠️ Ha nem találtuk meg, a RÉGI viselkedést adjuk vissza — így a hibaüzenet továbbra is
+  // egy konkrét útvonalat nevez meg, amit meg lehet nézni. ⛔ Néma `''` nem lenne segítség.
   return join(process.cwd(), 'src', '_assets', 'sounds');
 }
 
