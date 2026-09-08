@@ -94,6 +94,19 @@ is — ÁLL**. Egy esemény reggelén ez pontosan abban az ablakban vakítaná m
 amikor a legjobban kell. *(2026-09-07: a user 06:26-kor ébren, 07:45-kor indul; a szerver
 01:30-kor indult, minden zöld ⇒ az újraindítás kimaradt, és ez volt a helyes.)*
 
+🔴 **OWNER-VISSZAJELZÉS A KIHAGYÁSRA, 2026-09-08 14:32:** *„Újra kellett volna indítani a
+gépet már tegnap reggel....”*
+
+⚠️ **A kivételt 2026-09-07-en alkalmaztam — és az owner szerint tévesen.** A három feltétel
+teljesült *(minden zöld · friss indítás · esemény aznap)*, mégis rossz döntés volt.
+⇒ A kivétel **szűkebb**, mint hittem: az „esemény van aznap” önmagában **nem** indíték a
+kihagyásra — ő épp aznap akart **friss, hibátlan** rendszert.
+
+❓ **NYITOTT és NEM TALÁLGATOM:** „a gépet” = a **számítógép** újraindítása, vagy a
+**rendszerünk** (LDP + szerver + figyelők)? A kettő **nem ugyanaz**, és a számítógép
+újraindítása **az ő munkáját is megszakítaná** ⇒ azt magamtól **soha nem teszem meg**.
+Felvéve: `current/open-questions.md`.
+
 ⇒ Ilyenkor a napindítás **technikai része kimarad**, de a **tartalmi** (áttekintés,
 `schedule-guardian`, értesítés) **NEM** — az mindig lefut.
 

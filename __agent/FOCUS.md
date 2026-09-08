@@ -5,25 +5,27 @@
 > ⚠️ A `one-thing-focus.md` ugyanennek a **duplikátuma**, stale-bannerrel — ne arra hivatkozz.
 > ⭐ Az **első** szabálya engem köt: *„Jelenleg csak rontasz rajta mert **te is csapongsz nagyon**"*.
 
-**Frissítve:** 2026-09-08 13:10
+**Frissítve:** 2026-09-08 16:10
 
 ---
 
 ## 📌 KITŰZVE MOST
 
-> ⏳ **Még nincs kitűzve — javaslat kiment, a válaszára vár.**
+🎯 **Master Prompter** — *(az owner saját sorrendje, 2026-09-08 15:31)*
 
-**A javaslatom:** 🍱 **Interfood — a következő 2-3 hetes rendelés leadása**
-*(organizer, `P=115`)*
+> **Owner szó szerint:** *„a jelenlegi egyik legfőbb projekt az a Master Promptor, Credit
+> Service és Adventure kiadás, amiután majd a mindenféle reklám feladatokra fogunk ráállni.
+> Ezek amúgy továbbra is az én feladataim.”*
 
-**Miért EZ az egy:** ez az egyetlen a magas prioritásúak közül, aminek **valódi határideje**
-van — **09-10**, azaz **két nap**. A többi P≥110 tétel *(Üzemorvos, LinkedIn, Organizer-kiépítés)*
-dátum nélküli: azok **nem romlanak el** attól, ha most nem velük kezdünk. ⭐ És van rá kész
-eszközünk: `ma interfood` + a `interfood-ordering` flow.
+**Sorrend:** (1) Master Prompter → (2) Credit Service → (3) Adventure kiadás → (4) reklám.
 
-⛔ **Nem én döntöm el.** Ha mást mond, az a kitűzött — a javaslatom felírva marad.
+⭐ **Nem én választottam — Ő mondta ki.** Ez a helyes működés: a kitűzés az övé, én
+**nyilván tartom és a helyén tartom** *(`focus-support.md` 7⃣: ⛔ nem viszem el a feladatait)*.
 
----
+⏰ **Az egyetlen dátumos tétel mellette:** 🍱 Interfood-rendelés — **09-10**.
+
+⚠️ **A korábbi Interfood-javaslatom visszavonva** *(13:10)*: aként ajánlottam kitűzöttnek,
+hogy nem tudtam az ő sorrendjéről — az az üzenete a **DEV**-be érkezett.
 
 ## 🗂️ Amit közben felírtam, és NEM hozok elő
 

@@ -62,3 +62,37 @@ tudva. **A duplikált munka a rossz routing TÜNETE volt**, nem külön hiba.
 
 **Kapcsolódó:** [[message-delivery-reliability]] · [[ldp-default-runtime]] · [[ssot]] ·
 [[post-development-verification]]
+
+---
+
+## 🔴 OWNER-SZABÁLY, 2026-09-08 15:31 — a DEV-be érkező üzenet KRITIKUS HIBA
+
+> *„Ugye a My Assistant sessionbe kell csattanjon minden és semmi sem a devben. A dev csak
+> dolgozik és a My Assistant delegálja a devnek a feladatokat. **Ha a devnél landol egy Discord
+> üzenet, az kritikus hiba.**"*
+
+⭐ **Ez nem preferencia, hanem szerep-határ:** a DEV **végrehajtó**, a My Assistant a
+**kapcsolattartó és delegáló**. Egy DEV-be érkező owner-üzenet nem „kényelmetlen" — a
+**szerepek összecsúszását** okozza: a DEV elkezd asszisztensi döntéseket hozni, az asszisztens
+pedig nem tud a saját megbízásáról. *(Mérve ugyanezen a napon: a DEV asszisztensi
+alapelv-fájlokat írt, miközben én ugyanazt írtam meg külön — duplikált munka.)*
+
+### Mit jelent ez a gyakorlatban
+
+| | |
+|---|---|
+| ✅ **Owner → My Assistant** | minden Discord-üzenet, hang, fájl |
+| ✅ **My Assistant → DEV** | delegált feladat, handoff-fájl |
+| ⛔ **Owner → DEV** | **KRITIKUS HIBA** — jelenteni kell, nem elnyelni |
+
+📌 **Ezért nincs csendes fallback a cél-feloldásban:** ha a rögzítés érvénytelen, a kézbesítés
+**hangosan bukik**. A „valahova csak elment" itt **rosszabb**, mint a nem-kézbesítés.
+
+## ⚠️ AMI EBBŐL MÉG NINCS IGAZOLVA (2026-09-08 16:05)
+
+A javítás **kódban él** *(`dist` 15:50, figyelő újraindult 15:52 és 16:00)*, és a rögzítés
+**feloldható** — ellenőrizve: `ccs-6f25a888-mtp9a8cx` („My Assistant").
+🔴 **DE:** a legutóbbi két tényleges kézbesítés *(15:32, 15:36)* **még a DEV-hez ment**, mert
+azok a régi figyelőből futottak. ⇒ **Élő owner-üzenettel még NINCS bizonyítva**, hogy a
+javítás működik. ⛔ Amíg nincs, „megjavítva"-ként **nem jelentendő** — csak *„kódban él,
+igazolásra vár"*.

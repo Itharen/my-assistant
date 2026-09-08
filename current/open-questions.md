@@ -777,3 +777,26 @@ aminek a veszteségét most mérjük. A `cue-heard` a legérzékenyebb: az **bes
   így, **engem** hívna-e így, vagy a `comm doctor` parancsra utal.
 - **Miért nem tippelek:** a megszólítás személyes; rossz irányba tippelni kellemetlen, és a
   javítása drágább, mint egy egymondatos kérdés.
+
+## Q-2026-09-08-02 — „Újra kellett volna indítani a gépet" — MELYIK gépet?
+
+- **Kategória:** process · **Fontosság:** `m` · **Státusz:** `open` · **Felvéve:** 2026-09-08 16:10
+- **Owner szó szerint (2026-09-08 14:32):** *„Újra kellett volna indítani a gépet már tegnap reggel...."*
+
+**Miért kérdés, és miért nem tippelek:** két, egymástól élesen különböző dolgot jelenthet.
+
+| Olvasat | Mit jelentene | Kockázat, ha rosszul értem |
+|---|---|---|
+| **(a) a számítógép** (RAVEN) | teljes Windows-újraindítás | 🔴 **Megszakítaná a saját munkáját** — ezt magamtól SOHA nem teszem meg |
+| **(b) a rendszerünk** | `dc ldp` + szerver + figyelők | olcsó, és az `ENTRY.md` §0 amúgy is előírja |
+
+⚠️ **A (b)-t 2026-09-07-én szándékosan kihagytam** az `ENTRY.md` §0 kivétele alapján *(minden
+zöld · friss indítás · esemény aznap)*, és **naplóztam is, miért**. Az owner visszajelzése
+szerint ez **rossz döntés** volt ⇒ a kivétel szűkítendő. Ez a rész **független** a kérdéstől:
+akár (a)-t, akár (b)-t értette, a **kihagyás** volt a hiba.
+
+⭐ **Ami emellett szól, hogy tényleg volt baj:** aznap **94,2%-os RAM** mellett futottunk
+(122/130 GB), és emiatt az FDP AI várakozott ⇒ **hangüzenetek buktak el** időtúllépéssel.
+Ez pontosan az a tünet, amit egy újraindítás orvosolt volna.
+
+**Amíg nincs válasz:** a (b)-t a mostanitól **nem hagyom ki** eseményre hivatkozva.
