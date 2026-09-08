@@ -14,6 +14,12 @@ import { spawn, type ChildProcess } from 'node:child_process';
 
 import { emitServerActionLog } from '../_collections/action-log.util.js';
 
+import {
+  decideSupervisorAction,
+  type SupervisorAction,
+  type SupervisorDecision,
+} from './supervisor-decision.js';
+
 /** Az újraindítási várakozás alsó és felső határa. */
 export const RESTART_DELAY_MIN_MS: number = 5_000;
 export const RESTART_DELAY_MAX_MS: number = 5 * 60_000;
@@ -66,6 +72,15 @@ export class SupervisedChild {
   private stopping: boolean = false;
   private startTimer: NodeJS.Timeout | null = null;
 
+  /**
+   * A legutóbb naplózott döntés.
+   *
+   * ⚠️ **Csak VÁLTOZÁSKOR naplózunk.** A felügyelő percenként dönt; minden kört naplózni
+   * annyi zajt termelne, hogy a valódi esemény elveszne benne — és pont az a cél, hogy
+   * kiszúrható legyen.
+   */
+  private lastLoggedAction: SupervisorAction | null = null;
+
   /** A gyermek utolsó kimeneti sorai — ez teszi a hibát olvashatóvá. */
   private readonly outputTail: string[] = [];
 
@@ -114,9 +129,33 @@ export class SupervisedChild {
    * a néma nem-indulás pont az a hiba, ami ellen ez az egész készült.
    */
   private async attemptStart(): Promise<void> {
-    if (this.stopping || this.child) return;
-
+    // 🔴 A DÖNTÉS KIEMELVE — mérve 2026-09-08 11:30: a figyelő meghalt, és a felügyelő
+    // **9+ percig** nem indított újat, **nulla** napló-bejegyzéssel. Az eredeti őrfeltétel
+    // (`if (this.stopping || this.child) return;`) **újraütemezés nélkül** lépett ki, tehát egy
+    // beragadt `child` hivatkozás **véglegesen** abbahagyatta a felügyeletet — némán.
     const prerequisites = this.config.checkPrerequisites();
+    const decision: SupervisorDecision = decideSupervisorAction({
+      stopping: this.stopping,
+      childPid: this.child?.pid ?? null,
+      // ⚠️ A `child` LÉTEZÉSE nem bizonyítja, hogy a folyamat él — az elmaradt `exit`
+      // esemény pont ezt a hazugságot hozza létre.
+      childAlive: this.child?.pid !== undefined && isPidAlive(this.child.pid),
+      prerequisitesOk: prerequisites.ok,
+      runningElsewhere: this.config.isRunningElsewhere(),
+    });
+
+    await this.logDecisionChange(decision);
+
+    if (decision.action === 'reclaim-dead-child') {
+      // Elengedjük a halott hivatkozást, és AZONNAL újrapróbálunk.
+      this.child = null;
+    }
+
+    if (decision.action !== 'start') {
+      if (decision.rescheduleMs !== null) this.scheduleStart(decision.rescheduleMs);
+
+      return;
+    }
 
     if (!prerequisites.ok) {
       await emitServerActionLog({
@@ -137,13 +176,6 @@ export class SupervisedChild {
       return;
     }
 
-    if (this.config.isRunningElsewhere()) {
-      // Máshol már fut (pl. ütemezett feladatként). Nem indítunk másodikat, csak
-      // visszanézünk később, hogy él-e még.
-      this.scheduleStart(FOREIGN_RECHECK_MS);
-
-      return;
-    }
 
     const startedAt: number = Date.now();
 
@@ -246,6 +278,39 @@ export class SupervisedChild {
   }
 
   /** A gyermek kimenetének gyűjtése — csak az utolsó néhány sort tartjuk meg. */
+  /**
+   * A döntés naplózása — ⚠️ **csak ha VÁLTOZOTT** az előzőhöz képest.
+   *
+   * 🔴 Mérve 2026-09-08 11:30: a felügyelő 9+ percig nem indított újra, és **egyetlen**
+   * bejegyzés sem született. Emiatt a „miért?" kérdés **megválaszolhatatlan** volt.
+   */
+  private async logDecisionChange(decision: SupervisorDecision): Promise<void> {
+    if (this.lastLoggedAction === decision.action) return;
+
+    this.lastLoggedAction = decision.action;
+
+    // ⚠️ A halott gyermek elengedése HIBA-szintű: ez azt jelenti, hogy egy kilépés-esemény
+    // elmaradt — a felügyelet enélkül beragadt volna.
+    const isProblem: boolean = decision.action === 'reclaim-dead-child'
+      || decision.action === 'blocked-prerequisites';
+
+    process.stdout.write(`[felügyelő/${this.config.label}] ${decision.action}: ${decision.detail}
+`);
+
+    await emitServerActionLog({
+      actor: 'server',
+      kind: isProblem ? 'error' : 'note',
+      summary: `[${this.config.errorCode}-${decision.action.toUpperCase()}] `
+        + `${this.config.label}: ${decision.detail}`,
+      extra: {
+        issuer: 'supervised-child.decision',
+        label: this.config.label,
+        action: decision.action,
+        rescheduleMs: decision.rescheduleMs,
+      },
+    });
+  }
+
   private captureOutput(text: string): void {
     for (const line of text.split('\n')) {
       const trimmed: string = line.trim();
@@ -316,5 +381,24 @@ export function registerShutdownHooks(child: SupervisedChild): void {
       stopAll();
       process.kill(process.pid, signal);
     });
+  }
+}
+
+/**
+ * ÉL-e a folyamat.
+ *
+ * 🔴 MIÉRT KELL: a `ChildProcess` hivatkozás létezése **nem bizonyítja**, hogy a folyamat él.
+ * Ha a `exit` esemény elmarad, a hivatkozás beragad, és a felügyelő örökre azt hiszi, hogy
+ * minden rendben — pontosan ez történt 2026-09-08 11:30-kor.
+ *
+ * ⚠️ A `kill(pid, 0)` nem küld jelet, csak létezést vizsgál.
+ */
+function isPidAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+
+    return true;
+  } catch {
+    return false;
   }
 }
