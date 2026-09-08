@@ -23,6 +23,17 @@ export interface DiscordInboundMessage {
   content: string;
   /** Mikor érkezett (ISO 8601, Europe/Budapest offszettel). */
   receivedAt: string;
+  /**
+   * 🔗 Melyik üzenetre VÁLASZOLT az owner.
+   *
+   * 🔴 Enélkül a *„ezt az üzenetet próbáld újraolvasni"* kérés **értelmezhetetlen**: a
+   * szöveg nem mondja meg, MELYIKRE gondolt — azt kizárólag a válasz-referencia hordozza.
+   * Owner (2026-09-08 14:49): *„kelleni fog **reply reference** és on demand read…"*
+   *
+   * ⭐ Az asszisztens ezzel hívhatja a `ma stt transcript <messageId>`-t.
+   * Elhagyható: hiánya = az üzenet nem válasz volt.
+   */
+  referencedMessageId?: string;
 }
 
 /** A kötegelő döntése: küldjünk-e most, és ha nem, miért nem. */

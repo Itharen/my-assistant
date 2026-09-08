@@ -132,6 +132,8 @@ function toIncoming(message: Message): IncomingDiscordMessage {
     authorName: message.author.username,
     isFromBot: message.author.bot,
     content: message.content,
+    // 🔗 A válasz-referencia (T-68/2): erre mutat rá az owner, amikor *„ezt olvasd újra"*.
+    ...(message.reference?.messageId ? { referencedMessageId: message.reference.messageId } : {}),
     attachments: [...message.attachments.values()].map((a): DiscordAttachment => ({
       id: a.id,
       url: a.url,
@@ -485,6 +487,11 @@ export class DiscordListener {
         channelId: incoming.channelId,
         content: incoming.content,
         receivedAt: new Date().toISOString(),
+        // 🔗 A válasz-referencia TOVÁBBADÁSA (T-68/2) — enélkül az asszisztens nem tudja,
+        // MELYIK üzenetre gondolt az owner, amikor azt mondja: „ezt olvasd újra".
+        ...(incoming.referencedMessageId
+          ? { referencedMessageId: incoming.referencedMessageId }
+          : {}),
       });
 
       this.processedCount += 1;

@@ -141,6 +141,10 @@ async function runStatusSubcommand(command: string, args: string[]): Promise<voi
   return (await import('./commands/status.command.js')).runStatusCommand(command, args);
 }
 
+async function runSttSubcommand(command: string, args: string[]): Promise<void> {
+  return (await import('./commands/stt.command.js')).runSttCommand(command, args);
+}
+
 async function runTickSubcommand(command: string, args: string[]): Promise<void> {
   return (await import('./commands/tick.command.js')).runTickCommand(command, args);
 }
@@ -192,6 +196,13 @@ const COMMAND_TREE: Record<string, Record<string, CommandHandler>> = {
   },
   status: {
     digest: (args: string[]) => runStatusSubcommand('digest', args),
+  },
+  // 🎙️ A hangüzenet ↔ transzkript nyilvántartás olvasása (T-68).
+  // ⚠️ MÉRT CSAPDA (2026-09-08): a `voice-funnel` 593 zöld teszt és zöld `tsc` mellett
+  // **futásidőben nem létezett**, mert kimaradt ebből az engedélyezési listából.
+  stt: {
+    transcript: (args: string[]) => runSttSubcommand('transcript', args),
+    pending: (args: string[]) => runSttSubcommand('pending', args),
   },
   tick: {
     plan: (args: string[]) => runTickSubcommand('plan', args),

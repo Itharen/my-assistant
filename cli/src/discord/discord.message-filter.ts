@@ -25,6 +25,19 @@ export interface IncomingDiscordMessage {
    * Elhagyható, hogy a régi hívók ne törjenek el; hiánya = nincs csatolmány.
    */
   attachments?: DiscordAttachment[];
+  /**
+   * 🔗 Melyik üzenetre VÁLASZOLT az owner — a Discord reply-referenciája.
+   *
+   * 🔴 OWNER-KÉRÉS (2026-09-08 14:49): *„lesz olyan üzenetem, kérésem, hogy »ezt az
+   * üzenetet próbáld újraolvasni« (reply-al)… Szóval kelleni fog **reply reference** és
+   * on demand read és voice process."*
+   *
+   * ⚠️ Enélkül a *„ezt olvasd újra"* kérés **értelmezhetetlen**: a szöveg nem mondja meg,
+   * MELYIK üzenetre gondolt — azt kizárólag a válasz-referencia hordozza.
+   *
+   * Elhagyható: hiánya = az üzenet nem válasz.
+   */
+  referencedMessageId?: string;
 }
 
 export interface MessageFilterConfig {
