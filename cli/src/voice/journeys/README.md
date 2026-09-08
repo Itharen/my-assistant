@@ -11,6 +11,21 @@
 | **Néma eldobás** *(veszteség-variáns)* | 3 mp beszéd → a felvevő eldobja → **látható** összefoglaló → a tölcsér mutatja | az eldobás oka `discarded-by-recorder`; a **másodperc** mérve (3 mp); az összefoglaló a **hang-csatornába** megy és tartalmazza a mp-et; a tölcsér `lostAudioSeconds: 3`, arány **0%** | `voice.journey-e2e.spec.ts` |
 | **Idegen + duplikátum** *(megszakítás-variáns)* | idegen beszélő → owner → **ugyanaz** a szegmens újra | idegennél nincs feldolgozás; a duplikátum **nem** kerül a kötegbe és **nem** küld második tükröt; ⭐ mindkettőnél **csend** (se hang, se „nem jutott át"); a tölcsérben `skipped: 2`, az arány **100% marad** | `voice.journey-e2e.spec.ts` |
 
+### 🔁 MEGSZAKÍTÁS + FOLYTATÁS *(kötelező variáns)* — `stt.retry-journey-e2e.spec.ts`
+
+| Journey | Belépés → érték → folytatás | Business-assertek |
+|---|---|---|
+| **A bukott felismerés VISSZAJÖN** | a felismerés bukik → a hang **bájtjai** a sorra → telik az idő → esedékessé válik → **ugyanazok a bájtok** jönnek vissza → a szöveg a **kötegbe** kerül → a sor kiürül | túl korán **nincs** kiadás *(a várakozás maga az alkalmazkodás)*; a visszakapott bájtok **azonosak**; a jelölés `🔊 HANGCSATORNA` és ⛔ **nem** `HANGÜZENET`; a tükör a **hang-csatornába** megy |
+| **Feladás** *(variáns)* | minden próba elfogy → **kimondjuk**, hogy elveszett | a `recordFailure` `null`-t ad, ha nincs több lépcső; a feladás-üzenet tartalmazza az **okot**; és **oda** megy, ahol elhangzott |
+| **Együttélés** *(variáns)* | egy hangüzenet és egy hang-csatornás tétel **egyszerre** a soron | mindkettő a **saját** útján kézbesítődik; a **hangjuk sem cserélődik össze** |
+
+⭐ **Pozitív kontrollal igazolva (2026-09-08):** a `source` mező elhagyása **3 tesztet** buktat —
+tehát a védelem valódi, nem látszat.
+
+⛔ **Amit ez sem állít:** nincs benne valódi Discord-kapcsolat és valódi STT. A figyelő privát
+ragasztó-metódusa (`deliverRetriedTranscript`) pontosan az itt végigvitt darabokat hívja, de
+maga élő klienst igényel, ezért nem szerepel.
+
 ## A hat kötelező tulajdonság — hol teljesül
 
 | # | Tulajdonság | Hogyan |
@@ -45,6 +60,7 @@ A védelem tehát valódi, nem látszat.
 | visszajelzés-tábla | `voice-feedback-plan.ts` | mindhárom |
 | hangjelzések | `voice-cues.ts` | ⚠️ **nincs journey-ben** — a lejátszás élő hang-kapcsolatot igényel; unit-teszt + futásidejű ffmpeg-igazolás fedi |
 | átviteli arány | `voice-funnel-report.ts` | mindhárom |
+| újrapróbálás *(a bukott felismerés visszajön)* | `stt.retry-queue.ts` + `stt.retry-delivery.ts` | 🔁 Megszakítás + folytatás |
 
 ## ⛔ Amit a journey NEM állít
 

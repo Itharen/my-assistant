@@ -2743,3 +2743,48 @@ adtam ki · a nyitott rendszer-gond. Az `ENTRY.md` 5. lepese mostantol ERRE muta
 📌 **A tanulsag:** egy allapot-fajl ket dolgot **nem tud egyszerre**: teljes tortenetet orizni ES
 gyors belepo lenni. ⇒ Ketto kell — **archivum** es **belepo**. Ugyanaz a javaslat, amit az FDP tett
 az AGENT_BUS-ra; most a sajat fajlomon vezettem be.
+
+
+---
+
+## ✅ 2026-09-08 05:19–05:23 — DEV: a T-52 ÉLESBEN igazolva + a retry-journey megvan
+
+### 1️⃣ A pulzus hang-szegmense — ÉLESBEN, teljes láncon igazolva
+
+| Mit néztem | Eredmény |
+|---|---|
+| az életjel tartalmazza-e a `voice` mezőt | ✅ **IGEN** — az új figyelő fut (`pid 126020`), 05:19-kor írta |
+| a pulzus-sorban van-e hang-szegmens | ✅ **NINCS — és ez a HELYES**: `speechStarts: 0` ⇒ „a nulla nem hír" |
+
+⭐ Ez az end-to-end igazolás: az adat átmegy a **figyelőtől a szerverig**, és a szegmens
+**helyesen hallgat**. ⏳ A „volt beszéd" ág élő igazolása owner-függő *(a tesztek + a 04:17-es
+futásidejű próba fedik)*.
+
+### 2️⃣ 🔁 A HIÁNYZÓ KÖTELEZŐ VARIÁNS: megszakítás + folytatás
+
+A frissített `core-e2e-user-journey` **nevesíti**: *„interruption and resume (leave mid-flow and
+come back)"* — és pont ez hiányzott. ⚠️ Az *„a bukott felismerés már nem vesz el"* eddig
+**állítás** volt, nem bizonyíték.
+
+⇒ `cli/src/stt/stt.retry-journey-e2e.spec.ts` — **3 journey**, valódi állapot-továbbadással:
+
+```
+a felismerés bukik → a hang BÁJTJAI a sorra → telik az idő → esedékes
+→ UGYANAZOK a bájtok jönnek vissza → a szöveg a KÖTEGBE kerül → a sor kiürül
+```
+
+| Journey | Mit bizonyít |
+|---|---|
+| **A bukott felvétel visszajön** | túl korán **nincs** kiadás · a bájtok **azonosak** · a jelölés `🔊 HANGCSATORNA`, ⛔ **nem** `HANGÜZENET` · a tükör a hang-csatornába |
+| **Feladás** | ha elfogy a próba, **kimondjuk** — az okkal, és **oda**, ahol elhangzott |
+| **Együttélés** | egy hangüzenet + egy hang-csatornás tétel egyszerre a soron ⇒ **saját** úton kézbesítődnek, és a **hangjuk sem cserélődik össze** |
+
+### ✅ POZITÍV KONTROLL — megint kifizetődött
+
+⛔ Nem elég, hogy elsőre zöld lett. Szándékosan kivettem a `source` mező mentését ⇒ **3 teszt
+bukott**, köztük a journey teljes útja. Visszaállítva: **630/630 zöld**.
+📌 *(Egy elsőre zöld journey gyanús — a védelmet is meg kell mérni, nem csak a működést.)*
+
+### Teszt
+
+**CLI 630/630 zöld** *(+3)* · szerver 79/79 · a journey-katalógus frissítve.
