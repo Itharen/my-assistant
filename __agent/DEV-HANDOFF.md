@@ -512,3 +512,55 @@ meg kell őrizni**, hogy később — jobb körülmények között — feloldhat
 próbálkozás-történet **megmarad**, **(b)** reply-referenciával **újra kérhető** az olvasás/átirat,
 **(c)** mindre **teszt** van, és a CLI-suite **zöld**. ⭐ És a mai, most is feloldatlan
 hangüzenetén **igazolva** — nem csak fixture-ön.
+
+---
+
+## 2026-09-09 00:05 — 🔴 5 review-lépés PIROS: valódi találatok, nem eszközhiba
+
+**Mérve** (`logs/live-dev-pipeline/status.json`, ciklus 22:40, `pipelineComplete: true`):
+
+| Lépés | Bukó szabály(ok) |
+|---|---|
+| `dc-review-server` | `controller-handler-error-wrapping` · `unique-error-codes` |
+| `dc-review-client` | `no-native-browser-dialogs` |
+| `dc-review-relay` | `controller-handler-error-wrapping` |
+| `dc-review-browser-extension` | `no-silent-catch` |
+| `dc-review-cli` | *(a naplóban csonkolt — fusd le, és nézd meg)* |
+
+**Két konkrét, már látható találat:**
+- `client/src/app/_modules/dashboard/_components/d-waves/d-waves.component.ts:366` —
+  natív böngésző-dialógus (`window.confirm` / `alert`).
+- `client/src/app/_modules/reports/_components/r-dev-io/r-dev-io.component.ts:83` —
+  `.subscribe()` **`DyNX_SubscriptionControl` nélkül** *(kell: `extends DyNX_SubscriptionControl`
+  + `addSubscription()`)*.
+- Több **duplikált blokk** is van *(cli `linkedin.config.ts:82`, server `google.data-service.ts:195`,
+  client `r-dev-io` .ts/.scss)*.
+
+### ⚠️ A LÉNYEG, amit ne érts félre
+
+⛔ **Az eszköz NEM romlott el.** A „failed" itt azt jelenti: **talált valamit**. Ez a review
+**dolgozik**. ⇒ A megoldás **a találatok javítása**, ⛔ **nem** a lépés kikapcsolása vagy
+`fatal: false`-ra állítása.
+
+> **Owner, 2026-09-08 08:24:** *„Semmilyen tesztet, semmilyen ellenőrzést, semmilyen reviewt
+> ne kapcsolj ki. NEEE!"*
+
+🔴 **Miért sürgetőbb, mint amilyennek látszik:** amíg **állandóan piros**, a review **nem tud
+jelezni**. Egy új, valódi hiba beleolvad a meglévő pirosba, és **senkinek nem tűnik fel** —
+pontosan az a hibaosztály, ami ma már kétszer megvágott minket
+*(a némán elavult `dist`, és a hamis „nincs beállítva")*.
+
+**A `no-silent-catch` külön súlyos:** a projekt hard rule-ja a **zero-tolerance** a néma
+`catch`-re (`current/principles/error-handling.md`).
+
+### Sorrend és kész-definíció
+
+1. **Fusd le a reviewt** csomagonként, és írd ki a **teljes** találati listát *(a `status.json`
+   csonkol — ne abból dolgozz)*.
+2. Javítsd a találatokat. ⚠️ A duplikációnál a **kivonás** a cél, nem a másolat átnevezése.
+3. ✅ **Kész, ha mind az 5 review-lépés ZÖLD**, és a CLI/server/client teszt-suite is zöld.
+4. ⛔ Ha egy találatot **nem lehet** javítani, azt **ne némítsd el**: írd le ide, **miért**, és
+   hagyd az ownernek eldönteni.
+
+📌 Emlékeztető: a `tsc-transplanted` **változatlanul piros** (`Buffer` → `BodyInit`) — a
+2026-09-08 12:15-ös szakasz szól róla. Az is ide tartozik.
