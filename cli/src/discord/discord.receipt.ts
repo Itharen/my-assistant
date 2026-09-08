@@ -26,3 +26,30 @@ export function composeDeliveryNotice(deliveredCount: number): string {
     ? '📨 Átment az üzeneted.'
     : `📨 Átment ${deliveredCount} üzeneted.`;
 }
+
+/**
+ * Kimenjen-e egyáltalán az értesítő.
+ *
+ * 🔴 MÉRT SPAM, 2026-09-08: **72 üzenetet** küldtem aznap, ebből **17 ez a nyugta** volt.
+ * Az owner reggel ezt írta: *„megint kicsit össze lett spam-elve a discord"*.
+ *
+ * ⚠️ **KÉT OWNER-SZABÁLY ÜTKÖZÖTT, és mindkettő érvényes:**
+ *
+ * | Mikor | Mit mondott |
+ * |---|---|
+ * | 2026-09-07 10:29 | *„esetleg arról küldhetsz egy rövid 2 szavas választ, hogy **na most ment el neked x üzenet**"* |
+ * | 2026-09-08 13:19 | *„nem jeleznél vissza **mindig minden inputról**. Csak intéznéd/feljegyeznéd."* |
+ *
+ * ⭐ **A feloldás nem választás, hanem a KÜLÖNBSÉG megtalálása:** a korábbi kérés **kötegre**
+ * szólt *(„x üzenet")*, a tiltás pedig az **egyenkénti** visszajelzésre. Mivel az üzenetei
+ * egyesével érkeznek, a `deliveredCount` **majdnem mindig 1** volt ⇒ a köteg-értesítőből
+ * gyakorlatilag **per-input nyugta** lett, azaz pontosan az, amit megtiltott.
+ *
+ * ⇒ **Egyetlen üzenetnél hallgatunk** — arról a „gépel…" jelzés úgyis szól. **Kettőtől
+ * felfelé** viszont megy, mert ott valódi információ van: hogy **több** ment át egyszerre.
+ *
+ * 📌 Kanonikus: `current/principles/focus-support.md` 6️⃣ + `discord-message-style.md`.
+ */
+export function shouldSendDeliveryNotice(deliveredCount: number): boolean {
+  return deliveredCount >= 2;
+}

@@ -37,7 +37,7 @@ import {
   refreshBatchEntries,
   type CurrentMessageState,
 } from './discord.batch-refresh.js';
-import { composeDeliveryNotice } from './discord.receipt.js';
+import { composeDeliveryNotice, shouldSendDeliveryNotice } from './discord.receipt.js';
 import { sendDiscordMessage, splitForDiscord } from './discord.sender.js';
 import {
   composeTranscriptForBatch,
@@ -1134,6 +1134,10 @@ export class DiscordListener {
    * ekkorra mar sikeresen megtortent.
    */
   private async notifyDelivered(deliveredCount: number): Promise<void> {
+    // 🔴 A HALLGATÁS AZ ALAPÉRTELMEZÉS — egyetlen üzenetre NEM nyugtázunk.
+    // Mérve 2026-09-08: 17 ilyen nyugta ment ki egy nap alatt. Owner: „össze lett spam-elve".
+    if (!shouldSendDeliveryNotice(deliveredCount)) return;
+
     try {
       const sent = await sendDiscordMessage(composeDeliveryNotice(deliveredCount), 'ack');
 
