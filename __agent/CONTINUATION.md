@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-08 02:15
+**Utoljára frissítve:** 2026-09-08 02:25
 
 ---
 
@@ -1876,7 +1876,55 @@ A `?day=2` nélküli lekérés most azt állította, hogy **van** nap-2 robotika
 🔴 **Nem fogadtam el.** A programot holnap az **appból** vesszük — ahogy az owner tanulsága is
 mondja. ⛔ Nem kaparom tovább: két ellentmondó válasz után a forrás megbízhatatlan.
 
+
+---
+
+## 2026-09-08 02:23 — TIZENKET UZENET, harom UJ IRANY (az owner lefekudt 02:17-kor)
+
+### ✅ Amit ELVEGEZTEM
+
+**1. Ujrapontozott programterv** *(owner 02:04: „az osszes ajanlast pontozva")* — es **lazitott
+helyszin-szabaly**: *„eleg, hogyha egy epuletben van, nem kell az osszes ugyanabban az eloadoban"*
+⇒ a Neprajzi Muzeum **osszes termje** jatszik. **14 tetel** pontozva 4–9-ig.
+⭐ **A szuperszamitogep 7 → 8**, mert o maga mondta: *„eleg jol hangzik"* — es egyetertek, valos
+tapasztalat, nem igeret. **Ez viszont 11:15-kor van** ⇒ visszahozza a **11:00-as** erkezest mint
+valos alternativat.
+
+**2. Az O leveleet fogadtuk el** *(02:08)* — rovidebb, es a *„vagy spam-be kerultem? 😬"* pont az a
+hang, amit kert. ⛔ Az enyem elavult; az ove megy.
+
+### 👤 T-53 — NEM VOLT FELJEGYZESEM ROLA
+
+> *„nincs is neked feljegyzesed arrol, hogy en ki vagyok, mi vagyok, stb."*
+
+**Igaza volt.** 📌 **Tobb szaz szabalyom van arrol, HOGYAN dolgozzak — es alig valami arrol,
+KINEK.** Ez szerkezeti hianyossag volt, nem feledekenyseg.
+
+Letrehozva: `current/owner-profile.md`. ⛔ **A nem tudott reszek URESEN maradtak** *(napi ritmus
+reszletei, hosszu tavu celok, fontos emberek, egeszseg, mit szeret)* — nem toltottem fel
+kovetkeztetessel.
+⏳ **Az o GPT-s infocsomagjara var** *(02:18)* — **emlekeztetni kell ra**.
+
+### 🔴 T-55 — ELSODRODTAM AZ ORGANIZERTOL
+
+> *„mintha ellenel tavolodva az organizeres feladatoktol, pedig az fontos kulcspontja lesz itt az
+> asszisztensi munkanak"*
+
+**Igaza van.** A mai nap **majdnem teljes egeszeben** hang-csatorna, dispatch es sajat
+hiba-javitas volt. Az organizer-oldali munka *(feladatok, naptar, keszlet)* **kimaradt**.
+⚠️ Ez ugyanaz a mintazat, amit o maga diagnosztizalt 22:30-kor: *„nem tudsz rendesen az
+asszisztensi munkakra koncentralni, amig fejlesztesi munkakat is vegzel."*
+
+### 📧 T-54 — uj feladat: e-mail-figyeles
+
+*„csinaltunk neked egy e-mailt, ahol elég sok minden át is van iranyitva, de ott most eleg nagy a
+kupi, es eleg sok minden fludolja"* ⇒ **egyutt** kell beallitani, mit ne kapjon.
+
+
 ### A következő konkrét lépés
+
+🥇 **A KÖVETKEZŐ KÖR ELSŐ DOLGA: VISSZA AZ ORGANIZERHEZ (T-55).** Az owner jelezte, hogy
+elsodródtam tőle, és igaza van. ⛔ Ne a hang-csatorna legyen megint az első.
 
 ⏳ **AZ OWNERRE VÁR — és a fejlesztés MÁR NEM az én dolgom (22:30 óta):**
 
