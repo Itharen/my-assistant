@@ -88,6 +88,57 @@ A hang jelzi, hogy *valami* történik; a konzol mondaná meg, hogy *mi*.
 📌 **Ez NEM prompton át érkezett** — a sorod nem volt üres, ezért ide írom. A handoff-fájlt
 úgyis frissen olvasod minden ébredéskor; ez a **prompt-mentes csatorna** közöttünk.
 
+
+---
+
+## ⭐ 2026-09-08 01:41 — MEGVAN A KONZOL-KIMENET PONTOS SPECIFIKÁCIÓJA
+
+Az owner leírta, mit akar látni — **ez a hiányzó 2. pont konkrét alakja**:
+
+> *„Itt a hangfelismerős sztoriknál még mindig a régi CCAP megoldást próbáljuk reprodukálni… Az
+> volt az egyik legnagyobb eredményem, amit még kézzel raktam össze, amikor ilyen jeleket mutat:
+> **`|` színesen, egy sorban**, miközben hallja a hangomat, és azok **pirosak és zöldek**, és
+> amikor **elég sok zöld van egymás mellett**, akkor **minősítjük azt egy hangszövegű üzenetnek**."*
+
+**Amit ez jelent:**
+
+| Elem | Mit |
+|---|---|
+| forma | **egyetlen sorban** futó `\|` jelek, **színesen** |
+| 🟢 zöld | az adott hangkeret **beszédnek** minősül |
+| 🔴 piros | nem beszéd *(zaj / csend)* |
+| a szabály | **elég sok EGYMÁS MELLETTI zöld** ⇒ ez egy megszólalás |
+| időzítés | **élőben, beszéd közben** — nem utólag |
+
+⭐ **Ez ugyanaz az adat, amit az átemelt `setupSpeechDetection` már kiszámol** *(hangerő + ZCR
+keretenként)* — csak **nem jeleníti meg**. ⇒ Nem új mérés kell, hanem **kivezetés**.
+
+📌 **És ez oldja meg a másik panaszt is:** a *„nem látom, mi történik"* és a *„miért dobtad el"*
+ugyanaz a kérdés. Ha a piros/zöld sáv látszik, **maga a szűrő működése válik láthatóvá** — és
+akkor a küszöb hangolása sem találgatás lesz.
+
+⚠️ **Hol jelenjen meg:** az LDP-konzolon *(ott nézi)*. ⛔ Ne a Discordra — az elárasztaná.
+
+---
+
+## 🔴 2026-09-08 01:58 — AZ LDP-ÚJRAINDÍTÁS: az owner MÁR TÖBBSZÖR kérte
+
+> *„A My Assistant szerver az LDP-ben **még mindig leáll**, és utána lefut az egész LDP, és csak
+> utána indul újra. Pedig **ezt kértem már többször**, hogy úgy kéne működnie, hogy miután lefutott
+> az egész, **csak akkor** állítja le és indítja újra."*
+
+**Mérve 2026-09-08 02:05:** **38 szerver-újraindítás**, ebből **20 a 22:00 óta eltelt 3,2 órában**;
+átlagos ciklus-köz **10,1 perc** — miközben egy teljes pipeline **~15+ perc**.
+⇒ A szerver **gyakrabban indul újra, mint amennyi idő egy körhöz kell**, és a Discord-csatorna az
+idő nagy részében **halott**. *(Ma éjjel két owner-üzenet emiatt nem ért el időben — az audit
+találta meg őket.)*
+
+⚠️ **Ez a `dc ldp`-ben van, ami a `cli-dynamo` repóban él — a my-assistanton KÍVÜL.**
+Felvéve: `__documentations/BEDROCK-FRS.md` → **BFR-MYASSISTANT-001**, prioritás **critical**-re emelve.
+
+🙋 **Ha az owner azt mondja, hogy nyúlhatunk a `dc`-hez, ez a TE feladatod lesz** — addig a BFR a
+csatorna. ⛔ Magadtól ne kezdj bele idegen repóba.
+
 ---
 
 ## 3. Build és teszt

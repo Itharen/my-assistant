@@ -151,3 +151,8 @@ Az owner maga jelezte: *„a CCLP tipikus félrehallás, ilyenkor a CCAP-ról be
 
 Az owner jelezte: *„Ez is egy tipikus félrehallás amúgy, nem is értem miért. Olvast > olvasd"*.
 ⇒ Felszólító módú `olvasd` helyett gyakran `olvast` jön az átiratban.
+
+## 2026-09-08 — `cueba` / `Q-ba` ≈ **queue-ba** · `messzicset` ≈ **message-et**
+
+Az owner sorolta fel: *„cueba, Q-ba > queue-ba · messzicset > massage-et"*
+⚠️ A második nála is elírás: a helyes cél-szó **message**, nem „massage".

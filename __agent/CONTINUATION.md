@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-08 01:50
+**Utoljára frissítve:** 2026-09-08 02:15
 
 ---
 
@@ -1788,6 +1788,59 @@ owner szol** — automatikus „megjott-e mar?" ellenorzes nem epitheto.
 A `node cli/bin/ma.js` **elszall**, ha az LDP epp `rimraf`-olta a `dist`-et.
 ⭐ **Megkerulo ut, ami mukodik:** `cd cli && npx tsx src/main.ts comm say --file …` — a forrasbol fut,
 `dist` nelkul. *(Ma ketszer akadtam el emiatt.)*
+
+
+
+---
+
+## 🔴 2026-09-08 02:05 — AZ AUDIT MEGFOGTA: KILENC uzenet nem ert el a figyelo kiesese alatt
+
+⭐ **A `comm audit` bizonyitotta az ertelmet:** a figyelo **23 percig** nem elt *(LDP-ciklus)*, es
+kozben az owner **tobb uzenetet is irt**. Az audit — ami **magat a Discordot** kerdezi — megtalalta
+oket. ⇒ A kompenzalo kontroll **mukodik**; a keslelteteset viszont nem szunteti meg.
+
+### 📊 A ROMLAS MERVE — es az ok
+
+| Meres (02:05) | Ertek |
+|---|---|
+| Szerver-ujrainditas osszesen | **38** |
+| Ebbol **22:00 ota** *(3,2 ora)* | **20** |
+| Atlagos ciklus-koz | **10,1 perc** *(min 5,5 · max 55,7)* |
+| A figyelo kiesese most | **23 perc** *(korabban 7 → 18 → 23)* |
+
+🔴 **A donto arany:** egy teljes pipeline **~15+ perc**, a ciklusok **10 percenkent** indulnak ⇒
+**a szerver gyakrabban indul ujra, mint amennyi ido egy korhoz kell.**
+
+⭐ **Ez a delegalas egyenes kovetkezmenye** — es azert fajo, mert a delegalas **mukodik**.
+⇒ `BFR-MYASSISTANT-001` prioritasa **critical**-re emelve, a mereesekkel.
+
+**Owner (01:58):** *„ezt kertem mar tobbszor"* — tehat ez nala **ismetelt** keres, nem uj.
+
+### ⭐ MEGVAN A KONZOL-KIMENET SPECIFIKACIOJA (owner 01:41)
+
+> *„`|` szinesen, egy sorban, mikozben hallja a hangomat, es azok pirosak es zoldek, es amikor
+> eleg sok zold van egymas mellett, akkor minositjuk azt egy hangszovegu uzenetnek"*
+
+📌 **Ez ugyanaz az adat, amit az atemelt `setupSpeechDetection` MAR kiszamol** *(hangero + ZCR
+keretenkent)* — csak nem jeleniti meg. ⇒ **Nem uj meres kell, hanem kivezetes.**
+⭐ **Es ez oldja meg a masik panaszt is:** a *„nem latom, mi tortenik"* es a *„miert dobtad el"*
+**ugyanaz a kerdes** — ha a piros/zold sav latszik, a **szuro mukodese valik lathatova**, es a
+kuszob hangolasa sem talalgatas lesz. → `DEV-HANDOFF.md`.
+
+### ✅ Amit EN vegeztem el ebben a korben (asszisztensi, nem fejlesztes)
+
+**1. Holnapi ebreszto + PONTOZAS.** Az owner kerte *(01:52)*. A pontozas alapja a **sajat mai
+tanulsaga**: *„minden, amit meghallgattam, olyan volt, amit mar tudok; a robotosak kinda
+erdekesek voltak"* ⇒ robotika es **uj architektura** fel, az **„uzleti siker"** keretezes le.
+⭐ **A 8-as es 9-es tetelek MIND 14:00 utan vannak** ⇒ a **13:45-os erkezes semmi lenyegeset nem
+veszit**, es ket oraval tobbet alhat. Ebresztő: **~09:00** (11:00-ra) vagy **~11:45** (13:45-re).
+⚠️ A keszulodes hosszat **nem mertuk** ma — csak az indulast (07:45). Ezt kimondtam neki.
+
+**2. A level ujrafogalmazva** — rovidebb, kozvetlenebb. ⚠️ Az owner kulon kikototte:
+*„ennek az ujrafogalmazasat ne add most vissza az fdp agentnek veletlenul se. te is elbirsz vele"*
+⇒ **en irtam at**, nem delegaltam.
+
+**STT-felrehallasok:** `cueba` / `Q-ba` ≈ **queue-ba** · `messzicset` ≈ **message-et**.
 
 
 ### A következő konkrét lépés
