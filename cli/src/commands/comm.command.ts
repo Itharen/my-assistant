@@ -19,7 +19,7 @@ import { localTimeHeader } from '../utils/local-time.js';
 import type { CommCheck, CommCheckStatus, CommDoctorReport } from '../comm/comm.models.js';
 import { DiscordBridge } from '../discord/discord.bridge.js';
 import { DiscordListener } from '../discord/discord.listener.js';
-import { sendDiscordMessage } from '../discord/discord.sender.js';
+import { sendDiscordMessage, type DiscordSendResult } from '../discord/discord.sender.js';
 import { formatCommHistory, readCommHistory } from '../comm/comm.history.js';
 import { AUDIT_LIMIT, auditDiscordChannel, formatChannelAudit } from '../comm/comm.channel-audit.js';
 import {
@@ -87,6 +87,7 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
       text: { type: 'string' },
       file: { type: 'string' },
       long: { type: 'boolean' },
+      voice: { type: 'boolean' },
       day: { type: 'string' },
       hours: { type: 'string' },
     },
@@ -143,8 +144,40 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
       // gyakorlatilag NULLA infó.
       const result = await sendDiscordMessage(source.text);
 
-      writeEnvelope(ok(action, requestId, startedAt, result), pretty || !asJson);
+      // 🔊 `--voice`: a válasz a HANG-CSATORNÁBA is kimegy.
+      //
+      // > **Owner, 2026-09-09 00:18 (hangcsatorna):** *„Amikor ezekre válaszolsz, azt jól lenne,
+      // > ha **itt is látnám**."*
+      //
+      // ⭐ MIÉRT KELL, holott a fő szöveges csatornába úgyis kimegy: amikor **beszél**, a
+      // hang-csatornát nézi. A másik csatornába érkező válasz ott van, csak **nem ott, ahol ő
+      // épp van** — ez ugyanaz a hiba, amit 2026-09-07-kor a tükör-szövegnél már elkövettünk.
+      //
+      // ⛔ SZÁNDÉKOSAN NEM AUTOMATIKUS minden üzenetre: az **megduplázná** a mennyiséget, és a
+      // mai mérés szerint (72 üzenet / nap) a mennyiség a fő panasz. A hang-csatornai
+      // beszélgetésre adott válasznál viszont **odavaló**.
+      const alsoVoice: boolean = parsed.values['voice'] === true;
+      const voiceChannelId: string = (process.env['MA_DISCORD_VOICE_CHANNEL_ID'] ?? '').trim();
+      let voiceResult: DiscordSendResult | null = null;
 
+      if (alsoVoice) {
+        voiceResult = voiceChannelId
+          ? await sendDiscordMessage(source.text, 'reply', voiceChannelId)
+          : {
+            sent: false,
+            partCount: 0,
+            detail: 'A hang-csatorna nincs beállítva — a tükrözés kimaradt.',
+            remedy: 'MA_DISCORD_VOICE_CHANNEL_ID a `.env`-ben.',
+          };
+      }
+
+      writeEnvelope(
+        ok(action, requestId, startedAt, voiceResult ? { ...result, voiceMirror: voiceResult } : result),
+        pretty || !asJson,
+      );
+
+      // ⚠️ A hang-tükör bukása NEM teszi bukottá a küldést: a fő csatornába kiment.
+      // ⛔ De el sem hallgatjuk — a burokban ott a `voiceMirror`.
       if (!result.sent) process.exitCode = 1;
       return;
     }
