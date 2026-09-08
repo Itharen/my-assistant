@@ -29,8 +29,8 @@ asszisztensi munkát** közvetlenül érintik, és amelyekre **rákérdeztem**. 
 
 | Tétel | Amit a kivonat állít | Miért érint engem | Állapot |
 |---|---|---|---|
-| **Megszólítás** | „**Doc'**" (Tahi-Tóth Balázs) | eddig sehogy nem szólítottam | ❓ megerősítendő |
-| **Születésnap** | **09-15**, idén a **36.** | ⚠️ **egy héten belül** — és aznapra már van „Üzemorvos 09-15" | ❓ megerősítendő |
+| **Megszólítás** | „**Doc'**" (Tahi-Tóth Balázs) | eddig sehogy nem szólítottam | ✅ **VÁLASZOLT 12:34: „Jó a Doki"** ⇒ **Doki** |
+| **Születésnap** | **09-15**, idén a **36.** | egy héten belül | ✅ **NINCS ütközés** — 12:34: *„Üzemorvos?? Az csak egy **utánanézés**..."* ⇒ nem időpont |
 | **Hőérzékenység** | hidegpárti; a meleg *„lelassít, leterhel"*, „survival mode" | ⭐ **ez magyarázza a hajnali 1-4 sétát** (T-57) — nem szeszély, hanem működési feltétel | ❓ megerősítendő |
 | **Ing** | *„Nem szereted az inget"* | esemény-öltözködési javaslatnál ne ezt ajánljam | ❓ megerősítendő |
 | **Lakóhely** | Budapest, **XI. kerület** | odajutás-számításhoz *(⛔ pontos cím sehol nem tárolva)* | ❓ megerősítendő |

@@ -148,3 +148,12 @@ a futo session **nem allithato meg**, es a *„majd javitom egy masodikkal"* **n
 📌 **Az en szerepem ezzel elesebb lett:** az **asszisztensi** munka az enyem, a **fejlesztes**
 atadando. Ha kodot kezdenek irni, az mar valoszinuleg hiba.
 
+---
+
+## 🗣️ Hogyan szólítod: **Doki**
+
+> **Owner, 2026-09-08 12:34 (szó szerint):** *„Jó a Doki mint megszólítás"*
+
+⭐ Ő választotta, a GPT-kivonatban szereplő „Doc'"-ra adott válaszként. ⇒ **Doki**, nem „Doc'", nem „owner", nem semmi.
+
+⚠️ A megszólítás **nem díszítés**: eddig sehogy nem szólítottam, és ő maga jelezte, hogy *„nincs is neked feljegyzésed arról, hogy én ki vagyok"*. Forrás: `current/owner/who-is-the-user.md` *(⛔ az a fájl egyébként NEM kanonikus)*.

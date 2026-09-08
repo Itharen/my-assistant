@@ -426,3 +426,35 @@ illeszkedik az `ArrayBufferView<ArrayBuffer>`-re. ⚠️ **Ez hipotézis — mé
 `__documentations/BEDROCK-FRS.md` → **`BFR-MYASSISTANT-001`** (`@futdevpro/cli-dynamo`,
 **critical**): make-before-break újraindítás. Az owner **kifejezetten ezt kérte** (10:48).
 ⛔ Ne építs helyi kerülőutat, és ⛔ **egyetlen LDP-lépést se vegyél ki** — a hossz nem a hiba.
+
+---
+
+## 2026-09-08 13:12 — T-66: a `comm doctor` HAMIS állítást tesz a hang-csatornáról
+
+**Mérve (13:02 és 13:04, két külön futás):**
+
+| Tény | Forrás |
+|---|---|
+| `MA_DISCORD_GUILD_ID` + `MA_DISCORD_VOICE_CHANNEL_ID` **be van állítva** | `.env:39-40` |
+| A bot **belépett**: *„🔊 BENT VAGYOK a hang-csatornában — honnie-place"* | action-log, **13:02:03** |
+| Az életjelben **13:03:58-tól** ott a `voice.joined: true` | `listener-heartbeat.json` |
+| A doktor mégis: **„A hang-csatorna nincs beállítva"** | `comm doctor`, 13:02 **és** 13:04 |
+
+🔴 **A hiba:** `decideVoicePresenceCheck` a `!voice` ágon **`missing` + „nincs beállítva"**-t ad.
+Ez **tényállítás a konfigurációról**, amit a függvény **nem tud ellenőrizni** — csak azt látja,
+hogy az *életjelben* nincs `voice` blokk. A két dolog **nem ugyanaz**.
+
+⭐ **A helyes ág `unknown`** — pontosan úgy, ahogy a szomszédos `joined === undefined` ág már
+helyesen csinálja: *„a bent-ülés nem állapítható meg"*.
+
+⚠️ **Miért nem kozmetika:** a hiba **mindkét irányban** téveszt. Most „nincs beállítva"-t mondott
+egy **működő** csatornára; ugyanez a kód egy **valódi kimaradást** is „nincs beállítva"-ként
+mutatna — vagyis pont azt az esetet fedné el, amiért a check készült
+*(a fájl saját kommentje: „a legfontosabb ág: `configured && !joined` ⇒ broken")*.
+
+📌 **A megkülönböztetéshez a konfiguráció tényleges olvasása kell** *(`readVoicePresenceConfig`)*,
+nem az életjel hiánya. Három állapot: **nincs konfigurálva** · **konfigurálva, még nem jelentett**
+(`unknown`) · **konfigurálva, nincs bent** (`broken`).
+
+⛔ Ez **saját szabály-sértés is**: *„Egy állapot-mező NEVE nem a jelentése"*
+(`post-development-verification.md`) — a `voice` mező **hiánya** nem jelenti a konfiguráció hiányát.
