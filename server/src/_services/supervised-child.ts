@@ -253,6 +253,23 @@ export class SupervisedChild {
       if (!trimmed) continue;
 
       this.outputTail.push(trimmed);
+
+      // 🔴 TOVÁBB IS ADJUK A KONZOLRA — mérve 2026-09-08 10:55, hogy eddig NEM tettük.
+      //
+      // A gyermek `stdio`-ja `pipe`, és a kimenete KIZÁRÓLAG ebbe a 12 soros gyűrűpufferbe
+      // került. ⇒ **A figyelő fekete doboz volt:** a szerver logjában semmi nem látszott
+      // belőle, és a puffer csak KILÉPÉSKOR került naplóba.
+      //
+      // Két mért következménye volt:
+      // 1. Az owner kérése — *„a szerver logjában kell látnom"* (a hang-kapcsolat eseményei,
+      //    `MA-VOICE-JOINED` / `-DROPPED`, és a keretenkénti színes sáv) — **nem teljesült**,
+      //    hiába írja őket a figyelő a saját `stdout`-jára.
+      // 2. Amikor a figyelő életjele **befagyott** (a folyamat élt, de nem vert), **semmilyen
+      //    jel nem volt arról, mit csinál** — a diagnózishoz hiányzott maga a jel.
+      //
+      // ⚠️ A címke az elején marad, hogy a szerver saját sorai és a gyermekéi
+      // **szétválaszthatók** legyenek (`grep '[Discord-figyelő]'`).
+      process.stdout.write(`[${this.config.label}] ${trimmed}\n`);
     }
 
     if (this.outputTail.length > OUTPUT_TAIL_LINES) {

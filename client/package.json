@@ -1,6 +1,6 @@
 {
   "name": "@my-assistant/client",
-  "version": "0.1.477",
+  "version": "0.1.478",
   "private": true,
   "description": "my-assistant Angular client — Dynamo NGX + FDP NGX templates + Material + Tailwind.",
   "DyBu_settings": {
