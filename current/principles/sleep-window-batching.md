@@ -43,3 +43,31 @@ listához — veszít vele bármit?"* Ha nem, akkor **nem küldöm**.
 - `current/principles/wake-relative-planning.md` — a **tervezés** tengelye is az ébredése
 - `current/principles/discord-message-style.md` — a tagoltság, nem a hossz
 - `__agent/STATE-NOW.md` — itt gyűlik a „rá vár" lista
+
+---
+
+## 2026-09-08 09:04 — AZ OWNER UGYANEZT KÉRTE, ÉS KIBŐVÍTETTE
+
+> *„Mint például azt is nyugodtan felírhatnád úgy, hogy amíg alszom, addig ne írogassál nekem, ne
+> beszélj hozzám, hanem csak gyűjtögesd az outputokat. Mert amikor felébredtem, akkor foglald
+> össze, hogy mi van.*
+>
+> *Hasonlóan, amikor **nem vagyok itthon**, akkor csak a **lényeget** írd meg...*
+>
+> *És továbbra is kicsit hosszan, körülményesen fogalmazol ahelyett, hogy a lényegre törnél.
+> **Minél többet írsz, annál kevesebb infó fog átjönni nekem. Minél többet írsz, annál kevesebb
+> dolgot fogok elolvasni....**"*
+
+⭐ **Az utolsó két mondat a legfontosabb, amit a kommunikációról mondott.** Nem stílus-kérés:
+**fordított arány.** A több szöveg **kevesebb átvitt információ** — mert a többletet nem olvassa el.
+
+### A három sáv — ezek után
+
+| Hol van | Mit küldök |
+|---|---|
+| 😴 **alszik** | ⛔ semmit — gyűjtök, ébredéskor **egy** összefoglaló |
+| 🚶 **nincs itthon** | **csak a lényeget** — amiből teendő vagy döntés következik, semmi mást |
+| 🏠 **itthon, ébren** | normál — de a fordított arány itt is érvényes |
+
+📌 **Az „amíg alszom" szabályt már ma reggel felvettem** *(08:48-as kérése után)*; ez a bejegyzés
+a **kiegészítés**: a „nincs itthon" sáv, és a fordított arány kimondása.

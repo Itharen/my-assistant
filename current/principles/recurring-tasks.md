@@ -57,6 +57,19 @@
 > Heti két alkalommal, illetve heti két-három alkalommal kéne a LinkedIn-re
 > posztoljunk tanulságokat, amiket a héten összeszedtem.
 
+### 2026-09-03 — heti ismétlődő feladat felvétele
+
+> Kéne hetente egy ismétlődő feladat, hogy a Linkedin-re rakok ki posztokat.
+
+**Rögzítés:** `org:task:6a98e83e482367e7f640c1d4` — „LinkedIn — heti posztolás”.
+Az Organizerben `recurrenceType=intervalBased`, `recurrenceInterval=7` elmentve;
+azonos patch dry-run visszaellenőrzése nem mutatott eltérést. Nap/időpont, első
+esedékesség és utolsó teljesítés nincs megadva. `dueDate` nélkül még nem képződnek
+időzített példányok, külön emlékeztető nincs aktiválva; a nap/időpont owner-válaszra vár.
+A heti task nem írja felül a korábbi heti 2–3 posztos célt és nem ad automatikus
+publikálási engedélyt. A tartalomgyűjtés továbbra is másik session feladata;
+itt a megjelenést követjük. A személyes üzenetküldés blokkoltsága külön téma.
+
 ## 2026-05-07 — LinkedIn pontosítás: scope és workflow
 
 > A Linkedin-es heti tanulságokat nem itt gyűjtjük, az egy teljesen másik
@@ -330,3 +343,21 @@ határán). Tervezésnél előre 2-3h-ás slot-ot kell lefoglalni.
 - **Bevásárlás 2-3 hetente**: 14 vs 21 nap? Default: 18 nap (átlag), de a shopping-list mérete is befolyásolhatja.
 - **Kaja-rendelés csúszása**: a régi csütörtök–vasárnap görbét a 2026-08-26-i
   kedd–szerda célsávhoz kell majd újrakalibrálni az Interfood-eszköz mérései alapján.
+
+---
+
+## 2026-09-08 — SÉTA: a hajnali 1–4 a kedvenc sáv
+
+> **Owner, szó szerint (09:24):** *„mindennapra sétát is be kéne ütemezni. Ott is volt egy csomó
+> sztori ezzel kapcsolatban. Meg tudjátok sétálni, meg hogyan. Amúgy a **hajnal 1-4 időintervallum
+> a kedvencem a sétára**. De ha lehült az idő és sötét van, akkor nem olyan rossz."*
+
+⭐ **Ez nem véletlen preferencia, hanem illeszkedik a csúszó alvás-ciklusához**
+*(`sleep-system.md`)*: hajnali 1–4 gyakran az **ébrenléti** szakaszába esik. ⇒ A séta-emlékeztető
+**nem reggel** esedékes, hanem az ő ritmusa szerint.
+
+**Amit szeret benne:** hűvös · sötét · csendes.
+⚠️ ⇒ A **meleg nappal** nem semleges alternatíva, hanem **rosszabb** — ma pl. 33 °C van.
+
+📌 **Következmény a felvételre:** napi ismétlődő tétel, de az esedékesség-ablak a **hajnali sáv**,
+nem a naptári nap eleje.

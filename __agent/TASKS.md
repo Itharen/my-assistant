@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-08 06:10
+**Utoljára frissítve:** 2026-09-08 09:55
 
 ---
 
@@ -82,6 +82,8 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 | T-50 | 🙋 | 📝 **LinkedIn posztok kitétele** | Owner 21:20: *„a LinkedIn posztokat ki kéne tenni, amiket terveztem"* | 🙋 **kérdés nála:** nála vannak megtervezve, vagy nekem kell összeszedni? |
 | T-51 | 🤖 | 📮 **CC-session üzenetküldés — szabályok ADOPTÁLVA** | ✅ `__agent/references/ccap-session-messaging.md`: a 6 HARD szabály (§7), a végpontok, és a **beazonosított ID-k** — 🔴 a fájl tetején a kötelező „a szabályokat MINDIG előbb olvasd el" figyelmeztetéssel. FDP Assistant: `ccs-eb7533f2-msf45rno` | ⛔ küldés **csak owner-jóváhagyással**; a `status` küldés előtt újra lekérdezendő |
 | T-55 | 🤖 | 🗂️ **Vissza az ORGANIZERHEZ** | ✅ **ELSŐ KÖR MEGVOLT** (`current/tasks/organizer-triage-2026-09-08.md`): 137 tétel · 5 lejárt · 11 dátum nélküli magas prio. 🔴 **Adathiba találva:** a „Napi matrac" leírása *„MINDEN NAP"*, de az ismétlődése `none` ⇒ 3,5 hónapja egyetlen lejárt tételként ül | 🙋 **owner-döntések:** napi ismétlődő legyen? · NZT és OGS kivezethető? · adjunk-e dátumot a top 3 dátumtalannak? |
+| T-56 | 🤖 | 🚶 **Napi séta ütemezése** | Owner 2026-09-08 09:24: *„mindennapra sétát is be kéne ütemezni… a **hajnal 1-4** időintervallum a kedvencem a sétára. De ha lehült az idő és sötét van, akkor nem olyan rossz."* | napi ismétlődő organizer-tétel + a hajnali sáv preferencia rögzítve |
+| T-57 | 🤖 | 🗂️ **Az organizer-tételek ISMÉTLŐDŐK legyenek** | Owner: *„annak is ismétlődőnek kell lennie"* — a „Napi matrac" adathiba **általánosítva**: minden napi/heti szokás legyen tényleg ismétlődő | átnézni, mely rendszeres tételek vannak `recurrenceType: none`-nal |
 | T-53 | 🤝 | 👤 **Owner-profil — KI Ő** | ⭐ **Owner 02:09:** *„nincs is neked feljegyzésed arról, hogy én ki vagyok"* — **igaza volt**. Létrehozva: `current/owner-profile.md`, a **biztosan tudott** részekkel; a hiányzók ⛔ **üresen** hagyva | ⏳ **az ő GPT-s infócsomagjára vár** *(02:18: „majd ezt el ne felejtsem odaadni")* ⇒ **emlékeztetni kell rá** |
 | T-54 | 🤝 | 📧 **E-mail-figyelés beállítása** | ⏸️ **Jóváhagyást kértem a postafiók megnézésére** — ⛔ nincs a katalógusban, tehát nem az én hatásköröm. Felajánlva: **feladó + tárgy + darabszám** statisztika, tartalom-olvasás nélkül | 🙋 belenézhetek? *(Alternatíva: ő mondja meg, mi zavarja)* |
 | T-55 | 🤖 | 🗂️ **Vissza az ORGANIZERHEZ** | 🔴 **Owner 02:16:** *„mintha ellenél távolodva az organizeres feladatoktól, pedig az fontos kulcspontja lesz itt az asszisztensi munkának"* — **igaza van**: a fejlesztési tűzoltás elvitte a figyelmet | felmérni, mi maradt el az organizer-oldalon, és visszaállni rá |

@@ -3271,3 +3271,41 @@ ellenőrzése)*, ami nem owner-döntésen áll.
 - **Commitolva + pusholva:** `e0772b9` · `5644441` · `239ac37`
 - ⛔ **A `dc` / `cli-dynamo` repóhoz nem nyúltam** — az LDP-újraindítás továbbra is
   `BFR-MYASSISTANT-001`, owner-kapun
+
+---
+
+## 2026-09-08 09:52 — AZ LDP MIATT FELTORLODOTT 9 UZENET (kezzel behozva)
+
+**Owner:** *„el se indul a My Assistant szerver, ezert aztan nem kerulnek elkuldesre neked ezek az
+uzeneteim..... 🙁"*
+
+**Merve:** a pipeline **09:40:59-kor** indult, es 09:52-kor meg a `lint-client`-nel jart *(4,5 perce
+fut)*. A szerver csak a vegen indul ⇒ a figyelo halott, az uzenetei nem erkeznek.
+
+⭐ **Amit tettem:** **kozvetlenul a Discord API-bol** hoztam be az uzeneteit *(bot-tokennel,
+`/channels/:id/messages`)*. ⇒ A csatorna kiesese **nem jelenti, hogy en nem latom oket** — csak
+azt, hogy a szokasos ut all. Ezt erdemes megjegyezni: **van keruloutam**.
+
+### Amit ebbol elvegeztem
+
+**1. Indulas (surgos):** 09:52-kor valaszoltam — 11:00-ra indulas 10:15, keszulodes AZONNAL;
+kulonben 13:45. ⚠️ A szuperszamitogepesrol **nem talalgattam**: a programban nincs bovebb leiras.
+Amit mondani tudok: **egy eve futo rendszerrol szol, valos tapasztalattal** — ezert a 8 pont.
+
+**2. Ido:** ma **meleg** — reggel borult 21-23°, delutan **derult 29-33°**, eso nem varhato.
+⇒ viz kotelezo, ne vigyen reteget.
+
+**3. „Fel van irva minden?"** — igen, T-1…T-57. De **igaza van abban, hogy nem LATTA**: eddig
+csak nalam volt lista. ⇒ A `STATE-NOW.md` most ezt is viszi.
+
+**4. 🚶 SETA:** napi ismetlodo lesz. ⭐ **A hajnali 1-4 a kedvenc savja** — es ez nem veletlen:
+illeszkedik a csuszo alvas-ciklusahoz. ⇒ A seta-emlekezteto **nem reggel** esedekes.
+⚠️ A meleg nappal nem semleges alternativa, hanem **rosszabb**.
+
+**5. T-57:** a „Napi matrac" adathiba **altalanositva** — minden rendszeres szokas legyen tenyleg
+ismetlodo, ne csak a leirasaban.
+
+**6. Kommunikacio — a harom sav rogzitve** (`ENTRY.md` csatorna-tabla):
+😴 alszik → semmi · 🚶 nincs itthon → **csak a lenyeg** · 🏠 itthon → normal.
+⭐ **Az o mondata, amit alapelvve tettem:** *„Minel tobbet irsz, annal kevesebb info fog atjonni
+nekem."* — ez **forditott arany**, nem stilus-keres.

@@ -208,7 +208,7 @@ tudjuk megkülönböztetni a „megnéztem, nem volt teendő"-t attól, hogy **l
 
 | Csatorna | Mikor | Korlát |
 |---|---|---|
-| 💬 **Discord** | mindig szabad | ez az alapértelmezett |
+| 💬 **Discord** | mindig szabad — ⚠️ **de a MENNYISÉG sávfüggő** | 😴 **alszik** → ⛔ semmi, gyűjtök · 🚶 **nincs itthon** → **csak a lényeg** · 🏠 **itthon** → normál.<br>⭐ Owner 2026-09-08: *„Minél többet írsz, annál kevesebb infó fog átjönni nekem. Minél többet írsz, annál kevesebb dolgot fogok elolvasni."* ⇒ **fordított arány**, nem stílus-kérés |
 | 🔊 **Hangszóró** (Google Home) | **CSAK ébren + itthon** | a legerősebb figyelemfelkeltő — a kapu méri, ismeretlen jel ⇒ TILT |
 | 🖥️ **Session** | ha épp fut egy | önmagában **nem elég** Discord-üzenetre |
 
