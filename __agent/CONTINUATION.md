@@ -3771,3 +3771,71 @@ kettő már minta.)* A `HALOTT` súlya változatlan.
    lesz jele. **Ez a legmagasabb prioritás:** enélkül a figyelő halála **csendes és tartós**.
 2. `[Discord-figyelő]` és `[voice] MA-VOICE-*` sorok megjelenése a szerver logjában.
 3. A színes sáv — **beszéd** kell hozzá.
+
+
+---
+
+## 🎯 2026-09-08 12:02–12:10 — MEGVAN A FELÜGYELŐ-HIBA GYÖKERE
+
+### A mérés, ami idevezetett
+
+| Kérdés | Válasz |
+|---|---|
+| Kint van-e a továbbítás? | ✅ igen — a szerver **cserélődött** (pid 41304 → **78516**) |
+| Mégis 0 `[Discord-figyelő]` sor? | ⭐ **Mert a figyelőt ÉN indítottam kézzel** ⇒ nem a felügyelő gyermeke ⇒ nincs mit továbbítani. **Nem hiba, hanem következmény.** |
+
+### 🔴 A GYÖKÉR — két hiba egy sorban
+
+```ts
+if (this.stopping || this.child) return;   // ⛔ ÚJRAÜTEMEZÉS NÉLKÜL
+```
+
+1. **A felügyelő abbahagyhatta a felügyeletet.** Ha a `child` hivatkozás bármiért beragad
+   *(elmaradt `exit` esemény)*, ez az ág **véglegesen** kilép — és soha többé nem néz vissza.
+   ⇒ Pontosan a mért kép: **9+ perc, nulla bejegyzés, nulla újraindítás.**
+2. **Nem volt önjavítás:** a `child` **létezése** nem bizonyítja, hogy a folyamat **él**.
+   *(Ugyanaz a tanulság, ami ma már ötödször jött elő: egy mező NEVE nem a jelentése.)*
+
+### 🩹 A javítás
+
+`decideSupervisorAction` — tiszta függvény, **6 ág**:
+
+| Ág | Újraütemez? |
+|---|---|
+| `skip-stopping` *(szándékos leállás)* | ⛔ nem — **ez az egyetlen** |
+| `watch-child` · `reclaim-dead-child` · `blocked-prerequisites` · `defer-foreign` · `start` | ✅ mind |
+
+⭐ **A garancia tesztelve van:** *„a szándékos leálláson kívül minden ág újraütemez"*.
+✅ **Pozitív kontroll:** az eredeti hiba visszatétele *(élő gyermek ága → nincs újraütemezés)*
+**2 bukást** ad, visszaállítva 0.
+
+🩹 **`reclaim-dead-child`:** ha a nyilvántartott pid **halott**, elengedjük és **azonnal**
+indítunk — ez fogja meg az elmaradt `exit`-et.
+
+🩹 **A döntés naplózódik** *(stdout + akció-napló)*, de **csak változáskor** — körönkénti
+naplózás elnyomná a valódi eseményt.
+
+### ✅ Az állapot MOST
+
+```
+✅ Discord-figyelő ÉL — életjel 0 perce
+✅ Bent ül a(z) „honnie-place" csatornában
+ÖSSZEGZÉS: 12 rendben · 0 HIBÁS
+```
+
+*(Korábban ma: 1 hibás — a bot nem volt bent.)*
+
+### ⏳ A ZÁRÓ LÉPÉS, ami még hátra van
+
+⚠️ A `[voice]` sorok **továbbra sem** jutnak a szerver logjába, mert a jelenlegi figyelő
+**kézi indítású** *(„idegen")*, nem a felügyelő gyermeke.
+
+⇒ **Ha az új felügyelő-kód kint van**, a kézi figyelőt le kell állítani: a felügyelő ekkor
+**saját gyermekként** indítja újra — ami **egyszerre bizonyítja az új felügyelőt** ÉS
+**bekapcsolja a kimenet-továbbítást**. ⭐ Ez egy lépésben zárja a maradék két nyitott tételt.
+
+### Állapot
+
+- **Teszt:** CLI **721/721** · szerver **99/99** · fordítás tiszta
+- **Commitolva + pusholva:** `f9b1a70`
+- **A make-before-break tartja** — `adopted: true`, a szerver a `client-test` alatt is kiszolgál
