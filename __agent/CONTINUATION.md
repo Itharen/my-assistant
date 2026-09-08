@@ -3336,3 +3336,77 @@ hang-csatorna a **szerverben** el; a kliens-build/teszt/lint ezekre **semmilyen 
 
 ⛔ Magamtol nem nyultam a `pipeline.config.json`-hoz. A `lint-client` timeout **okanak meresét**
 viszont kiadtam a DEV-nek.
+
+
+---
+
+## ⭐ 2026-09-08 09:54–10:15 — MAKE-BEFORE-BREAK: a megoldás a SAJÁT configunkban volt
+
+### Az élő igazolás állása
+
+| Amit néztem | Eredmény |
+|---|---|
+| `[voice]` sorok a szerver logjában | **3** — de mind a **saját tesztemből** *(a pozitív kontroll szándékos hibája)*, ⛔ nem élő nyom |
+| a szerver újraindult-e az új kóddal | ⚪ **nem** — 09:54-kor még `lint-client`, a pipeline ~15 perc |
+| új beszéd | ⚪ nincs |
+
+⇒ Az élő igazolás **továbbra is hátra van**. ⚠️ De közben megjött egy új owner-követelmény,
+és **az lett a kör érdemi munkája**.
+
+### 🔴 A KÖVETELMÉNY
+
+> **Owner:** *„az LDP futása tesztjei, buildjei alatt ne állítsuk le a szervert, hanem végig
+> fusson, és csak akkor állítsuk le, amikor már újraindítanánk az új verziót."*
+
+### ⭐ AMI KIDERÜLT — és amiben TÉVEDTEM
+
+**A képesség MÁR LÉTEZETT a `dc ldp`-ben.** Mi a **legacy** ágon voltunk:
+
+| Ág | Viselkedés *(a `dc ldp` saját doksijából)* |
+|---|---|
+| `postPipelineCommand` *(a miénk volt)* | *„Cascading kill… Adoption / kill-twin / heartbeat NINCS — **minden trigger újraindít**."* |
+| `entry` — **detached** | *„a régi szerver **életben marad a STEPS futása alatt** → kéréseket szolgál ki, **swap csak a build/test zöldje után**."* |
+
+🔴 **Ezért a korábbi következtetésem — *„ez a `dc`-ben van, nem tudunk hozzányúlni"* — TÉVES
+volt.** A `dc`-hez tényleg nem nyúltunk; a megoldás **négy sor** a saját
+`.dynamo/pipeline.config.json`-unkban.
+
+⭐ **És a bedrock már válaszolt is a BFR-re:** megépült a `DyCLI_LDP_LegacyFlowWarning_Util`,
+ami a legacy ág kiesését **láthatóvá** teszi — a tesztjei **a mi méréseinket idézik**.
+
+### Amit az átálláshoz MÉRNI kellett *(nem feltételezni)*
+
+| Kérdés | Mért válasz |
+|---|---|
+| A fordított JS futtatható? | 🔴 **NEM** — `ERR_MODULE_NOT_FOUND`: a `moduleResolution: bundler` **kiterjesztés nélküli** ESM importokat generál (`'./app.server'`) |
+| Akkor mi a belépő? | a **TS forrás**, `NODE_OPTIONS=--import tsx` mellett — ⭐ próbával igazolva, hogy a wrapper `require()`-je így lefut |
+| A `cwd` váltása tör valamit? | ⚠️ A detached spawn nem ad `cwd`-t ⇒ gyökér. **(1)** a `dotenv/config` mostantól a **gyökér** `.env`-et tölti a **18 bájtos** `server/.env` helyett — **bővebb** halmaz, és a dotenv nem ír felül már beállított változót ⇒ **nincs veszteség**. **(2)** az egyetlen cwd-függő hívás **felfelé** keres ⇒ a gyökérben mélység-0-n talál |
+| Mi pótolja a `pre-kill-port`-ot? | a **kill-twin** (SIGTERM → 5 mp → SIGKILL) a PID-fájl alapján |
+
+### 🔴 EGY SAJÁT HIBA, AMIT ELKÖVETTEM ÉS HELYREÁLLÍTOTTAM
+
+A config írásakor a szkriptem **unicode-hibával elszállt írás közben**, és a
+`.dynamo/pipeline.config.json` **0 bájtosra csonkolódott** — a futó rendszer LDP-configja.
+🩹 `git checkout` azonnal visszaállította *(5887 bájt, érvényes JSON)*, utána a szerkesztő
+eszközzel ment át a változás.
+
+📌 **Tanulság:** emojit/ékezetet tartalmazó fájlt ⛔ **nem** írok python-heredoc + `\uXXXX`
+escape-ekkel. Ez ugyanaz a hiba-osztály, mint a korábbi négy heredoc-baleset.
+
+### ⏳ Ami MÉG NINCS igazolva
+
+⚠️ **A `dc ldp` a configot INDULÁSKOR olvassa** ⇒ a váltás a **következő LDP-indításkor** lép
+életbe. ⛔ **Az LDP-t nem indítottam újra** — az önmagában is kiesést okozna, és az owner gépén fut.
+
+| Tétel | Mi igazolná |
+|---|---|
+| make-before-break | a következő LDP-indítás után: a szerver **végig él** a STEPS alatt, és a swap csak a zöld build után jön |
+| kapcsolat-napló | egy `[voice] … MA-VOICE-JOINED` sor a szerver logjában |
+| színes sáv | **beszéd** a csatornában |
+
+### Állapot
+
+- **Teszt:** CLI **710/710** · fordítás zöld
+- **Commitolva + pusholva:** `203d3f9` *(make-before-break)* · `b579506` *(konzol-zaj)*
+- **BFR-MYASSISTANT-001:** ✅ lezárva, átmozgatva a `BEDROCK-FRS-RESOLVED.md`-be
+- **Új alapelv:** `current/principles/ldp-make-before-break.md` *(ikerfájlokba bevezetve, szinkron OK)*
