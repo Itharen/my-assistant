@@ -57,8 +57,11 @@ kap hibát. ⛔ **Minden jövőbeli leltár `--cursor`-ral, lapozva készül** �
 
 ## ⏭️ A javasolt sorrend — ⛔ owner-jóváhagyásra vár (C-13)
 
-1. **Gazda-jelölés** — `path` vagy `tag` szerint: **övé / közös / enyém**. Enélkül a többi lépés
-   is találgatás. *(A rendszer-oldali terminológia már létezik: `task-tracking.md` 🤖 / 🤝 / 🙋.)*
+1. ~~**Gazda-jelölés** — `path` vagy `tag` szerint: övé / közös / enyém.~~
+   ⛔ **TÁRGYTALAN — az owner 2026-09-08 22:37-kor megválaszolta:** *„ami az organizerben van, az
+   az enyém. A te saját feladataidat te magadnak külön kezeld."* ⇒ **A hely maga a gazda**, nincs
+   szükség mezőre. ⭐ Nem adathiány volt, hanem **rossz kérdés** — a szerkezet már hordozta a
+   választ. *(`task-tracking.md`)*
 2. **Duplikátumok** összevonása (4 tétel).
 3. **Ismétlődések** beállítása azokon, amik nyilvánvalóan ciklikusak *(mosás, matrac, séta…)*.
 4. **Dátum vagy tudatos „nincs dátum"** — a 129-ből amelyik valóban határidős, kapjon dátumot.

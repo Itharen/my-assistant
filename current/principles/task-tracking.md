@@ -82,3 +82,38 @@ a státusz-fájloknál *(`ENTRY.md` §5)*: ha csak az egyik frissül, a többi *
 - [[recording-discipline]] — „jegyezz fel" = kötelező rögzítés
 - [[two-domains]] — a **másik** tengely: asszisztensi vs. szoftverfejlesztési munka
   *(⚠️ ez a fájl a „**kié** a feladat" tengelyt vágja el, nem a „**milyen** feladat"-ot)*
+
+---
+
+## 🔴 A HATÁR KIMONDVA — 2026-09-08 22:37 (owner hangüzenet)
+
+> *„Ezeket úgy fogjuk szelektálni, hogy **ami az organizerben van, az az enyém**. A te saját
+> feladataidat **te magadnak külön kezeld, rendszerezd**."*
+
+⭐ **A szétválasztás a HELY, nem a címke.** Nincs szükség gazda-mezőre, tag-re vagy besorolásra:
+
+```
+organizer            →  AZ ÖVÉ.        ⛔ Nem az enyém, akkor sem, ha technikai a címe.
+__agent/TASKS.md     →  AZ ENYÉM.      ⛔ Nem kerül az organizerbe.
+```
+
+### ⚠️ Amit ez a saját, korábbi javaslatomból TÖRÖL
+
+A 2026-09-08-i leltárban azt javasoltam első lépésnek, hogy **jelöljük meg a gazdát** minden
+organizer-tételen *(övé / közös / enyém)*, mert mind a 140 egyetlen `path`-ban ült.
+🔴 **Ez a lépés ezzel tárgytalan** — az owner nem besorolást adott, hanem **megszüntette a
+kérdést**: a tárolási hely maga a gazda.
+
+📌 **A tanulság:** *„nincs válasz az adatban"* nem mindig adathiány. Néha a **kérdés** rossz.
+Mielőtt mezőt javasolok, meg kell néznem, nem hordozza-e a **szerkezet** már a választ.
+
+### ⛔ Ami ebből következik a napi működésre
+
+| | |
+|---|---|
+| Az organizerben **technikai című** tétel *(„CCAP…", „LDP…", „MCP…")* | **az ÖVÉ** — az ő fejlesztői munkája. ⛔ Nem „szennyeződés", nem viszem át magamhoz |
+| Az én rendszer-feladatom | **soha nem** kerül az organizerbe |
+| **Átfedés** *(ugyanazt a dolgot ő is nyilvántartja, én is)* | ⭐ **megengedett és hasznos** — de ha az **én oldalamon elkészül**, azt **jeleznem kell**, hogy ő **lezárhassa**. ⛔ Lezárni nem én zárom le |
+
+🔗 A lezárás azért fontos, mert az organizer a **következő ismétlődést lezáráskor** hozza létre
+*(`recurring-tasks.md`)* — a mért **12 %-os lezárási arány** miatt a láncok megállnak.
