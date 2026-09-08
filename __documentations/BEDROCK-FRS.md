@@ -164,3 +164,54 @@ letörölnénk. *(`rimraf` → build → atomi csere.)*
 
 ⚠️ **Ez a mérés az eredeti kérést NEM váltja fel, hanem BŐVÍTI** — a prioritás változatlanul
 **critical**.
+
+#### 🔴 SÚLYOSBÍTÓ MÉRÉS 2026-09-08 20:04 — a vakablak nem másodperces, hanem **VÉGTELEN, ha a build elbukik**
+
+Az előző kiegészítés azt írta le, hogy a `rimraf` **előre** törli a `dist`-et. Most kiderült a
+**súlyosabb** eset: **ha a build ELBUKIK, a `dist` SOSEM épül újra** — a CLI tehát nem
+„néhány percig", hanem **határozatlan ideig** halott.
+
+**A mért eset** (`logs/live-dev-pipeline/status.json`, ciklus indult 19:07:24):
+
+| Lépés | Eredmény |
+|---|---|
+| `rimraf-cli-dist` | ✅ 18 s — **a `dist` törölve** |
+| `tsc-cli` | 🔴 **`failed`, 602,2 s** — `[tee-run] FATAL: timeout: command exceeded 600s — killing` |
+| a ciklus | `phase: waiting-for-restart`, `pipelineComplete: false` |
+| **A CLI állapota** | ⛔ **halott 19:07-től 20:04-ig — 57 percig**, amíg kézzel újra nem fordítottam |
+
+**Az LDP saját őrének sora a bukás pillanatában:**
+```
+[tee-run] GUARD CRITICAL: CPU 32.8% · RAM 96.9% (126136/130153 MB) — RAM 96.9% >= critical 96%
+[ldp] GUARD: the process tree of step 'tsc-cli' OUTLIVED the step (root PID 298888) - killed: 1/1
+```
+
+⭐ **Amit ez elvesz:** `ma comm say` *(nem tudok üzenni az ownernek)* · `ma comm doctor` ·
+`ma status digest` · `ma action-log emit` *(még a hibát sem tudom naplózni)* · és a
+**Discord-figyelő újraindulása** is meghiúsulna. ⚠️ A már **futó** figyelő túlélte — ezért az
+üzenetek **beérkezni** tudtak volna; a **válasz** viszont nem ment volna ki.
+
+#### ⚠️ AMIT NEM ÁLLÍTOK — és miért fontos
+
+⛔ **NEM állítom, hogy a RAM az ok.** Ellenpélda ugyanabból az órából: **kézzel** ugyanaz a
+fordítás *(`npx tsc -p cli/tsconfig.json`)* **22,5 s alatt** lefutott, **95,2 %-os RAM mellett**.
+
+| Futás | Környezet | RAM | Idő |
+|---|---|---|---|
+| LDP-lépés | pipeline-on belül | **96,9 %** | 🔴 **> 600 s (kivágva)** |
+| kézi | önállóan | **95,2 %** | ✅ **22,5 s** |
+
+⇒ A fordítás **önmagában 22 másodperces munka**. Valami a 19:07-es ablakban **27-szeresére**
+lassította. A RAM a legesélyesebb jelölt, de **1,7 százalékpont** különbségre ok-állítást
+építeni felelőtlenség lenne *(`measure-the-effect-not-just-the-cause.md`)*.
+
+#### 📌 Amit ez a kérésen VÁLTOZTAT
+
+A make-before-break itt **nem kényelmi kérdés, hanem adatvesztés-megelőzés**:
+
+1. **A `dist` cseréje legyen atomi** — új könyvtárba fordítunk, és **csak siker esetén** cserélünk.
+   Így egy **bukott build nem visz magával egy működő CLI-t**.
+2. **A bukott lépésnek vissza kell állítania az előző kimenetet** — ma a `rimraf` hatása
+   **túléli** a bukást, és senki nem takarítja el.
+3. ⭐ **A timeout ne csendben öljön:** a `tsc-cli` **10 percig** tartotta a ciklust, majd
+   kivágódott — és a rendszer **nem jelezte**, hogy közben a CLI nem elérhető.
