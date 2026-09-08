@@ -15,6 +15,7 @@ import { readFile } from 'node:fs/promises';
 import { parseArgs } from 'node:util';
 
 import { runCommDoctor } from '../comm/comm.doctor.js';
+import { localTimeHeader } from '../utils/local-time.js';
 import type { CommCheck, CommCheckStatus, CommDoctorReport } from '../comm/comm.models.js';
 import { DiscordBridge } from '../discord/discord.bridge.js';
 import { DiscordListener } from '../discord/discord.listener.js';
@@ -280,7 +281,8 @@ function renderReport(report: CommDoctorReport): string {
 
   lines.push('');
   lines.push('  KOMMUNIKÁCIÓS CSATORNÁK — DIAGNOSZTIKA');
-  lines.push(`  ${report.checkedAt}`);
+  // ⏰ Helyi idő — a `report.checkedAt` marad ISO a gépi fogyasztóknak.
+  lines.push(`  ${localTimeHeader(new Date(report.checkedAt))}`);
   lines.push('');
 
   let currentArea: string = '';

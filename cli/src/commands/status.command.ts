@@ -6,6 +6,7 @@
 import { parseArgs } from 'node:util';
 
 import { buildStatusDigest } from '../status/status.digest.js';
+import { localTimeHeader } from '../utils/local-time.js';
 import type { StatusDigest, StatusTask } from '../status/status.models.js';
 import { makeRequestId, ok, writeEnvelope } from '../output/envelope.js';
 
@@ -37,7 +38,16 @@ export async function runStatusCommand(subcommand: string, args: string[]): Prom
 }
 
 function render(digest: StatusDigest): string {
-  const lines: string[] = ['', '  STÁTUSZ-KIVONAT', `  ${digest.generatedAt}`, ''];
+  // ⏰ HELYI IDŐ, nem UTC. Mért hiba (owner, 2026-09-08 08:55): itt `...T01:02:38.765Z`
+  // állt, amikor **03:02** volt az owner óráján — és ebből téves következtetést vont le.
+  // ⚠️ A `digest.generatedAt` **marad ISO** (gépi mező, a `--json` fogyasztói számítanak rá);
+  // csak az EMBER-OLVASHATÓ kiirás vált.
+  const lines: string[] = [
+    '',
+    '  STÁTUSZ-KIVONAT',
+    `  ${localTimeHeader(new Date(digest.generatedAt))}`,
+    '',
+  ];
 
   lines.push(`  ${digest.headline}`);
   lines.push('');

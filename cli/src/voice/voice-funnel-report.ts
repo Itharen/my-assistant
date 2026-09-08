@@ -30,6 +30,7 @@
 // ⭐ Ezért az alapértelmezés **gördülő ablak** (12 óra), ami átível az éjfélen; a naptári nap
 // továbbra is kérhető (`--day`).
 
+import { localTimeHeader } from '../utils/local-time.js';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -288,9 +289,9 @@ function computeTransferRate(report: VoiceFunnelReport): number | null {
 }
 
 /** Ember-olvasható tábla. */
-export function renderVoiceFunnel(report: VoiceFunnelReport): string {
+export function renderVoiceFunnel(report: VoiceFunnelReport, now: Date = new Date()): string {
   if (!report.hasData) {
-    return `\n📊 Hang-tölcsér — ${report.windowLabel}\n\n`
+    return `\n📊 Hang-tölcsér — ${report.windowLabel}\n  ${localTimeHeader(now)}\n\n`
       + '  ⚪ Nincs napló erre az időszakra — nem futott semmi, vagy más időszakot kell nézni.\n\n';
   }
 
@@ -308,6 +309,7 @@ export function renderVoiceFunnel(report: VoiceFunnelReport): string {
   return [
     '',
     `📊 Hang-tölcsér — ${report.windowLabel}`,
+    `  ${localTimeHeader(now)}`,
     '',
     `  ${icon} ÁTVITELI ARÁNY: ${rate}`,
     ...(weak
