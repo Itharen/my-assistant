@@ -242,3 +242,101 @@ fontosabbat. Egy hangulatjelzés nem némíthat el egy információt.
 ⚠️ A fő `tsc` **önmagában nem elég**: az átemelt fa külön projekt
 (`tsconfig.transplanted.json` + `scripts/transplanted-build-fix.ts`). Enélkül a `_modules`
 **futásidőben nem létezik**, és a zöld típus-ellenőrzés **elfedi** a hiányt.
+
+---
+
+## 9. 🔌 A KAPCSOLAT-NAPLÓ, A SZÍNES SÁV ÉS A HELYI IDŐ — 2026-09-08 09:50
+
+### 9.1 🔴 A napló-hiány, ami MÉRHETETLENNÉ tette a kiesést
+
+**Mérve 2026-09-08 09:04**, a napi akció-naplóban:
+
+| Kód | Darab |
+|---|---|
+| `MA-VOICE-JOINED` | **24** |
+| `MA-VOICE-RECORDING-STARTED` | 23 |
+| `MA-VOICE-SPEECH-DETECTED` | 9 |
+| `MA-VOICE-SPEECH-DROPPED` | 8 |
+| **bármilyen kilépés-esemény** | **0** — ⛔ *ilyen kód nem is létezett a forrásban* |
+
+🔴 **Az ok:** az egyetlen leválás-kezelő (`VoiceChannelPresence.watchForDrop`) egy **üres
+`catch`**-ben semmisítette meg a kapcsolatot:
+
+```ts
+]).catch((): void => { this.connection?.destroy(); this.connection = null; });
+```
+
+⇒ A bot **kieshetett a csatornából**, és erről **semmilyen nyom** nem keletkezett.
+📌 Emiatt állítottam valótlant az ownernek arról, hogy bent voltunk-e.
+
+### 9.2 A hat kapcsolat-esemény
+
+| Kód | Mikor | Szint |
+|---|---|---|
+| `MA-VOICE-JOINED` | bent vagyunk | `note` |
+| `MA-VOICE-LEFT` | **mi** léptünk ki, szándékosan | `note` |
+| `MA-VOICE-DISCONNECTED` | elszakadt — de még visszajöhet | `note` |
+| `MA-VOICE-RECONNECTED` | ⭐ magától visszajött, a kiesés hosszával | `note` |
+| `MA-VOICE-DROPPED` | 🔴 **VALÓDI KIESÉS** — hossz + következmény | `error` |
+| `MA-VOICE-JOIN-FAILED` | be sem tudtunk lépni | `error` |
+
+⭐ **A leválás és a kiesés KÜLÖN kódot kap.** Ha egy kódon mennének, a *„hányszor estem ki?"*
+kérdésre a napló **hamis, felfelé torzított** választ adna.
+
+**Hol látszik:** ⭐ **a szerver logjában** (`[voice] HH:mm:ss MA-VOICE-… …`) **és** az
+akció-naplóban. ⚠️ A `safeLog` **kizárólag** a JSONL-be ír — ezért a konzol-sor **külön** megy
+`stdout`-ra. Owner: *„a szerver logjában kell látnom"*.
+
+⭐ **Mellékhatás, ami önmagában is fontos:** a kiesés **frissíti a jelenlét-állapotot**, így a
+`ma comm doctor` és a pulzus-sor többé **nem állítja örökre**, hogy bent ülünk.
+
+### 9.3 🎨 Az élő, keretenkénti színes sáv (T-52)
+
+**Owner:** *„`|` színesen, egy sorban, miközben hallja a hangomat, és azok pirosak és zöldek,
+és amikor elég sok zöld van egymás mellett, akkor minősítjük azt egy hangszövegű üzenetnek."*
+
+| Szín | Mit jelent |
+|---|---|
+| 🟢 zöld | ⭐ a felvevő **TÉNYLEGESEN** beszédnek vette *(`isSpeech`)* |
+| 🟡 sárga | nem beszéd, de közel volt *(ZCR a küszöb 90%-a fölött)* |
+| 🔴 piros | csend / zaj |
+
+⭐ **A zöld a tényleges döntés, nem a mi rekonstrukciónk** a küszöbökből. Ha saját képlettel
+színeznénk, a sáv **elcsúszhatna** attól, amit a felvevő csinál — és akkor **hazudna** arról,
+amit megfigyel.
+
+**A záró ítélet:** nem a zöldek **száma** dönt, hanem a leghosszabb **megszakítatlan** sorozat
+*(`MIN_GREEN_RUN = 8`)*. Szórt zöldek = zaj.
+
+#### ⛔ Az átemelt kódhoz NEM nyúltunk
+
+Az elemző **singleton**, az `analyzeAudio` **publikus** ⇒ a példányra **kívülről** ülünk rá
+(`voice-analysis-observer.ts`): meghívjuk az eredetit, továbbadjuk az eredményt a sávnak, és
+**változatlanul** visszaadjuk. Az átemelt fájl **bájtra érintetlen**.
+
+#### 🔴 EGY MÉRT ELTÉRÉS AZ EREDETITŐL
+
+Az eredeti `\r`-rel **helyben rajzol**. Itt ez **nem működhet**: a konzolra **két külön
+folyamat** ír *(a figyelő a sávot, a szerver a 60 mp-enkénti pulzus-sort)*, és a pulzus
+**ráragad** a sosem lezárt sorra. ⇒ **Teljes, `\n`-nel lezárt sorokat** írunk, kötegenként
+*(`BAR_WIDTH = 48` keret ≈ 1 mp)*. Az élő jelleg megmarad; a sort a közéékelődő pulzus
+**nem tudja elrontani**.
+
+### 9.4 ⏰ Helyi idő minden állapot-kiírásban
+
+**Mérve (owner, 08:55):** a `ma status digest` fejléce `2026-09-08T01:02:38.765Z` volt, amikor
+**03:02** volt az owner óráján.
+
+| Parancs | Előtte | Utána |
+|---|---|---|
+| `ma status digest` | nyers ISO (UTC) | `⏰ 2026-09-08 09:14:29 (Europe/Budapest)` |
+| `ma comm doctor` | nyers ISO (UTC) | ugyanaz |
+| `ma comm voice-funnel` | ⛔ **semmi** — csak „az elmúlt 12 óra" | ugyanaz |
+
+⭐ **A zóna neve is kiíródik** — enélkül nem lehet megkülönböztetni az UTC-s sortól, és épp ez
+volt a mért hiba. ⚠️ A `--json` változat **marad ISO**: a gépi fogyasztók arra számítanak.
+
+### 9.5 Kapcsolódó fájlok
+
+`cli/src/voice/voice-connection-log.ts` · `cli/src/voice/voice-analysis-bar.ts` ·
+`cli/src/voice/voice-analysis-observer.ts` · `cli/src/utils/local-time.ts`

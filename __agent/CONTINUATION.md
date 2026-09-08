@@ -3190,3 +3190,84 @@ kimondanom, nem homalyosan kerdezni.
 rendszeresen a fejlesztot"*. A handoff-fajlba **irtam**, ahelyett hogy **kiadtam** volna.
 ⇒ 09:05: rendes dispatch ment ki (`success: true`), harom tetellel, sorrendben: **naplo-hiany** ·
 szines elo sav · helyi ido. A `dc`-hez ⛔ TILOS nyulnia.
+
+
+---
+
+## ✅ 2026-09-08 09:04–09:55 — A HÁRMAS CSOMAG MEGÉPÜLT (élő igazolás még hátra)
+
+### 1️⃣ NAPLÓ-HIÁNY — a kiesés MÉRHETETLEN volt
+
+**A mérés, ami igazolta a panaszt** *(09:04, a napi akció-napló)*:
+
+| Kód | Darab |
+|---|---|
+| `MA-VOICE-JOINED` | **24** |
+| bármilyen **kilépés**-esemény | **0** — ⛔ *ilyen kód nem is létezett a forrásban* |
+
+🔴 **Az ok megvan:** a `watchForDrop` egy **üres `catch`**-ben semmisítette meg a kapcsolatot.
+A bot kieshetett, és **semmilyen nyom** nem keletkezett.
+
+🩹 **Most 6 külön kód:** `JOINED` · `LEFT` · `DISCONNECTED` · `RECONNECTED` · `DROPPED` ·
+`JOIN-FAILED`. ⭐ A **leválás** *(még visszajöhet)* és a **kiesés** *(végleges)* külön kódot és
+külön szintet kap — egy kódon a *„hányszor estem ki?"* kérdésre **felfelé torzított** válasz jönne.
+
+⭐ **A szerver logjába is megy** (`stdout`), nem csak a JSONL-be — mérve: a `safeLog` **kizárólag**
+az akció-naplóba írt, ami az ownernek láthatatlan.
+
+⭐ **Ráadás:** a kiesés **frissíti a jelenlét-állapotot** ⇒ a `doctor` és a pulzus többé nem
+állítja **örökre**, hogy bent ülünk.
+
+### 2️⃣ T-52 — az ÉLŐ, keretenkénti SZÍNES sáv
+
+🟢 zöld = a felvevő **ténylegesen** beszédnek vette · 🟡 határeset · 🔴 csend.
+A záró ítélet a **leghosszabb megszakítatlan** zöld sorozat *(az owner szabálya — szórt zöld = zaj)*.
+
+⭐ **A zöld a TÉNYLEGES `isSpeech`**, nem az én rekonstrukcióm a küszöbökből: saját képlettel a
+sáv **elcsúszhatna** attól, amit a felvevő csinál, és akkor **hazudna** arról, amit megfigyel.
+
+⛔ **Az átemelt kód bájtra érintetlen:** az elemző singleton, az `analyzeAudio` publikus ⇒ a
+példányra **kívülről** ülünk rá.
+
+⚠️ **EGY MÉRT ELTÉRÉS:** `\n`-nel zárt teljes sorok a `\r` helyett — a konzolra **két külön
+folyamat** ír, és a pulzus **ráragad** a sosem lezárt sorra.
+
+### 3️⃣ HELYI IDŐ
+
+`status digest` · `comm doctor` · `comm voice-funnel` — mind **helyi időt** ír, a **zóna nevével**
+*(enélkül nem különböztethető meg az UTC-s sortól — épp ez volt a hiba)*. A `--json` marad ISO.
+✅ **Élesben igazolva:** `date` **09:14:18** vs. mindhárom parancs **09:14:2x**.
+
+---
+
+### 🔴 KÉT VALÓS HIBÁT A SAJÁT TESZTEM FOGOTT MEG
+
+1. **Az időzítőből hívott lezárás NEM volt védve.** A `push()` igen, a csend-időzítő útja nem ⇒
+   élesben **`uncaughtException`** lett volna a **figyelő folyamatban**. Pontosan az a hibaosztály,
+   amit a DEV-HANDOFF kemény korlátként tilt: *„a diagnosztika sosem buktathatja meg azt, amit
+   megfigyel."*
+2. **A teszt-suite 5 mp-ről 317 mp-re ugrott.** A lecserélt felvevő mellett az alapértelmezés
+   **behúzta a valódi, 19,5 mp-es** átemelt fát. ⇒ A kettő most **együtt jár**: az átemelt fát
+   **egységként** töltjük, vagy sehogy.
+
+### ⏳ AMI MÉG NINCS IGAZOLVA — és ezt nem állítom késznek
+
+⚠️ **Élőben egyik tétel sem futott le még.** Mérve 09:32: az LDP épp `dc-review-server` fázisban
+van, a szerver **nem indult újra** az új kóddal ⇒ a `[voice]` sorok száma a szerver logjában
+**0**. Ez **nem hiba** — csak azt jelenti, hogy még nem volt alkalma megjelenni.
+
+| Tétel | Mi igazolná |
+|---|---|
+| kapcsolat-napló | a szerver újraindulása után egy `[voice] … MA-VOICE-JOINED` sor a logban |
+| színes sáv | **beszéd** a csatornában — a sáv csak akkor rajzol |
+| helyi idő | ✅ **már igazolva** |
+
+📌 **Ezért NEM zárom le a hurkot:** van kijelölt, konkrét következő lépés *(az élő nyom
+ellenőrzése)*, ami nem owner-döntésen áll.
+
+### Állapot
+
+- **Teszt:** CLI **710/710** · fordítás zöld · 3 pozitív kontroll *(2, 3 és 2 bukás → 0)*
+- **Commitolva + pusholva:** `e0772b9` · `5644441` · `239ac37`
+- ⛔ **A `dc` / `cli-dynamo` repóhoz nem nyúltam** — az LDP-újraindítás továbbra is
+  `BFR-MYASSISTANT-001`, owner-kapun
