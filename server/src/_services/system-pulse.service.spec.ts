@@ -52,6 +52,49 @@ describe('🔊 hang-szegmens a pulzusban (T-52) — a konzol NÉMA volt beszéd 
     expect(line).toContain('⚠️ 2 elveszett (4.1 mp)');
   });
 
+  it('🔴 BE VAN ÁLLÍTVA, DE NINCS BENT ⇒ ez HIBA, és LÁTSZANIA kell', () => {
+    const line: string = composePulseLine(healthy({
+      voice: {
+        joined: false,
+        channelName: 'honnie-place',
+        speechStarts: 0,
+        filesOpened: 0,
+        filesDelivered: 0,
+        filesDropped: 0,
+        lostAudioSeconds: 0,
+      },
+    }));
+
+    // ⚠️ Enélkül az owner beszélne a csatornába, ahol a bot nincs bent — némán.
+    expect(line).toContain('🔴 NINCS BENT');
+    expect(line).toContain('honnie-place');
+  });
+
+  it('⚠️ a RÉGI formátumú életjel (`joined` hiányzik) NEM számít hibának', () => {
+    const line: string = composePulseLine(healthy({
+      voice: { speechStarts: 0, filesOpened: 0, filesDelivered: 0, filesDropped: 0, lostAudioSeconds: 0 },
+    }));
+
+    expect(line).not.toContain('NINCS BENT');
+    expect(line).not.toContain('🔊 hang');
+  });
+
+  it('✅ bent van + volt beszéd ⇒ a tölcsér látszik, a hiba-jelzés nem', () => {
+    const line: string = composePulseLine(healthy({
+      voice: {
+        joined: true,
+        speechStarts: 9,
+        filesOpened: 4,
+        filesDelivered: 3,
+        filesDropped: 0,
+        lostAudioSeconds: 0,
+      },
+    }));
+
+    expect(line).toContain('🔊 hang 9 → 3 feldolgozva');
+    expect(line).not.toContain('NINCS BENT');
+  });
+
   it('a szegmens sem tör sort — a pulzus EGY sor marad', () => {
     const line: string = composePulseLine(healthy({
       voice: { speechStarts: 5, filesOpened: 4, filesDelivered: 2, filesDropped: 2, lostAudioSeconds: 4.1 },

@@ -95,6 +95,13 @@ export interface SystemPulseSnapshot {
 
 /** A hang-tölcsér számai a pulzushoz. */
 export interface PulseVoiceFunnel {
+  /**
+   * 🔴 Bent van-e a bot a hang-csatornában. `undefined` = régi formátumú életjel.
+   *
+   * ⚠️ A `undefined` NEM hamis: olyankor **nem állítunk semmit**.
+   */
+  joined?: boolean;
+  channelName?: string;
   speechStarts: number;
   filesOpened: number;
   filesDelivered: number;
@@ -171,7 +178,17 @@ function formatClock(now: Date): string {
  * szegmens csak a **valódi** eldobást jelöli ⚠️-vel, másodperccel együtt.
  */
 export function describeVoice(voice: PulseVoiceFunnel | undefined): string[] {
-  if (!voice || voice.speechStarts === 0) return [];
+  // ⛔ Nincs `voice` mező = a hang-csatorna NINCS BEÁLLÍTVA ⇒ jogos csend, nem hír.
+  if (!voice) return [];
+
+  // 🔴 BE VAN ÁLLÍTVA, DE NINCS BENT — ez HIBA, és eddig TELJESEN néma volt.
+  // Az owner beszélne a csatornába, ahol a bot nincs bent: nincs hangjelzés, nincs tükör,
+  // nincs magyarázat. ⚠️ A `joined === undefined` (régi életjel) NEM számít hibának.
+  if (voice.joined === false) {
+    return [`🔊 hang 🔴 NINCS BENT${voice.channelName ? ` a(z) „${voice.channelName}" csatornában` : ''}`];
+  }
+
+  if (voice.speechStarts === 0) return [];
 
   const lost: string = voice.filesDropped > 0
     ? ` · ⚠️ ${voice.filesDropped} elveszett (${voice.lostAudioSeconds} mp)`
@@ -243,6 +260,10 @@ function readVoiceFunnel(): PulseVoiceFunnel | undefined {
       typeof record[key] === 'number' ? record[key] as number : 0;
 
     return {
+      // ⚠️ Csak akkor vesszük át, ha TÉNYLEG boolean — a régi életjelben nincs benne, és a
+      // hiányzó mezőből NEM következtetünk „nincs bent"-re.
+      ...(typeof record['joined'] === 'boolean' ? { joined: record['joined'] } : {}),
+      ...(typeof record['channelName'] === 'string' ? { channelName: record['channelName'] } : {}),
       speechStarts: numberOr('speechStarts'),
       filesOpened: numberOr('filesOpened'),
       filesDelivered: numberOr('filesDelivered'),

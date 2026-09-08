@@ -227,6 +227,17 @@ export class DiscordListener {
   /** 🔊 A hangjelzések — aki BESZEL, az nem a kepernyot nezi (owner, 21:49). */
   private cues: VoiceCuePlayer | null = null;
 
+  /**
+   * 🔴 A hang-jelenlét ALLAPOTA — ez utazik az eletjelben a diagnosztikaig.
+   *
+   * ⚠️ `configured: false` = a hang-csatorna nincs beallitva ⇒ **jogos csend**.
+   * A `configured: true, joined: false` viszont **HIBA**, amit LATNI kell.
+   */
+  private voicePresenceState: { configured: boolean; joined: boolean; channelName?: string } = {
+    configured: false,
+    joined: false,
+  };
+
 
 
   constructor(private readonly bridge: DiscordBridge = new DiscordBridge()) {}
@@ -503,6 +514,15 @@ export class DiscordListener {
         ...(result.remedy ? { remedy: result.remedy } : {}),
       },
     });
+
+    // 🔴 AZ ÁLLAPOT ELTEVÉSE — hogy a diagnosztika és a konzol IS lássa, bent vagyunk-e.
+    // ⚠️ Enélkül egy elbukott belépés TELJESEN néma: az owner beszélne a csatornába, ahol a
+    // bot nincs bent, és semmi nem mondaná meg, miért nem történik semmi.
+    this.voicePresenceState = {
+      configured: true,
+      joined: result.joined,
+      ...(result.channelName ? { channelName: result.channelName } : {}),
+    };
 
     if (result.joined) await this.startVoiceRecording(config.channelId);
   }
@@ -1592,21 +1612,27 @@ ${spoken}`
     // 🔊 A HANG-TÖLCSÉR IS UTAZIK — így a konzol-pulzus meg tudja mutatni (T-52).
     // ⚠️ Ha nincs élő szonda, a mező KIMARAD — nem nullázódik. A „nem fut" és a „fut, de
     // nem történt semmi" két különböző állapot, és a pulzus is másképp mutatja őket.
+    // ⚠️ A `voice` mező akkor kerül bele, ha a hang-csatorna BE VAN ÁLLÍTVA — akkor is, ha a
+    // belépés elbukott. ⭐ Így a `voice` HIÁNYA egyértelműen azt jelenti: „nincs beállítva"
+    // *(jogos csend)*, a `joined: false` pedig azt: „be van állítva, de NINCS BENT" *(hiba)*.
     const funnel: VoiceFunnelStats | undefined = this.dropProbe?.funnel;
+    const presence = this.voicePresenceState;
 
     await writeHeartbeat({
       updatedAt: new Date().toISOString(),
       botTag,
       processedCount: this.processedCount,
       pid: process.pid,
-      ...(funnel
+      ...(presence.configured
         ? {
           voice: {
-            speechStarts: funnel.speechStarts,
-            filesOpened: funnel.filesOpened,
-            filesDelivered: funnel.filesDelivered,
-            filesDropped: funnel.filesDropped,
-            lostAudioSeconds: funnel.lostAudioSeconds,
+            joined: presence.joined,
+            ...(presence.channelName ? { channelName: presence.channelName } : {}),
+            speechStarts: funnel?.speechStarts ?? 0,
+            filesOpened: funnel?.filesOpened ?? 0,
+            filesDelivered: funnel?.filesDelivered ?? 0,
+            filesDropped: funnel?.filesDropped ?? 0,
+            lostAudioSeconds: funnel?.lostAudioSeconds ?? 0,
           },
         }
         : {}),

@@ -54,6 +54,21 @@ export interface DiscordHeartbeat {
 
 /** A hang-tölcsér számai, ahogy az élő szonda látja. */
 export interface DiscordHeartbeatVoice {
+  /**
+   * 🔴 BENT VAN-E a bot a hang-csatornában.
+   *
+   * ⚠️ MÉRT HIÁNY (2026-09-08 06:24): ha a belépés **elbukik**, arról **SEMMI** nem szól —
+   * sem a `comm doctor` *(mérve: 0 hang-sor)*, sem a konzol-pulzus *(nincs szonda ⇒ nincs
+   * `voice` mező ⇒ hallgatás)*. ⇒ Az owner beszélne a csatornába, **ahol a bot nincs bent**:
+   * nincs hangjelzés, nincs tükör, nincs magyarázat. Pontosan az a hibaosztály, amit ez a
+   * projekt folyamatosan üldöz — *„a nem-indulás CSENDES"*.
+   *
+   * ⚠️ HÁROM ÁLLAPOT, és a `undefined` NEM hamis: a régi formátumú életjelekben a mező még
+   * nincs benne. Olyankor **nem állítunk semmit** — a „nem tudom" nem „nincs bent".
+   */
+  joined?: boolean;
+  /** Melyik csatornába lépett be — a diagnosztika így nevesíti. */
+  channelName?: string;
   /** Hány megszólalást érzékelt a Discord. */
   speechStarts: number;
   /** Hány felvétel nyílt (a többi beleolvadt egy futóba — ⛔ NEM veszteség). */
@@ -64,6 +79,30 @@ export interface DiscordHeartbeatVoice {
   filesDropped: number;
   /** Mennyi hang veszett el összesen. */
   lostAudioSeconds: number;
+}
+
+/**
+ * A `voice` blokk óvatos beolvasása.
+ *
+ * ⚠️ A `joined` CSAK akkor kerül át, ha tényleg `boolean` — a régi életjelekben nincs benne,
+ * és a hiányból ⛔ **nem** következtetünk „nincs bent"-re. A „nem tudom" nem „nem".
+ */
+function parseVoice(raw: unknown): DiscordHeartbeatVoice | undefined {
+  if (typeof raw !== 'object' || raw === null) return undefined;
+
+  const record = raw as Record<string, unknown>;
+  const numberOr = (key: string): number =>
+    typeof record[key] === 'number' ? record[key] as number : 0;
+
+  return {
+    ...(typeof record['joined'] === 'boolean' ? { joined: record['joined'] } : {}),
+    ...(typeof record['channelName'] === 'string' ? { channelName: record['channelName'] } : {}),
+    speechStarts: numberOr('speechStarts'),
+    filesOpened: numberOr('filesOpened'),
+    filesDelivered: numberOr('filesDelivered'),
+    filesDropped: numberOr('filesDropped'),
+    lostAudioSeconds: numberOr('lostAudioSeconds'),
+  };
 }
 
 export function resolveHeartbeatPath(userHome: string = homedir()): string {
@@ -113,10 +152,15 @@ export async function readHeartbeat(
     if (Number.isNaN(timestamp)) return { state: 'absent' };
 
     const ageMs: number = now.getTime() - timestamp;
+    // ⚠️ A `voice` mezőt ÁT KELL VINNI. Enélkül a diagnosztika mindig „nincs beállítva"-t
+    // látna — vagyis pont azt a néma félrejelentést csinálná, ami ellen készült.
+    // ⭐ EGYSZER olvassuk ki: két hívás felesleges, és eltérhetne egymástól.
+    const voice: DiscordHeartbeatVoice | undefined = parseVoice(record['voice']);
     const heartbeat: DiscordHeartbeat = {
       updatedAt,
       botTag: typeof record['botTag'] === 'string' ? record['botTag'] : '',
       processedCount: typeof record['processedCount'] === 'number' ? record['processedCount'] : 0,
+      ...(voice ? { voice: voice } : {}),
     };
 
     return { state: ageMs <= HEARTBEAT_STALE_MS ? 'alive' : 'stale', ageMs, heartbeat };

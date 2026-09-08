@@ -2813,3 +2813,63 @@ volt. **A kesz definicioja viszont az OWNER kerese**, nem a mi implementaciónk.
 verifikacio nem az, hogy megnezem, zold-e a teszt — hanem hogy **osszevetem az o SZAVAIVAL**.
 
 T-52 visszanyitva, a kulonbseg tetelesen a `DEV-HANDOFF.md`-ben.
+
+
+---
+
+## ✅ 2026-09-08 06:24–06:30 — DEV: a hang-lánc NÉMA HALÁLA már látszik
+
+### A mérés, ami a csomagot kijelölte
+
+Nincs új beszéd (25%, 4 kísérlet). Ellenőriztem viszont egy dolgot, ami eddig kimaradt:
+**mi történik, ha a bot BE SEM LÉP a hang-csatornába?**
+
+| Felület | Mit mond ma |
+|---|---|
+| `comm doctor` | 🔴 **NULLA** hang-csatorna sor *(mérve: `grep -c` → 0)* |
+| konzol-pulzus | 🔴 **semmi** — nincs szonda ⇒ nincs `voice` mező ⇒ hallgatás |
+
+⇒ Az owner beszélne a csatornába, **ahol a bot nincs bent**: nincs hangjelzés, nincs tükör,
+nincs magyarázat. ⭐ Pontosan az a hibaosztály, amit ez a rendszer folyamatosan üldöz —
+*„a nem-indulás CSENDES"* —, és amit a szabály is tilt: *„üres állapot magyarázó error
+nélkül tilos"*.
+
+📌 **És a saját tervezésem is hozzájárult:** a pulzus-szegmenst úgy írtam meg, hogy a
+`voice: undefined` és a „csupa nulla" **egyformán hallgat** — pedig a kódban külön ki is
+emeltem, hogy a kettő **nem ugyanaz**. A megkülönböztetés megvolt, a kimenet nem használta.
+
+### 🩹 Három állapot, három viselkedés — mindenhol
+
+| Helyzet | Pulzus | Doctor |
+|---|---|---|
+| a hang-csatorna **nincs beállítva** | *(semmi)* | ⚪ `missing` — jogos |
+| **be van állítva, de NINCS BENT** | 🔴 `🔊 hang 🔴 NINCS BENT a(z) „…" csatornában` | 🔴 `broken` + teendő |
+| bent van, de csend volt | *(semmi)* | ✅ `ok` |
+| bent van, volt beszéd | `🔊 hang 9 → 3 feldolgozva` | ✅ `ok` |
+| **régi formátumú életjel** | *(semmi)* | ❓ `unknown` — ⛔ **nem** állítunk semmit |
+
+⭐ Az életjel `voice` mezője mostantól **akkor is kiíródik, ha a belépés elbukott** — így a
+mező **hiánya** egyértelműen azt jelenti: „nincs beállítva".
+
+### ⚠️ EGY HIBA, amit OLVASÁSSAL kaptam el — mielőtt kiszállítottam volna
+
+A `readHeartbeat` a beolvasott objektumból **kézzel** építi újra a mezőket — és a `voice`-t
+**eldobta**. ⇒ Az új doctor-ellenőrzés **mindig** „nincs beállítva"-t látott volna: pont azt a
+néma félrejelentést csinálta volna, ami ellen készült.
+🩹 Javítva + **5 teszt** kifejezetten az átvitelre *(köztük: a régi formátum `joined`-ja marad
+`undefined`, és a sérült blokk nem dob)*.
+
+### ✅ ÉLŐ IGAZOLÁS
+
+```
+❓ Bent ül-e a bot a HANG-csatornában
+     A figyelő életjele még a régi formátumú — a bent-ülés nem állapítható meg.
+     → TEENDŐ: A következő figyelő-újraindulás után már látszani fog.
+```
+
+⭐ Ez a helyes válasz: a futó figyelő még a régi formátumot írja, tehát **nem tudjuk** — és a
+doctor ezt **ki is mondja**, ahelyett hogy hibát vagy rendben-t hazudna.
+
+### Teszt
+
+**CLI 635/635 zöld** *(+5)* · **szerver 82/82 zöld** *(+3)*.

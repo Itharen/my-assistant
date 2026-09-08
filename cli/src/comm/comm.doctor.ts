@@ -13,7 +13,7 @@ import { CcapError } from '../ccap/ccap.error.js';
 import { resolveSelfIdentity } from '../ccap/ccap.identity.js';
 import { DiscordBatchStore } from '../discord/discord.batch-store.js';
 import { DiscordBridge } from '../discord/discord.bridge.js';
-import { readHeartbeat } from '../discord/discord.heartbeat.js';
+import { readHeartbeat, type HeartbeatStatus } from '../discord/discord.heartbeat.js';
 import { checkReplyObligation } from '../discord/discord.reply-tracker.js';
 import { MAX_ATTEMPTS, SttRetryQueue, type SttRetryEntry } from '../stt/stt.retry-queue.js';
 import { summarizeChecks, type CommCheck, type CommDoctorReport } from './comm.models.js';
@@ -37,6 +37,7 @@ export async function runCommDoctor(options: { projectRoot?: string } = {}): Pro
   await checkDiscordConfig(checks);
   await checkDiscordListener(checks);
   await checkDiscordBatch(checks);
+  await checkVoiceChannelPresence(checks);
   await checkSttRetryQueue(checks);
   await checkReplyDebt(checks);
   await checkSpeakerGate(projectRoot, checks);
@@ -280,6 +281,96 @@ async function checkDiscordBatch(checks: CommCheck[]): Promise<void> {
  * `degraded` csak akkor, ha egy tétel már a próbálkozásai VÉGÉHEZ közeledik — onnantól ugyanis
  * valós az esély, hogy a tartalom **véglegesen** elvész.
  */
+/**
+ * 🔊 BENT VAN-E A BOT A HANG-CSATORNÁBAN.
+ *
+ * 🔴 MÉRT HIÁNY (2026-09-08 06:24): a `comm doctor` kimenetében **NULLA** sor szólt a
+ * hang-csatornáról. ⇒ Ha a belépés elbukik, azt **semmi** nem mondja meg: az owner beszélne
+ * a csatornába, ahol a bot **nincs bent**, és nem kapna se hangjelzést, se tükröt, se
+ * magyarázatot. Pontosan az a hibaosztály, amit ez a rendszer folyamatosan üldöz —
+ * *„a nem-indulás CSENDES"*.
+ *
+ * ⭐ AZ ÉLETJELBŐL dolgozik, nem a konfigurációból: nem azt kérdezzük, „be van-e állítva",
+ * hanem azt, hogy **BENT VAN-E MOST** — ugyanaz az elv, amiért az életjel egyáltalán létezik.
+ *
+ * ⚠️ HÁROM ÁLLAPOT, és egyik sem keverhető: nincs beállítva *(jogos)* · nincs bent *(HIBA)* ·
+ * régi formátumú életjel *(nem tudjuk — és ezt ki is mondjuk, nem tippelünk)*.
+ */
+async function checkVoiceChannelPresence(checks: CommCheck[]): Promise<void> {
+  const label: string = 'Bent ül-e a bot a HANG-csatornában';
+
+  try {
+    const status: HeartbeatStatus = await readHeartbeat();
+    const voice = status.heartbeat?.voice;
+
+    if (status.state !== 'alive') {
+      checks.push({
+        id: 'voice-channel-presence',
+        area: 'discord',
+        label,
+        status: 'unknown',
+        detail: 'A figyelő életjele nem friss — a hang-jelenlét sem állapítható meg.',
+        remedy: 'Előbb a Discord-figyelőt kell rendbe tenni (l. a fenti sort).',
+      });
+
+      return;
+    }
+
+    if (!voice) {
+      checks.push({
+        id: 'voice-channel-presence',
+        area: 'discord',
+        label,
+        status: 'missing',
+        detail: 'A hang-csatorna nincs beállítva — a figyelő nem is próbál belépni.',
+        remedy: 'Ha kell: MA_DISCORD_GUILD_ID + MA_DISCORD_VOICE_CHANNEL_ID a `.env`-ben.',
+      });
+
+      return;
+    }
+
+    if (voice.joined === undefined) {
+      // ⚠️ Régi formátumú életjel. ⛔ NEM állítjuk, hogy nincs bent — azt mondjuk, nem tudjuk.
+      checks.push({
+        id: 'voice-channel-presence',
+        area: 'discord',
+        label,
+        status: 'unknown',
+        detail: 'A figyelő életjele még a régi formátumú — a bent-ülés nem állapítható meg.',
+        remedy: 'A következő figyelő-újraindulás után már látszani fog.',
+      });
+
+      return;
+    }
+
+    checks.push({
+      id: 'voice-channel-presence',
+      area: 'discord',
+      label,
+      status: voice.joined ? 'ok' : 'broken',
+      detail: voice.joined
+        ? `Bent ül${voice.channelName ? ` a(z) „${voice.channelName}" csatornában` : ''}.`
+        : 'A hang-csatorna BE VAN ÁLLÍTVA, de a bot NINCS BENT — az odabeszélt hang '
+          + 'sehova nem jut el, és semmilyen visszajelzést nem kapsz rá.',
+      ...(voice.joined
+        ? {}
+        : {
+          remedy: 'Nézd meg a `MA-VOICE-JOIN-FAILED` sort az akció-naplóban: '
+            + 'jogosultság, törölt csatorna vagy rossz azonosító a szokásos ok.',
+        }),
+    });
+  } catch (err: unknown) {
+    checks.push({
+      id: 'voice-channel-presence',
+      area: 'discord',
+      label,
+      status: 'unknown',
+      detail: `Az életjel nem olvasható: ${err instanceof Error ? err.message : String(err)}`,
+      remedy: 'Ellenőrizd a `~/.config/my-assistant/discord/listener-heartbeat.json` fájlt.',
+    });
+  }
+}
+
 async function checkSttRetryQueue(checks: CommCheck[]): Promise<void> {
   try {
     const entries: SttRetryEntry[] = await new SttRetryQueue().list();
