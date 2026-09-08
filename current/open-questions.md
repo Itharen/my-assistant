@@ -768,3 +768,12 @@ aminek a veszteségét most mérjük. A `cue-heard` a legérzékenyebb: az **bes
 
 **Amit várok:** fejhallgató vagy hangszóró. Ha hangszóró, javaslom a `cue-heard` kikapcsolását
 (vagy az egész jelzés-készletét), amíg nem mérjük meg, hogy tényleg visszahallatszik-e.
+
+### Q-2026-09-08-01 — „Doki" mint megszólítás: kit illet?
+- **Kategória:** meta / kommunikáció · **Fontosság:** `l`
+- **Státusz:** open · **Felvéve:** 2026-09-08 13:10
+- **A kérdés:** az owner ezt írta: *„Jó a Doki mint megszólítás"* — közvetlenül az
+  *„Üzenorvos?? Az csak egy utánanézés..."* után. ⚠️ Nem egyértelmű, hogy **őt** szólítsam-e
+  így, **engem** hívna-e így, vagy a `comm doctor` parancsra utal.
+- **Miért nem tippelek:** a megszólítás személyes; rossz irányba tippelni kellemetlen, és a
+  javítása drágább, mint egy egymondatos kérdés.
