@@ -15,6 +15,8 @@
 // 2. **Ami itt van, azt el lehet lopni.** Ezért minél rövidebb ideig legyen itt, és minél
 //    kevesebb. A lejárat NEM kényelmi funkció, hanem a támadási felület csökkentése.
 
+import { DyFM_Error } from '@futdevpro/fsm-dynamo';
+
 /** Egy pufferelt tétel. A `payload` a relay számára ÁTLÁTSZATLAN — nem értelmezzük. */
 export interface BufferedItem {
   /** A tétel azonosítója — a nyugtázás ezzel hivatkozik rá. */
@@ -56,20 +58,31 @@ export function pruneBuffer(
   maxItems: number = MAX_BUFFERED_ITEMS,
   maxAgeMs: number = ITEM_MAX_AGE_MS,
 ): PruneOutcome {
-  const nowMs: number = now.getTime();
-  const notExpired: BufferedItem[] = items.filter((item: BufferedItem): boolean => {
-    const receivedMs: number = new Date(item.receivedAt).getTime();
+  try {
+    const nowMs: number = now.getTime();
+    const notExpired: BufferedItem[] = items.filter((item: BufferedItem): boolean => {
+      const receivedMs: number = new Date(item.receivedAt).getTime();
 
-    // Az értelmezhetetlen időbélyeget MEGTARTJUK: bizonytalanságból nem dobunk el adatot.
-    return Number.isNaN(receivedMs) || nowMs - receivedMs <= maxAgeMs;
-  });
-  const expiredCount: number = items.length - notExpired.length;
-  // Túlcsordulásnál a LEGRÉGEBBI esik ki — a friss helyzet többet ér, mint a régi.
-  const kept: BufferedItem[] = notExpired.length > maxItems
-    ? notExpired.slice(notExpired.length - maxItems)
-    : notExpired;
+      // Az értelmezhetetlen időbélyeget MEGTARTJUK: bizonytalanságból nem dobunk el adatot.
+      return Number.isNaN(receivedMs) || nowMs - receivedMs <= maxAgeMs;
+    });
+    const expiredCount: number = items.length - notExpired.length;
+    // Túlcsordulásnál a LEGRÉGEBBI esik ki — a friss helyzet többet ér, mint a régi.
+    const kept: BufferedItem[] = notExpired.length > maxItems
+      ? notExpired.slice(notExpired.length - maxItems)
+      : notExpired;
 
-  return { kept, expiredCount, overflowCount: notExpired.length - kept.length };
+    return { kept, expiredCount, overflowCount: notExpired.length - kept.length };
+  } catch (error) {
+    // ⚠️ Ez a függvény MINDEN végpontról meghívódik. Ha egy sérült tétel miatt elszáll, a
+    // hívó egy nyers `TypeError`-t kapna — a relay pedig azt a stacket küldené ki a hálózatra.
+    // A kanonikus kód helyette AZONOSÍTHATÓ, és nem szivárogtat belső részletet.
+    throw new DyFM_Error({
+      error: error,
+      errorCode: 'MA-RELAY-BUFFER-PRUNE-FAILED',
+      message: 'A puffer karbantartása elszállt.',
+    });
+  }
 }
 
 /**
@@ -81,9 +94,20 @@ export function pruneBuffer(
  * alapján, az elveszett helyzetet viszont **semmi** nem hozza vissza.
  */
 export function removeAcknowledged(items: BufferedItem[], acknowledgedIds: string[]): BufferedItem[] {
-  const acknowledged: Set<string> = new Set(acknowledgedIds);
+  try {
+    const acknowledged: Set<string> = new Set(acknowledgedIds);
 
-  return items.filter((item: BufferedItem): boolean => !acknowledged.has(item.id));
+    return items.filter((item: BufferedItem): boolean => !acknowledged.has(item.id));
+  } catch (error) {
+    // 🔴 A törlési út a legérzékenyebb: ha itt elszáll, a hívó nem tudja, hogy a tételek
+    // TÖRLŐDTEK-e vagy sem. A kanonikus kód mellett a lényeg, hogy a kivétel NEM néma —
+    // a nyugtázás bukása látszik, és a tételek a következő lehúzáskor újra jönnek.
+    throw new DyFM_Error({
+      error: error,
+      errorCode: 'MA-RELAY-BUFFER-ACK-REMOVE-FAILED',
+      message: 'A nyugtázott tételek eltávolítása elszállt.',
+    });
+  }
 }
 
 /**
@@ -93,5 +117,15 @@ export function removeAcknowledged(items: BufferedItem[], acknowledgedIds: strin
  * kerülhet, tehát nem szivároghat belőle helyzet-információ.
  */
 export function createItemId(now: Date, randomPart: string): string {
-  return `${now.getTime().toString(36)}-${randomPart}`;
+  try {
+    return `${now.getTime().toString(36)}-${randomPart}`;
+  } catch (error) {
+    // ⚠️ Azonosító nélkül a tétel NEM nyugtázható ⇒ soha nem törlődne. Ezért itt a némán
+    // előálló hibás azonosító rosszabb, mint a hangos bukás: az ingest inkább dőljön el.
+    throw new DyFM_Error({
+      error: error,
+      errorCode: 'MA-RELAY-ITEM-ID-FAILED',
+      message: 'A tétel-azonosító előállítása elszállt.',
+    });
+  }
 }

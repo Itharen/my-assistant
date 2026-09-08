@@ -14,14 +14,18 @@ export function isTrustedMyAssistantUrl(value: string | undefined): boolean {
   if (!value) {
     return false;
   }
-  try {
-    const url: URL = new URL(value);
-    return url.protocol === 'http:'
-      && url.port === '39335'
-      && (url.hostname === '127.0.0.1' || url.hostname === 'localhost');
-  } catch {
+  // ⚠️ Ez egy BIZALMI döntés — nem szabad kivétel-vezérelt vezérlésre bízni. A korábbi
+  // `try/catch` vakon `false`-t adott MINDEN hibára: egy váratlan hiba (nem csak az
+  // „ez nem URL" eset) ugyanazon a néma ágon távozott volna. A `URL.parse` kérdez, nem dob.
+  const url: URL | null = URL.parse(value);
+
+  if (!url) {
     return false;
   }
+
+  return url.protocol === 'http:'
+    && url.port === '39335'
+    && (url.hostname === '127.0.0.1' || url.hostname === 'localhost');
 }
 
 export function isWorkspaceRequest(value: unknown): value is LinkedInWorkspaceRuntimeRequest {

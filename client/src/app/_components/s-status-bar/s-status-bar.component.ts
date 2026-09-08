@@ -45,12 +45,15 @@ export class S_StatusBar_Component implements OnInit, OnDestroy {
     if (!ts) {
       return '—';
     }
-    try {
-      const d: Date = new Date(ts);
+    // A `new Date(...)` SOHA nem dob — ervenytelen bemenetre `Invalid Date`-et ad, es a
+    // `getHours()` NaN-t. A korabbi try/catch ezert sosem sult el: a hibas idobelyeg
+    // „NaN:NaN"-kent jelent meg a status-barban. Explicit ellenorzes kell helyette.
+    const d: Date = new Date(ts);
 
-      return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-    } catch {
+    if (Number.isNaN(d.getTime())) {
       return '—';
     }
+
+    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   }
 }

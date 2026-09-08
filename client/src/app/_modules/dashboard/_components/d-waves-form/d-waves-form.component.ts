@@ -10,6 +10,8 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
+import { DyFM_Log } from '@futdevpro/fsm-dynamo';
+
 import {
   type A_WaveJsonlSnapshotPayload,
   type A_WaveLevel,
@@ -138,8 +140,12 @@ export class D_WavesForm_Component {
       this.handleReset();
       this.ack = '🌊 Snapshot rögzítve.';
       this.isOpen = false;
-    } catch {
-      // control-service már showError-on át routolt; itt csak skip-eljük az ack-ot.
+    } catch (err) {
+      // A control-service mar atengedte a hibat az `A_Error_ControlService.showError()`-on
+      // (toast + szerver-oldali rogzites), itt CSAK az ack-agat ugorjuk at. ⚠️ De a keret
+      // maga nem lehet nyomtalan: enelkul a devtools-ban nem latszik, hogy MELYIK muvelet
+      // szakadt meg — csak az, hogy valahol hiba volt.
+      DyFM_Log.warn(`[d-waves-form.submit] a muvelet megszakadt: ${String(err)}`);
     } finally {
       this.isBusy = false;
     }

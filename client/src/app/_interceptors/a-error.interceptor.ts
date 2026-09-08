@@ -10,6 +10,8 @@
 // as a second-line defense.
 
 import { inject, Injectable } from '@angular/core';
+
+import { DyFM_Log } from '@futdevpro/fsm-dynamo';
 import {
   type HttpEvent,
   type HttpHandler,
@@ -40,7 +42,8 @@ export class A_Error_Interceptor implements HttpInterceptor {
           this.error_CS.showError(err, 'http');
         } else {
           // Csak konzolra — a központi pipeline-t kihagyjuk recursion ellen.
-          console.error('[a-error.interceptor] /errors/error/log failed', req.method, req.url, err.status, err.message);
+          DyFM_Log.error(`[a-error.interceptor] /errors/error/log failed: ${req.method} ${req.url} `
+            + `${err.status} ${err.message}`);
         }
 
         return throwError((): HttpErrorResponse => err);

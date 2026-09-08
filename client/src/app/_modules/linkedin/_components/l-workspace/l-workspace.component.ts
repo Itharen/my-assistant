@@ -20,6 +20,8 @@ import {
 interface LinkedInInboxViewItem extends LinkedInWorkspaceInboxItem {
   displayName: string;
   displayDate: string;
+  categoryLabel: string;
+  reviewLabel: string;
 }
 
 interface LinkedInMessageViewItem extends LinkedInWorkspaceMessage {
@@ -46,6 +48,7 @@ export class L_Workspace_Component implements OnInit {
   previousOffsets: number[] = [];
   cacheUpdatedAt: string | null = null;
   inboxItems: LinkedInInboxViewItem[] = [];
+  selectedInboxItem: LinkedInInboxViewItem | null = null;
   selectedThreadId: string | null = null;
   messages: LinkedInMessageViewItem[] = [];
   drafts: LinkedInWorkspaceDraft[] = [];
@@ -74,6 +77,7 @@ export class L_Workspace_Component implements OnInit {
 
   async handleOpenWorkspace(): Promise<void> {
     this.clearFeedback();
+    this.isBridgeConnected = this.bridge.isConnected();
     try {
       const result: LinkedInWorkspaceLaunchResult = await this.bridge.open();
       this.notice = result.message;
@@ -111,6 +115,7 @@ export class L_Workspace_Component implements OnInit {
       return;
     }
     this.selectedThreadId = threadId;
+    this.selectedInboxItem = this.inboxItems.find((item: LinkedInInboxViewItem): boolean => item.threadId === threadId) ?? null;
     this.cvCheck = 'pending';
     this.isManualSendArmed = false;
     await this.loadThread(threadId);
@@ -188,6 +193,10 @@ export class L_Workspace_Component implements OnInit {
         ...item,
         displayName: this.toDisplayName(item.counterpartId, item.threadId),
         displayDate: new Date(item.latestMessageAt).toLocaleString('hu-HU'),
+        categoryLabel: this.toCategoryLabel(item.semanticCategory),
+        reviewLabel: item.reviewState === 'fresh'
+          ? `${item.semanticConfidence ?? 'ismeretlen'} bizonyosság`
+          : item.reviewState === 'stale' ? 'elavult agenti értékelés' : 'agenti értékelésre vár',
       }));
       this.total = response.total;
       this.nextOffset = response.nextOffset;
@@ -196,6 +205,7 @@ export class L_Workspace_Component implements OnInit {
         await this.handleSelectThread(this.inboxItems[0].threadId);
       } else if (this.inboxItems.length === 0) {
         this.selectedThreadId = null;
+        this.selectedInboxItem = null;
         this.messages = [];
         this.drafts = [];
       }
@@ -219,7 +229,7 @@ export class L_Workspace_Component implements OnInit {
       this.drafts = response.drafts;
       if (resetDraft) {
         const latestDraft: LinkedInWorkspaceDraft | undefined = [...response.drafts]
-          .filter((draft: LinkedInWorkspaceDraft) => draft.status !== 'discarded')
+          .filter((draft: LinkedInWorkspaceDraft) => draft.status !== 'discarded' && draft.currentForLatestMessage)
           .sort((left: LinkedInWorkspaceDraft, right: LinkedInWorkspaceDraft) => right.updatedAt.localeCompare(left.updatedAt))[0];
         this.selectedDraftId = latestDraft?.id ?? null;
         this.draftBody = latestDraft?.body ?? '';
@@ -270,15 +280,33 @@ export class L_Workspace_Component implements OnInit {
 
   private toDisplayName(counterpartId: string | null, threadId: string): string {
     if (counterpartId) {
-      try {
-        const url: URL = new URL(counterpartId);
-        const slug: string = url.pathname.split('/').filter(Boolean).pop() ?? counterpartId;
-        return slug.replace(/[-_]+/gu, ' ');
-      } catch {
+      // ⚠️ A `counterpartId` NEM garantaltan URL — lehet nyers slug is. Korabban a `new URL()`
+      // kivetelere epult a dontes, es a catch elnyelte a hibat: egy VARATLAN hiba (pl. egy
+      // serult `pathname`) ugyanazon a nema agon tavozott volna. Kivetel helyett kerdezunk.
+      const url: URL | null = URL.parse(counterpartId);
+
+      if (!url) {
         return counterpartId;
       }
+      const slug: string = url.pathname.split('/').filter(Boolean).pop() ?? counterpartId;
+
+      return slug.replace(/[-_]+/gu, ' ');
     }
     return `Beszélgetés ${threadId.slice(-8)}`;
+  }
+
+  private toCategoryLabel(category: LinkedInWorkspaceInboxItem['semanticCategory']): string {
+    const labels: Record<Exclude<LinkedInWorkspaceInboxItem['semanticCategory'], null>, string> = {
+      actionable: 'válasz szükséges',
+      'priority-direct-project': 'kiemelt projektmegkeresés',
+      'clarification-needed': 'tisztázandó',
+      'closed-no-reply': 'lezárt, nem kell válasz',
+      'automated-ignore': 'automatikus / szponzorált',
+      'duplicate-opportunity': 'duplikált lehetőség',
+      snoozed: 'elhalasztva',
+      'sent-confirmed': 'elküldve, visszaolvasva',
+    };
+    return category === null ? 'még nincs agenti kategória' : labels[category];
   }
 
   private clearFeedback(): void {

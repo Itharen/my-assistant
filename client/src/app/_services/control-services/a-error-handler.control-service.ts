@@ -11,6 +11,8 @@
 
 import { ErrorHandler, inject, Injectable } from '@angular/core';
 
+import { DyFM_Log } from '@futdevpro/fsm-dynamo';
+
 import { A_Error_ControlService } from './a-error.control-service';
 
 @Injectable({ providedIn: 'root' })
@@ -27,7 +29,8 @@ export class A_ErrorHandler_ControlService implements ErrorHandler {
     } catch (showErr) {
       // Final fallback — direct console so the user-facing system never
       // silently swallows the original error.
-      console.error('[A_ErrorHandler] failed to surface error', showErr, error);
+      DyFM_Log.error(`[A_ErrorHandler] failed to surface error: ${String(showErr)} `
+        + `(eredeti: ${String(error)})`);
     }
   }
 }

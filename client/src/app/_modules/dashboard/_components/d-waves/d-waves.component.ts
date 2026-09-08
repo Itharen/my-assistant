@@ -7,6 +7,7 @@
 
 import { CommonModule } from '@angular/common';
 import { Component, inject, Input, OnDestroy } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 import {
   A_WaveKind,
@@ -170,7 +171,7 @@ function computeXTicks(tStart: number, tEnd: number, rangeHours: number): D_Wave
     selector: 'd-waves',
     templateUrl: './d-waves.component.html',
     styleUrl: './d-waves.component.scss',
-    imports: [CommonModule, D_WavesForm_Component]
+    imports: [CommonModule, FormsModule, D_WavesForm_Component]
 })
 /** Waves panel — 3 vonalas SVG diagram astral/mental/matter time-series-szel, precomputált polyline-okkal. */
 export class D_Waves_Component implements OnDestroy {
@@ -347,6 +348,15 @@ export class D_Waves_Component implements OnDestroy {
     return result;
   }
 
+  /** Nyitva van-e az egyeni-intervallum urlap (a nativ `prompt()` helyett). */
+  isCustomRangeOpen: boolean = false;
+
+  /** Az urlap nyers bemenete napokban. */
+  customRangeDays: string = '14';
+
+  /** Az urlap validacios hibaja — ⛔ a nema elutasitas helyett LATHATO visszajelzes. */
+  customRangeError: string | null = null;
+
   /** Aktuálisan kiválasztott interval — a preset gombok highlight-jához. */
   get selectedRangeHours(): number {
     return this.control.getRangeHours();
@@ -358,17 +368,34 @@ export class D_Waves_Component implements OnDestroy {
   }
 
   /**
-   * Custom interval — egyszerű prompt() input napokban (1-365 között).
-   * Phase 5c MVP: később date-picker komponens-re cserélhető (~Phase 5c-extra).
+   * Egyeni intervallum — INLINE urlap, ⛔ NEM nativ bongeszo-dialogus.
+   *
+   * 🔴 Miert valtott: a nativ dialogus BLOKKOLJA a bongeszo szalat (a grafikon frissitese es a
+   * socket-esemenyek megallnak, amig nyitva van), nem stilizalhato, mobilon mashogy nez ki, es
+   * ⛔ e2e-vel sem vezerelheto — a teszt vagy megall rajta, vagy kulon dialog-kezelot igenyel.
    */
-  handleCustomRange(): void {
-    if (typeof window === 'undefined') return;
-    const raw: string | null = window.prompt('Egyéni intervallum napokban (1-365):', '14');
+  handleCustomRangeToggle(): void {
+    this.isCustomRangeOpen = !this.isCustomRangeOpen;
+    this.customRangeError = null;
 
-    if (!raw) return;
-    const days: number = Number(raw.trim());
+    if (this.isCustomRangeOpen) {
+      this.customRangeDays = String(Math.round(this.selectedRangeHours / 24));
+    }
+  }
 
-    if (!Number.isFinite(days) || days <= 0) return;
+  /** Az inline urlap elfogadasa — a hatarok ELLENORZOTTEK es a hiba LATHATO. */
+  handleCustomRangeApply(): void {
+    const days: number = Number(this.customRangeDays.trim());
+
+    if (!Number.isFinite(days) || days < 1 || days > 365) {
+      // ⚠️ A korabbi, dialogus-alapu valtozat itt NEMAN visszatert: a felhasznalo azt latta, hogy „nem
+      // tortent semmi", es nem tudta, hogy a bemenete volt ervenytelen.
+      this.customRangeError = 'Adj meg egy szamot 1 es 365 nap kozott.';
+
+      return;
+    }
+    this.customRangeError = null;
+    this.isCustomRangeOpen = false;
     this.control.setRangeHours(Math.round(days * 24));
   }
 

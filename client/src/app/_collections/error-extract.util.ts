@@ -5,7 +5,7 @@
 
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { DyFM_Error } from '@futdevpro/fsm-dynamo';
+import { DyFM_Error, DyFM_Log } from '@futdevpro/fsm-dynamo';
 
 /** Normalizált error részletek a kliens-oldali error pipeline-hoz — `A_ErrorExtract_Util.extract` outputja. */
 export interface A_ErrorDetails_Interface {
@@ -115,7 +115,12 @@ export class A_ErrorExtract_Util {
   private static safeStringify(v: unknown): string {
     try {
       return JSON.stringify(v, A_ErrorExtract_Util.cycleSafeReplacer());
-    } catch {
+    } catch (stringifyErr) {
+      // A ciklus-biztos replacer ELLENERE is elszallhat (getter dob, BigInt, proxy). Ilyenkor a
+      // `String(v)` fallback marad — de a fallback ONMAGABAN nem lathato: `[object Object]`-kent
+      // jelenne meg, es senki nem tudna, hogy ITT veszett el a reszlet. Ezert nyomot hagyunk.
+      DyFM_Log.warn(`[A_ErrorExtract] MA-CLIENT-ERROR-STRINGIFY-FAILED: ${String(stringifyErr)}`);
+
       return String(v);
     }
   }

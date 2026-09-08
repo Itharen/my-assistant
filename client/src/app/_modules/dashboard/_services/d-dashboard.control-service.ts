@@ -12,6 +12,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable, OnDestroy } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
 
+import { DyFM_Log } from '@futdevpro/fsm-dynamo';
+
 import { A_Server_ApiService } from '../../../_services/api-services/a-server.api-service';
 import { A_Error_ControlService } from '../../../_services/control-services/a-error.control-service';
 import {
@@ -91,7 +93,12 @@ export class D_Dashboard_ControlService implements OnDestroy {
       const parsed: number = Number(raw);
 
       return Number.isFinite(parsed) && parsed > 0 ? Math.round(parsed) : 24;
-    } catch {
+    } catch (err) {
+      // A `localStorage` olvasasa dobhat (letiltott sutik, privat mod, kvota). A 24 oras
+      // alapertelmezes helyes valasz — de ⛔ nem lehet nema: enelkul ugy tunne, hogy a
+      // felhasznalo beallitasa „nem ragadt meg", holott a tarolo maga nem elerheto.
+      DyFM_Log.warn(`[d-dashboard] MA-CLIENT-RANGE-READ-FAILED: ${String(err)}`);
+
       return 24;
     }
   }
@@ -107,9 +114,10 @@ export class D_Dashboard_ControlService implements OnDestroy {
       const resp = await this.api.getWaveMarkers(sinceMs, now);
       this.data.setMarkers(resp.rows);
     } catch (err) {
-      // No toast — marker overlay opcionális, NEM blocker. Csak action-log lenne értelmes,
-      // de a server-side hibái már ott vannak (MA-WAVE-MARKERS-*).
-      void err;
+      // ⚠️ Nincs toast — a marker-overlay opcionalis enrichment, NEM blocker; a felhasznalot
+      // nem zavarjuk vele. ⛔ De a `void err` NYOMTALAN volt: a szerver-oldali `MA-WAVE-MARKERS-*`
+      // csak akkor letezik, ha a keres ELERTE a szervert — halozati hibanal semmi nyom nem maradt.
+      DyFM_Log.warn(`[d-dashboard] MA-CLIENT-WAVE-MARKERS-FAILED: ${String(err)}`);
     }
   }
 
@@ -119,8 +127,11 @@ export class D_Dashboard_ControlService implements OnDestroy {
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem(D_Dashboard_ControlService.STORAGE_KEY, String(hours));
       }
-    } catch {
-      /* ignore */
+    } catch (err) {
+      // Kvota vagy jogosultsagi hiba: a beallitas nem marad meg a kovetkezo betoltesre. Ez
+      // elviselheto, de a nema elnyelestol a felhasznalo azt latna, hogy a valasztasa
+      // „veletlenszeruen visszaall" — ok nelkul.
+      DyFM_Log.warn(`[d-dashboard] MA-CLIENT-RANGE-WRITE-FAILED: ${String(err)}`);
     }
   }
 

@@ -6,6 +6,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 
+import { DyFM_Log } from '@futdevpro/fsm-dynamo';
+
 import {
   type A_DashboardSnapshot,
   type A_InsightRow,
@@ -57,8 +59,12 @@ export class D_Insights_Component {
     this.busyId = id;
     try {
       await this.control.dismissInsight(id);
-    } catch {
-      // control-service already routed through A_Error_ControlService.
+    } catch (err) {
+      // A control-service mar atengedte a hibat az `A_Error_ControlService.showError()`-on
+      // (toast + szerver-oldali rogzites), itt CSAK az ack-agat ugorjuk at. ⚠️ De a keret
+      // maga nem lehet nyomtalan: enelkul a devtools-ban nem latszik, hogy MELYIK muvelet
+      // szakadt meg — csak az, hogy valahol hiba volt.
+      DyFM_Log.warn(`[d-insights.handleDismiss] a muvelet megszakadt: ${String(err)}`);
     } finally {
       this.busyId = null;
     }

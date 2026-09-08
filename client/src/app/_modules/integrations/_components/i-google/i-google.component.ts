@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Component, OnInit, signal } from '@angular/core';
 
+import { DyFM_Log } from '@futdevpro/fsm-dynamo';
+
 import { I_Integrations_ApiService } from '../../_services/i-integrations.api-service';
 import type { GoogleStatusResponse, GoogleQueryResult } from '@server-models';
 
@@ -36,8 +38,16 @@ export class I_Google_Component implements OnInit {
   /** Lekéri a Google Assistant status-t a server-től. */
   async refresh(): Promise<void> {
     this.loading.set(true);
+    this.authError.set(null);
     try {
       this.status.set(await this.api.getGoogleStatus());
+    } catch (err) {
+      // 🔴 Korabban CSAK `finally` volt: a hiba kiszokott a keretbol, es mivel a `refresh()`-t az
+      // `ngOnInit()` varja meg, egy le nem kezelt promise-elutasitas lett belole — a panel
+      // ORoKRE ures maradt, mindenfele jelzes nelkul. A felhasznalo azt latta, hogy „nincs adat".
+      DyFM_Log.error(`[i-google.refresh] MA-CLIENT-GOOGLE-STATUS-FAILED: ${String(err)}`);
+      this.status.set(null);
+      this.authError.set('Google allapot nem toltheto be. Fut a szerver?');
     } finally {
       this.loading.set(false);
     }

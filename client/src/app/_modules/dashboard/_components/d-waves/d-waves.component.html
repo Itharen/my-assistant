@@ -16,8 +16,25 @@
             [class.active]="selectedRangeHours === preset.hours"
             (click)="handleSelectRange(preset.hours)">{{ preset.label }}</button>
   }
-  <button type="button" class="range-btn custom" (click)="handleCustomRange()">custom…</button>
+  <button type="button" class="range-btn custom"
+          [class.active]="isCustomRangeOpen"
+          (click)="handleCustomRangeToggle()">custom…</button>
 </div>
+
+<!-- Inline egyeni-intervallum urlap — a blokkolo nativ dialogus helyett. -->
+@if (isCustomRangeOpen) {
+  <div class="custom-range">
+    <label for="d-waves-custom-days">Egyéni intervallum napokban (1–365):</label>
+    <input id="d-waves-custom-days" type="number" min="1" max="365"
+           [(ngModel)]="customRangeDays"
+           (keyup.enter)="handleCustomRangeApply()">
+    <button type="button" class="range-btn" (click)="handleCustomRangeApply()">OK</button>
+    <button type="button" class="range-btn" (click)="handleCustomRangeToggle()">Mégse</button>
+    @if (customRangeError; as err) {
+      <span class="custom-range-error">⚠️ {{ err }}</span>
+    }
+  </div>
+}
 
 @if (!hasData) {
   <div class="empty">

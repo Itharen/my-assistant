@@ -44,12 +44,11 @@ describe('S_StatusBar_Component', () => {
     expect(result).toMatch(/^\d{2}:\d{2}$/);
   });
 
-  it('formatTime returns "—" for invalid timestamp', () => {
-    // new Date('not-a-date') gives Invalid Date - formatTime should still
-    // return SOMETHING (current impl returns 'NaN:NaN' via padStart). For
-    // safety it returns '—' on parse-fail. Verify the catch-path is robust.
-    const result: string = component.formatTime('not-a-date');
-    expect(result === '—' || result.includes('NaN')).toBeTrue();
+  it('🔴 formatTime "—"-t ad érvénytelen időbélyegre — SOHA nem "NaN:NaN"', () => {
+    // A korábbi implementáció egy try/catch-re épült, ami SOSEM sült el: a `new Date(...)` nem
+    // dob, csak `Invalid Date`-et ad, és a `getHours()` NaN-t ⇒ a status-barban valójában
+    // „NaN:NaN" jelent meg. ⛔ A régi állítás („vagy tartalmaz NaN-t") pont ezt engedte át.
+    expect(component.formatTime('not-a-date')).toBe('—');
   });
 
   it('renders srv and cli labels in template', () => {

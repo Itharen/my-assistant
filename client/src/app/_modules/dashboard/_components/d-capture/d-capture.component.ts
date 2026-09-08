@@ -10,6 +10,8 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
+import { DyFM_Log } from '@futdevpro/fsm-dynamo';
+
 import { A_CaptureKind } from '../../../../_models/server-envelope.interface';
 import { A_Error_ControlService } from '../../../../_services/control-services/a-error.control-service';
 
@@ -71,9 +73,12 @@ export class D_Capture_Component {
         });
         this.ack = `🌊 Snapshot: A${this.astral} · M${this.mental} · ☷${this.matter}`;
       }
-    } catch {
-      // control-service already routed through A_Error_ControlService —
-      // we only catch here to skip the ack-on-success branch.
+    } catch (err) {
+      // A control-service mar atengedte a hibat az `A_Error_ControlService.showError()`-on
+      // (toast + szerver-oldali rogzites), itt CSAK az ack-agat ugorjuk at. ⚠️ De a keret
+      // maga nem lehet nyomtalan: enelkul a devtools-ban nem latszik, hogy MELYIK muvelet
+      // szakadt meg — csak az, hogy valahol hiba volt.
+      DyFM_Log.warn(`[d-capture.submit] a muvelet megszakadt: ${String(err)}`);
     } finally {
       this.isBusy = false;
     }

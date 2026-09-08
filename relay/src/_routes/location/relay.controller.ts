@@ -10,7 +10,7 @@
 
 import { Request, Response } from 'express';
 
-import { DyFM_HttpCallType } from '@futdevpro/fsm-dynamo';
+import { DyFM_Error, DyFM_HttpCallType } from '@futdevpro/fsm-dynamo';
 import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
 
 import { authorize, envNameFor, readPresentedToken, type RelayTokenKind } from '../../_services/relay-auth.service.js';
@@ -45,14 +45,36 @@ export function resetBuffer(): void {
 
 /** Egységes elutasítás — kívülről NEM megkülönböztethető, hogy MIÉRT. */
 function reject(res: Response): void {
-  res.status(401).send({ ok: false, error: 'unauthorized' });
+  try {
+    res.status(401).send({ ok: false, error: 'unauthorized' });
+  } catch (error) {
+    // ⚠️ Ha a válasz már elment (dupla `send`, megszakadt kapcsolat), az `express` dob. Ez a
+    // keret eddig NYOMTALAN volt: az elutasítás elszállt, a hívó pedig időtúllépést látott
+    // volna a „401" helyett. A kanonikus kód ezt AZONOSÍTHATÓVÁ teszi.
+    throw new DyFM_Error({
+      error: error,
+      errorCode: 'MA-RELAY-REJECT-SEND-FAILED',
+      message: 'Az elutasító válasz kiküldése elszállt.',
+    });
+  }
 }
 
 /** A kérés hitelesítése a megadott fajtájú titokkal. */
 function checkAuth(req: Request, kind: RelayTokenKind): boolean {
-  const expected: string = (process.env[envNameFor(kind)] ?? '').trim();
+  try {
+    const expected: string = (process.env[envNameFor(kind)] ?? '').trim();
 
-  return authorize(readPresentedToken(req), expected).ok;
+    return authorize(readPresentedToken(req), expected).ok;
+  } catch (error) {
+    // 🔴 BIZTONSÁGI HATÁR: itt a nyers hiba a TOKEN-összehasonlítás környezetét vinné magával
+    // a hálózatra. Ezért a kivétel kanonikus kóddá alakul — a részlet a szerver oldalán marad.
+    // ⛔ És mivel dobunk (nem `false`-t adunk), a hitelesítés bukása SOHA nem lesz „átengedés".
+    throw new DyFM_Error({
+      error: error,
+      errorCode: 'MA-RELAY-AUTH-CHECK-FAILED',
+      message: 'A kérés hitelesítése elszállt.',
+    });
+  }
 }
 
 export class Relay_Controller extends DyNTS_Controller {

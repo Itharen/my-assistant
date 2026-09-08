@@ -3,6 +3,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 
+import { DyFM_Log } from '@futdevpro/fsm-dynamo';
+
 import { I_Integrations_ApiService } from '../../_services/i-integrations.api-service';
 import type { SpotifyStatusResponse } from '@server-models';
 
@@ -30,8 +32,16 @@ export class I_Spotify_Component implements OnInit {
   /** Lekéri a Spotify status-t a server-től. */
   async refresh(): Promise<void> {
     this.loading.set(true);
+    this.authError.set(null);
     try {
       this.status.set(await this.api.getSpotifyStatus());
+    } catch (err) {
+      // 🔴 Korabban CSAK `finally` volt: a hiba kiszokott a keretbol, es mivel a `refresh()`-t az
+      // `ngOnInit()` varja meg, egy le nem kezelt promise-elutasitas lett belole — a panel
+      // ORoKRE ures maradt, mindenfele jelzes nelkul. A felhasznalo azt latta, hogy „nincs adat".
+      DyFM_Log.error(`[i-spotify.refresh] MA-CLIENT-SPOTIFY-STATUS-FAILED: ${String(err)}`);
+      this.status.set(null);
+      this.authError.set('Spotify allapot nem toltheto be. Fut a szerver?');
     } finally {
       this.loading.set(false);
     }

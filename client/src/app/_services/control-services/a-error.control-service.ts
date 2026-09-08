@@ -13,7 +13,7 @@
 
 import { inject, Injectable, NgZone } from '@angular/core';
 
-import { DyFM_HttpCallType } from '@futdevpro/fsm-dynamo';
+import { DyFM_HttpCallType, DyFM_Log } from '@futdevpro/fsm-dynamo';
 import { DyNX_ApiCall_Settings, DyNX_ApiService, DyNX_Message_ControlService } from '@futdevpro/ngx-dynamo';
 
 import {
@@ -40,7 +40,7 @@ export class A_Error_ControlService {
     const details = A_ErrorExtract_Util.extract(err, source);
 
     // Always log to console first — devtools is the developer's source of truth.
-    console.error(`[A_Error] ${details.errorCode}`, details.message, details);
+    DyFM_Log.error(`[A_Error] ${details.errorCode} ${details.message}`);
 
     // Display through the snackbar service inside Angular zone so change
     // detection picks it up even when the error surfaced from an async
@@ -88,7 +88,7 @@ export class A_Error_ControlService {
       );
     } catch (persistErr) {
       // Don't recurse — log only.
-      console.warn('[A_Error] failed to persist error to server', persistErr);
+      DyFM_Log.warn(`[A_Error] failed to persist error to server: ${String(persistErr)}`);
     }
   }
 
