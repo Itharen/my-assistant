@@ -12,7 +12,7 @@
 
 import { spawn, type ChildProcess } from 'node:child_process';
 
-import { isProcessAlive } from '../_collections/process-alive.util.js';
+import { ProcessAlive_Util } from '../_collections/process-alive.util.js';
 import { emitServerActionLog } from '../_collections/action-log.util.js';
 
 import {
@@ -140,7 +140,7 @@ export class SupervisedChild {
       childPid: this.child?.pid ?? null,
       // ⚠️ A `child` LÉTEZÉSE nem bizonyítja, hogy a folyamat él — az elmaradt `exit`
       // esemény pont ezt a hazugságot hozza létre.
-      childAlive: this.child?.pid !== undefined && isProcessAlive(this.child.pid),
+      childAlive: this.child?.pid !== undefined && ProcessAlive_Util.isAlive(this.child.pid),
       prerequisitesOk: prerequisites.ok,
       runningElsewhere: this.config.isRunningElsewhere(),
     });

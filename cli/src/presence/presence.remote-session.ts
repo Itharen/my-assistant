@@ -24,7 +24,7 @@ import { existsSync } from 'node:fs';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 
 /** Egy távoli munkamenet ideje. A `endedAt` hiánya = MÉG NYITVA. */
 export interface RemoteSessionInterval {
@@ -139,7 +139,7 @@ export async function readRemoteSessions(
         withTimes.push({ name, mtimeMs: (await stat(join(logDir, name))).mtimeMs });
       } catch (err) {
         // A fajl eltunhetett ket muvelet kozott (`ENOENT`) — vart eset.
-        reportSwallowedFailure('presence.remote-session.statLog', err, ['ENOENT']);
+        SwallowedFailure_Util.report('presence.remote-session.statLog', err, ['ENOENT']);
         continue;
       }
     }
@@ -154,7 +154,7 @@ export async function readRemoteSessions(
       try {
         sessions.push(...parseRemoteSessions(await readFile(join(logDir, file.name), 'utf-8')));
       } catch (err) {
-        reportSwallowedFailure('presence.remote-session.readLog', err, ['ENOENT']);
+        SwallowedFailure_Util.report('presence.remote-session.readLog', err, ['ENOENT']);
         continue;
       }
     }
@@ -163,7 +163,7 @@ export async function readRemoteSessions(
   } catch (err) {
     // ⚠️ Az ures lista azt allitja, hogy „nem volt tavoli munkamenet". Ha valojaban olvasni
     // sem tudtuk, az MAS — es ez a kulonbseg a jelenlet-kovetes egesz alapja.
-    reportSwallowedFailure('presence.remote-session.list', err, ['ENOENT']);
+    SwallowedFailure_Util.report('presence.remote-session.list', err, ['ENOENT']);
 
     return [];
   }

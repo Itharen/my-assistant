@@ -12,7 +12,7 @@ import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 
 /** Ennyi idő után tekintjük halottnak a figyelőt. */
 export const HEARTBEAT_STALE_MS: number = 5 * 60_000;
@@ -122,7 +122,7 @@ export async function writeHeartbeat(
     // A figyelot nem akaszthatja meg: ha az eletjelet nem tudjuk kiirni, a diagnosztika
     // „halott"-nak fogja latni — ami OVATOS iranyba teved. ⛔ De epp ezert kell nyom:
     // kulonben egy ELO figyelo tunne halottnak, es senki nem tudna, hogy csak az IRAS bukott.
-    reportSwallowedFailure('discord.heartbeat.write', err);
+    SwallowedFailure_Util.report('discord.heartbeat.write', err);
   }
 }
 
@@ -170,7 +170,7 @@ export async function readHeartbeat(
   } catch (err) {
     // Serult fajl → nem tudjuk, el-e. Az ovatos valasz: nem tekintjuk elonek. ⚠️ Az `absent`
     // itt „nem tudom"-ot jelent, nem „nincs figyelo" — a kettot csak a naplo kulonbozteti meg.
-    reportSwallowedFailure('discord.heartbeat.read', err);
+    SwallowedFailure_Util.report('discord.heartbeat.read', err);
 
     return { state: 'absent' };
   }

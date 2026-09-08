@@ -18,36 +18,40 @@
 // halottnak látott volna — és **elindított volna mellé egy másodikat**. Pontosan az az
 // ikerfolyamat-helyzet, amit a felügyelőnek meg kellene akadályoznia.
 
-import { reportSwallowedFailure } from './swallowed-failure.util.js';
+import { SwallowedFailure_Util } from './swallowed-failure.util.js';
 
-/**
- * Fut-e még az adott azonosítójú folyamat?
- *
- * @param pid a vizsgált folyamat azonosítója.
- * @returns `true`, ha a folyamat létezik *(akkor is, ha nem küldhetünk neki jelet)*.
- *
- * ⚠️ Ismeretlen hibánál `false` a válasz — de ⛔ **nem némán**: az ismeretlen eset naplózódik,
- * mert a „nem tudom" és a „biztosan halott" nem ugyanaz.
- */
-export function isProcessAlive(pid: number): boolean {
-  try {
-    process.kill(pid, 0);
+/** Folyamat-életjel vizsgálat — statikus util. */
+export class ProcessAlive_Util {
 
-    return true;
-  } catch (err) {
-    const code: string | undefined = (err as NodeJS.ErrnoException)?.code;
+  /**
+   * Fut-e még az adott azonosítójú folyamat?
+   *
+   * @param pid a vizsgált folyamat azonosítója.
+   * @returns `true`, ha a folyamat létezik *(akkor is, ha nem küldhetünk neki jelet)*.
+   *
+   * ⚠️ Ismeretlen hibánál `false` a válasz — de ⛔ **nem némán**: az ismeretlen eset naplózódik,
+   * mert a „nem tudom" és a „biztosan halott" nem ugyanaz.
+   */
+  static isAlive(pid: number): boolean {
+    try {
+      process.kill(pid, 0);
 
-    if (code === 'ESRCH') {
+      return true;
+    } catch (err) {
+      const code: string | null = SwallowedFailure_Util.readErrorCode(err);
+
+      if (code === 'ESRCH') {
+        return false;
+      }
+
+      // ⭐ A LÉNYEG: az `EPERM` azt jelenti, hogy a folyamat LÉTEZIK — a jel küldése bukott el,
+      // nem a létezés-vizsgálat.
+      if (code === 'EPERM') {
+        return true;
+      }
+      SwallowedFailure_Util.report('process-alive', err);
+
       return false;
     }
-
-    // ⭐ A LÉNYEG: az `EPERM` azt jelenti, hogy a folyamat LÉTEZIK — a jel küldése bukott el,
-    // nem a létezés-vizsgálat.
-    if (code === 'EPERM') {
-      return true;
-    }
-    reportSwallowedFailure('process-alive', err);
-
-    return false;
   }
 }

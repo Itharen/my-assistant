@@ -11,7 +11,7 @@
 // A volume save+restore és a music capture+resume egyaránt KÖTELEZŐ minden hívásnál
 // (lásd current/principles/cast-notifier-defaults.md).
 
-import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 
 import { fetchTtsMp3 } from './tts.js';
 import { startMp3Server } from './mp3-server.js';
@@ -205,13 +205,13 @@ export async function notify(opts: NotifyOptions): Promise<NotifyResult> {
       // A hibat a hivo kapja (a `finally` ettol fuggetlenul lezarja a szervert) — de a
       // KERET nem lehet nyomtalan: enelkul csak annyi latszana, hogy „nem szolalt meg",
       // es nem az, hogy a lejatszas-parancs bukott el.
-      reportSwallowedFailure('cast.orchestrator.playOnCast', err);
+      SwallowedFailure_Util.report('cast.orchestrator.playOnCast', err);
       throw err;
     } finally {
       await serverHandle.close().catch((closeErr: unknown): void => {
         // A szerver lezarasa best-effort — de a bukasa MEGSZAMOLHATO: ha ez tartosan
         // elhasal, portok szivarognak, es a kovetkezo ertesites mar el sem indul.
-        reportSwallowedFailure('cast.orchestrator.mp3Server.close', closeErr);
+        SwallowedFailure_Util.report('cast.orchestrator.mp3Server.close', closeErr);
       });
     }
 
@@ -229,7 +229,7 @@ export async function notify(opts: NotifyOptions): Promise<NotifyResult> {
   } catch (err) {
     // ⚠️ A hiba tovabbmegy a hivohoz — de eddig a HANGERO-VISSZAALLITAS es a
     // ZENE-FOLYTATAS kozott ELVESZETT az OK. A napló-sor mondja meg, MI bukott el.
-    reportSwallowedFailure('cast.orchestrator.speak', err);
+    SwallowedFailure_Util.report('cast.orchestrator.speak', err);
     throw err;
   } finally {
     // 7. Volume RESTORE — best-effort
@@ -324,7 +324,7 @@ async function preSnapshotMusic(args: {
   } catch (err) {
     // ⚠️ Az `onLog` OPCIONALIS: ha a hivo nem ad at naplozot, ez a hiba NYOMTALANUL tunik el.
     // A kozos jelento fuggetlen a hivotol — igy a bukas mindenkeppen rogzul.
-    reportSwallowedFailure('cast.orchestrator.preSnapshotMusic', err);
+    SwallowedFailure_Util.report('cast.orchestrator.preSnapshotMusic', err);
     out.skipped = `spotify api error: ${(err as Error).message}`;
     onLog?.(`music pre-snapshot: ${out.skipped}`);
   }
@@ -402,7 +402,7 @@ async function resumeMusic(args: {
     onLog?.(`music resume: ${music.resumeError}`);
   } catch (err) {
     // Ugyanaz, mint fent: az `onLog` hianyaban a bukas lathatatlan lenne.
-    reportSwallowedFailure('cast.orchestrator.resumeMusic', err);
+    SwallowedFailure_Util.report('cast.orchestrator.resumeMusic', err);
     music.resumeError = (err as Error).message;
     onLog?.(`music resume: FAILED — ${music.resumeError}`);
   }

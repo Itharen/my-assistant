@@ -21,7 +21,7 @@
 
 import { DyFM_Error, DyFM_Log } from '@futdevpro/fsm-dynamo';
 
-import { reportSwallowedFailure } from '../../_collections/swallowed-failure.util.js';
+import { SwallowedFailure_Util } from '../../_collections/swallowed-failure.util.js';
 import { appendLocation } from './location-store.service.js';
 import { decideHomeState, parseOwnTracksLocation, toStoredLocation } from './location.retention.js';
 import type { HomeState, OwnTracksLocation, StoredLocation } from './location.models.js';
@@ -295,7 +295,7 @@ async function safeJson(response: Response): Promise<(RelayPullResponse & { remo
   } catch (err) {
     // ⚠️ A `null` azt jelenti a hívónak, hogy „nincs értelmezhető válasz". Ez helyes — ⛔ de
     // némán ugyanúgy nézne ki, mint egy üres relay. A kettő között ÓRIÁSI a különbség.
-    reportSwallowedFailure('relay-puller.safeJson', err);
+    SwallowedFailure_Util.report('relay-puller.safeJson', err);
 
     return null;
   }

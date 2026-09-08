@@ -1,4 +1,4 @@
-import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 
 import { isRecord, requireNonEmptyString } from './linkedin.config.js';
 import { LinkedInToolError } from './linkedin.error.js';
@@ -431,7 +431,7 @@ async function readResponseBody(response: Response): Promise<unknown> {
     // ⚠️ A LinkedIn hiba eseten HTML-t is kuldhet JSON helyett (pl. bejelentkezteto oldal).
     // A nyers szoveg visszaadasa helyes fallback — de a nema valtozatban ez „furcsa
     // hibauzenet"-kent jelent meg, es nem derult ki, hogy a valasz egyaltalan nem JSON volt.
-    reportSwallowedFailure('linkedin.api-client.parseBody', err);
+    SwallowedFailure_Util.report('linkedin.api-client.parseBody', err);
 
     return { message: text.slice(0, 1_000) };
   }

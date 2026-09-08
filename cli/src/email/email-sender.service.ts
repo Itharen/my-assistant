@@ -3,7 +3,7 @@ import type { Stats } from 'node:fs';
 import { basename, isAbsolute } from 'node:path';
 import nodemailer from 'nodemailer';
 
-import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 import { isGmailEmailAccount, resolveEmailSmtpConfig, type EmailSmtpConfig } from './email-account.config.js';
 import { sendGmailEmail } from './email-gmail-sender.service.js';
 import { appendEmailToSent, type SentAppendResult } from './email-imap.client.js';
@@ -175,7 +175,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<EmailSendRes
       // ⚠️ Az uzenet MAR ELMENT — csak a „Elkuldottek" mappaba masolas bukott. Ezert nem
       // dobunk: a kuldes sikeres. ⛔ De a nema valtozatban egy tartos append-hiba miatt az
       // owner elkuldott levelei sorra hianyoztak volna a mappabol, magyarazat nelkul.
-      reportSwallowedFailure('email.sender.appendToSent', error);
+      SwallowedFailure_Util.report('email.sender.appendToSent', error);
       const reason: string = error instanceof Error ? error.message : 'Unknown Sent append failure';
 
       sentCopy = { status: 'failed', reason: reason };

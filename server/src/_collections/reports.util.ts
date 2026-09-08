@@ -14,9 +14,9 @@ import { fileURLToPath } from 'node:url';
 
 import { VersionBroadcast_SocketServerService } from '../_services/socket-services/version-broadcast.socket-server-service';
 
-import { readActionLogJsonlDay } from './action-log-jsonl.util';
+import { ActionLogJsonl_Util } from './action-log-jsonl.util';
 import { emitServerActionLog } from './action-log.util';
-import { reportSwallowedFailure } from './swallowed-failure.util';
+import { SwallowedFailure_Util } from './swallowed-failure.util';
 
 /**
  * Az action-log JSONL nyers sor-alakja, ahogy a riportok olvassák.
@@ -44,7 +44,7 @@ async function safeBroadcastDomainEvent(topic: string, op: 'create' | 'update' |
     // A szórás bukasa SOHA nem donthet meg egy irast — de a „már naplozva van az ado oldalon"
     // feltevesre nem lehet epiteni: ha maga a szolgaltatas peldanyositasa hasal el, ott SEM
     // keletkezik bejegyzes. Igy a kliens frissites nelkul maradna, teljesen nyomtalanul.
-    reportSwallowedFailure('reports.util.safeBroadcastDomainEvent', err);
+    SwallowedFailure_Util.report('reports.util.safeBroadcastDomainEvent', err);
   }
 }
 
@@ -280,7 +280,7 @@ export async function listRecentShips(limit: number = 30, days: number = 14): Pr
   for (const dateStr of dateStrs) {
     // ⭐ A beolvasás + soronkénti értelmezés (és a HIÁNYZÓ vs. HIBÁS fájl megkülönböztetése)
     // a közös `readActionLogJsonlDay`-ben van — lásd az ottani indoklást.
-    const rows: ShipLogRaw_Interface[] = await readActionLogJsonlDay<ShipLogRaw_Interface>({
+    const rows: ShipLogRaw_Interface[] = await ActionLogJsonl_Util.readDay<ShipLogRaw_Interface>({
       filePath: path.join(dir, `${dateStr}.jsonl`),
       issuer: 'reports.util.listShipLog',
     });
@@ -355,7 +355,7 @@ export async function listAgentLog(opts: { date?: string; actor?: string; limit?
   const filePath: string = path.join(resolveRepoRoot(), '__agent', 'log', 'actions', `${date}.jsonl`);
   const result: ReportAgentLog_Row[] = [];
 
-  const rows: ShipLogRaw_Interface[] = await readActionLogJsonlDay<ShipLogRaw_Interface>({
+  const rows: ShipLogRaw_Interface[] = await ActionLogJsonl_Util.readDay<ShipLogRaw_Interface>({
     filePath: filePath,
     issuer: 'reports.util.listAgentLog',
   });

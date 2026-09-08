@@ -15,7 +15,7 @@ import { appendFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 
-import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 import type { DiscordInboundMessage } from './discord.models.js';
 
 export interface DiscordBatchStorePaths {
@@ -194,7 +194,7 @@ export class DiscordBatchStore {
 
           return parsed.messageId === messageId;
         } catch (err) {
-          reportSwallowedFailure('discord.batch-store.archiveLineParse', err);
+          SwallowedFailure_Util.report('discord.batch-store.archiveLineParse', err);
 
           return false;
         }
@@ -204,7 +204,7 @@ export class DiscordBatchStore {
       // az elveszett uzenet viszont sokkal rosszabb. ⛔ De a dontes oka nem tunhet el:
       // enelkul egy tartosan serult archivum MINDEN uzenetet ujra feldolgoztatna, es
       // senki nem tudna, miert ismetlodik minden.
-      reportSwallowedFailure('discord.batch-store.isKnownArchived', err);
+      SwallowedFailure_Util.report('discord.batch-store.isKnownArchived', err);
 
       return false;
     }
@@ -236,7 +236,7 @@ function parseLine(line: string): DiscordInboundMessage | null {
   } catch (err) {
     // A `null` azt jelenti: „ez a sor nem ertelmezheto". Helyes — de ha SOK ilyen van, akkor
     // uzenetek tunnek el a kotegbol, es a nema valtozatban ez sehol nem latszott.
-    reportSwallowedFailure('discord.batch-store.parseRecord', err);
+    SwallowedFailure_Util.report('discord.batch-store.parseRecord', err);
 
     return null;
   }

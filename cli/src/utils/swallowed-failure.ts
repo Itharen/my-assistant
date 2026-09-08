@@ -13,7 +13,7 @@
 // jelentett egy hiba közben** — pontosan az a hibafajta, ami miatt az owner reggel 24 belépést
 // és **nulla kilépést** látott a naplóban.
 //
-// ⭐ EZ A FÜGGVÉNY a fallbackot MEGTARTJA, csak nyomot hagy mellette. És mert ezek a hívók
+// ⭐ EZ AZ OSZTÁLY a fallbackot MEGTARTJA, csak nyomot hagy mellette. És mert ezek a hívók
 // **ciklusban** futnak (percenkénti életjel, kötegelt feldolgozás), a jelentés **deduplikált**:
 // hatókörönként egyszer, és újra csak akkor, ha MÁS hiba jött.
 //
@@ -22,32 +22,52 @@
 
 import { DyFM_Log } from '@futdevpro/fsm-dynamo';
 
-/** Hatókörönként az utoljára bejelentett hiba-üzenet. */
-const lastReportedByScope: Map<string, string> = new Map<string, string>();
+/** Elnyelt hibák bejelentése — statikus util, állapota csak a dedup-nyilvántartás. */
+export class SwallowedFailure_Util {
 
-/**
- * Egy elnyelt (fallbackkel kezelt) hiba bejelentése.
- *
- * @param scope a hívó azonosítója — ez kerül a napló-sor elejére (pl. `cast.tts.synthesize`).
- * @param err az elkapott hiba.
- * @param expectedCodes rendszerhiba-kódok (`ENOENT`, `EACCES`, …), amelyek ebben a hívóban
- *        **VÁRT** esetek — ezekre csendben maradunk.
- *
- * ⭐ MIÉRT ITT DŐL EL, ÉS NEM A HÍVÓBAN EGY `if`-BEN: a hívónál a feltételbe zárt jelentés
- * azt jelenti, hogy a **másik ág néma marad** — és épp az a másik ág a váratlan hiba.
- * A döntés ezért ide tartozik: a hívó **mindig** jelent, a szűrés itt történik, egy helyen.
- */
-export function reportSwallowedFailure(scope: string, err: unknown, expectedCodes: string[] = []): void {
-  const code: string | undefined = (err as NodeJS.ErrnoException)?.code;
+  /** Hatókörönként az utoljára bejelentett hiba-üzenet. */
+  private static readonly lastReportedByScope: Map<string, string> = new Map<string, string>();
 
-  if (code !== undefined && expectedCodes.includes(code)) {
-    return;
+  /**
+   * Egy elnyelt (fallbackkel kezelt) hiba bejelentése.
+   *
+   * @param scope a hívó azonosítója — ez kerül a napló-sor elejére (pl. `cast.tts.synthesize`).
+   * @param err az elkapott hiba.
+   * @param expectedCodes rendszerhiba-kódok (`ENOENT`, `EACCES`, …), amelyek ebben a hívóban
+   *        **VÁRT** esetek — ezekre csendben maradunk.
+   *
+   * ⭐ MIÉRT ITT DŐL EL, ÉS NEM A HÍVÓBAN EGY `if`-BEN: a hívónál a feltételbe zárt jelentés
+   * azt jelenti, hogy a **másik ág néma marad** — és épp az a másik ág a váratlan hiba.
+   * A döntés ezért ide tartozik: a hívó **mindig** jelent, a szűrés itt történik, egy helyen.
+   */
+  static report(scope: string, err: unknown, expectedCodes: string[] = []): void {
+    const code: string | null = SwallowedFailure_Util.readErrorCode(err);
+
+    if (code !== null && expectedCodes.includes(code)) {
+      return;
+    }
+    const message: string = String(err);
+
+    if (SwallowedFailure_Util.lastReportedByScope.get(scope) === message) {
+      return;
+    }
+    SwallowedFailure_Util.lastReportedByScope.set(scope, message);
+    DyFM_Log.warn(`[${scope}] MA-CLI-SWALLOWED-FAILURE: ${message}`);
   }
-  const message: string = String(err);
 
-  if (lastReportedByScope.get(scope) === message) {
-    return;
+  /**
+   * Egy hiba rendszerhiba-kódja (`ENOENT`, `EPERM`, …), ha van.
+   *
+   * ⚠️ Szándékosan **típus-cast nélkül**: a `as NodeJS.ErrnoException` csak *átnevezné* az
+   * ismeretlen értéket, és futásidőben semmit nem ellenőrizne. Itt tényleg megkérdezzük,
+   * hogy van-e `code` mező, és hogy szöveg-e.
+   */
+  static readErrorCode(err: unknown): string | null {
+    if (typeof err !== 'object' || err === null || !('code' in err)) {
+      return null;
+    }
+    const code: unknown = err.code;
+
+    return typeof code === 'string' ? code : null;
   }
-  lastReportedByScope.set(scope, message);
-  DyFM_Log.warn(`[${scope}] MA-CLI-SWALLOWED-FAILURE: ${message}`);
 }

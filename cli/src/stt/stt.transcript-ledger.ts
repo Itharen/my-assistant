@@ -36,7 +36,7 @@ import { existsSync } from 'node:fs';
 import { copyFile, mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 
 /** Egy hangüzenet sorsa — ez a nyilvántartás lelke. */
 export type TranscriptStatus =
@@ -202,7 +202,7 @@ export class TranscriptLedger {
     } catch (err) {
       // ⚠️ Serult bejegyzes: ugy kezeljuk, mintha nem lenne — ⛔ de NEM toroljuk, hogy
       // kezzel meg megnezheto legyen. A naplo-sor mondja meg, hogy VAN ott valami.
-      reportSwallowedFailure('stt.transcript-ledger.get', err);
+      SwallowedFailure_Util.report('stt.transcript-ledger.get', err);
 
       return null;
     }
@@ -280,7 +280,7 @@ export class TranscriptLedger {
     } catch (err) {
       // ⚠️ A `null` azt jelenti a hivonak: „nincs mit ujraprobalni". Ha valojaban CSAK
       // olvasni nem tudtuk, a hang MEGVAN — es a kettot csak a naplo kulonbozteti meg.
-      reportSwallowedFailure('stt.transcript-ledger.readAudio', err);
+      SwallowedFailure_Util.report('stt.transcript-ledger.readAudio', err);
 
       return null;
     }
@@ -311,7 +311,7 @@ export class TranscriptLedger {
 
       return true;
     } catch (renameErr) {
-      reportSwallowedFailure('stt.transcript-ledger.keepAudio.rename', renameErr);
+      SwallowedFailure_Util.report('stt.transcript-ledger.keepAudio.rename', renameErr);
     }
 
     try {
@@ -324,7 +324,7 @@ export class TranscriptLedger {
     } catch (copyErr) {
       // ⛔ Itt tenyleg elveszett. A bejegyzes ettol meg elkeszul `audioFile` nelkul: a
       // „tudjuk, hogy elveszett" tobbet er a semminel.
-      reportSwallowedFailure('stt.transcript-ledger.keepAudio.copy', copyErr);
+      SwallowedFailure_Util.report('stt.transcript-ledger.keepAudio.copy', copyErr);
 
       return false;
     }

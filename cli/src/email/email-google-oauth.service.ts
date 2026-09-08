@@ -6,7 +6,7 @@ import { dirname, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 import {
   resolveEmailAccountIdentity,
   resolveEmailGoogleOAuthConfig,
@@ -91,7 +91,7 @@ export async function authorizeEmailGoogleAccount(account: string): Promise<Emai
     // A `finally` ettol fuggetlenul lezarja a figyelot. ⚠️ De a keret eddig nyomtalan volt:
     // az engedelyezes megszakadasa (a felhasznalo elutasitotta, idotullepes) ugyanugy
     // nezett ki, mint egy halozati hiba — pedig a teendo teljesen mas.
-    reportSwallowedFailure('email.oauth.awaitCode', err);
+    SwallowedFailure_Util.report('email.oauth.awaitCode', err);
     throw err;
   } finally {
     listener.close();
@@ -173,7 +173,7 @@ export async function getEmailGoogleAuthStatus(account: string): Promise<EmailGo
   } catch (err) {
     // ⚠️ Itt a kivetel a VART valasz: „nincs beallitva". ⛔ De ha az ok mas (serult fajl,
     // jogosultsag), a hasznalo ugyanazt latna — „allitsd be" —, holott a beallitas MEGVAN.
-    reportSwallowedFailure('email.oauth.resolveConfig', err);
+    SwallowedFailure_Util.report('email.oauth.resolveConfig', err);
     clientConfigured = false;
   }
   const tokenPath: string = emailGoogleTokenPath(account);
@@ -368,6 +368,6 @@ function openSystemBrowser(url: string): void {
     // A teljes URL mindig ki van irva, tehat a kezi megnyitas mukodo fallback — a hiba
     // nem all utjaba semminek. De rogzul: fejlesztoi kornyezetben ez arulja el, hogy a
     // rendszer bongeszo-inditasa nem mukodik.
-    reportSwallowedFailure('email.oauth.openSystemBrowser', err);
+    SwallowedFailure_Util.report('email.oauth.openSystemBrowser', err);
   }
 }

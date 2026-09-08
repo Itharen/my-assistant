@@ -36,7 +36,7 @@
 // leíró eseményként jön vissza — egy olvashatatlan könyvtár nem némíthatja el a hang-csatornát.
 
 import { readdir, stat } from 'node:fs/promises';
-import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 
 /** WAV-fejléc mérete a `wav` csomag `Writer`-énél — ennyi a „üres" fájl. */
 const WAV_HEADER_BYTES: number = 44;
@@ -275,7 +275,7 @@ export class VoiceDropProbe {
         // ⚠️ A fajl epp eltunhetett ket muvelet kozott (`ENOENT`) — ez NEM hiba, a kovetkezo
         // kor kezeli. Barmi mas viszont az: e nelkul a szonda „0 bajtos elveszett hangot"
         // jelentene egy olvasasi hiba miatt, es pont a meres valna hamissa.
-        reportSwallowedFailure('voice.drop-probe.sizeOf', err, ['ENOENT']);
+        SwallowedFailure_Util.report('voice.drop-probe.sizeOf', err, ['ENOENT']);
       }
     }
   }

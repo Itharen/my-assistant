@@ -14,8 +14,8 @@ import { homedir } from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { reportSwallowedFailure } from '../_collections/swallowed-failure.util.js';
-import { isProcessAlive } from '../_collections/process-alive.util.js';
+import { SwallowedFailure_Util } from '../_collections/swallowed-failure.util.js';
+import { ProcessAlive_Util } from '../_collections/process-alive.util.js';
 import { registerShutdownHooks, SupervisedChild } from './supervised-child.js';
 
 /** Indítás előtti türelmi idő — hagyjuk a szervert felállni. */
@@ -125,7 +125,7 @@ function isListenerAliveElsewhere(): boolean {
     if (Date.now() - updatedMs > HEARTBEAT_FRESH_MS) return false;
 
     // A SAJÁT, korábbi futásunk életjele nem számít idegennek — az a folyamat már halott.
-    if (typeof parsed.pid === 'number' && !isProcessAlive(parsed.pid)) return false;
+    if (typeof parsed.pid === 'number' && !ProcessAlive_Util.isAlive(parsed.pid)) return false;
 
     return true;
   } catch (err) {
@@ -133,7 +133,7 @@ function isListenerAliveElsewhere(): boolean {
     // legyen figyelő. ⛔ De ez a döntés eddig NYOMTALAN volt: egy sérült életjel-fájl miatt
     // minden indulásnál egy MÁSODIK figyelő állt volna a már futó mellé, és a duplikált
     // üzenet-feldolgozás okát semmi nem árulta volna el.
-    reportSwallowedFailure('discord-listener.isListenerAliveElsewhere', err);
+    SwallowedFailure_Util.report('discord-listener.isListenerAliveElsewhere', err);
 
     return false;
   }

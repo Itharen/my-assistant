@@ -16,7 +16,7 @@
 // konfiguráció megléte nem azonos a működéssel.)*
 
 import { existsSync, readFileSync, statSync } from 'node:fs';
-import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 
 /** Ennél régebbi állapot-fájl gyanús, még ha a folyamat él is. */
 export const LDP_STATUS_STALE_MS: number = 30 * 60_000;
@@ -55,7 +55,7 @@ export function isProcessAlive(pid: number, killer: (p: number, s: number) => vo
 
     return true;
   } catch (err) {
-    const code: string | undefined = (err as NodeJS.ErrnoException)?.code;
+    const code: string | null = SwallowedFailure_Util.readErrorCode(err);
 
     // Nincs ilyen folyamat — ez a BIZTOS nemleges valasz.
     if (code === 'ESRCH') {
@@ -68,7 +68,7 @@ export function isProcessAlive(pid: number, killer: (p: number, s: number) => vo
     if (code === 'EPERM') {
       return true;
     }
-    reportSwallowedFailure('comm.ldp-check.isProcessAlive', err);
+    SwallowedFailure_Util.report('comm.ldp-check.isProcessAlive', err);
 
     return false;
   }

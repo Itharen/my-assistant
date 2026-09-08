@@ -15,7 +15,7 @@ import { existsSync } from 'node:fs';
 import { appendFile, mkdir, readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
-import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 import { resolveDiscordBatchPaths } from './discord.batch-store.js';
 
 /** A kimenő üzenetek naplója — ebből tudjuk, mikor válaszoltunk utoljára. */
@@ -61,7 +61,7 @@ export async function recordOutbound(
     // Ha nem tudjuk rogziteni, a kovetkezo ellenorzes „tartozunk valasszal"-t mond — ami az
     // OVATOS irany, a hamis „rendben" lenne a veszelyes. ⛔ De a nema valtozatban egy tartos
     // iras-hiba orokos „tartozunk valasszal"-t okozott volna, minden magyarazat nelkul.
-    reportSwallowedFailure('discord.reply-tracker.recordOutbound', err);
+    SwallowedFailure_Util.report('discord.reply-tracker.recordOutbound', err);
   }
 }
 
@@ -139,11 +139,11 @@ async function readLastTimestamp(
         }
       } catch (err) {
         // Serult sor — megyunk visszafele tovabb, de nem nyomtalanul.
-        reportSwallowedFailure('discord.reply-tracker.parseLogLine', err);
+        SwallowedFailure_Util.report('discord.reply-tracker.parseLogLine', err);
       }
     }
   } catch (err) {
-    reportSwallowedFailure('discord.reply-tracker.readNewestTimestamp', err);
+    SwallowedFailure_Util.report('discord.reply-tracker.readNewestTimestamp', err);
 
     return undefined;
   }

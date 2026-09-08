@@ -14,7 +14,7 @@ import { join } from 'node:path';
 
 import { Client, Events, GatewayIntentBits, Partials, type Message } from 'discord.js';
 
-import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 import { logAction } from '../action-log/action-log.client.js';
 import { DiscordBridge } from './discord.bridge.js';
 import { saveInboxAttachments } from './discord.file-intake.js';
@@ -1066,7 +1066,7 @@ export class DiscordListener {
       // ⚠️ Itt nem a felismeres BUKASA jon (azt a `result.ok` viszi), hanem egy VARATLAN
       // kivetel. Eddig csak a `finally` allt itt, tehat a kivetel a keretbol kiszokott, es
       // az egesz uzenet-feldolgozas nemán megszakadt — a hang pedig NEM kerult a sorba.
-      reportSwallowedFailure('discord.listener.transcribeAudio', err);
+      SwallowedFailure_Util.report('discord.listener.transcribeAudio', err);
       throw err;
     } finally {
       this.sttInFlight = false;
@@ -1313,7 +1313,7 @@ export class DiscordListener {
         // A kulso `catch` naplozza (`MA-STT-RETRY-FAILED`), de a `sttInFlight` zar miatt ez a
         // keret sajat jogan is erdekes: enelkul nem derulne ki, hogy a felismero-hivas maga
         // szallt el, nem az ot koveto kezbesites.
-        reportSwallowedFailure('discord.listener.retry.transcribeAudio', err);
+        SwallowedFailure_Util.report('discord.listener.retry.transcribeAudio', err);
         throw err;
       } finally {
         this.sttInFlight = false;
@@ -1791,7 +1791,7 @@ ${spoken}`
       if (code === 10008) {
         return { kind: 'deleted' };
       }
-      reportSwallowedFailure('discord.listener.fetchReplyTarget', err);
+      SwallowedFailure_Util.report('discord.listener.fetchReplyTarget', err);
 
       return { kind: 'unknown' };
     }

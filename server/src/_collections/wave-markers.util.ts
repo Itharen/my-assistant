@@ -10,7 +10,7 @@
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { readActionLogJsonlDay } from './action-log-jsonl.util';
+import { ActionLogJsonl_Util } from './action-log-jsonl.util';
 
 /** Wave-marker event-class kategóriák — `current/feature-requests/wave-panel-ui.md` Phase 5e szakasz. */
 export type WaveMarker_Kind = 'törés' | 'megoszló-erő' | '3x3-trigger';
@@ -82,7 +82,7 @@ export async function readWaveMarkers(sinceMs: number, untilMs: number): Promise
     // ⭐ A beolvasás + soronkénti értelmezés a közös `readActionLogJsonlDay`-ben van. Ott
     // dől el a HIÁNYZÓ nap (várt, csendes) és a HIBÁS olvasás (naplózott) különbsége is —
     // itt korábban mindkettő ugyanazon a néma `continue`-n távozott.
-    const rows: RawActionLogRow_Interface[] = await readActionLogJsonlDay<RawActionLogRow_Interface>({
+    const rows: RawActionLogRow_Interface[] = await ActionLogJsonl_Util.readDay<RawActionLogRow_Interface>({
       filePath: path.join(dir, `${dateStr}.jsonl`),
       issuer: 'wave-markers.util.readWaveMarkers',
     });

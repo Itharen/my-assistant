@@ -20,7 +20,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { homedir } from 'node:os';
 import * as path from 'node:path';
 
-import { reportSwallowedFailure } from '../_collections/swallowed-failure.util.js';
+import { SwallowedFailure_Util } from '../_collections/swallowed-failure.util.js';
 import { resolveListenerHeartbeatFile } from './discord-listener.service.js';
 import { resolvePresencePaths } from './presence-monitor.service.js';
 
@@ -291,7 +291,7 @@ function readVoiceFunnel(): PulseVoiceFunnel | undefined {
   } catch (err) {
     // ⚠️ Sérült életjel → nem tudjuk. Az óvatos válasz a hallgatás, nem a hamis nulla —
     // de a hallgatás csak a KIMENETRE vonatkozik, a naplóra nem.
-    reportSwallowedFailure('system-pulse.voice-stats', err);
+    SwallowedFailure_Util.report('system-pulse.voice-stats', err);
 
     return undefined;
   }
@@ -322,7 +322,7 @@ function readDiscordHeartbeat(now: Date): SystemPulseSnapshot['discord'] {
     };
   } catch (err) {
     // ⚠️ Az `absent` itt „nem tudom"-ot jelent, nem „nincs figyelő". A különbség a naplóban látszik.
-    reportSwallowedFailure('system-pulse.discord-heartbeat', err);
+    SwallowedFailure_Util.report('system-pulse.discord-heartbeat', err);
 
     return { state: 'absent' };
   }
@@ -362,7 +362,7 @@ function readNewestPresenceSample(now: Date): SystemPulseSnapshot['presence'] {
 
     return { state: 'absent' };
   } catch (err) {
-    reportSwallowedFailure('system-pulse.presence-sample', err);
+    SwallowedFailure_Util.report('system-pulse.presence-sample', err);
 
     return { state: 'absent' };
   }
@@ -390,7 +390,7 @@ function readLastSample(file: string): { timestampMs: number; idleState?: string
     } catch (err) {
       // Egy csonka utolsó sor NORMÁLIS (épp írják) — ezért lépünk tovább. ⚠️ De ha MINDEN sor
       // értelmezhetetlen, az már hiba, és ennélkül „nincs jelenlét-adat"-ként jelent meg.
-      reportSwallowedFailure(`system-pulse.presence-line:${file}`, err);
+      SwallowedFailure_Util.report(`system-pulse.presence-line:${file}`, err);
       continue;
     }
   }
@@ -418,7 +418,7 @@ function countSttRetryPending(): number {
     return readdirSync(dir).filter((name: string): boolean => name.endsWith('.json')).length;
   } catch (err) {
     // A hamis NULLA a legveszélyesebb válasz: azt jelentené, hogy „nincs várakozó hang".
-    reportSwallowedFailure('system-pulse.stt-retry-count', err);
+    SwallowedFailure_Util.report('system-pulse.stt-retry-count', err);
 
     return 0;
   }
@@ -435,7 +435,7 @@ function countPendingInbound(): number {
       .filter((line: string): boolean => line.trim().length > 0)
       .length;
   } catch (err) {
-    reportSwallowedFailure('system-pulse.pending-inbound-count', err);
+    SwallowedFailure_Util.report('system-pulse.pending-inbound-count', err);
 
     return 0;
   }
@@ -455,7 +455,7 @@ function readLastOutboundAge(now: Date): number | undefined {
 
     return now.getTime() - statSync(file).mtimeMs;
   } catch (err) {
-    reportSwallowedFailure('system-pulse.last-outbound-age', err);
+    SwallowedFailure_Util.report('system-pulse.last-outbound-age', err);
 
     return undefined;
   }
@@ -502,7 +502,7 @@ export class SystemPulse_Service {
     } catch (err) {
       // Kihagyjuk ezt a kört — a következő jön. De NÉMÁN nem: egy elhasalt pulzus-sor
       // pontosan úgy néz ki, mint egy leállt szerver, és pont ezt kellene megkülönböztetnie.
-      reportSwallowedFailure('system-pulse.pulse-tick', err);
+      SwallowedFailure_Util.report('system-pulse.pulse-tick', err);
     }
   }
 }

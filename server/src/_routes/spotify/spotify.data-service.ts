@@ -17,7 +17,7 @@ import type {
   SpotifyStatusResponse,
 } from '@server/_models/interfaces/integrations/spotify.interface';
 
-import { reportSwallowedFailure } from '../../_collections/swallowed-failure.util.js';
+import { SwallowedFailure_Util } from '../../_collections/swallowed-failure.util.js';
 
 /** OAuth scope-ok — playback read + control. */
 const SPOTIFY_SCOPES: string[] = [
@@ -99,7 +99,7 @@ export class Spotify_DataService {
       // ⚠️ A `tokenValid: false` HATAROZOTT allitas — pedig lehet, hogy csak a Spotify volt
       // elerhetetlen. Ilyenkor a felhasznalot feleslegesen ujra-bejelentkezesre kuldenenk;
       // a naploban viszont latszik, MI tortent valojaban.
-      reportSwallowedFailure('spotify.data-service.getStatus', err);
+      SwallowedFailure_Util.report('spotify.data-service.getStatus', err);
 
       return {
         configured: true,

@@ -22,7 +22,7 @@ import { existsSync } from 'node:fs';
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { reportSwallowedFailure } from '../utils/swallowed-failure.js';
+import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 
 /**
  * A várakozási lépcsők — az n. újrapróbálás ennyivel a bukás UTÁN esedékes.
@@ -192,7 +192,7 @@ export class SttRetryQueue {
         // ⚠️ Egy serult leiro NEM nemithatja el az egesz sort: a tobbi tetel tartalma is
         // elveszne vele. A serultet atugorjuk — a takaritas a `dropCorrupt` dolga. ⛔ De az
         // atugras nem lehet nema: egy varakozo hang tunne el ugy, hogy sehol nem latszik.
-        reportSwallowedFailure('stt.retry-queue.readEntry', err);
+        SwallowedFailure_Util.report('stt.retry-queue.readEntry', err);
         continue;
       }
     }
@@ -248,7 +248,7 @@ export class SttRetryQueue {
         // A takaritas a fontos, ezert nem dobunk tovabb. ⛔ De ez a horog EPP A HANG
         // MEGORZESE: ha elhasal, a `remove()` VEGLEG torli a felvetelt. A „hivo majd
         // naplozza" feltevesre itt nem lehet epiteni — ez a tartalom utolso pillanata.
-        reportSwallowedFailure('stt.retry-queue.onGiveUp', err);
+        SwallowedFailure_Util.report('stt.retry-queue.onGiveUp', err);
       }
 
       await this.remove(messageId);
