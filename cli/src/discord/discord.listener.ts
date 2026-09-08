@@ -67,6 +67,10 @@ import type {
 } from '../voice/voice-drop-probe.js';
 import { VOICE_LOG_CODES } from '../voice/voice-log-codes.js';
 import { MissedSpeechReporter } from '../voice/voice-missed-speech.js';
+import {
+  describeConnectionEvent,
+  type VoiceConnectionEvent,
+} from '../voice/voice-connection-log.js';
 import { VoiceCuePlayer } from '../voice/voice-cues.js';
 import {
   planFeedbackForDrop,
@@ -500,20 +504,23 @@ export class DiscordListener {
 
     if (!this.client) return;
 
+    // 🔴 A FIGYELŐ BEKÖTÉSE A BELÉPÉS ELŐTT — különben a belépés eseménye elveszne.
+    // Mérve 2026-09-08: 24 belépés / 0 kilépés a naplóban, mert a leválásnak nem volt csatornája.
+    this.voicePresence.setEventSink((event: VoiceConnectionEvent): void => {
+      void this.recordVoiceConnectionEvent(event);
+    });
+
     const result = await this.voicePresence.join(this.client, config);
 
-    await this.safeLog({
-      kind: result.joined ? 'note' : 'error',
-      summary: result.joined
-        ? `[discord/listener] 🔊 ${result.detail}`
-        : `[discord/listener] MA-VOICE-JOIN-FAILED: ${result.detail}`,
-      extra: {
-        code: result.joined ? 'MA-VOICE-JOINED' : 'MA-VOICE-JOIN-FAILED',
-        channelName: result.channelName ?? null,
-        guildName: result.guildName ?? null,
-        ...(result.remedy ? { remedy: result.remedy } : {}),
-      },
-    });
+    // ⚠️ A TEENDŐ külön sor: a `join-failed` eseményben csak az OK fér el, a javítási javaslat
+    // viszont pont az, amit az owner keres — ezt nem hagyjuk el.
+    if (!result.joined && result.remedy) {
+      await this.safeLog({
+        kind: 'note',
+        summary: `[discord/listener] Teendő a hang-csatornához: ${result.remedy}`,
+        extra: { code: 'MA-VOICE-JOIN-FAILED', guildName: result.guildName ?? null },
+      });
+    }
 
     // 🔴 AZ ÁLLAPOT ELTEVÉSE — hogy a diagnosztika és a konzol IS lássa, bent vagyunk-e.
     // ⚠️ Enélkül egy elbukott belépés TELJESEN néma: az owner beszélne a csatornába, ahol a
@@ -525,6 +532,55 @@ export class DiscordListener {
     };
 
     if (result.joined) await this.startVoiceRecording(config.channelId);
+  }
+
+  /**
+   * 🔌 EGY KAPCSOLAT-ESEMÉNY RÖGZÍTÉSE — **két helyre**, mért okkal.
+   *
+   * 1. **A szerver logjára** (`stdout`) — ⭐ EZ AZ ÚJ. Owner: *„a szerver logjában kell látnom"*.
+   *    A `safeLog` **kizárólag** az akció-naplóba ír (mérve), ami az ownernek láthatatlan.
+   * 2. **Az akció-naplóba** — hogy visszamenőleg mérhető és grep-elhető legyen.
+   *
+   * ⭐ ÉS FRISSÍTI A JELENLÉT-ÁLLAPOTOT: enélkül egy kiesés után a `ma comm doctor` és a
+   * pulzus-sor **örökre azt mondaná, hogy bent ülünk** — a belépéskor eltett érték sosem
+   * romlana el. Épp ez az a fajta hazug diagnózis, ami rosszabb, mint a diagnózis hiánya.
+   */
+  private async recordVoiceConnectionEvent(event: VoiceConnectionEvent): Promise<void> {
+    const line = describeConnectionEvent(event);
+
+    // ⚠️ `stdout`, nem `stderr`: ez normál működés-napló, nem hiba-csatorna — az LDP így
+    // teszi a szerver rendes kimenetébe.
+    process.stdout.write(`${line.console}
+`);
+
+    if (event.kind === 'dropped' || event.kind === 'left' || event.kind === 'join-failed') {
+      this.voicePresenceState = {
+        ...this.voicePresenceState,
+        configured: true,
+        joined: false,
+        ...(event.channelName ? { channelName: event.channelName } : {}),
+      };
+    }
+
+    if (event.kind === 'joined' || event.kind === 'reconnected') {
+      this.voicePresenceState = {
+        ...this.voicePresenceState,
+        configured: true,
+        joined: true,
+        ...(event.channelName ? { channelName: event.channelName } : {}),
+      };
+    }
+
+    await this.safeLog({
+      kind: line.level,
+      summary: line.summary,
+      extra: {
+        code: line.code,
+        ...(event.channelName ? { channelName: event.channelName } : {}),
+        ...(event.reason ? { reason: event.reason } : {}),
+        ...(event.offlineMs === undefined ? {} : { offlineMs: event.offlineMs }),
+      },
+    });
   }
 
   /**

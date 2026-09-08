@@ -24,6 +24,8 @@ import {
 } from '@discordjs/voice';
 import type { Client, Guild, VoiceBasedChannel } from 'discord.js';
 
+import type { VoiceConnectionEvent } from './voice-connection-log.js';
+
 /** Ennyit várunk a kapcsolat készre állására. Az átemelt kód is ennyivel dolgozott. */
 export const VOICE_READY_TIMEOUT_MS: number = 30_000;
 
@@ -118,6 +120,38 @@ export class VoiceChannelPresence {
   private lastChannelName: string | null = null;
 
   /**
+   * 🔴 A KAPCSOLAT-ESEMÉNYEK KIVEZETÉSE — ennélkül a kiesés MÉRHETETLEN.
+   *
+   * Mérve 2026-09-08: **24 belépés, 0 kilépés** a naplóban — mert a leválást egy néma
+   * `catch` nyelte el. A hívó ezt a callbacket adja meg, és **minden** állapot-váltást megkap.
+   *
+   * ⚠️ Szándékosan `void`-ot ad vissza és soha nem dob: a **diagnosztika nem buktathatja
+   * meg azt, amit megfigyel**.
+   */
+  private onEvent: ((event: VoiceConnectionEvent) => void) | null = null;
+
+  /** Mikor szakadt el a kapcsolat — ebből jön a kiesés hossza. */
+  private disconnectedAt: number | null = null;
+
+  /** A kapcsolat-események figyelőjének beállítása. */
+  setEventSink(sink: (event: VoiceConnectionEvent) => void): void {
+    this.onEvent = sink;
+  }
+
+  /** Esemény kiküldése — ⛔ a figyelő hibája SOHA nem terjedhet tovább. */
+  private emit(event: VoiceConnectionEvent): void {
+    try {
+      this.onEvent?.(event);
+    } catch (error: unknown) {
+      process.stderr.write(
+        `[voice] a kapcsolat-esemény naplózása nem sikerült: `
+        + `${error instanceof Error ? error.message : String(error)}
+`,
+      );
+    }
+  }
+
+  /**
    * Az élő kapcsolat — a felvevő ezen ül rá.
    *
    * ⚠️ SZÁNDÉKOSAN csak olvasható, és `null`, ha nincs kapcsolat: a hívónak **látnia kell**,
@@ -163,6 +197,8 @@ export class VoiceChannelPresence {
 
       await entersState(this.connection, VoiceConnectionStatus.Ready, VOICE_READY_TIMEOUT_MS);
       this.lastChannelName = channel.name;
+      this.disconnectedAt = null;
+      this.emit({ kind: 'joined', channelName: channel.name });
 
       return {
         joined: true,
@@ -172,6 +208,8 @@ export class VoiceChannelPresence {
       };
     } catch (error: unknown) {
       const detail: string = error instanceof Error ? error.message : String(error);
+
+      this.emit({ kind: 'join-failed', reason: detail });
 
       return {
         joined: false,
@@ -188,9 +226,21 @@ export class VoiceChannelPresence {
    * **újra beléptetne** minket abba a csatornába, amiből épp kifelé tartunk.
    */
   leave(): void {
+    const wasConnected: boolean = this.connection !== null;
+
     this.wanted = false;
     this.connection?.destroy();
     this.connection = null;
+
+    // ⚠️ Csak akkor jelentünk kilépést, ha tényleg bent voltunk — különben a leállási
+    // útvonalon minden indulás egy hamis „kiléptem" sort termelne.
+    if (wasConnected) {
+      this.emit({
+        kind: 'left',
+        ...(this.lastChannelName ? { channelName: this.lastChannelName } : {}),
+        reason: 'szándékos leállás (leave)',
+      });
+    }
   }
 
   /**
@@ -205,14 +255,43 @@ export class VoiceChannelPresence {
     this.connection?.on(VoiceConnectionStatus.Disconnected, (): void => {
       if (!this.wanted || !this.connection) return;
 
+      // 🔴 ITT VOLT A NÉMA PONT: eddig a leválásról SEMMILYEN nyom nem keletkezett.
+      this.disconnectedAt = Date.now();
+      this.emit({
+        kind: 'disconnected',
+        ...(this.lastChannelName ? { channelName: this.lastChannelName } : {}),
+        reason: `a Discord bontotta a kapcsolatot — ${RECONNECT_GRACE_MS / 1000} mp türelmi idő indul`,
+      });
+
       void Promise.race([
         entersState(this.connection, VoiceConnectionStatus.Signalling, RECONNECT_GRACE_MS),
         entersState(this.connection, VoiceConnectionStatus.Connecting, RECONNECT_GRACE_MS),
-      ]).catch((): void => {
-        // Nem jött vissza magától — bontunk, hogy a következő indítás tiszta lappal kezdjen.
+      ]).then((): void => {
+        // ⭐ Magától visszajött — ez a „nem is volt baj" eset, de LÁTSZANIA kell: ebből derül
+        // ki, hogy a csatorna zajos, még ha nem is esett ki végleg.
+        this.emit({
+          kind: 'reconnected',
+          ...(this.lastChannelName ? { channelName: this.lastChannelName } : {}),
+          offlineMs: this.sinceDisconnect(),
+        });
+        this.disconnectedAt = null;
+      }).catch((error: unknown): void => {
+        // 🔴 A VALÓDI KIESÉS. ⛔ Ezt eddig egy üres `catch` nyelte el.
+        this.emit({
+          kind: 'dropped',
+          ...(this.lastChannelName ? { channelName: this.lastChannelName } : {}),
+          offlineMs: this.sinceDisconnect(),
+          reason: `a türelmi időn belül nem jött vissza (${error instanceof Error ? error.message : String(error)})`,
+        });
+        this.disconnectedAt = null;
         this.connection?.destroy();
         this.connection = null;
       });
     });
+  }
+
+  /** Mennyi ideje tart a leválás (ms). `0`, ha nem tudjuk — ⛔ soha nem `NaN`. */
+  private sinceDisconnect(): number {
+    return this.disconnectedAt === null ? 0 : Date.now() - this.disconnectedAt;
   }
 }
