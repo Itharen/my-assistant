@@ -2705,3 +2705,25 @@ felülete, **nem** a *„most hallak"* visszajelzés. Az owner szó szerinti ké
 ### Teszt
 
 **Szerver 79/79 zöld** *(+5)* · **CLI 627/627 zöld** · mindkét `tsc` zöld.
+
+### 🔍 EGY VISSZAVONT FINDING — és a tanulság a MÉRÉS MÓDJÁRÓL
+
+Az éles pulzus-sor ellenőrzésekor a saját szkriptem ezt írta: `🏠 jelenlét 🔴 nincs mérés`.
+Ez pont az a hibaosztály, ami egyszer már **112 napig** észrevétlen maradt, ezért utánamentem.
+
+**Mérve:** a `resolvePresencePaths()` `import.meta.url`-ből számol, és a **build**-elt
+elrendezésből `server/build/server/activity-monitor/data`-t ad — ami **nem létezik**.
+
+⛔ **DE A FUTÓ RENDSZERBEN NINCS HIBA.** Tovább mérve: a szerver a
+`serverRestart.postPipelineCommand` → `start-prod` → `tsx ./src/index.ts` úton indul, vagyis a
+**forrásból** fut, nem a `build/`-ből. Onnan az útvonal **helyes** — és az éles konzol-sor
+ténylegesen `🏠 jelenlét ✅ tétlen (4mp)`-et mutatott.
+
+📌 **A TANULSÁG NEM A KÓDRÓL SZÓL, HANEM A MÉRÉS MÓDJÁRÓL:** az ad-hoc ellenőrző szkriptem a
+**build**-elt modult importálta — egy olyan elrendezésből, ahonnan a rendszer **soha nem fut**.
+⇒ A „hibát" a mérőeszközöm gyártotta, nem a rendszer. ⭐ Az **élő konzol-sor** mondott igazat,
+és jól tettem, hogy nem az ad-hoc szkriptnek hittem.
+
+⭐ **A visszavont finding a folyamat SIKERE, nem kudarca** (`core-review-until-clean`): mértem,
+mielőtt állítottam volna — és a hamis riasztás elhalt, mielőtt bárkinek munkát okozott volna.
+⛔ Nem javítok „biztos, ami biztos" alapon olyat, aminek **nincs mért hatása**.
