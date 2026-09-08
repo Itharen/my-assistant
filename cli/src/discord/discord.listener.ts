@@ -505,6 +505,17 @@ export class DiscordListener {
 
     if (!this.client) return;
 
+    // 🔴 A „BE VAN ÁLLÍTVA" TÉNYT AZONNAL RÖGZÍTJÜK — a belépés MEGKÍSÉRLÉSE ELŐTT.
+    //
+    // ⚠️ MÉRT HAZUG DIAGNÓZIS (2026-09-08 13:03): a `voice` mező csak a belépés UTÁN került az
+    // életjelbe, ezért indulás után ~2 percig a `ma comm doctor` azt mondta, hogy
+    // **„a hang-csatorna nincs beállítva"** — miközben be volt állítva, és a bot épp be is
+    // lépett (`MA-VOICE-JOINED 13:02:03`).
+    //
+    // ⇒ A hiányzó mező KÉT dolgot jelenthetett: „nincs beállítva" VAGY „még nem jelentette".
+    // A kettő összemosása pont az a hazug diagnózis, ami rosszabb a diagnózis hiányánál.
+    this.voicePresenceState = { configured: true, joined: false };
+
     // 🔴 A FIGYELŐ BEKÖTÉSE A BELÉPÉS ELŐTT — különben a belépés eseménye elveszne.
     // Mérve 2026-09-08: 24 belépés / 0 kilépés a naplóban, mert a leválásnak nem volt csatornája.
     this.voicePresence.setEventSink((event: VoiceConnectionEvent): void => {
