@@ -2814,3 +2814,115 @@ időpontja, illetve az STT terhelése)*, kódolással nem vihető előbbre. ⛔ 
 
 **Teszt:** CLI **756/756** · fordítás tiszta · pozitív kontroll *(a hang-megőrzés kivétele 2
 bukást ad)*.
+
+---
+
+## AGB-2026-09-09-01 — `[OPEN] From: dev · To: owner` · Az 5 piros review-lépés: mit javítottam, és hol áll a labda
+
+**2026-09-09 01:13** · commitok: `a279980` · `00021b1` · `675d6fe` · `a4923ef` · `231ad73` · `5e8c553`
+
+### Amit a handoff kért, és amit tettem
+
+⛔ **Semmit nem kapcsoltam ki.** Nincs letiltott review, nincs `fatal: false`, nincs
+kivétel-lista. A találatokat javítottam.
+
+### A négy megnevezett, biztonság-kritikus szabály — ELŐTTE / UTÁNA
+
+| szabály | cli | server | client | relay | b-ext | **maradt** |
+|---|---|---|---|---|---|---|
+| `no-silent-catch` | 72 → **9** | 27 → **0** | 11 → **0** | 0 | 1 → **0** | **9** |
+| `unique-error-codes` | 0 | 11 → **0** | 0 | 0 | 0 | **0** ✅ |
+| `no-native-browser-dialogs` | – | – | 1 → **0** | – | – | **0** ✅ |
+| `controller-handler-error-wrapping` | – | 56 → **39** | – | 5 → **0** | – | **39** |
+
+Ráadásként zöldre jött a `no-console-log` a kliensen (5 → 0), mert a hibakezelő lánc
+`console` hívásai kapták meg a szabály szerinti `DyFM_Log` sinket.
+
+### 🔴 Amit a javítás közben TALÁLTAM — ezek valódi hibák voltak, nem stílus
+
+| hol | mi volt |
+|---|---|
+| `s-status-bar.formatTime` | a `try/catch` **sosem sült el** *(a `new Date()` nem dob)* ⇒ az érvénytelen időbélyeg **„NaN:NaN"**-ként jelent meg a status-barban |
+| `i-google` / `i-spotify` | csak `finally` volt ⇒ az `ngOnInit` által megvárt promise elutasítása **kezeletlen** maradt, a panel **örökre üresen állt**, jelzés nélkül |
+| `isPidAlive` / `isProcessAlive` *(2 szó szerinti másolat + 1 a CLI-ben)* | a vak `catch { false }` az **`EPERM`-et is halottnak** mondta — pedig az azt jelenti, hogy a folyamat **ÉL**. A felügyelő így egy **második példányt** indított volna a már futó mellé |
+| `stt.transcript-ledger.recordFailed` | a hang átmentése **csak `rename`**-mel ment; kötetek között (`EXDEV`) ez bukik ⇒ a felvétel **némán elveszett volna** — vagyis pont a **T-68 célja** *(visszamenőleges feloldás)* szűnt volna meg |
+| `discord.listener` *(2 hely)* | csak `finally` a felismerés körül ⇒ egy váratlan kivétel kiszökött a keretből, és a hang **NEM került a sorba** |
+| `email-sender` | a Sent-mappába másolás néma bukása ⇒ az elküldött leveleid **sorra hiányoztak volna** a mappából, magyarázat nélkül |
+
+### ⭐ Két mérés, ami eldöntött egy-egy kérdést
+
+1. **`process.stderr.write` nem dob** — még lezárt fd-vel sem *(Node 22, mérve ma)*. A
+   `throttle.ts`-ben ezért egy „végső esély" `try/catch` olyat védett, ami nem történhet meg,
+   cserébe létrehozott egy valódi néma ágat ⇒ **kivettem**. ⚠️ Ahol a belső írás
+   `JSON.stringify`-t is végez *(`action-log.client`)*, ott körkörös hivatkozásnál **valóban
+   dobhat** — ott megmaradt.
+2. **A saját új util-jaim 8 ÚJ találatot hoztak be** *(`no-plain-function-export`, `no-as-cast`)*.
+   Egy review-javítás nem termelhet új review-találatot — ezért mind a négy fájl statikus
+   `_Util` osztály lett, cast nélkül. Most **nulla** találattal szerepelnek.
+
+---
+
+## 🙋 AMI OWNER-DÖNTÉSRE VÁR — három tétel
+
+### 1. A 9 megmaradt néma hibaelnyelés az ÁTEMELT CCAP-kódban van
+
+`cli/src/_modules/{voice,voice-output,elevenlabs}` — ide a `transplant-not-rewrite` szabály
+szerint **nem nyúlok**: *„nagyon törékeny az a kód, de cserében meg egész jól működött."*
+
+**A kérdés:** hozzányúlhatok-e **kizárólag** annyiban, hogy a néma `catch`-ekbe **egy napló-sort**
+teszek *(a viselkedés változatlan marad)*, vagy maradjon érintetlenül és a lépés piros?
+
+### 2. A 39 megmaradt `controller-handler-error-wrapping` — ebből ~20 VISELKEDÉS-VÁLTOZÁS lenne
+
+A szabály azt kéri, hogy **minden**, végpontról elérhető függvény **dobjon** kanonikus
+`DyFM_Error`-t. Van azonban egy csoport, ami **szerződés szerint SOSEM dob**:
+
+`emitServerActionLog` · `broadcastDomainEvent` · a `reports.util` riport-olvasói ·
+`readWavesFromJsonl` · `readWaveMarkers` · `readOrganizerTasks`
+
+Ezek ma hiba esetén `[]`-t vagy `false`-t adnak, és a hívók erre építenek. Ha dobnának:
+
+- a **naplózás bukása megdöntené** azt a műveletet, amit naplózni akart;
+- egy **szórás-hiba visszadobná** a már sikeres írást;
+- egy olvashatatlan riport-fájl **500-as hibát** adna a dashboardon üres panel helyett.
+
+**A kérdés:** melyiket akarod? *(A) marad a mai, csendes-de-már-naplózott viselkedés, és a
+lépés piros marad · (B) átállunk „inkább hangos hiba, mint hamis nyugalom"-ra — ez viszont
+**látható változás** a dashboardon.* ⚠️ Én **(B)**-t javaslom a riport- és wave-olvasókra
+*(pont az a panasz, hogy a rendszer nyugalmat jelent hiba közben)*, és **(A)**-t a naplózásra
+és a szórásra *(ott a kaszkád rosszabb)* — de ez a te döntésed, mert a dashboardon látszik.
+
+### 3. A „mind az 5 lépés ZÖLD" ma 2 240 találatot jelent
+
+**Mérve az összes csomagon, ma:**
+
+| csomag | találat | bukó review |
+|---|---|---|
+| cli | 1 587 | 33 / 88 |
+| server | 340 | 28 / 88 |
+| client | 245 | 29 / 88 |
+| relay | 33 | 14 / 88 |
+| browser-extension | 26 | 11 / 88 |
+| **össz** | **2 231** | |
+
+A maradék **túlnyomó része projekt-szintű konvenció**, nem hiba:
+`no-as-cast` ~80 · `no-plain-function-export` ~60 · `one-export-per-file` ~35 ·
+`jsdoc-presence` · `import-group-order` · `max-line-chars` · `enum-from-string-union`.
+
+Ezek javítása **szerkezeti átalakítás** az egész kódbázison *(minden util átírása statikus
+osztályra, minden fájl szétbontása egy exportra)*. ⛔ Ez **nem egy kör munkája**, és nem is
+kockázatmentes.
+
+⭐ **Van rá gépi segítség:** `dc rev --fix --apply` *(autofix)* — több szabályhoz létezik.
+**A kérdés:** ráengedhetem-e az autofixet a konvenció-szabályokra *(egyesével, tesztekkel
+minden lépés után)*, vagy ez maradjon addig, amíg a fontosabb dolgok elkészülnek?
+
+---
+
+### 🛑 A hurok lezárva
+
+Nincs több olyan DEV-tétel, amit **owner-döntés nélkül** el tudnék végezni: a maradék
+mindhárom tétel a fenti három kérdésen áll. ⛔ Nem ütemeztem új ébredést.
+
+**Ellenőrizve:** CLI **768/768** · szerver **99/99** · relay **22/22** · fordítás tiszta
+mind az öt csomagon · pozitív kontroll a hang-megőrzésre *(a fallback kiiktatása 2 bukást ad)*.
