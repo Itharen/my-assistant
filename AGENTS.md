@@ -700,6 +700,7 @@ megfogalmazása lesz a referencia.
 | `current/principles/time-must-be-measured.md` | ⏰ **Minden időpont-állítás ELŐTT `date`** — tilos korábbi mérésből extrapolálni. Mért lebukás: 07:12-t írtam, 06:59 volt |
 | `current/principles/post-development-verification.md` | **Fejlesztés után KÖTELEZŐ ellenőrzés**: pipeline zöld · szerver-port él · figyelők életjele friss · `comm doctor`. ⚠️ Egy állapot-mező NEVE nem a jelentése — a valóságon kell ellenőrizni |
 | `current/principles/thought-storm-inputs.md` | **Gondolat-orkán inputok**: egy üzenetben több téma. Szétbontás → besorolás → routing → visszajelzés. ⚠️ A **zárójeles félmondat** gyakran tartós szabály |
+| `current/principles/ldp-make-before-break.md` | 🔴 **A szolgáltatás NEM állhat le a build alatt** — a régi példány addig szolgál ki, amíg az új TÉNYLEG indulhat. Mérve: 38 újraindítás/nap, 10,1 perc ciklus-köz egy ~15 perces pipeline mellett — és egy **élő beszélgetés** veszett el tőle |
 
 **Új alapelv kezelése:** ha a user új szabály-szerű dolgot mond, **soha ne csak
 "vegyük tudomásul"** — minden esetben:

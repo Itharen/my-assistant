@@ -58,9 +58,17 @@
   "versionBump": {
     "enabled": false
   },
+  "_comment_serverRestart": "🔴 MAKE-BEFORE-BREAK (owner, 2026-09-08): 'az LDP tesztjei, buildjei alatt ne allitsuk le a szervert, hanem vegig fusson, es csak akkor allitsuk le, amikor mar ujraindítanank az uj verziot'. ⭐ MERVE: a kepesseg MAR LETEZETT a `dc ldp`-ben — mi a LEGACY agon voltunk. A legacy ag: 'Cascading kill: a wrapper exit-jekor a szerver is meghal. Adoption / kill-twin / heartbeat NINCS — minden trigger ujraindit.' A DETACHED (`entry`) ag: 'ha a pipeline indulasakor a regi szerver el es heartbeat friss, az S(N) eletben marad a STEPS futasa alatt => kereseket szolgal ki, swap csak a build/test zoldje utan.' ⚠️ MERT KOVETKEZMENY a legacy agon: 08:52-kor bent voltunk a hang-csatornaban, 08:56:58-kor uj pipeline indult, es kiestunk egy ELO beszelgetes alol.",
+  "_comment_serverRestart_entry": "⚠️ A belepo a TS FORRAS, nem a forditott JS — MERVE: `node ./build/server/src/index.js` => ERR_MODULE_NOT_FOUND, mert a `moduleResolution: bundler` kiterjesztes NELKULI ESM importokat general ('./app.server'), amit a Node nem old fel. A wrapper viszont `require()`-el, ezert a tsx betoltot a NODE_OPTIONS adja — probaval igazolva: `NODE_OPTIONS=--import tsx` mellett egy ESM+TS belepo `require()`-je lefut.",
+  "_comment_serverRestart_cwd": "⚠️ A detached spawn NEM ad `cwd`-t => a projekt gyokerebol indul, a korabbi `npm --prefix server` viszont a `server/`-bol. Ket kovetkezmenyt MERTUNK: (1) a `dotenv/config` mostantol a GYOKER `.env`-et tolti a 18 bajtos `server/.env` helyett — ez BOVEBB halmaz, es a dotenv nem irja felul a mar beallitott valtozokat, tehat nincs vesztes; (2) az egyetlen cwd-fuggo hivas (`resolveInterfoodProjectRoot`) FELFELE keres `__agent`+`package.json`-t, amit a gyokerben MELYSEG-0-n megtalal. ⛔ A `pre-kill-port.mjs` innentol nem fut — helyette a kill-twin (SIGTERM -> 5s -> SIGKILL) vedi a portot a PID-fajl alapjan.",
   "serverRestart": {
     "enabled": true,
-    "postPipelineCommand": "npm --prefix server run start-prod"
+    "entry": "./server/src/index.ts",
+    "env": {
+      "NODE_OPTIONS": "--import tsx"
+    },
+    "port": 39335,
+    "gracefulShutdownMs": 5000
   },
   "steps": [
     {
