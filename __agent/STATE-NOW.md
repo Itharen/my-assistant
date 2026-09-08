@@ -8,7 +8,7 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-08 16:12
+**Frissítve:** 2026-09-08 17:15
 
 ## Ma
 
@@ -27,6 +27,13 @@ A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
 4. 📱 **Helyzet-app v1** — belevágjunk? *(Capacitor, saját app)*
 5. 🔓 **Képesség-jóváhagyás** — ⚠️ **25 ⏳ / 1 ✅**: az üresjárati sávom gyakorlatilag ÜRES.
    Javasolt hármas: **C-13** feladat-kezelés · **C-10** státusz-kivonat · **C-19** alvás-ciklus
+
+## 🔴 A HANG-CSATORNA ÜRES 16:32 ÓTA — RAM-NYOMÁS, nem konfiguráció
+
+**RAM 92,5 %** (117,6/127,1 GB) ⇒ 8 sikertelen belépés (`The operation was aborted`).
+⛔ **Nem tudom orvosolni:** VMware 28,7 · WSL 15,7 · FAM 12,2 · Chrome 9,7 GB — egyik sem az
+enyém; a my-assistant **0,6 GB alatt**. A figyelő újraindítása **nem** segített.
+⭐ Ez igazolja az ownert: *„újra kellett volna indítani a gépet”* — **szóltam** (17:14).
 
 ## 🔴 A KÉZBESÍTÉSI INCIDENS — javítva, de MÉG NEM IGAZOLVA
 

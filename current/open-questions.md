@@ -800,3 +800,25 @@ akár (a)-t, akár (b)-t értette, a **kihagyás** volt a hiba.
 Ez pontosan az a tünet, amit egy újraindítás orvosolt volna.
 
 **Amíg nincs válasz:** a (b)-t a mostanitól **nem hagyom ki** eseményre hivatkozva.
+
+### ⭐ Q-2026-09-08-02 — MÉRÉS, ami a válasz felé mutat (2026-09-08 17:12)
+
+**A (a) olvasat — a SZÁMÍTÓGÉP — mellett szól a mérés.** Nem zárom le a kérdést *(ő mondja ki)*,
+de a tünetek gép-szintűek, nem rendszer-szintűek:
+
+| Mérés (17:05–17:12) | Érték |
+|---|---|
+| **RAM** | **92,5 %** — 117,6 / 127,1 GB |
+| A hang-csatornába belépés | **4+4 sikertelen kísérlet**, ok: `The operation was aborted` |
+| STT-időtúllépések korábban | 5 perc után sem fejeződött be *(a doktor is 90 % fölötti RAM-ot említ okként)* |
+
+**A fogyasztók** *(egyik sem az én folyamatom)*:
+`vmware-vmx` **28,7 GB** · `vmmemWSL` **15,7 GB** · FAM (`node`) **12,2 GB** ·
+Memory Compression **10,5 GB** · `chrome` **9,7 GB**.
+
+⛔ **Az én oldalamon nincs mit felszabadítani:** a my-assistant összes folyamata **együtt
+0,6 GB alatt** van, és nincs árva példány. ⇒ A rendszer-újraindítás *(b)* **nem oldaná meg**.
+
+🔴 **Amit ez jelent:** a *„nem indítottam újra"* nem elméleti mulasztás volt — **mérhetően
+elveszi a hang-csatornát és a hangfelismerést**. ⇒ Az `ENTRY.md` §0 kivételébe felvéve:
+a **RAM-nyomás** önálló ok az újraindításra, függetlenül attól, hogy „minden zöld".

@@ -94,6 +94,22 @@ is — ÁLL**. Egy esemény reggelén ez pontosan abban az ablakban vakítaná m
 amikor a legjobban kell. *(2026-09-07: a user 06:26-kor ébren, 07:45-kor indul; a szerver
 01:30-kor indult, minden zöld ⇒ az újraindítás kimaradt, és ez volt a helyes.)*
 
+🔴 **ÚJ, ÖNÁLLÓ ÚJRAINDÍTÁSI OK: RAM-NYOMÁS** *(mérve 2026-09-08 17:05)*
+
+A három kihagyási feltétel **nem elég** — hiányzott belőlük a memória. **90 % fölött a rendszer
+mérhetően romlik**, még ha „minden zöld" is:
+
+| Tünet | Mért érték |
+|---|---|
+| RAM | **92,5 %** (117,6 / 127,1 GB) |
+| Hang-csatorna | **8 sikertelen** belépés, `The operation was aborted` — 16:32 óta **ÜRES** |
+| Hangfelismerés | 5 perces időtúllépések |
+
+⛔ **És ezt ÉN NEM TUDOM ORVOSOLNI:** a fogyasztók a VMware (28,7 GB), a WSL (15,7 GB), a FAM
+(12,2 GB) és a Chrome (9,7 GB) — **egyik sem az én folyamatom**; a my-assistant összes
+folyamata **0,6 GB alatt**. ⇒ A **rendszer**-újraindítás nem segít; ez **gép-szintű**.
+⭐ Ilyenkor a dolgom: **mérni és szólni** — a döntés az övé.
+
 🔴 **OWNER-VISSZAJELZÉS A KIHAGYÁSRA, 2026-09-08 14:32:** *„Újra kellett volna indítani a
 gépet már tegnap reggel....”*
 
