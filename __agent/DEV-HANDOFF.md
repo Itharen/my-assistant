@@ -458,3 +458,57 @@ nem az életjel hiánya. Három állapot: **nincs konfigurálva** · **konfigur�
 
 ⛔ Ez **saját szabály-sértés is**: *„Egy állapot-mező NEVE nem a jelentése"*
 (`post-development-verification.md`) — a `voice` mező **hiánya** nem jelenti a konfiguráció hiányát.
+
+---
+
+## 2026-09-08 18:08 — 🎙️ T-68 a következő: hangüzenet ↔ transzkript nyilvántartás
+
+🔴 **ÉLŐ FÁJDALOM, nem elméleti feladat.** MOST, ebben a percben van egy **feloldatlan
+hangüzenete** a sorban: **3/5 próba**, minden kör *„A felismerés 5 perc után sem fejeződött be"*.
+Az owner **nem tudja**, mit mondott benne — és **én sem**.
+
+> **Owner (2026-09-08 15:31, szó szerint):** *„a rendszernek rögzítenie kéne, hogy melyik
+> üzenetekhez melyik transzkript tartozik, illetve melyik üzeneteknek nem sikerült a transzkript,
+> és ilyenkor ezeket majd **visszamenőlegesen is fel kell tudjad oldani**."*
+
+> **Owner (2026-09-08 14:49):** *„kelleni fog **reply reference** és **on demand read** és
+> **voice process**"*
+
+> **Owner (2026-09-08 13:48) — a KIVÁLTÓ panasz:** *„Adtál egy ilyet de nem tudom mire vonatkozik,
+> **ilyenkor kellene a reply**: 🔴 Egy hangüzenetedet VÉGLEG nem sikerült felismernem."*
+
+### A három rész — ebben a sorrendben
+
+| # | Mit | Miért ELŐBB, mint a többi |
+|---|---|---|
+| **1** | **Nyilvántartás:** `messageId → transcript \| failed(ok, próbák)` — tartósan | ⛔ **Enélkül a 3. lehetetlen.** ⚠️ Mérve: a `SttRetryQueue` a **feladás után TÖRLI** a bejegyzést ⇒ ma **nincs miből** visszamenőleg feloldani. Ez a **valódi blokkoló** |
+| **2** | **On-demand read:** reply-referenciával megjelölt üzenet újraolvasása | az owner ezt **explicit** kérte, és a `7e10dc1` már bekötötte, hogy a bukás-üzenet **válaszként** megy — a reply-lánc tehát **létezik**, csak visszafelé nincs használva |
+| **3** | **Visszamenőleges feloldás:** a feladott hangok újrapróbálása kérésre | ez a **cél**, de az 1. nélkül nincs mit újrapróbálni |
+
+⛔ **Ne kezdd a 3-mal.** A csábítás az lesz, hogy „a retry-sort úgyis bővíteni kell" — de a
+törlés miatt a történet **már elveszett**. Előbb **megőrizni**, aztán visszanyúlni.
+
+### ⚠️ Amit MÉRJ MEG, mielőtt a szűrőkhöz vagy a timeouthoz nyúlnál
+
+🔴 **A gyökérok NEM a mi kódunkban lehet:** az STT **5 percenként** túllép, miközben a gép
+**11 napja** megy és a RAM **93,9 %**. ⛔ **Az FDP AI-hoz (38321) NEM NYÚLUNK** — se újraindítás,
+se modell-unload (`fdp-ai-never-restart.md`).
+
+⭐ **A feladat ettől független és attól még értékes:** ha a felismerés bukik, a hangot **akkor is
+meg kell őrizni**, hogy később — jobb körülmények között — feloldható legyen. Sőt: **pont akkor
+ér a legtöbbet.**
+
+### 🚫 Amihez ne nyúlj
+
+- ⛔ **Egyetlen LDP-lépést sem** kapcsolsz ki (owner, 08:24: *„Semmilyen tesztet, semmilyen
+  ellenőrzést, semmilyen reviewt ne kapcsolj ki. NEEE!"*).
+- ⛔ Az STT **küszöbeihez** nem nyúlsz: mérve **nem ott** van a hiba.
+- ⛔ Ne írj az ownernek. **Minden owner-kommunikáció az asszisztensé** — a DEV-be érkező
+  owner-üzenet maga is **kritikus hiba** (`message-routing-must-be-pinned.md`).
+
+### Kész-definíció
+
+`__agent/TASKS.md` **T-68** ✅-re vált, ha: **(a)** egy bukott felismerés után a hang és a
+próbálkozás-történet **megmarad**, **(b)** reply-referenciával **újra kérhető** az olvasás/átirat,
+**(c)** mindre **teszt** van, és a CLI-suite **zöld**. ⭐ És a mai, most is feloldatlan
+hangüzenetén **igazolva** — nem csak fixture-ön.
