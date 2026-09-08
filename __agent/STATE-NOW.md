@@ -8,7 +8,7 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-08 08:58
+**Frissítve:** 2026-09-08 09:05
 
 ## Ma
 
@@ -25,7 +25,7 @@ A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
 4. 📧 **Belenézhetek a postafiókba?** *(feladó + tárgy + darabszám, tartalom nélkül)*
 5. 📱 **Helyzet-app v1** — belevágjunk? *(Capacitor, saját app)*
 6. 👤 **A GPT-s infócsomagja magáról** — várom, emlékeztetni kell rá
-8. 🔴 **Hozzányúlhatunk a `dc ldp`-hez?** — a build ma **elvitt egy élő beszélgetést** a hang-csatornából (08:56:58). Ha igen, a DEV ma megcsinálja
+8. ⚠️ **A `dc ldp` kérdés VISSZAVONVA** — a „build vitte el a beszélgetést" állításom **megalapozatlan** volt: a kiesést **sosem mértem**, és nincs is rá napló-esemény. *(A sorrend amúgy **Dynamo-kód**, nem helyi konfig — a `serverRestart` csak `enabled` + `postPipelineCommand`.)*
 7. 🔓 **Képesség-jóváhagyás** — ⚠️ **25 ⏳ / 1 ✅**: az üresjárati sávom gyakorlatilag ÜRES.
    Javasolt hármas: **C-13** feladat-kezelés · **C-10** státusz-kivonat · **C-19** alvás-ciklus
 

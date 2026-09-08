@@ -3150,3 +3150,43 @@ barmit?"* Ha nem: **nem kuldom.**
 
 Kanonikus: `current/principles/sleep-window-batching.md` + `ENTRY.md` §2.
 Az osszefoglalo **egy uzenetben** kiment.
+
+---
+
+## 🔴 2026-09-08 09:00 — MEGALAPOZATLAN OK-ALLITAS (owner javitott ki)
+
+**Amit allitottam:** egy build vitte el a hang-csatornas beszelgeteset, idobelyegekkel.
+**Owner:** *„Figyeltem kozben a logokat, es nem lattam, hogy epp ujrainditas lett volna. Boven
+elotte leptel ki."*
+
+### A hiba szerkezete
+
+| Amit mertem | Amit NEM mertem |
+|---|---|
+| belepes 08:52:29 · felvetel 08:53:58 · uj pipeline 08:56:58 | ⛔ **magat a kiesest** — sem azt, hogy MIKOR, sem hogy megtortent-e |
+
+🔴 **Volt egy OKOM es egy PANASZOM, es a kettot osszekotottem.** A kozottuk levo esemenyt — a
+tenyleges lecsatlakozast — **sosem mertem meg**.
+
+⭐ **Es utolag kiderult: nem is tudtam volna.** A naploban **NINCS kilepes-esemeny, egyaltalan**:
+24 belepes · 23 felvetel-indulas · 9 beszed-erzekeles · 8 eldobas — **0 kilepes**.
+
+### 📌 A melyebb tanulsag — uj alapelv
+
+**A megfigyelhetoseg hianya nem semleges: TERET AD A MESENEK.** Ahol nincs adat, ott a magyarazat
+kitolti a helyet — es **magabiztosan hangzik**, mert az OKOT tenyleg mertem.
+⇒ A hianyzo naplozas nem kenyelmi kerdes: azt jelenti, hogy **tevedhetek anelkul, hogy kiderulne**.
+
+Kanonikus: `current/principles/measure-the-effect-not-just-the-cause.md`.
+
+### A masik ket javitas
+
+**A kerdesem is rossz volt.** Az owner: *„Mit akarsz hozzanyulni? Maga a Dynamo fejleszteshez
+akarsz hozzanyulni, vagy a helyi konfigokhoz?"* — **Merve:** a `serverRestart` csak `enabled` +
+`postPipelineCommand`, **sorrend-opcio nincs** ⇒ **Dynamo-valtoztatas** lenne. Ezt kellett volna
+kimondanom, nem homalyosan kerdezni.
+
+**ORKESZTRALAS — igaza van.** *„mintha nem nezted volna es orkesztraltad volna folyamatosan es
+rendszeresen a fejlesztot"*. A handoff-fajlba **irtam**, ahelyett hogy **kiadtam** volna.
+⇒ 09:05: rendes dispatch ment ki (`success: true`), harom tetellel, sorrendben: **naplo-hiany** ·
+szines elo sav · helyi ido. A `dc`-hez ⛔ TILOS nyulnia.
