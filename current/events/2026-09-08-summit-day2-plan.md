@@ -104,3 +104,35 @@ biztosan**, és mindkettő az Expert-sávodba esik.
 ⚠️ A **18:00-s zárás** aggregátorból van, nem a hivatalos oldalról.
 ⚠️ A hivatalos időpontok **csúszhatnak** — a saját tanulságod szerint **helyben az app** az
 elsődleges forrás, nem ez a lista.
+
+---
+
+## 📺 2026-09-08 05:05 — AZ ELŐADÁSOK VISSZANÉZHETŐK (ez átértékeli az egészet)
+
+**Mérve:** a jegy tartalmaz **rendezvény-appot visszanézhető előadásokkal**, és **élő stream** is
+van. ⚠️ **Nem a hivatalos oldalról** — az appban megerősítendő.
+
+### ⭐ Amit ez jelent — és miért ez a legfontosabb mérés a mai naphoz
+
+Az owner nap-1 tanulsága: *„kb. minden, amit meghallgattam olyan volt, amit én már tudok"*.
+
+⇒ Ha az előadások **visszanézhetők**, akkor **élőben ülni egy előadáson a legrosszabb felhasználása
+az ottlétnek** — azt otthonról is megkapja, **gyorsítva, kihagyva**.
+
+**Amit a felvétel NEM ad, és amiért érdemes ott lenni:**
+
+| | |
+|---|---|
+| 🤖 **fizikai** robot-demók | ezt képernyőn nem lehet |
+| 🗣️ **kérdés** az előadónak | egyirányú felvételen nincs |
+| 🤝 **networking** | a jegy „networking zones"-t is tartalmaz |
+
+### ⇒ A hatás a döntésre
+
+**Erősíti a 13:45-öt.** A `11:15` szuperszámítógépes *(8 pont)* **visszanézhető**; a `15:00`
+robotikás viszont az, **amiért érdemes ott lenni** — az a fizikai/demó jellegű.
+
+📌 **Az általános elv, amit ebből érdemes megtartani:** ha egy esemény felvételt ad, akkor az
+**ottlét értéke NEM az információ**, hanem ami **nem rögzíthető**. A programot eszerint kell
+súlyozni — nem aszerint, mi hangzik érdekesnek.
+
