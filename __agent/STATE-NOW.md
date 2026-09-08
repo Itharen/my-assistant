@@ -8,7 +8,7 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-08 20:08
+**Frissítve:** 2026-09-08 20:52
 
 ## Ma
 
@@ -66,10 +66,11 @@ nem nyúlunk. ⇒ A hangüzenetei továbbra sem értelmeződnek.
 csatorna-hiba magyarázata · 🔴 **1 hangüzenete még mindig feloldatlan** (STT 5 perces
 időtúllépés, 3/5 próba).
 
-## 📬 Kézbesítés: rögzített cél — de ÉLŐ üzenettel máig nincs igazolva
+## ✅ Kézbesítés: ÉLŐBEN IGAZOLVA — 20:50:50
 
-A DEV-be csattant üzenetek ügye lezárva *(`message-routing-must-be-pinned.md`)*.
-🔴 **15:32 óta nem érkezett tőle szöveges üzenet** ⇒ a javítás **nem bizonyított**.
+Az owner 20:50-es üzenete a **`3fbced7d`** sessionbe érkezett *(az asszisztens)*, nem a DEV-be.
+⇒ A 14:00-kor felfedezett routing-hiba **lezárva**, `message-routing-must-be-pinned.md`.
+⭐ 6,5 óráig „kódban él, de nem bizonyított"-ként vezettem — a bizonyítékhoz **ő** kellett.
 
 ## 🤝 Akiknek kiadtam
 

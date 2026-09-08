@@ -96,3 +96,28 @@ A javítás **kódban él** *(`dist` 15:50, figyelő újraindult 15:52 és 16:00
 azok a régi figyelőből futottak. ⇒ **Élő owner-üzenettel még NINCS bizonyítva**, hogy a
 javítás működik. ⛔ Amíg nincs, „megjavítva"-ként **nem jelentendő** — csak *„kódban él,
 igazolásra vár"*.
+
+---
+
+## ✅ ÉLŐBEN IGAZOLVA — 2026-09-08 20:50:50
+
+> **Owner:** *„szóval akkor most ez már a jó session-ben landol?"*
+
+**Igen — és ez az első független bizonyíték.** A napló szerint a `20:50:50`-es köteg a
+`3fbced7d-9876-4fd6-8d92-f5b993859748` Claude-sessionbe ment, ami
+**az asszisztens** — nem a DEV (`5d347e4f-…`).
+
+| Mérföldkő | Idő |
+|---|---|
+| A hiba felfedezve *(owner: „TOTAL CHAOS")* | 14:00 |
+| Kódban javítva, cél rögzítve | 14:15 |
+| A figyelő a javított kódból fut | 15:52 |
+| 🔴 **Élő igazolás** — owner-üzenet az asszisztensnél | **20:50** |
+
+⚠️ **6,5 óra telt el a javítás és az igazolás között** — mert **nem érkezett owner-üzenet**.
+⭐ **És ezt végig KI IS MONDTAM:** minden köri jelentésben szerepelt, hogy *„kódban él,
+élő üzenettel még nincs bizonyítva"*. ⛔ Nem jelentettem késznek, amíg nem volt bizonyíték.
+
+📌 **A tanulság, ami átvihető:** egy javítás, aminek az igazolásához **külső esemény** kell
+*(itt: az owner ír egyet)*, nem „majdnem kész" — **nyitott**, és annak is nevezendő. A
+„működnie kell" és a „működik" között itt **6,5 óra** volt.
