@@ -117,6 +117,7 @@ interface ActionLogLine {
     delivered?: number;
     reason?: string;
     lostAudioSeconds?: number;
+    deliveredSoFar?: number;
   };
 }
 
@@ -231,22 +232,39 @@ function applyEntry(report: VoiceFunnelReport, entry: ActionLogLine): void {
 
     case VOICE_LOG_CODES.queued:
       report.queued += 1;
+      applyDelivered(report, entry);
 
       return;
 
     case VOICE_LOG_CODES.dropped:
       report.droppedAfterTranscribe += 1;
+      applyDelivered(report, entry);
 
       return;
 
     case VOICE_LOG_CODES.skipped:
       report.skipped += 1;
+      applyDelivered(report, entry);
 
       return;
 
     default:
       return;
   }
+}
+
+/**
+ * A kézbesített darabszám átvezetése a kimenetel-sorokból.
+ *
+ * 🔴 MIÉRT KELL: a `MA-VOICE-SPEECH-DETECTED` sor **csak új megszólaláskor** íródik, a
+ * feldolgozás viszont **percekkel később** fejeződik be *(mérve: az STT 5 percig is futhat)*.
+ * ⇒ Az utolsó megszólalás UTÁN befejeződő kézbesítések a régi úton **sosem** kerültek naplóba,
+ * és a tölcsér `delivered` száma **strukturálisan alulmért** volt.
+ *
+ * ⚠️ Mérve 2026-09-08 01:35: `delivered: 2`, miközben **3** kimenetel-sor keletkezett.
+ */
+function applyDelivered(report: VoiceFunnelReport, entry: ActionLogLine): void {
+  report.delivered = Math.max(report.delivered, entry.extra?.deliveredSoFar ?? 0);
 }
 
 /**

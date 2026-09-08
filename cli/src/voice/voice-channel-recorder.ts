@@ -201,14 +201,29 @@ export async function handleFinishedRecording(params: {
   });
 
   if (!result.ok || result.suspicious || !result.text.trim()) {
+    // 🔴 A `suspicious` CSAK AKKOR jelent „nem értettem", ha a felismerés LE IS FUTOTT.
+    //
+    // ⚠️ MÉRT HIBA, 2026-09-08 01:34 — az első élő adat buktatta ki. Az `stt.client.ts`
+    // **minden** bukásnál `suspicious: true`-t ad vissza *(a timeout-ágon is)*, tehát a
+    // korábbi `result.suspicious ? …` feltétel egy **5 PERCES IDŐTÚLLÉPÉST** így jelentett:
+    //
+    //   ❓ „hallottam, de nem értettem biztosan"   ⛔ ez NEM IGAZ
+    //
+    // ⇒ Az owner azt hitte volna, hogy **rosszul beszélt**, és megismételte volna tisztábban —
+    // ami **semmit nem segít**, mert a felismerő szolgáltatás nem fejezte be. A helyes üzenet:
+    // *technikai hiba*, más orvoslással. ⭐ A hazug diagnózis rosszabb, mint a néma hiba: rossz
+    // irányba küldi azt, aki javítani próbál.
+    //
+    // 📌 A mért adat: 3/3 felvétel `„A felismerés 5 perc után sem fejeződött be."` — mind
+    // `not-understood`-ként jelent meg. ⛔ Egyik sem volt gyanús átirat; **egyik sem volt átirat.**
+    const understoodButDoubtful: boolean = result.ok && result.suspicious;
+
     return {
       fromOwner: true,
       transcribed: false,
       queued: false,
-      // ⭐ A KETTŐ KÜLÖNBÖZIK, és az ownernek is másképp kell látnia: a „gyanús" azt jelenti,
-      // HALLOTTAM, csak nem bízom benne; a „nem adott szöveget" azt, hogy a felismerés bukott.
-      missed: result.suspicious ? 'not-understood' : 'recognition-failed',
-      detail: result.suspicious
+      missed: understoodButDoubtful ? 'not-understood' : 'recognition-failed',
+      detail: understoodButDoubtful
         ? `Gyanús átirat — NEM cselekszem rá: ${result.suspicionReason ?? result.detail}`
         : `A felismerés nem adott használható szöveget: ${result.detail}`,
     };

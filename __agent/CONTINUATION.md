@@ -2357,3 +2357,72 @@ biztonságos. *(A tesztek pirosa fogta meg, ahogy kell.)*
 ### Teszt
 
 **CLI 613/613 zöld** *(+6 gördülő-ablak teszt, köztük az éjfél-átívelés)*.
+
+
+---
+
+## 🔴🔴 2026-09-08 02:03 — ÉLŐ ADAT ÉRKEZETT — ÉS MEGDÖNTÖTTE AZ EREDETI DIAGNÓZIST
+
+### A mérés, amiért az egész készült
+
+```
+📊 Hang-tölcsér — az elmúlt 12 óra
+  ⚪ ÁTVITELI ARÁNY: 25%  (4 megszólalásból)
+  ⚠️  KEVÉS MINTA (< 5)
+
+  🎙️  megszólalás érzékelve ......... 9
+  📼  felvétel a feldolgozásig ...... 2   ⚠️ alulmért, l. lentebb
+  ✅  kötegbe került ................ 1
+  🎚️  a felvevő eldobta ............. 0   🔴 ← EZ A LÉNYEG
+  ❌  felismerés után elveszett ..... 3
+  🔊 ELVESZETT HANG: 0 másodperc
+```
+
+### 🔴 AZ EREDETI HIPOTÉZIS TÉVES VOLT
+
+**Amit 22:08-kor feltételeztem:** *„az átemelt `setupSpeechDetection` hangerő/ZCR-validációja
+dobja el a többit"* — vagyis a **felvevő szűrője** nyeli el a beszédet.
+
+**Amit a mérés mond:** `droppedByRecorder: **0**` · `lostAudioSeconds: **0**`.
+⇒ A szonda **EGYETLEN** felvételt sem látott némán eltűnni. **A felvevő szűrője nem dobott el
+semmit.**
+
+⭐ **A VALÓDI SZŰK KERESZTMETSZET: az STT IDŐTÚLLÉPÉSE.** Mind a **3** feldolgozott felvétel
+ezzel bukott: *„A felismerés 5 perc után sem fejeződött be."*
+
+📌 **Ezért volt helyes megtagadni a küszöb-állítgatást.** Ha mérés nélkül „megjavítottam" volna
+a ZCR/hangerő-küszöböket, egy **nem létező hibát** javítottam volna — és közben elrontottam
+volna a működő szegmentálást. *(`core-no-guessing` · `transplant-not-rewrite`.)*
+
+### 🔴 HÁROM VALÓS HIBA, amit CSAK az élő adat mutatott meg
+
+**1. ✅ JAVÍTVA — az időtúllépést „nem értettem"-ként jelentettük.**
+Az `stt.client.ts` **minden** bukásnál `suspicious: true`-t ad *(a timeout-ágon is)*, és a
+besorolásom ebből `not-understood`-ot csinált. ⇒ Az owner azt látta/hallotta volna, hogy
+*„hallottam, de nem értettem biztosan"* — **és megismételte volna tisztábban, ami semmit nem
+segít.** A helyes üzenet: **technikai hiba**, más orvoslással.
+⭐ **A hazug diagnózis rosszabb, mint a néma hiba: rossz irányba küldi azt, aki javítani akar.**
+🩹 `suspicious` már csak akkor jelent „nem értettem"-et, ha a felismerés **le is futott**
+(`result.ok && result.suspicious`). +2 teszt.
+
+**2. ✅ JAVÍTVA — a `delivered` szám strukturálisan ALULMÉRT.**
+A `MA-VOICE-SPEECH-DETECTED` sor **csak új megszólaláskor** íródik — a feldolgozás viszont
+**percekkel később** fejeződik be. ⇒ Az utolsó megszólalás után befejeződő kézbesítések
+**sosem** kerültek naplóba. *(Mérve: `delivered: 2`, miközben **3** kimenetel-sor keletkezett.)*
+🩹 A kimenetel-sor is viszi a `deliveredSoFar`-t. +2 teszt.
+
+**3. 🔴 NYITVA — a bukott felismerés VÉGLEG ELVESZIK.**
+Van `SttRetryQueue` *(„a fel nem ismert hang NEM vész el")*, de **mérve: a hang-csatorna útja
+NEM használja** — a `cli/src/voice/` alatt **nulla** hivatkozás rá. ⇒ A 3 időtúllépéses felvétel
+**visszahozhatatlanul elveszett**: a WAV-ot a felvevő takarítása törli.
+📌 **Ez a következő munkacsomag.**
+
+### ⛔ Amihez NEM nyúlok
+
+Az FDP AI szolgáltatáshoz **nem nyúlok** (`fdp-ai-never-restart.md` — owner: *„Ahhoz soha ne
+nyúlj!"*). Az STT lassúsága **nem az én javításom**; amit tehetek, az a **kiesés megelőzése**
+(újrapróbálkozás) és az **igaz jelentés**.
+
+### Teszt
+
+**CLI 617/617 zöld** *(+4)*.

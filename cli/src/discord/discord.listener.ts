@@ -622,6 +622,12 @@ export class DiscordListener {
             code: outcomeCode,
             fromOwner: outcome.fromOwner,
             transcribed: outcome.transcribed,
+            // 🔴 A KEZBESITETT DARABSZAM ITT IS KIMEGY. Merve 2026-09-08 01:35: a
+            // `MA-VOICE-SPEECH-DETECTED` sor CSAK uj megszolalaskor irodik, tehat a KESOBB
+            // befejezodo feldolgozasok (az STT percekig tart!) sosem kerultek naploba =>
+            // a tolcser `delivered` szama strukturalisan ALULMERT. A kimenetel-sor viszont
+            // mindig akkor kel, amikor tenyleg befejezodott valami.
+            deliveredSoFar: this.dropProbe?.funnel.filesDelivered ?? null,
             ...(outcome.missed ? { missed: outcome.missed } : {}),
           },
         });

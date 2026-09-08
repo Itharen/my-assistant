@@ -7,6 +7,9 @@ import {
   type VoiceFunnelReport,
 } from './voice-funnel-report.js';
 
+/** Sortörés nevesítve — a shell-heredoc kétszer is megette az inline escape-et. */
+const NEWLINE: string = '\n';
+
 /** Egy napló-sor összeállítása. */
 function line(code: string, extra: Record<string, unknown> = {}): string {
   return JSON.stringify({ ts: '2026-09-07T22:00:00+02:00', kind: 'note', extra: { code: code, ...extra } });
@@ -287,5 +290,35 @@ describe('🔴 gördülő ablak — az éjfél NEM vághatja ketté a beszélget
 
     expect(report.hasData).toBe(false);
     expect(renderVoiceFunnel(report)).toContain('elmúlt 12 óra');
+  });
+});
+
+describe('🔴 a `delivered` szám a KIMENETEL-sorokból is jön', () => {
+  it('a késve befejeződő feldolgozás is beleszámít (mérve 2026-09-08 01:35)', async () => {
+    const report = await buildVoiceFunnelReport({
+      projectRoot: '/p',
+      day: '2026-09-08',
+      read: async (): Promise<string> => [
+        line('MA-VOICE-SPEECH-DETECTED', { detected: 9, delivered: 2 }),
+        line('MA-VOICE-SPEECH-DROPPED', { deliveredSoFar: 3 }),
+      ].join(NEWLINE),
+    });
+
+    // ⭐ A DETECTED sor 2-t mondott, de a kimenetel-sor 3-at — a nagyobb az igaz.
+    expect(report.delivered).toBe(3);
+    expect(report.speechDetected).toBe(9);
+  });
+
+  it('a `deliveredSoFar` nélküli kimenetel-sor nem rontja el a számot', async () => {
+    const report = await buildVoiceFunnelReport({
+      projectRoot: '/p',
+      day: '2026-09-08',
+      read: async (): Promise<string> => [
+        line('MA-VOICE-SPEECH-DETECTED', { detected: 5, delivered: 4 }),
+        line('MA-VOICE-SPEECH-QUEUED'),
+      ].join(NEWLINE),
+    });
+
+    expect(report.delivered).toBe(4);
   });
 });

@@ -104,7 +104,53 @@ describe('voice-channel-recorder', () => {
 
       expect(outcome.transcribed).toBe(false);
       expect(outcome.detail).toContain('ismert hallucináció');
+      expect(outcome.missed).toBe('not-understood');
       expect(calls).toEqual([]);
+    });
+
+    it('🔴 az STT IDŐTÚLLÉPÉS nem „nem értettem", hanem TECHNIKAI HIBA (élő adat, 2026-09-08)', async () => {
+      const { bridge, calls } = makeBridge();
+
+      // Az `stt.client.ts` MINDEN bukásnál `suspicious: true`-t ad — a timeout-ágon is.
+      // ⚠️ Élőben 3/3 felvétel így „hallottam, de nem értettem"-ként jelent meg, pedig
+      // egyik sem volt átirat: a felismerés 5 perc után sem fejeződött be.
+      const outcome = await handleFinishedRecording({
+        ...BASE,
+        bridge: bridge,
+        transcribe: makeStt({
+          ok: false,
+          suspicious: true,
+          text: '',
+          detail: 'A felismerés 5 perc után sem fejeződött be.',
+        }) as never,
+        read: READ_OK as never,
+      });
+
+      // ⭐ A LÉNYEG: NEM `not-understood`. Az owner ne higgye, hogy rosszul beszélt —
+      // a megismétlés tisztábban SEMMIT nem segítene.
+      expect(outcome.missed).toBe('recognition-failed');
+      expect(outcome.detail).toContain('5 perc');
+      expect(calls).toEqual([]);
+    });
+
+    it('⭐ a „gyanús" CSAK sikeres felismerésnél jelent „nem értettem"-et', async () => {
+      const { bridge } = makeBridge();
+
+      const doubtful = await handleFinishedRecording({
+        ...BASE,
+        bridge: bridge,
+        transcribe: makeStt({ ok: true, suspicious: true, suspicionReason: 'ismétlődő minta' }) as never,
+        read: READ_OK as never,
+      });
+      const failed = await handleFinishedRecording({
+        ...BASE,
+        bridge: bridge,
+        transcribe: makeStt({ ok: false, suspicious: true, text: '' }) as never,
+        read: READ_OK as never,
+      });
+
+      expect(doubtful.missed).toBe('not-understood');
+      expect(failed.missed).toBe('recognition-failed');
     });
 
     it('üres átiratot sem ad tovább', async () => {
