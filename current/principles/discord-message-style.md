@@ -240,3 +240,53 @@ Nem elég **helyes** és **tömör**: a **darabszám időegységre** is számít
 📌 **Az alapértelmezés a NEM-KÜLDÉS.** Az üzenet a kivétel, amit indokolni kell — nem fordítva.
 Ami nem éri el a küszöböt, az a **repóba** megy *(`STATE-NOW.md`, `TASKS.md`)*, ahol **kereshető**
 és nem takar el semmit.
+
+---
+
+## 🔴 2026-09-09 (hajnal) — A SPAM MÉRVE: 42 %-a GÉPI volt, nem fogalmazási hiba
+
+> **Owner, 2026-09-08 21:02:** *„megint kicsit össze lett spam-elve a discord.... vissza tudod
+> olvasni ott az utolsó 100 üzenetet?"*
+
+**A visszaolvasás eredménye** *(`delivered-inbound.jsonl` + `outbound-log.jsonl`, 2026-09-08)*:
+
+| | Darab |
+|---|---|
+| Az owner üzenetei aznap | **49** |
+| **Az én üzeneteim** | **72** — arány **1,4 : 1** |
+| ├─ ebből **automata** | **30 (42 %)** |
+| │  ├─ *„📨 Átment az üzeneted."* nyugta | **17** |
+| │  ├─ hang-felismerés bukott | **11** |
+| │  └─ egyéb hang | **2** |
+| └─ saját, érdemi | **42** |
+
+### ⭐ A TANULSÁG, ami az eddigieket felülírja
+
+Eddig minden spam-panaszra a **fogalmazásomat** vizsgáltam *(hossz, tagolás, emojik)*. **Rossz
+helyen kerestem.** A mérés szerint majdnem a fele **gépi zaj** volt — olyan üzenetek, amiket
+**nem is én döntöttem el, hogy elküldök**.
+
+🔴 **A 17 nyugtát az owner 2026-09-08 13:19-kor KIFEJEZETTEN megtiltotta** — és a szabályt
+**fel is írtam** *(`focus-support.md` 6️⃣)*. ⛔ **De csak a szabály-fájlba került be, a KÓDBA
+nem.** A `notifyDelivered` változatlanul futott tovább.
+
+### 📌 A hibaosztály, amit ebből tanulok
+
+**Egy viselkedési szabály felírása NEM lépteti életbe, ha a viselkedést KÓD végzi.**
+
+```
+Új owner-szabály  →  1. felírom a principle-be        (megvolt)
+                     2. MEGKERESEM, ki hajtja végre    ⛔ EZ MARADT EL
+                     3. ha KÓD → bekötöm + teszt
+```
+
+⚠️ **Ugyanez a minta korábban is:** a „ne írj alvás közben" szabályt is felírtam, majd
+**~10 üzenetet küldtem éjjel** — mert semmi nem **kényszerítette ki**. A különbség most az,
+hogy ez **mérhetővé** vált: a nyugta gépi, tehát **megszámolható**.
+
+⭐ **Ellenőrző kérdés minden új szabálynál:** *„ha holnap elfelejtem, mi akadályozza meg, hogy
+megszegjem?"* Ha a válasz „semmi", a szabály **nincs bevezetve**, csak leírva.
+
+**Javítva:** `discord.receipt.ts` → `shouldSendDeliveryNotice()` — egyetlen üzenetre **néma**,
+kettőtől felfelé szól *(így a 2026-09-07-es „most ment el x üzeneted" kérés is teljesül)*.
+4 teszt, CLI **760/760**.
