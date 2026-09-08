@@ -3839,3 +3839,57 @@ naplózás elnyomná a valódi eseményt.
 - **Teszt:** CLI **721/721** · szerver **99/99** · fordítás tiszta
 - **Commitolva + pusholva:** `f9b1a70`
 - **A make-before-break tartja** — `adopted: true`, a szerver a `client-test` alatt is kiszolgál
+
+
+---
+
+## ⏳ 2026-09-08 12:30–12:37 — A ZÁRÓ LÉPÉS TELEPÍTÉSRE VÁR (szándékosan nem erőltettem)
+
+### A mérés
+
+| Kérdés | Válasz |
+|---|---|
+| Kint van-e az új felügyelő-kód? | ⛔ **NINCS** — a szerver **11:53**-kor indult *(uptime 2523 s)*, a `f9b1a70` commit **12:07:59**-kor volt |
+| `felügyelő/` sorok a szerver logjában | **0** *(következmény, nem hiba)* |
+| LDP | `dc-review-server`, **4+ perce** ugyanott — terhelt gép |
+
+### ⛔ MIÉRT NEM CSINÁLTAM MEG MÉGIS
+
+A záró lépés a **kézi figyelő leállítása** — de a jelenlegi szerverben **még a hibás felügyelő
+fut**. Éppen az a felügyelő, amelyik **11:30-kor 9+ percig nem indított újra**.
+
+⇒ Ha most leállítanám, jó eséllyel **megint elesne a Discord** — az owner csatornája —, és
+**a régi kódban nincs döntés-naplózás**, tehát még csak nem is tudnám meg, miért.
+
+📌 **A várakozás itt a helyes döntés:** a kockázat valós *(az owner csatornája)*, a nyereség
+pedig **nagyobb** a telepítés után *(a `reclaim-dead-child` / `defer-foreign` / `start` sorok
+megmondják, mi történt)*. Ugyanaz a lépés holnap ugyanennyibe kerül, de **bizonyít is**.
+
+### 🔧 Operatív megfigyelés: a FAM MCP-hídja bukott, a szerver ÉL
+
+Az MCP-kapcsolat `CONNECT_TIMEOUT`-tal elszállt. A szabály szerinti **probe** viszont:
+
+```
+ready: true · hydration.complete: true · 6/6 tár kész · uptime 1850 s
+```
+
+⇒ **Nem várakozási probléma** — a szerver egészséges, az **MCP-híd** hibás.
+🩹 A szabály fallbackje működik: a szabály-frissítés **REST-en** ment
+*(`POST /api/read`, `:39265`)*. ⛔ A „nincs FAM" nem lett volna igaz állítás.
+
+### A ZÁRÓ LÉPÉS RECEPTJE *(a következő körre)*
+
+1. Ellenőrizni, hogy a szerver **cserélődött** *(új pid, uptime kisebb, mint a `f9b1a70` óta
+   eltelt idő)*, vagy van `felügyelő/` sor a szerver logjában.
+2. Leállítani a **kézi** figyelőt *(a pid az életjel-fájlban)*.
+3. **60 mp-en belül** meg kell jelennie a felügyelő döntésének *(`start`)* — ez **bizonyítja az
+   új felügyelőt**.
+4. Utána a `[Discord-figyelő]` és `[voice] MA-VOICE-*` soroknak **látszaniuk kell** a szerver
+   logjában — ez zárja a reggeli 1. követelményt.
+5. ⚠️ Ha 2 percen belül nem jön vissza: **azonnal kézzel** *(`ma comm listen`)*.
+
+### Állapot változatlanul jó
+
+`✅ Discord-figyelő ÉL` · `✅ Bent ül a(z) „honnie-place" csatornában` · **0 hibás**
+CLI **721/721** · szerver **99/99** · a make-before-break tartja *(`adopted: true`, 42 perc
+folyamatos üzem a buildek alatt)*
