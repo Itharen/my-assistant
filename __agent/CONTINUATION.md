@@ -3622,3 +3622,84 @@ Az organizer a kovetkezo elofordulast a **lezaraskor** hozza letre ⇒ egy **le 
 
 Ugy dontott, **nem indul el delelott**. Valasz: a **15:00-as robotikashoz** indulas **14:00**.
 Felirva visszanezesre: szuperszamitogepes + minden mai kihagyott.
+
+
+---
+
+## ⭐ 2026-09-08 11:03–11:15 — A REGGEL ÉPÍTETT NAPLÓ ÉLESBEN MEGVÁLASZOLTA A KÉRDÉST
+
+### 🎯 A követelmény teljesült — és rögtön dolgozott is
+
+A reggeli 1. követelmény *(„egy kiesést nem lehet megmérni")* élesben:
+
+```
+10:57:54  🔴 KIESTEM a hang-csatornából — „honnie-place" — 5 mp után bontva
+          ok: a türelmi időn belül nem jött vissza (The operation was aborted)
+          code: MA-VOICE-DROPPED
+```
+
+⇒ **Reggel 24 belépés / 0 kilépés volt. Most a kiesés kódolva, okkal és hosszal van rögzítve.**
+
+⭐ **És a tegnap épített doctor-ellenőrzés is fogott:** 🔴 *„BE VAN ÁLLÍTVA, de a bot NINCS
+BENT"* — ez az állapot **korábban teljesen néma** volt.
+
+---
+
+## 🔴 HÁROM VALÓS HIBA, AMIT EZ A LÁTHATÓSÁG KIHOZOTT
+
+### 1. Kiesés után NEM léptünk vissza — a csatorna ÜRESEN maradt
+
+| Esemény | Idő |
+|---|---|
+| utolsó belépés | 10:49:18 |
+| kiesés | 10:57:54 |
+| **újra-belépés** | ⛔ **soha** |
+
+📌 **Tudtuk, hogy kiestünk, és nem csináltunk vele semmit.** A naplózás elkapta — a
+**cselekvés** hiányzott.
+
+🩹 `planVoiceRejoin`: **5 mp → 15 mp → 60 mp → 300 mp**, majd **kimondott feladás**.
+⛔ Nem végtelen: elveszett jogosultságot vagy törölt csatornát az újrapróbálás **nem gyógyít**.
+A feladás **megmondja a következményt** *(a csatorna ÜRES marad)* és hogy **emberi
+beavatkozás** kell.
+
+### 2. A figyelő FEKETE DOBOZ volt — a reggel megírt sorok sehova nem jutottak
+
+A `SupervisedChild` a gyermek kimenetét **kizárólag egy 12 soros gyűrűpufferbe** tette, ami
+csak **kilépéskor** került naplóba.
+
+⇒ 🔴 **Az owner reggeli kérése — *„a szerver logjában kell látnom"* — NEM teljesült.**
+A `MA-VOICE-JOINED` / `-DROPPED` sorok és a színes sáv a **figyelő** `stdout`-jára mennek,
+ami **sehova nem jutott el**. Hiába építettem meg őket.
+
+📌 **Ez az én hibám a reggeli csomagban:** megírtam a konzol-sorokat, és **nem ellenőriztem
+végig, hogy eljutnak-e oda, ahol az owner nézi.** A „megírtam" ≠ „látszik".
+
+🩹 A kimenet mostantól **`[Discord-figyelő]` címkével a szerver konzoljára** is megy.
+
+### 3. A saját tesztjeim szennyezték az ÉLES akció-naplót
+
+**22 hamis `MA-VOICE-BAR-FAILED` bejegyzés** a mai napi naplóban — mert az LDP `cli-test`
+lépése **élesben futtatja** a suite-ot, és a megfigyelő a **valódi** `logAction`-t hívta.
+
+⚠️ **Nem kozmetikai:** az akció-napló a **mérés rekordja**. Teszt-zajtól a későbbi elemzés
+**nem létező üzemi hibákat** lát — pont az a hazug adat, ami ellen az egész naplózás készült.
+
+🩹 A hiba-nyelő cserélhető; a teszt némát ad át.
+
+---
+
+## ⏳ Ami hátra van
+
+| Tétel | Állapot |
+|---|---|
+| a bot vissza a csatornába | ⏳ a következő szerver-indulás hozza az újra-belépést |
+| `[voice]` sorok a szerver logjában | ⏳ ugyanaz a kör |
+| a színes sáv élőben | ⏳ **beszéd** kell hozzá |
+| ⚠️ **a pulzus-sor hamis zöldje** | 🔍 mérve: `💬 Discord ✅ (5p)` egy **5 perce befagyott** életjelre, miközben a `doctor` 🔴-t mondott. **A kettő ellentmond** — az egyik küszöb rossz. Nem javítva |
+
+### Állapot
+
+- **Teszt:** CLI **721/721** · szerver **82/82** · fordítás **tiszta**
+- **Commitolva + pusholva:** `db91e67` · `4a2cfe9`
+- **A make-before-break igazoltan működik** *(185 mp folyamatos kiszolgálás build közben)*
