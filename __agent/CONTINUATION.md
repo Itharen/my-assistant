@@ -3023,3 +3023,42 @@ ciklusnal egy fix ebresztore epitett terv **eleve hibas** — nem azert, mert ro
 mert **rossz a tengelye**.
 
 Kanonikus: `current/principles/wake-relative-planning.md`.
+
+
+---
+
+## 🟠 2026-09-08 08:04–08:20 — DEV: a doctor-ellenőrzés tesztelhetővé téve (⏳ teszt-futás folyamatban)
+
+### A mérés: nincs miért újat kezdeni a T-52-n
+
+| Kérdés | Válasz |
+|---|---|
+| új beszéd? | ⚪ nincs — a tölcsér változatlan (25%, 4 kísérlet) |
+| megjött a T-52 owner-döntés? | ⚪ nincs *(a 3 opció a diagnózis-dokumentumban vár)* |
+
+⇒ A wakeup-utasítás szerint **nem kezdtem bele** a T-52-be. Helyette a maradék valós
+lefedettségi hiány.
+
+### A csomag: a tegnap épített doctor-ellenőrzés 5 ága TESZTELETLEN volt
+
+A `checkVoiceChannelPresence` **nem exportált**, és **életjel-fájlt olvas** ⇒ szerkezetileg
+tesztelhetetlen. Öt ága van *(nem él az életjel · nincs beállítva · régi formátum · bent van ·
+NINCS BENT)*, és a diagnosztika épp attól ér valamit, hogy **mindegyik a helyeset mondja**.
+
+🩹 A **döntés** kiemelve tiszta függvénybe: `decideVoicePresenceCheck(status) → CommCheck`.
+⭐ Ugyanaz a minta, ami ma **háromszor** fogott valós hibát *(`classifyRecordingOutcome`,
+`planFeedbackForOutcome`, `planRetryDelivery`)*.
+
+### ⏳ ÁLLAPOT — a munka NINCS commitolva, és ez SZÁNDÉKOS
+
+✅ A **típusellenőrzés zöld** *(külön `--noEmit` futás, ami nem nyúl a `dist`-hez)*.
+⏳ A **teszt-futás folyamatban** — háttérben.
+
+⚠️ **Mérve 08:20:** az LDP épp `tsc-cli` fázisban van, **93 node-folyamat** fut. A saját
+buildem **ugyanazt a `dist/`-et írná** ⇒ ⛔ nem versenyzem vele: két párhuzamos `tsc` ugyanabba
+a kimenetbe **csonka buildet** adhat, ami rosszabb, mint a lassúság.
+
+📌 **Ezért nincs commit:** a szabály szerint **csak zöld teszttel** commitolok, a zöldet pedig
+csak nyugodt gépen lehet hitelesen megmérni *(ez a tegnap mért csapda: „mérés build közben
+félrevezet")*. A forrás-változás a munkafában van, a következő kör az **első dolga** a
+teszt-futtatás + commit.
