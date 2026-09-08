@@ -3498,3 +3498,80 @@ A szerver halott volt, a `restartPending` 13 percig nem fordult ciklusba. Leáll
 
 - **Teszt:** CLI **710/710** · szerver **82/82** · fordítás zöld
 - **Commitolva + pusholva:** `fae9789` *(CJS shim)* · `f7a5b9d` *(igaz készenlét)*
+
+
+---
+
+## ✅ 2026-09-08 10:53–11:01 — A MAKE-BEFORE-BREAK ÉLESBEN IGAZOLVA
+
+### 🎯 A BIZONYÍTÉK
+
+| Idő | Pipeline fázis | Szerver |
+|---|---|---|
+| 10:57:51 | `lint-client` | pid **41304**, uptime **524 s** |
+| 10:58:38 | `lint-client` | pid **41304**, uptime **571 s** |
+| 10:59:24 | `lint-client` | pid **41304**, uptime **617 s** |
+| 11:00:10 | `dc-review-cli` | pid **41304**, uptime **663 s** |
+| 11:00:55 | `dc-review-cli` | pid **41304**, uptime **709 s** |
+
+⇒ **185 másodperc folyamatos kiszolgálás** build/teszt/review közben — **ugyanaz a PID**, nulla
+megszakítás. Ez pontosan az owner kérése: *„a szervernek futnia kéne a teljes teszt és build és
+összes többi lépés közben."*
+
+**És a státusz is ezt mondja:** `serverAdopted: true` — a wrapper **örökbe fogadta** a futó
+szervert, ahelyett hogy megölte volna.
+
+⭐ **A shim működik:** `/api/healthz` → `{"status":"ok","schemaVersion":2,"uptimeSeconds":...,"pid":41304}`
+— a `pid` mező is ott van, tehát a **készenlét-ellenőrzés is IGAZAT mond** mostantól.
+
+---
+
+## 🔴 EGY ÚJ, MÉRT HIBA: a figyelő FEKETE DOBOZ volt
+
+### A tünet
+
+A `ma comm doctor` szerint a **Discord-figyelő NEM fut** *(15 üzenet vár)*. Az életjel
+**10:49:17-nél befagyott** — de a **folyamat ÉL** *(pid 190948, 6,7 s CPU)*.
+
+⭐ **A tegnap épített doctor-ellenőrzés helyesen viselkedett:** `❓ nem állapítható meg`,
+⛔ **nem** hamis „nincs bent". Pontosan az az ág, amit a `joined === undefined` esetre írtam.
+
+### Az ok, amiért NEM tudtam diagnosztizálni
+
+A `SupervisedChild` a gyermek `stdio`-ját `pipe`-ra állítja, és a kimenetet **kizárólag egy
+12 soros gyűrűpufferbe** teszi (`captureOutput`), ami **csak KILÉPÉSKOR** kerül naplóba.
+
+⇒ **Két mért következmény:**
+
+1. 🔴 **Az owner reggeli 1. követelménye NEM teljesült.** *„Az ownernek a SZERVER LOGJÁBAN kell
+   látnia"* — a `MA-VOICE-JOINED` / `-DROPPED` sorok és a keretenkénti színes sáv a **figyelő**
+   `stdout`-jára mennek, ami **sehova nem jutott el**. Hiába építettem meg őket ma reggel.
+2. 🔴 **A befagyott életjel nem volt diagnosztizálható** — a folyamat élt, de semmilyen jel nem
+   szólt arról, mit csinál.
+
+📌 **Ez az én hibám a reggeli csomagban:** megírtam a konzol-sorokat, és **nem ellenőriztem
+végig, hogy eljutnak-e oda, ahol az owner nézi**. A „megírtam" ≠ „látszik".
+
+### 🩹 A javítás
+
+A `captureOutput` mostantól **a konzolra is továbbít**, `[Discord-figyelő]` címkével — így a
+szerver saját sorai és a gyermekéi szétválaszthatók. *(Commit `db91e67`, szerver 82/82 zöld.)*
+
+⇒ Ez egyszerre **teljesíti a követelményt** ÉS **láthatóvá teszi** a befagyott életjelet.
+
+---
+
+## ⏳ Ami a következő kör dolga
+
+| Tétel | Mi kell hozzá |
+|---|---|
+| 🔴 **a figyelő befagyott életjele** | a következő szerver-indulás után a `[Discord-figyelő]` sorok megmondják, min akadt meg. **Ez a legmagasabb prioritás** — a Discord az owner csatornája, és 15 üzenet vár |
+| `[voice] MA-VOICE-JOINED` a szerver logjában | ugyanez a kör hozza |
+| a színes sáv | **beszéd** a csatornában |
+| ⚠️ **a pulzus-sor hamis zöldje** | mérve: a pulzus `💬 Discord ✅ (5p)`-t írt egy **5 perce befagyott** életjelre, miközben a `doctor` 🔴-t. **A kettő ellentmond** — az egyik küszöb rossz |
+
+### Állapot
+
+- **Teszt:** CLI **710/710** · szerver **82/82** · fordítás zöld
+- **Commitolva + pusholva:** `db91e67`
+- **Az LDP fut**, a make-before-break **igazoltan** működik

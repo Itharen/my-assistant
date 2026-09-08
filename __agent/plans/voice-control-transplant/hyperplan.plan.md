@@ -11,7 +11,7 @@
 
 ---
 
-## 📊 STATUS — 2026-09-08 09:50
+## 📊 STATUS — 2026-09-08 11:01
 
 > ⛔ **A KORÁBBI, 18:05-ös STATUS TÚLÁLLÍTOTT.** „6/6 szakasz megépítve" ⇒ a lánc **össze van
 > kötve**, de az **átviteli arány ~1%** volt: az owner végigbeszélt egy beszélgetést, és
@@ -26,10 +26,13 @@
 | **A 3. owner-követelmény** *(🔊 hangjelzések, mint a CCAP-ban)* | ✅ **MEGÉPÍTVE** — 5 jelzés, a CCAP **eredeti hangjaival**; futásidőben igazolva (útvonal + ffmpeg-dekódolás). 🔇 `MA_VOICE_CUES=off` kikapcsoló |
 | **A veszteség kezelése** | ✅ **A BUKOTT FELISMERÉS MÁR NEM VESZ EL** — a `SttRetryQueue` bekötve a hang-csatornára (2→5→15→45 perc), forrás-helyes kézbesítéssel |
 | **Teszt** | CLI **710/710** zöld + szerver **82/82** — unit + 🧭 3 user-journey, **pozitív kontrollal** igazolva; fő `tsc` zöld; a transzplantált build emittál |
+| **🎯 MAKE-BEFORE-BREAK** | ✅ **ÉLESBEN IGAZOLVA (11:01)** — 185 mp folyamatos kiszolgálás build/teszt/review közben, **ugyanaz a PID**, `serverAdopted: true`. ⚠️ Az út nem volt egyenes: az első váltás **~25 percre levitte a szervert** (CJS `require()` vs. ESM `import.meta`) — CJS shim oldotta meg |
+| **🔴 A FIGYELŐ FEKETE DOBOZ VOLT** | 🔴 **MEGÉRTVE ÉS JAVÍTVA** — a gyermek kimenete csak egy **12 soros gyűrűpufferbe** ment ⇒ a reggel megírt `[voice]` konzol-sorok **sehova nem jutottak**. ⏳ A hatása a következő szerver-induláskor látszik |
 | **A lánc NÉMA HALÁLA** | ✅ **LÁTSZIK** — `ma comm doctor` + pulzus-sor kimondja, ha a bot **nincs bent** a csatornában. A döntés tiszta függvény (`decideVoicePresenceCheck`), **mind az öt ága** tesztelt, pozitív kontrollal |
 | **A KIESÉS MÉRHETŐSÉGE** | ✅ **MEGVAN** — mérve 24 belépés / **0 kilépés**: ilyen kód **nem is létezett**, a leválást üres `catch` nyelte el. Most **6 külön kód**, a kiesés **hosszával**, a **szerver logjában** |
 | **🎨 T-52 — ÉLŐ, keretenkénti SZÍNES sáv** | ✅ **MEGVAN** — a **zöld a tényleges `isSpeech` döntés**, nem rekonstrukció; a záró ítéletet a **leghosszabb megszakítatlan** sorozat adja. ⛔ Az átemelt kód **bájtra érintetlen** (kívülről ülünk rá). ⚠️ Eltérés: `
-`-nel zárt sorok a `` helyett — **mért** ütközés a pulzus-sorral |
+`-nel zárt sorok a `
+` helyett — **mért** ütközés a pulzus-sorral |
 | **⏰ Helyi idő** | ✅ **MEGVAN** — `status digest` · `comm doctor` · `comm voice-funnel`; a `--json` marad ISO. Élesben igazolva: `date` 09:14:18 vs. mindhárom 09:14:2x |
 | **Következő lépés** | ⏳ **TÖBB ÉLŐ MINTA** — 4 kísérlet még „kevés minta". A bukott felvételek most már **újrapróbálódnak**, tehát a következő mérés már ezzel együtt jön. ⛔ A szűrő-küszöbökhöz továbbra sem nyúlunk — **mérve nem ott van a hiba** |
 
