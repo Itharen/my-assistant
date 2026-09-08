@@ -297,78 +297,81 @@ async function checkDiscordBatch(checks: CommCheck[]): Promise<void> {
  * régi formátumú életjel *(nem tudjuk — és ezt ki is mondjuk, nem tippelünk)*.
  */
 async function checkVoiceChannelPresence(checks: CommCheck[]): Promise<void> {
-  const label: string = 'Bent ül-e a bot a HANG-csatornában';
-
   try {
-    const status: HeartbeatStatus = await readHeartbeat();
-    const voice = status.heartbeat?.voice;
-
-    if (status.state !== 'alive') {
-      checks.push({
-        id: 'voice-channel-presence',
-        area: 'discord',
-        label,
-        status: 'unknown',
-        detail: 'A figyelő életjele nem friss — a hang-jelenlét sem állapítható meg.',
-        remedy: 'Előbb a Discord-figyelőt kell rendbe tenni (l. a fenti sort).',
-      });
-
-      return;
-    }
-
-    if (!voice) {
-      checks.push({
-        id: 'voice-channel-presence',
-        area: 'discord',
-        label,
-        status: 'missing',
-        detail: 'A hang-csatorna nincs beállítva — a figyelő nem is próbál belépni.',
-        remedy: 'Ha kell: MA_DISCORD_GUILD_ID + MA_DISCORD_VOICE_CHANNEL_ID a `.env`-ben.',
-      });
-
-      return;
-    }
-
-    if (voice.joined === undefined) {
-      // ⚠️ Régi formátumú életjel. ⛔ NEM állítjuk, hogy nincs bent — azt mondjuk, nem tudjuk.
-      checks.push({
-        id: 'voice-channel-presence',
-        area: 'discord',
-        label,
-        status: 'unknown',
-        detail: 'A figyelő életjele még a régi formátumú — a bent-ülés nem állapítható meg.',
-        remedy: 'A következő figyelő-újraindulás után már látszani fog.',
-      });
-
-      return;
-    }
-
-    checks.push({
-      id: 'voice-channel-presence',
-      area: 'discord',
-      label,
-      status: voice.joined ? 'ok' : 'broken',
-      detail: voice.joined
-        ? `Bent ül${voice.channelName ? ` a(z) „${voice.channelName}" csatornában` : ''}.`
-        : 'A hang-csatorna BE VAN ÁLLÍTVA, de a bot NINCS BENT — az odabeszélt hang '
-          + 'sehova nem jut el, és semmilyen visszajelzést nem kapsz rá.',
-      ...(voice.joined
-        ? {}
-        : {
-          remedy: 'Nézd meg a `MA-VOICE-JOIN-FAILED` sort az akció-naplóban: '
-            + 'jogosultság, törölt csatorna vagy rossz azonosító a szokásos ok.',
-        }),
-    });
+    checks.push(decideVoicePresenceCheck(await readHeartbeat()));
   } catch (err: unknown) {
     checks.push({
-      id: 'voice-channel-presence',
+      id: VOICE_PRESENCE_CHECK_ID,
       area: 'discord',
-      label,
+      label: VOICE_PRESENCE_LABEL,
       status: 'unknown',
       detail: `Az életjel nem olvasható: ${err instanceof Error ? err.message : String(err)}`,
       remedy: 'Ellenőrizd a `~/.config/my-assistant/discord/listener-heartbeat.json` fájlt.',
     });
   }
+}
+
+export const VOICE_PRESENCE_CHECK_ID: string = 'voice-channel-presence';
+export const VOICE_PRESENCE_LABEL: string = 'Bent ül-e a bot a HANG-csatornában';
+
+/**
+ * A hang-jelenlét ÉRTÉKELÉSE — tiszta függvény, fájlrendszer nélkül.
+ *
+ * ⭐ MIÉRT KÜLÖN: a döntésnek **öt ága** van, és a diagnosztika épp attól ér valamit, hogy
+ * mindegyik a **helyeset** mondja. A `checkVoiceChannelPresence` viszont életjel-fájlt olvas
+ * ⇒ szerkezetileg tesztelhetetlen. *(Ugyanaz a minta, ami ma már háromszor valós hibát fogott:
+ * `classifyRecordingOutcome`, `planFeedbackForOutcome`, `planRetryDelivery`.)*
+ *
+ * 🔴 A LEGFONTOSABB ÁG: `configured && !joined` ⇒ **`broken`**. Ez az az állapot, amiről
+ * korábban **semmi** nem szólt: az owner beszélt volna a csatornába, ahol a bot nincs bent.
+ */
+export function decideVoicePresenceCheck(status: HeartbeatStatus): CommCheck {
+  const label: string = VOICE_PRESENCE_LABEL;
+  const base = { id: VOICE_PRESENCE_CHECK_ID, area: 'discord' as const, label };
+  const voice = status.heartbeat?.voice;
+
+  if (status.state !== 'alive') {
+    return {
+      ...base,
+      status: 'unknown',
+      detail: 'A figyelő életjele nem friss — a hang-jelenlét sem állapítható meg.',
+      remedy: 'Előbb a Discord-figyelőt kell rendbe tenni (l. a fenti sort).',
+    };
+  }
+
+  if (!voice) {
+    return {
+      ...base,
+      status: 'missing',
+      detail: 'A hang-csatorna nincs beállítva — a figyelő nem is próbál belépni.',
+      remedy: 'Ha kell: MA_DISCORD_GUILD_ID + MA_DISCORD_VOICE_CHANNEL_ID a `.env`-ben.',
+    };
+  }
+
+  if (voice.joined === undefined) {
+    // ⚠️ Régi formátumú életjel. ⛔ NEM állítjuk, hogy nincs bent — azt mondjuk, nem tudjuk.
+    return {
+      ...base,
+      status: 'unknown',
+      detail: 'A figyelő életjele még a régi formátumú — a bent-ülés nem állapítható meg.',
+      remedy: 'A következő figyelő-újraindulás után már látszani fog.',
+    };
+  }
+
+  return {
+    ...base,
+    status: voice.joined ? 'ok' : 'broken',
+    detail: voice.joined
+      ? `Bent ül${voice.channelName ? ` a(z) „${voice.channelName}" csatornában` : ''}.`
+      : 'A hang-csatorna BE VAN ÁLLÍTVA, de a bot NINCS BENT — az odabeszélt hang '
+        + 'sehova nem jut el, és semmilyen visszajelzést nem kapsz rá.',
+    ...(voice.joined
+      ? {}
+      : {
+        remedy: 'Nézd meg a `MA-VOICE-JOIN-FAILED` sort az akció-naplóban: '
+          + 'jogosultság, törölt csatorna vagy rossz azonosító a szokásos ok.',
+      }),
+  };
 }
 
 async function checkSttRetryQueue(checks: CommCheck[]): Promise<void> {
