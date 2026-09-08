@@ -12,8 +12,26 @@ import { promises as fs } from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { emitServerActionLog } from './action-log.util';
 import { VersionBroadcast_SocketServerService } from '../_services/socket-services/version-broadcast.socket-server-service';
+
+import { readActionLogJsonlDay } from './action-log-jsonl.util';
+import { emitServerActionLog } from './action-log.util';
+import { reportSwallowedFailure } from './swallowed-failure.util';
+
+/**
+ * Az action-log JSONL nyers sor-alakja, ahogy a riportok olvassák.
+ *
+ * ⚠️ Minden mező opcionális: a napló **append-only és sokforrású** — nem feltételezhetjük,
+ * hogy egy régi sor a mai alakot követi.
+ */
+interface ShipLogRaw_Interface {
+  ts?: string;
+  actor?: string;
+  kind?: string;
+  summary?: string;
+  ref?: string;
+  extra?: { loc_delta?: string; ldp?: string };
+}
 
 /**
  * FR #3g Phase 5 (cycle 104): no-throw domain-event broadcast helper.
@@ -22,8 +40,11 @@ import { VersionBroadcast_SocketServerService } from '../_services/socket-servic
 async function safeBroadcastDomainEvent(topic: string, op: 'create' | 'update' | 'delete', payload: unknown): Promise<void> {
   try {
     await VersionBroadcast_SocketServerService.getInstance().broadcastDomainEvent(topic, op, payload);
-  } catch {
-    // Broadcast failure should never break a write — skip silently (already action-logged on the broadcaster side).
+  } catch (err) {
+    // A szórás bukasa SOHA nem donthet meg egy irast — de a „már naplozva van az ado oldalon"
+    // feltevesre nem lehet epiteni: ha maga a szolgaltatas peldanyositasa hasal el, ott SEM
+    // keletkezik bejegyzes. Igy a kliens frissites nelkul maradna, teljesen nyomtalanul.
+    reportSwallowedFailure('reports.util.safeBroadcastDomainEvent', err);
   }
 }
 
@@ -257,33 +278,24 @@ export async function listRecentShips(limit: number = 30, days: number = 14): Pr
   }
 
   for (const dateStr of dateStrs) {
-    const filePath: string = path.join(dir, `${dateStr}.jsonl`);
+    // ⭐ A beolvasás + soronkénti értelmezés (és a HIÁNYZÓ vs. HIBÁS fájl megkülönböztetése)
+    // a közös `readActionLogJsonlDay`-ben van — lásd az ottani indoklást.
+    const rows: ShipLogRaw_Interface[] = await readActionLogJsonlDay<ShipLogRaw_Interface>({
+      filePath: path.join(dir, `${dateStr}.jsonl`),
+      issuer: 'reports.util.listShipLog',
+    });
 
-    try {
-      const content: string = await fs.readFile(filePath, 'utf8');
-      const lines: string[] = content.split(/\r?\n/).filter((l): boolean => l.trim().length > 0);
+    for (const raw of rows) {
+      if (raw.kind !== 'ship' || !raw.ts) continue;
 
-      for (const line of lines) {
-        try {
-          const raw: { ts?: string; actor?: string; kind?: string; summary?: string; ref?: string; extra?: { loc_delta?: string; ldp?: string } } =
-            JSON.parse(line) as typeof raw;
-
-          if (raw.kind !== 'ship' || !raw.ts) continue;
-
-          result.push({
-            ts: raw.ts,
-            actor: raw.actor ?? 'unknown',
-            summary: raw.summary ?? '',
-            ref: raw.ref ?? '',
-            loc_delta: raw.extra?.loc_delta ?? '',
-            ldp: raw.extra?.ldp ?? '',
-          });
-        } catch {
-          // Skip bad lines silently — already handled by emitter side.
-        }
-      }
-    } catch {
-      // No log for this day — skip silently.
+      result.push({
+        ts: raw.ts,
+        actor: raw.actor ?? 'unknown',
+        summary: raw.summary ?? '',
+        ref: raw.ref ?? '',
+        loc_delta: raw.extra?.loc_delta ?? '',
+        ldp: raw.extra?.ldp ?? '',
+      });
     }
   }
 
@@ -343,31 +355,22 @@ export async function listAgentLog(opts: { date?: string; actor?: string; limit?
   const filePath: string = path.join(resolveRepoRoot(), '__agent', 'log', 'actions', `${date}.jsonl`);
   const result: ReportAgentLog_Row[] = [];
 
-  try {
-    const content: string = await fs.readFile(filePath, 'utf8');
-    const lines: string[] = content.split(/\r?\n/).filter((l): boolean => l.trim().length > 0);
+  const rows: ShipLogRaw_Interface[] = await readActionLogJsonlDay<ShipLogRaw_Interface>({
+    filePath: filePath,
+    issuer: 'reports.util.listAgentLog',
+  });
 
-    for (const line of lines) {
-      try {
-        const raw: { ts?: string; actor?: string; kind?: string; summary?: string; ref?: string } =
-          JSON.parse(line) as typeof raw;
+  for (const raw of rows) {
+    if (!raw.ts || !raw.actor) continue;
+    if (actorFilter !== '*' && raw.actor !== actorFilter) continue;
 
-        if (!raw.ts || !raw.actor) continue;
-        if (actorFilter !== '*' && raw.actor !== actorFilter) continue;
-
-        result.push({
-          ts: raw.ts,
-          actor: raw.actor,
-          kind: raw.kind ?? 'unknown',
-          summary: raw.summary ?? '',
-          ref: raw.ref ?? '',
-        });
-      } catch {
-        // Skip bad lines.
-      }
-    }
-  } catch {
-    // No log file for this day — return empty.
+    result.push({
+      ts: raw.ts,
+      actor: raw.actor,
+      kind: raw.kind ?? 'unknown',
+      summary: raw.summary ?? '',
+      ref: raw.ref ?? '',
+    });
   }
 
   // Most-recent first.
@@ -614,7 +617,7 @@ export async function markUserInputDone(payload: {
       return {
         ok: false,
         ts,
-        errorCode: 'MA-USER-INPUT-DONE-NOT-FOUND',
+        errorCode: 'MA-USER-INPUT-DONE-INDEX-UNRESOLVED',
         message: 'header index resolution failed',
       };
     }

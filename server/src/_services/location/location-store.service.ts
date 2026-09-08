@@ -21,6 +21,8 @@ import { appendFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises
 import * as path from 'node:path';
 import { homedir } from 'node:os';
 
+import { reportSwallowedFailure } from '../../_collections/swallowed-failure.util.js';
+
 import {
   DEFAULT_LOCATION_CONFIG,
   type LocationConfig,
@@ -77,7 +79,12 @@ export async function appendLocation(entry: StoredLocation): Promise<boolean> {
     await appendFile(file, `${JSON.stringify(entry)}\n`, 'utf-8');
 
     return true;
-  } catch {
+  } catch (err) {
+    // Egy meghiúsult írás ADATVESZTÉS: az a helyzet-pont sehol nem létezik többé. A `false`
+    // a hívónak szól, a napló-sor pedig nekünk — enélkül csak annyi látszana, hogy
+    // „kevés pont van", és senki nem tudná, hogy az írás volt a baj.
+    reportSwallowedFailure('location-store.appendLocation', err);
+
     return false;
   }
 }
@@ -95,12 +102,17 @@ export async function readLocations(): Promise<StoredLocation[]> {
       .map((line: string): StoredLocation | null => {
         try {
           return JSON.parse(line) as StoredLocation;
-        } catch {
+        } catch (err) {
+          // A sérült sor kimarad — de nem tűnik el. Ha sok ilyen van, a baj az ÍRÓ oldalon van.
+          reportSwallowedFailure('location-store.parseLine', err);
+
           return null;
         }
       })
       .filter((entry): entry is StoredLocation => entry !== null);
-  } catch {
+  } catch (err) {
+    reportSwallowedFailure('location-store.readLocations', err);
+
     return [];
   }
 }
@@ -131,7 +143,11 @@ export async function pruneStore(
     await rename(temporary, file);
 
     return entries.length - kept.length;
-  } catch {
+  } catch (err) {
+    // ⚠️ A `0` azt jelentené, hogy „nem volt mit kitakarítani" — pedig az is lehet, hogy NEM
+    // SIKERÜLT. A különbség számít: a második esetben a lejárt helyzetek OTT MARADNAK a tárban.
+    reportSwallowedFailure('location-store.pruneStore', err);
+
     return 0;
   }
 }

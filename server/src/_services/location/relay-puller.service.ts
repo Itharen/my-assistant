@@ -19,8 +19,9 @@
 // az úton, az adat ott marad, és a következő kör újra hozza. Fordított sorrendben (törlés
 // lehúzáskor) egy megszakadt válasz **véglegesen** elnyelné a helyzetet.
 
-import { DyFM_Log } from '@futdevpro/fsm-dynamo';
+import { DyFM_Error, DyFM_Log } from '@futdevpro/fsm-dynamo';
 
+import { reportSwallowedFailure } from '../../_collections/swallowed-failure.util.js';
 import { appendLocation } from './location-store.service.js';
 import { decideHomeState, parseOwnTracksLocation, toStoredLocation } from './location.retention.js';
 import type { HomeState, OwnTracksLocation, StoredLocation } from './location.models.js';
@@ -269,6 +270,19 @@ async function fetchWithTimeout(url: string, init: RequestInit): Promise<Respons
 
   try {
     return await fetch(url, { ...init, signal: controller.signal });
+  } catch (err) {
+    // ⭐ AZ IDŐTÚLLÉPÉS ÉS EGY HÁLÓZATI HIBA KÜLÖNBÖZŐ DOLOG, de az `AbortError` eddig
+    // ugyanúgy nézett ki, mint bármi más — a hívó naplója „elbukott a lehúzás"-t írt, és
+    // nem derült ki, hogy a relay LASSÚ volt-e vagy ELÉRHETETLEN.
+    if ((err as Error)?.name === 'AbortError') {
+      throw new DyFM_Error({
+        error: err,
+        errorCode: 'MA-RELAY-PULL-TIMEOUT',
+        message: `A relay ${PULL_TIMEOUT_MS} ms alatt nem válaszolt (${url}).`,
+      });
+    }
+
+    throw err;
   } finally {
     clearTimeout(timer);
   }
@@ -278,7 +292,11 @@ async function fetchWithTimeout(url: string, init: RequestInit): Promise<Respons
 async function safeJson(response: Response): Promise<(RelayPullResponse & { removed?: number }) | null> {
   try {
     return await response.json() as RelayPullResponse & { removed?: number };
-  } catch {
+  } catch (err) {
+    // ⚠️ A `null` azt jelenti a hívónak, hogy „nincs értelmezhető válasz". Ez helyes — ⛔ de
+    // némán ugyanúgy nézne ki, mint egy üres relay. A kettő között ÓRIÁSI a különbség.
+    reportSwallowedFailure('relay-puller.safeJson', err);
+
     return null;
   }
 }

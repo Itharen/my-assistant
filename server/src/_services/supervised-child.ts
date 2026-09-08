@@ -12,6 +12,7 @@
 
 import { spawn, type ChildProcess } from 'node:child_process';
 
+import { isProcessAlive } from '../_collections/process-alive.util.js';
 import { emitServerActionLog } from '../_collections/action-log.util.js';
 
 import {
@@ -139,7 +140,7 @@ export class SupervisedChild {
       childPid: this.child?.pid ?? null,
       // ⚠️ A `child` LÉTEZÉSE nem bizonyítja, hogy a folyamat él — az elmaradt `exit`
       // esemény pont ezt a hazugságot hozza létre.
-      childAlive: this.child?.pid !== undefined && isPidAlive(this.child.pid),
+      childAlive: this.child?.pid !== undefined && isProcessAlive(this.child.pid),
       prerequisitesOk: prerequisites.ok,
       runningElsewhere: this.config.isRunningElsewhere(),
     });
@@ -384,21 +385,3 @@ export function registerShutdownHooks(child: SupervisedChild): void {
   }
 }
 
-/**
- * ÉL-e a folyamat.
- *
- * 🔴 MIÉRT KELL: a `ChildProcess` hivatkozás létezése **nem bizonyítja**, hogy a folyamat él.
- * Ha a `exit` esemény elmarad, a hivatkozás beragad, és a felügyelő örökre azt hiszi, hogy
- * minden rendben — pontosan ez történt 2026-09-08 11:30-kor.
- *
- * ⚠️ A `kill(pid, 0)` nem küld jelet, csak létezést vizsgál.
- */
-function isPidAlive(pid: number): boolean {
-  try {
-    process.kill(pid, 0);
-
-    return true;
-  } catch {
-    return false;
-  }
-}

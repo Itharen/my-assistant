@@ -3,9 +3,12 @@ import { Request, Response } from 'express';
 import { DyFM_HttpCallType } from '@futdevpro/fsm-dynamo';
 import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
 
+import { readActionLogFailureStats } from '../../_collections/action-log.util.js';
+
 const BOOT_TIME_MS: number = Date.now();
-// A valasz bovult a `pid`-del (2026-09-08) => a schema-verzio no.
-const HEALTH_SCHEMA_VERSION: number = 2;
+// A valasz bovult a `pid`-del (2026-09-08), majd az elveszett action-log irasok merlegevel
+// (2026-09-09) => a schema-verzio no.
+const HEALTH_SCHEMA_VERSION: number = 3;
 
 interface HealthResponse {
   status: 'ok';
@@ -23,6 +26,14 @@ interface HealthResponse {
    * `Application start failed` allt. A hamis „ready" 22 percig fedte el, hogy a szerver halott.
    */
   pid: number;
+  /**
+   * Hany action-log bejegyzes veszett el ugy, hogy MEG JELEZNI SEM tudtuk.
+   *
+   * A `> 0` azt jelenti, hogy a naplo HIANYOS. Ezt azert adjuk ki itt, mert az `action-log`
+   * vegso hiba-aga definicio szerint nem tud naplozni (nincs mukodo kimenete) — a szamlalo
+   * viszont a memoriaban el, tehat lekerdezheto. A hiany igy nem marad lathatatlan.
+   */
+  actionLogDroppedCount: number;
 }
 
 /** Minimal liveness proof used by the client and the deterministic workspace launcher. */
@@ -44,6 +55,7 @@ export class Health_Controller extends DyNTS_Controller {
             schemaVersion: HEALTH_SCHEMA_VERSION,
             uptimeSeconds: Math.max(0, Math.floor((Date.now() - BOOT_TIME_MS) / 1000)),
             pid: process.pid,
+            actionLogDroppedCount: readActionLogFailureStats().count,
           };
           res.send(response);
         } ],

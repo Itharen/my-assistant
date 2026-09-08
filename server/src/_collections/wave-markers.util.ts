@@ -4,13 +4,13 @@
 //
 // FR #3b-WAVE-UI Phase 5e.2 (cycle 88).
 //
-// No-throw kontraktus: olvasási hiba → emitServerActionLog + üres `[]` vissza.
+// No-throw kontraktus: a beolvasás és a hibakezelés a közös `readActionLogJsonlDay`-ben van
+// (hiányzó nap = várt, csendes; hibás olvasás = naplózott) — innen mindig lista jön vissza.
 
-import { promises as fs } from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { emitServerActionLog } from './action-log.util';
+import { readActionLogJsonlDay } from './action-log-jsonl.util';
 
 /** Wave-marker event-class kategóriák — `current/feature-requests/wave-panel-ui.md` Phase 5e szakasz. */
 export type WaveMarker_Kind = 'törés' | 'megoszló-erő' | '3x3-trigger';
@@ -79,35 +79,15 @@ export async function readWaveMarkers(sinceMs: number, untilMs: number): Promise
   const result: WaveMarker_Row[] = [];
 
   for (const dateStr of enumerateDateStrs(sinceMs, untilMs)) {
-    const filePath: string = path.join(dir, `${dateStr}.jsonl`);
-    let content: string;
+    // ⭐ A beolvasás + soronkénti értelmezés a közös `readActionLogJsonlDay`-ben van. Ott
+    // dől el a HIÁNYZÓ nap (várt, csendes) és a HIBÁS olvasás (naplózott) különbsége is —
+    // itt korábban mindkettő ugyanazon a néma `continue`-n távozott.
+    const rows: RawActionLogRow_Interface[] = await readActionLogJsonlDay<RawActionLogRow_Interface>({
+      filePath: path.join(dir, `${dateStr}.jsonl`),
+      issuer: 'wave-markers.util.readWaveMarkers',
+    });
 
-    try {
-      content = await fs.readFile(filePath, 'utf8');
-    } catch {
-      // No log for this day — skip silently.
-      continue;
-    }
-
-    const lines: string[] = content.split(/\r?\n/).filter((l: string): boolean => l.trim().length > 0);
-
-    for (const line of lines) {
-      let raw: RawActionLogRow_Interface;
-
-      try {
-        raw = JSON.parse(line) as RawActionLogRow_Interface;
-      } catch (err) {
-        const e: Error = err instanceof Error ? err : new Error(String(err));
-
-        await emitServerActionLog({
-          actor: 'server',
-          kind: 'error',
-          summary: `[MA-WAVE-MARKERS-PARSE-FAIL] ${dateStr}: ${e.message.slice(0, 100)}`,
-          extra: { errorCode: 'MA-WAVE-MARKERS-PARSE-FAIL', issuer: 'wave-markers.util.readWaveMarkers', dateStr },
-        });
-        continue;
-      }
-
+    for (const raw of rows) {
       const eventClass: string | undefined = raw.extra?.event_class;
 
       if (!raw.ts || !eventClass || !ALLOWED_EVENT_CLASSES.has(eventClass)) {

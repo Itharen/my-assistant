@@ -76,8 +76,38 @@ export async function emitServerActionLog(entry: ServerActionLogEntry): Promise<
     };
     try {
       process.stderr.write(`[server/action-log] WRITE FAILED: ${JSON.stringify(errObj)}\n`);
-    } catch {
-      // Last-resort silent (stderr unwritable — recurse-resistant).
+    } catch (stderrErr) {
+      // 🔴 A VÉGSŐ ESET: még a `stderr` sem írható. Naplózni ⛔ nem tudunk — pont az a csatorna
+      // hiányzik, amivel naplóznánk, és bármi további írás-kísérlet ugyanígy elszállna.
+      //
+      // ⭐ DE A NÉMASÁG NEM AZ EGYETLEN ALTERNATÍVA: amit nem tudunk KIÍRNI, azt még
+      // MEGSZÁMOLHATJUK. A számláló a folyamat memóriájában él, tehát nem függ semmilyen
+      // I/O-tól, és a `/api/health` végponton lekérdezhető ⇒ az elveszett bejegyzések ténye
+      // **kiderül**, még ha a tartalmuk el is veszett.
+      noteUnreportableActionLogFailure(stderrErr);
     }
   }
+}
+
+/** Hány action-log bejegyzés veszett el úgy, hogy még jelezni sem tudtuk. */
+let unreportableFailureCount: number = 0;
+
+/** A legutóbbi ilyen hiba szövege — `null`, ha még nem volt ilyen. */
+let lastUnreportableFailure: string | null = null;
+
+/** A számláló léptetése. ⛔ Ez a függvény maga SEMMILYEN I/O-t nem végez — nem is szabad neki. */
+function noteUnreportableActionLogFailure(err: unknown): void {
+  unreportableFailureCount++;
+  lastUnreportableFailure = String(err);
+}
+
+/**
+ * Az ELVESZETT, jelezhetetlen action-log írások mérlege.
+ *
+ * ⚠️ A `count > 0` azt jelenti, hogy a napló **hiányos** — az abban az időszakban hozott
+ * következtetések ennyivel kevesebb tényre épülnek. A `/api/health` ezt kiadja, hogy a hiány
+ * ne csak a jövőbeli olvasó gyanúja legyen.
+ */
+export function readActionLogFailureStats(): { count: number; lastError: string | null } {
+  return { count: unreportableFailureCount, lastError: lastUnreportableFailure };
 }

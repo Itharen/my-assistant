@@ -14,6 +14,8 @@ import { homedir } from 'node:os';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { reportSwallowedFailure } from '../_collections/swallowed-failure.util.js';
+import { isProcessAlive } from '../_collections/process-alive.util.js';
 import { registerShutdownHooks, SupervisedChild } from './supervised-child.js';
 
 /** Indítás előtti türelmi idő — hagyjuk a szervert felállni. */
@@ -126,7 +128,13 @@ function isListenerAliveElsewhere(): boolean {
     if (typeof parsed.pid === 'number' && !isProcessAlive(parsed.pid)) return false;
 
     return true;
-  } catch {
+  } catch (err) {
+    // ⚠️ A `false` az ÓVATOS irány — inkább induljunk el feleslegesen, mint hogy egyáltalán ne
+    // legyen figyelő. ⛔ De ez a döntés eddig NYOMTALAN volt: egy sérült életjel-fájl miatt
+    // minden indulásnál egy MÁSODIK figyelő állt volna a már futó mellé, és a duplikált
+    // üzenet-feldolgozás okát semmi nem árulta volna el.
+    reportSwallowedFailure('discord-listener.isListenerAliveElsewhere', err);
+
     return false;
   }
 }
@@ -142,13 +150,3 @@ export function resolveListenerHeartbeatFile(): string {
   return path.join(homedir(), '.config', 'my-assistant', 'discord', 'listener-heartbeat.json');
 }
 
-/** Él-e még az adott folyamat? A `kill(pid, 0)` nem küld jelet, csak létezést kérdez. */
-function isProcessAlive(pid: number): boolean {
-  try {
-    process.kill(pid, 0);
-
-    return true;
-  } catch {
-    return false;
-  }
-}

@@ -9,6 +9,8 @@
 
 import { execFileSync } from 'child_process';
 
+import { reportSwallowedFailure } from './swallowed-failure.util.js';
+
 /** Egy normalizált organizer task — minimális mezőkkel a dashboard task-widget-hez. */
 export interface FoTaskItem_Interface {
   ref: string;
@@ -129,6 +131,11 @@ export function readOrganizerTasks(limit: number = 12): FoTasksResult_Interface 
 
     return { available: true, items };
   } catch (err) {
+    // ⚠️ Az `available: false` a hivonak elmondja, hogy nincs adat — a KONZOLON viszont eddig
+    // semmi nem latszott. Egy elszallt `fo` hivas (rossz kulcs, halott szerver) igy
+    // megkulonboztethetetlen volt attol, hogy egyszeruen nincs feladat.
+    reportSwallowedFailure('fo-tasks.util.listTasks', err);
+
     return { available: false, items: [], error: (err as Error).message };
   }
 }

@@ -84,15 +84,31 @@ function levelToValue(level: string | undefined): number {
 }
 
 /**
- * Olvas `__agent/state/3x3-log.jsonl`-ből és explode-ol minden sort 3 wave row-ra
- * (astral/mental/matter). A `limit` az utolsó N JSONL sorra szűkít (max 100).
+ * Egy MÁR ÉRTELMEZETT sor, amiről a `readRawJsonlRows` garantálja, hogy VAN időbélyege.
  *
- * Hibás JSON sorok skip-elve (`MA-WAVE-JSONL-PARSE-FAIL` action-log emit-tel).
- * Fájl-nem-található / olvasási hiba → üres `rows: []` + action-log
- * (`MA-WAVE-JSONL-READ-FAIL`), no-throw.
+ * ⚠️ Enélkül minden hívó újra ellenőrizné a `ts`-t (vagy — rosszabb — nem ellenőrizné, és a
+ * fordítóból `string | undefined` szivárogna tovább). A kiemelés után a garancia a TÍPUSBAN van.
  */
-export async function readWavesFromJsonl(limit: number): Promise<WaveJsonl_Row[]> {
-  const safeLimit: number = Math.min(Math.max(limit, 1), 100);
+type TimestampedJsonlRow_Type = RawJsonlRow_Interface & { ts: string };
+
+/**
+ * A JSONL BEOLVASÁSA ÉS SORONKÉNTI ÉRTELMEZÉSE — **egyetlen** helyen.
+ *
+ * 🔴 MIÉRT KÜLÖN FÜGGVÉNY: ez a blokk korábban **szó szerint kétszer** szerepelt
+ * (`readWavesFromJsonl` + `loadAllSnapshotRowsForSync`), és emiatt a `MA-WAVE-JSONL-READ-FAIL`
+ * és a `MA-WAVE-JSONL-PARSE-FAIL` kódok is kétszer. ⚠️ A duplikált hibakód nem kozmetikai
+ * probléma: a naplóból **nem dönthető el, MELYIK út bukott el** — a kód elvesztette azt az
+ * egyetlen tulajdonságát, amiért létezik (az azonosíthatóságot).
+ *
+ * ⛔ A megoldás a KIEMELÉS, nem a kódok átnevezése: a két hívó ugyanazt csinálja, tehát a
+ * *működésnek* kell egy helyen lennie. Az `issuer` mondja meg, ki kérte — így a hívó
+ * továbbra is azonosítható marad a naplóban.
+ *
+ * @param issuer a hívó neve, ez kerül az action-logba.
+ * @param tailLimit ha meg van adva, csak az UTOLSÓ ennyi sor.
+ * @returns az értelmezett sorok; hibás sor kimarad, olvasási hibánál üres tömb. ⛔ Nem dob.
+ */
+async function readRawJsonlRows(issuer: string, tailLimit?: number): Promise<TimestampedJsonlRow_Type[]> {
   const jsonlPath: string = resolveJsonlPath();
 
   let content: string;
@@ -104,18 +120,17 @@ export async function readWavesFromJsonl(limit: number): Promise<WaveJsonl_Row[]
       actor: 'server',
       kind: 'error',
       summary: `[MA-WAVE-JSONL-READ-FAIL] ${e.message.slice(0, 200)}`,
-      extra: { errorCode: 'MA-WAVE-JSONL-READ-FAIL', issuer: 'wave-jsonl.util.readWavesFromJsonl', path: jsonlPath, stack: e.stack },
+      extra: { errorCode: 'MA-WAVE-JSONL-READ-FAIL', issuer: issuer, path: jsonlPath, stack: e.stack },
     });
 
     return [];
   }
 
   const lines: string[] = content.split(/\r?\n/).filter((l: string): boolean => l.trim().length > 0);
-  const tail: string[] = lines.slice(-safeLimit);
+  const selected: string[] = tailLimit === undefined ? lines : lines.slice(-tailLimit);
+  const rows: TimestampedJsonlRow_Type[] = [];
 
-  const rows: WaveJsonl_Row[] = [];
-
-  for (const line of tail) {
+  for (const line of selected) {
     let raw: RawJsonlRow_Interface;
     try {
       raw = JSON.parse(line) as RawJsonlRow_Interface;
@@ -125,15 +140,33 @@ export async function readWavesFromJsonl(limit: number): Promise<WaveJsonl_Row[]
         actor: 'server',
         kind: 'error',
         summary: `[MA-WAVE-JSONL-PARSE-FAIL] ${e.message.slice(0, 100)} — line skipped`,
-        extra: { errorCode: 'MA-WAVE-JSONL-PARSE-FAIL', issuer: 'wave-jsonl.util.readWavesFromJsonl', linePreview: line.slice(0, 120) },
+        extra: { errorCode: 'MA-WAVE-JSONL-PARSE-FAIL', issuer: issuer, linePreview: line.slice(0, 120) },
       });
       continue;
     }
 
+    // Időbélyeg nélkül a sor nem helyezhető el az idővonalon — kihagyjuk.
     if (!raw.ts) {
       continue;
     }
+    rows.push(raw as TimestampedJsonlRow_Type);
+  }
 
+  return rows;
+}
+
+/**
+ * Olvas `__agent/state/3x3-log.jsonl`-ből és explode-ol minden sort 3 wave row-ra
+ * (astral/mental/matter). A `limit` az utolsó N JSONL sorra szűkít (max 100).
+ *
+ * A beolvasást és a soronkénti értelmezést a `readRawJsonlRows` végzi — hibás sor kimarad,
+ * olvasási hibánál üres lista jön vissza. ⛔ Nem dob.
+ */
+export async function readWavesFromJsonl(limit: number): Promise<WaveJsonl_Row[]> {
+  const safeLimit: number = Math.min(Math.max(limit, 1), 100);
+  const rows: WaveJsonl_Row[] = [];
+
+  for (const raw of await readRawJsonlRows('wave-jsonl.util.readWavesFromJsonl', safeLimit)) {
     const kinds: WaveJsonl_Kind[] = [ 'astral', 'mental', 'matter' ];
 
     for (const kind of kinds) {
@@ -204,13 +237,14 @@ function nowIsoBudapest(): string {
 /**
  * Snapshot payload validáció. Legalább egy szint (astral/mental/material) kötelező,
  * a megadott szintek a `ALLOWED_LEVELS` halmazból. Mood/note hossz-korlát.
- * Hibás → `MA-WAVE-JSONL-INVALID-PAYLOAD` errorCode + leíró message.
+ * Hibás → az adott okhoz tartozó KÜLÖN errorCode + leíró message. (Egy közös kód
+ * mind az 5 esetre azt jelentette volna, hogy a naplóból NEM dönthető el, MI volt a baj.)
  */
 function validatePayload(payload: WaveJsonlSnapshot_Payload): { ok: true } | { ok: false; errorCode: string; message: string } {
   const hasAnyLevel: boolean = !!(payload.astral || payload.mental || payload.material);
 
   if (!hasAnyLevel) {
-    return { ok: false, errorCode: 'MA-WAVE-JSONL-INVALID-PAYLOAD', message: 'At least one of astral/mental/material required' };
+    return { ok: false, errorCode: 'MA-WAVE-JSONL-NO-LEVEL', message: 'At least one of astral/mental/material required' };
   }
 
   const levelFields: (keyof WaveJsonlSnapshot_Payload)[] = [ 'astral', 'mental', 'material' ];
@@ -219,20 +253,20 @@ function validatePayload(payload: WaveJsonlSnapshot_Payload): { ok: true } | { o
     const v: string | undefined = payload[f] as string | undefined;
 
     if (v && !ALLOWED_LEVELS.has(v)) {
-      return { ok: false, errorCode: 'MA-WAVE-JSONL-INVALID-PAYLOAD', message: `Field '${f}' has invalid level '${v}'` };
+      return { ok: false, errorCode: 'MA-WAVE-JSONL-INVALID-LEVEL', message: `Field '${f}' has invalid level '${v}'` };
     }
   }
 
   if (payload.wave_vector && !ALLOWED_VECTORS.has(payload.wave_vector)) {
-    return { ok: false, errorCode: 'MA-WAVE-JSONL-INVALID-PAYLOAD', message: `Invalid wave_vector '${payload.wave_vector}'` };
+    return { ok: false, errorCode: 'MA-WAVE-JSONL-INVALID-VECTOR', message: `Invalid wave_vector '${payload.wave_vector}'` };
   }
 
   if (payload.mood && payload.mood.length > MOOD_MAX_LEN) {
-    return { ok: false, errorCode: 'MA-WAVE-JSONL-INVALID-PAYLOAD', message: `mood exceeds ${MOOD_MAX_LEN} chars` };
+    return { ok: false, errorCode: 'MA-WAVE-JSONL-MOOD-TOO-LONG', message: `mood exceeds ${MOOD_MAX_LEN} chars` };
   }
 
   if (payload.note && payload.note.length > NOTE_MAX_LEN) {
-    return { ok: false, errorCode: 'MA-WAVE-JSONL-INVALID-PAYLOAD', message: `note exceeds ${NOTE_MAX_LEN} chars` };
+    return { ok: false, errorCode: 'MA-WAVE-JSONL-NOTE-TOO-LONG', message: `note exceeds ${NOTE_MAX_LEN} chars` };
   }
 
   return { ok: true };
@@ -353,45 +387,10 @@ export function buildWaveRowsFromSnapshot(
  * + MA-WAVE-JSONL-READ-FAIL action-log, no-throw.
  */
 export async function loadAllSnapshotRowsForSync(): Promise<{ kind: WaveJsonl_Kind; value: number; level: string; vector: WaveJsonl_Vector | null; mood: string | null; note: string | null; snapshotTs: string }[]> {
-  const jsonlPath: string = resolveJsonlPath();
-
-  let content: string;
-  try {
-    content = await fs.readFile(jsonlPath, 'utf8');
-  } catch (err) {
-    const e: Error = err instanceof Error ? err : new Error(String(err));
-    await emitServerActionLog({
-      actor: 'server',
-      kind: 'error',
-      summary: `[MA-WAVE-JSONL-READ-FAIL] ${e.message.slice(0, 200)}`,
-      extra: { errorCode: 'MA-WAVE-JSONL-READ-FAIL', issuer: 'wave-jsonl.util.loadAllSnapshotRowsForSync', path: jsonlPath, stack: e.stack },
-    });
-
-    return [];
-  }
-
-  const lines: string[] = content.split(/\r?\n/).filter((l: string): boolean => l.trim().length > 0);
   const result: { kind: WaveJsonl_Kind; value: number; level: string; vector: WaveJsonl_Vector | null; mood: string | null; note: string | null; snapshotTs: string }[] = [];
 
-  for (const line of lines) {
-    let raw: RawJsonlRow_Interface;
-    try {
-      raw = JSON.parse(line) as RawJsonlRow_Interface;
-    } catch (err) {
-      const e: Error = err instanceof Error ? err : new Error(String(err));
-      await emitServerActionLog({
-        actor: 'server',
-        kind: 'error',
-        summary: `[MA-WAVE-JSONL-PARSE-FAIL] ${e.message.slice(0, 100)} — line skipped`,
-        extra: { errorCode: 'MA-WAVE-JSONL-PARSE-FAIL', issuer: 'wave-jsonl.util.loadAllSnapshotRowsForSync', linePreview: line.slice(0, 120) },
-      });
-      continue;
-    }
-
-    if (!raw.ts) {
-      continue;
-    }
-
+  // ⚠️ `tailLimit` NÉLKÜL — a sync MINDEN sort feldolgoz, nem csak az utolsó szeletet.
+  for (const raw of await readRawJsonlRows('wave-jsonl.util.loadAllSnapshotRowsForSync')) {
     const synthPayload: WaveJsonlSnapshot_Payload = {
       astral: raw.astral,
       mental: raw.mental,

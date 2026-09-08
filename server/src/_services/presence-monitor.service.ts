@@ -15,6 +15,7 @@ import { existsSync, readdirSync, statSync } from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { reportSwallowedFailure } from '../_collections/swallowed-failure.util.js';
 import { registerShutdownHooks, SupervisedChild } from './supervised-child.js';
 
 /**
@@ -143,7 +144,12 @@ function isSampleFresh(dataDir: string): boolean {
     }
 
     return isFreshSample(newestMs, Date.now());
-  } catch {
+  } catch (err) {
+    // A `false` azt jelenti: „nem fut már valaki" ⇒ INDULUNK. Ez óvatos válasz, és helyes —
+    // de ha az ok egy olvasási hiba volt, akkor egy MÁSODIK figyelőt indítanánk a már
+    // futó mellé, teljesen némán. Ezért a döntés alapja látható marad.
+    reportSwallowedFailure('presence-monitor.isAnotherLoggerFresh', err);
+
     return false;
   }
 }
