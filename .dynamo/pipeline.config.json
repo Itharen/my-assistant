@@ -68,6 +68,7 @@
       "NODE_OPTIONS": "--import tsx"
     },
     "port": 39335,
+    "healthUrl": "http://localhost:39335/api/healthz",
     "gracefulShutdownMs": 5000
   },
   "steps": [
