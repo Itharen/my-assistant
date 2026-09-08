@@ -8,7 +8,7 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-08 17:15
+**Frissítve:** 2026-09-08 18:06
 
 ## Ma
 
@@ -28,12 +28,17 @@ A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
 5. 🔓 **Képesség-jóváhagyás** — ⚠️ **25 ⏳ / 1 ✅**: az üresjárati sávom gyakorlatilag ÜRES.
    Javasolt hármas: **C-13** feladat-kezelés · **C-10** státusz-kivonat · **C-19** alvás-ciklus
 
-## 🔴 A HANG-CSATORNA ÜRES 16:32 ÓTA — RAM-NYOMÁS, nem konfiguráció
+## 🟡 A HANG-CSATORNA ÉL — de FLAKY, és az ok-állításom HIBÁS VOLT
 
-**RAM 92,5 %** (117,6/127,1 GB) ⇒ 8 sikertelen belépés (`The operation was aborted`).
-⛔ **Nem tudom orvosolni:** VMware 28,7 · WSL 15,7 · FAM 12,2 · Chrome 9,7 GB — egyik sem az
-enyém; a my-assistant **0,6 GB alatt**. A figyelő újraindítása **nem** segített.
-⭐ Ez igazolja az ownert: *„újra kellett volna indítani a gépet”* — **szóltam** (17:14).
+**17:42:47 óta bent van.** ⚠️ **Helyesbítve:** 17:14-kor azt írtam, hogy a **RAM 92,5 %** az ok —
+**nem áll**: a visszalépés **93,9 %**-on történt, tehát **magasabb** terhelésen.
+🔴 Korrelációt írtam okságként — hiányzott a **kontroll-megfigyelés**
+(`measure-the-effect-not-just-the-cause.md`, 3. eset). Az ownernek szóltam (18:05).
+
+**Ami igaz marad:** 17:00 óta **2 sikeres / 10 sikertelen** belépés ⇒ **flaky** · a gép
+**11 napja** megy, RAM **93,9 %** ⇒ az újraindítás önmagában indokolt, de **nem ez** a
+csatorna-hiba magyarázata · 🔴 **1 hangüzenete még mindig feloldatlan** (STT 5 perces
+időtúllépés, 3/5 próba).
 
 ## 🔴 A KÉZBESÍTÉSI INCIDENS — javítva, de MÉG NEM IGAZOLVA
 
