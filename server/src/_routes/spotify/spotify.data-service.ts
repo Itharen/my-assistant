@@ -8,6 +8,8 @@
 //   modul-load alkalmával egyszer fut, aztán cache-elt.
 
 import { randomUUID } from 'node:crypto';
+
+import { DyFM_Error } from '@futdevpro/fsm-dynamo';
 import type {
   SpotifyConfig,
   PlaybackSnapshot,
@@ -53,8 +55,26 @@ function loadCliClient(): Promise<typeof import('@cli/spotify/spotify.client')> 
 /** Plain data-service — nem extend-eli a DyNTS_DataService-t (nincs Mongoose model). */
 export class Spotify_DataService {
 
-  /** Status: configured? token valid? current playback + device list. */
+  /**
+   * Status: configured? token valid? current playback + device list.
+   *
+   * ⚠️ HIBACSOMAGOLAS (REQ-SYS-ERROR-WRAP): a tenyleges logika a `getStatusInner`-ben van.
+   */
   async getStatus(): Promise<SpotifyStatusResponse> {
+    try {
+      return await this.getStatusInner();
+    } catch (error: unknown) {
+      // A nyers hiba (halozat, CLI-betoltes) kanonikus kodda alakul.
+      throw new DyFM_Error({
+        error: error,
+        errorCode: 'MA-SPOTIFY-STATUS-FAILED',
+        message: 'A(z) getStatus muvelet elszallt.',
+      });
+    }
+  }
+
+  /** A tenyleges logika — a hibacsomagolas a hivo `getStatus`-ban van. */
+  private async getStatusInner(): Promise<SpotifyStatusResponse> {
     const { loadConfig, ensureFreshToken, getCurrentPlayback, listDevices } = await loadCliClient();
     const cfg: SpotifyConfig | null = await loadConfig();
     if (!cfg) {
@@ -90,7 +110,22 @@ export class Spotify_DataService {
   }
 
   /** OAuth flow start: olvas a meglévő config-ból (clientId), state-et generál, URL-t ad vissza. */
+  /** ⚠️ HIBACSOMAGOLAS (REQ-SYS-ERROR-WRAP): a tenyleges logika a `startAuthInner`-ben van. */
   async startAuth(serverPort: number): Promise<{ url: string; state: string } | { error: string }> {
+    try {
+      return await this.startAuthInner(serverPort);
+    } catch (error: unknown) {
+      // Az engedelyezes inditasanak bukasa nem szivarogtathat belso reszletet.
+      throw new DyFM_Error({
+        error: error,
+        errorCode: 'MA-SPOTIFY-AUTH-START-FAILED',
+        message: 'A(z) startAuth muvelet elszallt.',
+      });
+    }
+  }
+
+  /** A tenyleges logika — a hibacsomagolas a hivo `startAuth`-ban van. */
+  private async startAuthInner(serverPort: number): Promise<{ url: string; state: string } | { error: string }> {
     const { loadConfig } = await loadCliClient();
     const cfg: SpotifyConfig | null = await loadConfig();
     if (!cfg) {
@@ -114,7 +149,27 @@ export class Spotify_DataService {
   }
 
   /** OAuth callback: code → tokens, mentés a CLI config-jába. */
+  /** ⚠️ HIBACSOMAGOLAS (REQ-SYS-ERROR-WRAP): a tenyleges logika a `completeAuthInner`-ben van. */
   async completeAuth(args: {
+    code: string;
+    state: string;
+    serverPort: number;
+  }): Promise<{ ok: true } | { ok: false; error: string }> {
+    try {
+      return await this.completeAuthInner(args);
+    } catch (error: unknown) {
+      // ⚠️ Az OAuth-kod EGYSZER hasznalhato: nyers hiba eseten a felhasznalo nem tudna,
+      // hogy ujra kell-e kezdenie az engedelyezest.
+      throw new DyFM_Error({
+        error: error,
+        errorCode: 'MA-SPOTIFY-AUTH-COMPLETE-FAILED',
+        message: 'A Spotify engedelyezes lezarasa elszallt.',
+      });
+    }
+  }
+
+  /** A tenyleges logika — a hibacsomagolas a hivo `completeAuth`-ban van. */
+  private async completeAuthInner(args: {
     code: string;
     state: string;
     serverPort: number;

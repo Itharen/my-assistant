@@ -17,7 +17,7 @@
 
 import { Request, Response } from 'express';
 
-import { DyFM_HttpCallType } from '@futdevpro/fsm-dynamo';
+import { DyFM_Error, DyFM_HttpCallType } from '@futdevpro/fsm-dynamo';
 import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
 
 import { Wave, Wave_Kind, Wave_Vector } from '../../_models/data-models/wave.data-model';
@@ -46,7 +46,7 @@ interface SyncStats_Interface {
 async function upsertWaveRowIdempotent(
   row: { kind: 'astral' | 'mental' | 'matter'; value: number; level: string; vector: 'up' | 'down' | 'flat' | null; mood: string | null; note: string | null; snapshotTs: string },
   issuer: string,
-): Promise<'inserted' | 'skipped' | 'failed'> {
+): Promise<'inserted' | 'skipped'> {
   try {
     const probe = new Wave_DataService({ issuer });
     const existing: Wave[] = await probe.findDataList({ snapshotTs: row.snapshotTs, kind: row.kind as Wave_Kind }, true);
@@ -82,7 +82,14 @@ async function upsertWaveRowIdempotent(
       extra: { errorCode: 'MA-WAVE-DB-INSERT-FAIL', issuer: 'wave-jsonl.controller.upsertWaveRowIdempotent', kind: row.kind, snapshotTs: row.snapshotTs, stack: e.stack },
     });
 
-    return 'failed';
+    // ⭐ A „menjunk tovabb" DONTES a HIVOE, nem ezé a fuggvenye. Korabban itt egy `'failed'`
+    // allapotot adtunk vissza — vagyis ez a fuggveny dontott arrol, hogy a hiba tolerálhato.
+    // A dontes viszont a szinkron-ciklushoz tartozik: o tudja, hogy a tobbi sor meg johet.
+    throw new DyFM_Error({
+      error: e,
+      errorCode: 'MA-WAVE-DB-INSERT-FAIL',
+      message: `A wave-sor beszurasa elszallt (${row.kind}@${row.snapshotTs}).`,
+    });
   }
 }
 
@@ -135,9 +142,14 @@ export class WaveJsonl_Controller extends DyNTS_Controller {
             let synced: number = 0;
 
             for (const row of rows) {
-              const outcome = await upsertWaveRowIdempotent(row, 'wave-log-public');
-
-              if (outcome === 'inserted') synced++;
+              // ⭐ ITT dol el, hogy egy sor bukasa tolerálhato-e: a tobbi sor MEG johet, es a
+              // felhasznalo snapshotja mar rogzult a JSONL-ben. A hiba mar naplozva van a
+              // hivottban (`MA-WAVE-DB-INSERT-FAIL`), tehat nem tunik el.
+              try {
+                if (await upsertWaveRowIdempotent(row, 'wave-log-public') === 'inserted') synced++;
+              } catch {
+                // Szandekos tovabblepes — a bukast a hivott mar rogzitette.
+              }
             }
 
             // FR #3f Phase 5.B: socket-push event a kliensnek (real-time refresh-trigger)
@@ -164,9 +176,14 @@ export class WaveJsonl_Controller extends DyNTS_Controller {
             const stats: SyncStats_Interface = { inserted: 0, skipped: 0, failed: 0, totalRows: rows.length };
 
             for (const row of rows) {
-              const outcome = await upsertWaveRowIdempotent(row, 'jsonl-sync-script');
-
-              stats[outcome]++;
+              // A koteges szinkron VEGIGMEGY: egy rossz sor nem allithatja meg a tobbi
+              // ezret. A `failed` szamlalo itt keletkezik — ott, ahol a dontes is szuletik.
+              try {
+                stats[await upsertWaveRowIdempotent(row, 'jsonl-sync-script')]++;
+              } catch {
+                // A bukast a hivott mar naplozta (`MA-WAVE-DB-INSERT-FAIL`).
+                stats.failed++;
+              }
             }
 
             await emitServerActionLog({

@@ -5,7 +5,7 @@
 //
 // Pattern source: `LIVE-projects/master-prompter/server/src/_routes/flow/flow/flow.data-service.ts`.
 
-import { DyFM_DBFilter } from '@futdevpro/fsm-dynamo';
+import { DyFM_DBFilter, DyFM_Error } from '@futdevpro/fsm-dynamo';
 import { DyNTS_DataService } from '@futdevpro/nts-dynamo';
 
 import { Wave, wave_dataParams, Wave_Kind } from '../../_models/data-models/wave.data-model';
@@ -20,12 +20,19 @@ export class Wave_DataService extends DyNTS_DataService<Wave> {
 
   /** Visszaadja a Wave row-kat az utolsó `rangeHours` órából, opcionális `kind` szűrővel. */
   async listRecent(rangeHours: number, kind?: Wave_Kind): Promise<Wave[]> {
-    const since: Date = new Date(Date.now() - rangeHours * 60 * 60 * 1000);
-    const filterBy: DyFM_DBFilter<Wave> = {
-      __created: { $gte: since },
-      ...(kind ? { kind } : {}),
-    };
+    try {
+      const since: Date = new Date(Date.now() - rangeHours * 60 * 60 * 1000);
+      const filterBy: DyFM_DBFilter<Wave> = {
+        __created: { $gte: since },
+        ...(kind ? { kind } : {}),
+      };
 
-    return await this.findDataList(filterBy, true);
+      return await this.findDataList(filterBy, true);
+    } catch (error: unknown) {
+      throw new DyFM_Error({
+        ...this.getDefaultErrorSettings('listRecent', error),
+        errorCode: 'MA-WAVE-LIST1',
+      });
+    }
   }
 }

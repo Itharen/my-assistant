@@ -6,6 +6,7 @@
 // FR forrás: `current/feature-requests/sleep-aware-notifications.md`.
 // Phase 1 MVP: time-of-day heuristic (02:00-10:00 Europe/Budapest = sleep-window).
 // Phase 2 finomítás később: activity-monitor integration + sleep-system.md formula.
+import { DyFM_Error } from '@futdevpro/fsm-dynamo';
 
 /** Sleep-state output shape — kliens/cron-job/notify-gate olvashatja. */
 export interface SleepState_Snapshot {
@@ -52,16 +53,26 @@ export class SleepState_Service {
 
   /** Aktuális snapshot — request-time evaluate, no caching. */
   getSnapshot(now: Date = new Date()): SleepState_Snapshot {
-    const hour: number = now.getHours();
-    const isInSleepWindow: boolean = isInWindow(hour, this.startHour, this.endHour);
+    try {
+      const hour: number = now.getHours();
+      const isInSleepWindow: boolean = isInWindow(hour, this.startHour, this.endHour);
 
-    return {
-      isInSleepWindow,
-      source: 'time-of-day-heuristic',
-      ts: now.toISOString(),
-      hour,
-      window: { startHour: this.startHour, endHour: this.endHour },
-    };
+      return {
+        isInSleepWindow,
+        source: 'time-of-day-heuristic',
+        ts: now.toISOString(),
+        hour,
+        window: { startHour: this.startHour, endHour: this.endHour },
+      };
+    } catch (error: unknown) {
+      // ⚠️ Ervenytelen `Date` eseten a `toISOString()` DOB. A nyers kivetel itt azt jelentene,
+      // hogy az ertesitesek nema-ablaka kiszamithatatlan — kanonikus kod kell rola.
+      throw new DyFM_Error({
+        error: error,
+        errorCode: 'MA-SLEEP-SNAPSHOT-FAILED',
+        message: 'Az alvas-ablak allapota nem allapithato meg.',
+      });
+    }
   }
 
   /** Convenience — true ha jelenleg alvás-ablak (semmi notifikáció). */

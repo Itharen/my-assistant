@@ -7,7 +7,7 @@
 
 import { Request, Response } from 'express';
 
-import { DyFM_HttpCallType } from '@futdevpro/fsm-dynamo';
+import { DyFM_Error, DyFM_HttpCallType } from '@futdevpro/fsm-dynamo';
 import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
 
 import { readWaveMarkers, type WaveMarker_Row } from '../../_collections/wave-markers.util';
@@ -48,7 +48,17 @@ export class WaveMarkers_Controller extends DyNTS_Controller {
 
 /** Clamp + default helper a `sinceMs` / `untilMs` query-paramekhez. */
 function clampMs(raw: number, fallback: number, min: number, max: number): number {
-  if (!Number.isFinite(raw) || raw <= 0) return fallback;
+  try {
+    if (!Number.isFinite(raw) || raw <= 0) return fallback;
 
-  return Math.max(min, Math.min(max, raw));
+    return Math.max(min, Math.min(max, raw));
+  } catch (error: unknown) {
+    // A vegponti bemenet-ertelmezes barmely hibaja kanonikus kodot kap: a nyers kivetel
+    // itt a kliensig jutna, es egy elgepelt query-parameter „szerverhiba"-kent latszana.
+    throw new DyFM_Error({
+      error: error,
+      errorCode: 'MA-WAVE-MARKERS-RANGE-INVALID',
+      message: 'A marker-lekerdezes idohatara nem ertelmezheto.',
+    });
+  }
 }

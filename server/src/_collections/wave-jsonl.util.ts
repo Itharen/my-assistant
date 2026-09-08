@@ -15,6 +15,8 @@ import { promises as fs } from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { DyFM_Error } from '@futdevpro/fsm-dynamo';
+
 import { emitServerActionLog } from './action-log.util';
 
 /** Wave kategória taxonómia — egyezik a Wave_Kind enummal. */
@@ -349,6 +351,22 @@ export async function appendWaveSnapshotToJsonl(
  * effect a hívó controller-ben történik (DB connection a DyNTS_GlobalService-ben).
  */
 export function buildWaveRowsFromSnapshot(
+  payload: WaveJsonlSnapshot_Payload,
+  ts: string,
+): { kind: WaveJsonl_Kind; value: number; level: string; vector: WaveJsonl_Vector | null; mood: string | null; note: string | null; snapshotTs: string }[] {
+  try {
+    return buildWaveRowsFromSnapshotInner(payload, ts);
+  } catch (error: unknown) {
+    throw new DyFM_Error({
+      error: error,
+      errorCode: 'MA-WAVE-JSONL-ROW-BUILD-FAILED',
+      message: 'A snapshot wave-sorokra bontasa elszallt.',
+    });
+  }
+}
+
+/** A tenyleges lekepezes — a hibacsomagolas a hivo `buildWaveRowsFromSnapshot`-ban van. */
+function buildWaveRowsFromSnapshotInner(
   payload: WaveJsonlSnapshot_Payload,
   ts: string,
 ): { kind: WaveJsonl_Kind; value: number; level: string; vector: WaveJsonl_Vector | null; mood: string | null; note: string | null; snapshotTs: string }[] {

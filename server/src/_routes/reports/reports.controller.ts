@@ -7,7 +7,7 @@
 
 import { Request, Response } from 'express';
 
-import { DyFM_HttpCallType } from '@futdevpro/fsm-dynamo';
+import { DyFM_Error, DyFM_HttpCallType } from '@futdevpro/fsm-dynamo';
 import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
 
 import {
@@ -282,9 +282,19 @@ export class Reports_Controller extends DyNTS_Controller {
 
 /** Query int parse + clamp helper. */
 function clampInt(raw: unknown, min: number, max: number, fallback: number): number {
-  const n: number = Number(raw);
+  try {
+    const n: number = Number(raw);
 
-  if (!Number.isFinite(n) || n < 1) return fallback;
+    if (!Number.isFinite(n) || n < 1) return fallback;
 
-  return Math.max(min, Math.min(max, Math.floor(n)));
+    return Math.max(min, Math.min(max, Math.floor(n)));
+  } catch (error: unknown) {
+    // A vegponti bemenet-ertelmezes hibaja kanonikus kodot kap: egy elgepelt query-parameter
+    // nem jelenhet meg nyers kivetelkent a kliensnel.
+    throw new DyFM_Error({
+      error: error,
+      errorCode: 'MA-REPORTS-QUERY-PARAM-INVALID',
+      message: 'A lekerdezes egyik szam-parametere nem ertelmezheto.',
+    });
+  }
 }

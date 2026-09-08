@@ -20,13 +20,37 @@ export class Capture_DataService extends DyNTS_DataService<Capture> {
 
   /** Visszaadja a legutóbbi `limit` Capture row-t (default 20). */
   async listRecent(limit: number = 20): Promise<Capture[]> {
-    const items: Capture[] = await this.getAll(true);
+    try {
+      const items: Capture[] = await this.getAll(true);
 
-    return items.slice(0, limit);
+      return items.slice(0, limit);
+    } catch (error: unknown) {
+      // A nyers adatbazis-hiba a vegponton at a kliensig jutna — kanonikus kod nelkul
+      // nem azonosithato, es a belso reszleteket is kiszivarogtatna.
+      throw new DyFM_Error({
+        ...this.getDefaultErrorSettings('listRecent', error),
+        errorCode: 'MA-CAP-LIST1',
+      });
+    }
   }
 
   /** Menti a Capture-t, és energy kind esetén fanout-ol a Wave_DataService-be. */
   async saveWithFanout(): Promise<Capture> {
+    try {
+      return await this.saveWithFanoutInner();
+    } catch (error: unknown) {
+      // A validacios agak sajat, beszedes kodot dobnak (`MA-CAP-VAL*`) — azokat NEM
+      // csomagoljuk ujra: a `DyFM_Error` lanc megorzi az eredetit, es a hivo a legkulso
+      // kodot latja. Ez a keret arrol szol, ami MEGSEM validacio: mentes, fanout, DB.
+      throw new DyFM_Error({
+        ...this.getDefaultErrorSettings('saveWithFanout', error),
+        errorCode: 'MA-CAP-SAVE1',
+      });
+    }
+  }
+
+  /** A tenyleges mentes-logika — a hibacsomagolas a hivo `saveWithFanout`-ban van. */
+  private async saveWithFanoutInner(): Promise<Capture> {
     if (this.data.kind === 'text' || this.data.kind === 'voice') {
       const text: string | undefined = this.data.text?.trim();
 

@@ -6,6 +6,8 @@
 
 import { existsSync, promises as fs } from 'node:fs';
 import { randomUUID } from 'node:crypto';
+
+import { DyFM_Error } from '@futdevpro/fsm-dynamo';
 import type {
   GoogleAssistantConfig,
   GoogleStatusResponse,
@@ -43,7 +45,26 @@ function loadCliClient(): Promise<typeof import('@cli/google/google-assistant.cl
 export class Google_DataService {
 
   /** Status: configured? tokens present? device IDs? next step suggestion. */
+  /**
+   * ⚠️ HIBACSOMAGOLAS (REQ-SYS-ERROR-WRAP): a tenyleges logika az `getStatusInner`-ben van.
+   * Igy a keret **egy helyen** all, es a torzs behuzasa valtozatlan marad — a kettot
+   * osszekeverve minden ilyen javitas hasznalhatatlan diffet adna.
+   */
   async getStatus(): Promise<GoogleStatusResponse> {
+    try {
+      return await this.getStatusInner();
+    } catch (error: unknown) {
+      // A nyers hiba (fajlrendszer, CLI-betoltes) kanonikus koddá alakul.
+      throw new DyFM_Error({
+        error: error,
+        errorCode: 'MA-GOOGLE-STATUS-FAILED',
+        message: 'A(z) getStatus muvelet elszallt.',
+      });
+    }
+  }
+
+  /** A tenyleges logika — a hibacsomagolas a hivo `getStatus`-ban van. */
+  private async getStatusInner(): Promise<GoogleStatusResponse> {
     const { loadConfig, defaultTokensPath } = await loadCliClient();
     const cfg: GoogleAssistantConfig | null = await loadConfig();
     const tokensPath: string = defaultTokensPath();
@@ -72,7 +93,25 @@ export class Google_DataService {
   }
 
   /** OAuth start — visszaad egy authorize URL-t. */
+  /**
+   * ⚠️ HIBACSOMAGOLAS (REQ-SYS-ERROR-WRAP): a tenyleges logika az `startAuthInner`-ben van.
+   * Igy a keret **egy helyen** all, es a torzs behuzasa valtozatlan marad — a kettot
+   * osszekeverve minden ilyen javitas hasznalhatatlan diffet adna.
+   */
   async startAuth(serverPort: number): Promise<{ url: string; state: string } | { error: string }> {
+    try {
+      return await this.startAuthInner(serverPort);
+    } catch (error: unknown) {
+      throw new DyFM_Error({
+        error: error,
+        errorCode: 'MA-GOOGLE-AUTH-START-FAILED',
+        message: 'A(z) startAuth muvelet elszallt.',
+      });
+    }
+  }
+
+  /** A tenyleges logika — a hibacsomagolas a hivo `startAuth`-ban van. */
+  private async startAuthInner(serverPort: number): Promise<{ url: string; state: string } | { error: string }> {
     const { loadConfig } = await loadCliClient();
     const cfg: GoogleAssistantConfig | null = await loadConfig();
     if (!cfg) return { error: 'cli/config/google.json missing — upload first via GCP Console download' };
@@ -97,7 +136,29 @@ export class Google_DataService {
   }
 
   /** OAuth callback — code → tokens → device registration → save. */
+  /**
+   * ⚠️ HIBACSOMAGOLAS (REQ-SYS-ERROR-WRAP): a tenyleges logika a `completeAuthInner`-ben van.
+   */
   async completeAuth(args: {
+    code: string;
+    state: string;
+    serverPort: number;
+  }): Promise<{ ok: true; deviceModelId: string; deviceId: string } | { ok: false; error: string }> {
+    try {
+      return await this.completeAuthInner(args);
+    } catch (error: unknown) {
+      // ⚠️ Az OAuth-kod EGYSZER hasznalhato: ha itt nyers hiba jon ki, a felhasznalo nem
+      // tudja, hogy ujra kell-e kezdenie az engedelyezest. A kanonikus kod ezt megmondja.
+      throw new DyFM_Error({
+        error: error,
+        errorCode: 'MA-GOOGLE-AUTH-COMPLETE-FAILED',
+        message: 'A Google engedelyezes lezarasa elszallt.',
+      });
+    }
+  }
+
+  /** A tenyleges logika — a hibacsomagolas a hivo `completeAuth`-ban van. */
+  private async completeAuthInner(args: {
     code: string;
     state: string;
     serverPort: number;
@@ -167,7 +228,25 @@ export class Google_DataService {
   }
 
   /** Test query — wrap a CLI sendTextQuery-t. */
+  /**
+   * ⚠️ HIBACSOMAGOLAS (REQ-SYS-ERROR-WRAP): a tenyleges logika az `sendQueryInner`-ben van.
+   * Igy a keret **egy helyen** all, es a torzs behuzasa valtozatlan marad — a kettot
+   * osszekeverve minden ilyen javitas hasznalhatatlan diffet adna.
+   */
   async sendQuery(text: string, lang?: string): Promise<QueryResult> {
+    try {
+      return await this.sendQueryInner(text, lang);
+    } catch (error: unknown) {
+      throw new DyFM_Error({
+        error: error,
+        errorCode: 'MA-GOOGLE-QUERY-FAILED',
+        message: 'A(z) sendQuery muvelet elszallt.',
+      });
+    }
+  }
+
+  /** A tenyleges logika — a hibacsomagolas a hivo `sendQuery`-ban van. */
+  private async sendQueryInner(text: string, lang?: string): Promise<QueryResult> {
     const { sendTextQuery } = await loadCliClient();
     return sendTextQuery({ text, lang });
   }
