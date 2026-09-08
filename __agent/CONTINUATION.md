@@ -2935,7 +2935,7 @@ adathibat, de nem javithattam)* · **C-10 statusz-kivonat** *(magamtol ranezhess
 
 ---
 
-## 🔍 2026-09-08 07:13–07:30 — DEV: a SÁV megvan; a diagnózis kész, az építés owner-döntésre vár
+## 🔍 2026-09-08 07:13–07:17 — DEV: a SÁV megvan; a diagnózis kész, az építés owner-döntésre vár
 
 ### 🔴 ELŐSZÖR: a saját 06:24-es mérésem ÉRVÉNYTELEN volt
 
