@@ -3893,3 +3893,72 @@ ready: true · hydration.complete: true · 6/6 tár kész · uptime 1850 s
 `✅ Discord-figyelő ÉL` · `✅ Bent ül a(z) „honnie-place" csatornában` · **0 hibás**
 CLI **721/721** · szerver **99/99** · a make-before-break tartja *(`adopted: true`, 42 perc
 folyamatos üzem a buildek alatt)*
+
+
+---
+
+# ✅ 2026-09-08 13:05 — A HURKOT LEZÁROM: minden bizonyítva élesben
+
+## 🎯 A ZÁRÓ BIZONYÍTÉK — a teljes ciklus a SZERVER LOGJÁBAN
+
+```
+13:02:03  MA-VOICE-JOINED        🔊 BENT VAGYOK a hang-csatornában — „honnie-place"
+13:03:58  MA-VOICE-DISCONNECTED  ⚠️ Elszakadt — várok · ok: a Discord bontotta, 5 mp türelmi idő
+13:04:03  MA-VOICE-DROPPED       🔴 KIESTEM — 5 mp után bontva — az idáig elmondott beszéd NEM
+                                 jutott el hozzám · ok: nem jött vissza (The operation was aborted)
+13:04:09  MA-VOICE-JOINED        🔊 BENT VAGYOK a hang-csatornában — „honnie-place"
+```
+
+⭐ **Hat másodperccel a kiesés után magától visszalépett.** Reggel ugyanez így nézett ki:
+**24 belépés, 0 kilépés, semmilyen nyom, semmilyen visszalépés.**
+
+## A FELÜGYELŐ IS BIZONYÍTVA
+
+```
+[felügyelő/Discord-figyelő] defer-foreign: Máshol már fut egy példány — csak visszanézek.
+[felügyelő/Discord-figyelő] start: Nem fut senki — indítom.
+```
+
+⇒ Leállítottam a kézi („idegen") figyelőt, és a felügyelő **75 másodpercen belül** elindította a
+sajátját — **naplózott döntéssel**. Pontosan az az átmenet, ami 11:30-kor **némán elmaradt**.
+
+## A NÉGY KÖVETELMÉNY ÁLLAPOTA
+
+| # | Követelmény | Állapot |
+|---|---|---|
+| 1 | **A kiesés legyen mérhető, a SZERVER LOGJÁBAN** | ✅ **BIZONYÍTVA ÉLESBEN** *(fenti napló)* |
+| 2 | **Élő, keretenkénti színes sáv (T-52)** | ✅ megépítve, tesztelve · ⏳ **élőben nem láttuk — beszéd kell hozzá** |
+| 3 | **Helyi idő minden állapot-kiírásban** | ✅ **BIZONYÍTVA** *(`date` 09:14:18 vs. mindhárom parancs 09:14:2x)* |
+| 4 | **Make-before-break** | ✅ **BIZONYÍTVA** *(185 mp folyamatos kiszolgálás build közben, `adopted: true`)* |
+
+## 🔴 AMIT MA ELRONTOTTAM — és ami ebből tanulság lett
+
+1. **~25 percre levittem a szervert** *(CJS `require()` vs. ESM `import.meta`)*. A `cwd`-t
+   megvizsgáltam, a **betöltési módot** nem. 🩹 CJS shim.
+2. **A `[voice]` sorokat megírtam, de nem ellenőriztem, hogy odaérnek-e**, ahol az owner nézi.
+   A felügyelt gyermek kimenete egy **12 soros pufferbe** ment. *„Megírtam" ≠ „látszik".*
+3. **A tesztjeim 22 hamis üzemi hibát írtak az éles akció-naplóba.**
+4. **Egy config-írás 0 bájtosra csonkolta** a futó rendszer LDP-configját *(git állította helyre)*.
+5. **Egy hamis megállapítást tettem** *(„küszöb-ellentmondás")*, amit a mérés cáfolt — **visszavontam**.
+
+📌 **A közös szál mindben:** a **zöld jelzés és a működő rendszer két különböző állítás.**
+
+## ⏳ AMI NYITVA MARADT — és mi indítaná újra
+
+| Tétel | Mire vár |
+|---|---|
+| 🎨 **a színes sáv élőben** | **beszéd** a hang-csatornában — a sáv csak akkor rajzol |
+| 📊 **az átviteli arány** | ugyanaz: több élő minta *(most 3, „kevés minta")* |
+
+⇒ **Mindkettő az owner beszédére vár**, kódolással nem vihető előbbre. ⛔ Ezért nem ütemezek
+újabb ébredést — az üres kör poll lenne.
+
+🔁 **Újraindítja:** beszéd a csatornában *(utána `ma comm voice-funnel` + a `[voice]` sorok a
+szerver logjában megmutatják, mit látott a rendszer)*.
+
+## Záró állapot
+
+- **Teszt:** CLI **721/721** · szerver **99/99** · fordítás tiszta
+- **Az utolsó commit:** `4a93d90`
+- `✅ Discord-figyelő ÉL` · `joined: true` — a bot bent ül a „honnie-place" csatornában
+- **A make-before-break tartja** — a szerver a buildek alatt végig kiszolgál

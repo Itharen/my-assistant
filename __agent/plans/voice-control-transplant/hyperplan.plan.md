@@ -11,7 +11,7 @@
 
 ---
 
-## 📊 STATUS — 2026-09-08 12:10
+## 📊 STATUS — 2026-09-08 13:05 — ✅ A HUROK LEZÁRVA
 
 > ⛔ **A KORÁBBI, 18:05-ös STATUS TÚLÁLLÍTOTT.** „6/6 szakasz megépítve" ⇒ a lánc **össze van
 > kötve**, de az **átviteli arány ~1%** volt: az owner végigbeszélt egy beszélgetést, és
@@ -26,6 +26,7 @@
 | **A 3. owner-követelmény** *(🔊 hangjelzések, mint a CCAP-ban)* | ✅ **MEGÉPÍTVE** — 5 jelzés, a CCAP **eredeti hangjaival**; futásidőben igazolva (útvonal + ffmpeg-dekódolás). 🔇 `MA_VOICE_CUES=off` kikapcsoló |
 | **A veszteség kezelése** | ✅ **A BUKOTT FELISMERÉS MÁR NEM VESZ EL** — a `SttRetryQueue` bekötve a hang-csatornára (2→5→15→45 perc), forrás-helyes kézbesítéssel |
 | **Teszt** | CLI **710/710** zöld + szerver **82/82** — unit + 🧭 3 user-journey, **pozitív kontrollal** igazolva; fő `tsc` zöld; a transzplantált build emittál |
+| **🎯 ZÁRÓ BIZONYÍTÉK (13:05)** | ✅ **A TELJES CIKLUS A SZERVER LOGJÁBAN:** `MA-VOICE-DISCONNECTED` → `MA-VOICE-DROPPED` *(okkal + hosszal)* → `MA-VOICE-JOINED` **6 másodperccel később**. Reggel ugyanez: 24 belépés / **0 kilépés** / nulla visszalépés |
 | **🔐 A FELÜGYELŐ NÉMA MEGÁLLÁSA** | ✅ **GYÖKERÉNÉL JAVÍTVA (12:10)** — az őrfeltétel **újraütemezés nélkül** lépett ki ⇒ beragadt `child` esetén a felügyelet **véglegesen** megállt *(mérve: 9+ perc, nulla bejegyzés)*. Most tiszta döntés-függvény, **önjavítással** halott gyermekre, és **változás-naplózással** |
 | **🎯 MAKE-BEFORE-BREAK** | ✅ **ÉLESBEN IGAZOLVA (11:01)** — 185 mp folyamatos kiszolgálás build/teszt/review közben, **ugyanaz a PID**, `serverAdopted: true`. ⚠️ Az út nem volt egyenes: az első váltás **~25 percre levitte a szervert** (CJS `require()` vs. ESM `import.meta`) — CJS shim oldotta meg |
 | **🔴 A FIGYELŐ FEKETE DOBOZ VOLT** | 🔴 **MEGÉRTVE ÉS JAVÍTVA** — a gyermek kimenete csak egy **12 soros gyűrűpufferbe** ment ⇒ a reggel megírt `[voice]` konzol-sorok **sehova nem jutottak**. ⏳ A hatása a következő szerver-induláskor látszik |
