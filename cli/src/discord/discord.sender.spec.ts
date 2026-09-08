@@ -1,4 +1,4 @@
-import { splitForDiscord } from './discord.sender.js';
+import { splitForDiscord, resolveTargetChannelId } from './discord.sender.js';
 
 describe('splitForDiscord', () => {
   it('leaves a short message in one piece', () => {
@@ -33,5 +33,25 @@ describe('splitForDiscord', () => {
     const parts = splitForDiscord(lines);
 
     expect(parts.join('\n')).toBe(lines);
+  });
+});
+
+describe('resolveTargetChannelId — 🔴 a MÉRT hiba osztálya (2026-09-07 és 2026-09-09)', () => {
+
+  it('⭐ a KIFEJEZETTEN kért csatorna nyer — ez a hang-csatornai tükör lényege', () => {
+    expect(resolveTargetChannelId('voice-123', 'text-999')).toBe('voice-123');
+  });
+
+  it('üres kérésnél a fő szöveges csatorna', () => {
+    expect(resolveTargetChannelId('', 'text-999')).toBe('text-999');
+    expect(resolveTargetChannelId(undefined, 'text-999')).toBe('text-999');
+  });
+
+  it('⚠️ CSUPA SZÓKÖZ nem cél — különben némán a rossz helyre küldenénk', () => {
+    expect(resolveTargetChannelId('   ', 'text-999')).toBe('text-999');
+  });
+
+  it('⛔ ha egyik sincs, ÜRESET ad — a hívó ebből tudja, hogy nincs hova küldeni', () => {
+    expect(resolveTargetChannelId('', undefined)).toBe('');
   });
 });

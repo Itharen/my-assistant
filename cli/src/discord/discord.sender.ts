@@ -59,7 +59,7 @@ export async function sendDiscordMessage(
   targetChannelId: string = '',
 ): Promise<DiscordSendResult> {
   const token: string = (process.env['MA_DISCORD_BOT_TOKEN'] ?? '').trim();
-  const channelId: string = targetChannelId.trim() || (process.env['MA_DISCORD_CHANNEL_ID'] ?? '').trim();
+  const channelId: string = resolveTargetChannelId(targetChannelId, process.env['MA_DISCORD_CHANNEL_ID']);
   const trimmed: string = text.trim();
 
   if (!trimmed) {
@@ -215,4 +215,22 @@ export function splitForDiscord(text: string): string[] {
   if (current) parts.push(current);
 
   return parts;
+}
+
+/**
+ * MELYIK csatornába menjen az üzenet.
+ *
+ * 🔴 MIÉRT KÜLÖN, TISZTA FÜGGVÉNY: ez a döntés **már okozott valós hibát** (2026-09-07 21:47) —
+ * a hang-csatornai tükör a **fő szöveges csatornába** ment, az owner pedig a hang-csatornát
+ * nézte, és *„semmilyen reakciót nem látott"*. A `sendDiscordMessage` hálózatot hív, ezért
+ * **szerkezetileg tesztelhetetlen** volt; így a hibás ág **soha nem bukott meg tesztben**.
+ *
+ * ⭐ 2026-09-09: ugyanez a döntés lett a `--voice` kapcsoló alapja is *(a válasz a
+ * hang-csatornába is kimegy)* ⇒ innentől **két hívó** múlik rajta, és nem maradhat fedezetlen.
+ *
+ * @param target  a kifejezetten kért csatorna — üres, ha nincs ilyen
+ * @param fallback a `MA_DISCORD_CHANNEL_ID` értéke (fő szöveges csatorna)
+ */
+export function resolveTargetChannelId(target: string | undefined, fallback: string | undefined): string {
+  return (target ?? '').trim() || (fallback ?? '').trim();
 }
