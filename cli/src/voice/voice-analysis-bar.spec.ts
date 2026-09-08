@@ -10,6 +10,7 @@ import {
   longestGreenRun,
   MIN_GREEN_RUN,
   renderBar,
+  SEGMENT_IDLE_MS,
   summarizeSegment,
   VoiceAnalysisBar,
   ZCR_GATE,
@@ -200,10 +201,16 @@ describe('VoiceAnalysisBar — az élő gyűjtés', () => {
 
   it('⛔ a kiíró hibája NEM öli meg a sávot — a felvétel a termék, a sáv csak diagnosztika', () => {
     let calls: number = 0;
-    const bar: VoiceAnalysisBar = new VoiceAnalysisBar((): void => {
-      calls += 1;
-      throw new Error('a konzol elhasalt');
-    });
+    // ⚠️ A harmadik paraméter NÉMA: enélkül ez a szándékos hiba az owner LDP-konzoljába
+    // kerülne (mérve: 3 zaj-sor a szerver logjában).
+    const bar: VoiceAnalysisBar = new VoiceAnalysisBar(
+      (): void => {
+        calls += 1;
+        throw new Error('a konzol elhasalt');
+      },
+      SEGMENT_IDLE_MS,
+      (): void => undefined,
+    );
 
     // 🔴 Mért precedens: egy megfigyelő `?.` nélkül megölte volna a felvételt.
     expect((): void => {

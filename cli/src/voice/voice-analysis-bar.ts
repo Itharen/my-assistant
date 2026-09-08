@@ -156,6 +156,16 @@ export class VoiceAnalysisBar {
   constructor(
     private readonly write: (line: string) => void,
     private readonly idleMs: number = SEGMENT_IDLE_MS,
+    /**
+     * Hova megy a **kiíró saját hibája**.
+     *
+     * ⚠️ Alapból `stderr` — de **cserélhető**, mert a teszt szándékosan elrontott kiírója
+     * különben **az owner LDP-konzolját szennyezné**. Mérve 2026-09-08 10:05: a saját
+     * pozitív kontrollom **3 zaj-sort** tett a szerver logjába. ⛔ Ez pont a T-52 célja ellen
+     * dolgozik: a konzolnak **olvashatónak** kell maradnia.
+     */
+    private readonly reportWriteError: (detail: string) => void =
+      (detail: string): void => void process.stderr.write(detail),
   ) {}
 
   /** Egy keret hozzáadása. Ha betelt a köteg, kiír egy sort. */
@@ -199,7 +209,7 @@ export class VoiceAnalysisBar {
     try {
       this.write(line);
     } catch (error: unknown) {
-      process.stderr.write(
+      this.reportWriteError(
         `[voice] a sáv kiírása nem sikerült (a felvétel ettől ÉRINTETLEN): `
         + `${error instanceof Error ? error.message : String(error)}
 `,
