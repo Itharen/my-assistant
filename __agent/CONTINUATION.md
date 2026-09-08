@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-08 03:10
+**Utoljára frissítve:** 2026-09-08 04:10
 
 ---
 
@@ -1962,6 +1962,46 @@ Interfood-rendeles (115) es a **„Bevetelt kell szereznunk"** (100).
 emlekeztet, ha van mihez kotni az emlekeztetot.
 
 🙋 Felajanlottam, hogy kivalasztom a top 3-at es datumot javaslok rajuk.
+
+
+
+---
+
+## 2026-09-08 04:10 — CSENDES KOR: elokeszites + egy TEVES RIASZTAS a sajat eszkozomben
+
+### 🟡 A `comm doctor` a NYUGALMAT jelentette gyanusnak
+
+*„A folyamat el, de az allapot-fajl 43 perce nem frissult — elkepzelheto, hogy beragadt."*
+**A valosag:** `phase: server-runtime`, `pipelineComplete: true` — a pipeline **03:19-kor
+befejezodott**, azota a szerver fut. ⇒ **Nincs mit frissiteni.**
+
+🔴 A vizsgalat a *„regen frissult"*-et **beragadasnak** olvassa, pedig `server-runtime` fazisban a
+frissites hianya a **NORMALIS** allapot. ⭐ **Es epp most a legfelrevezetobb:** amiota nincs uj
+commit, a csatorna **vegre stabilan el** — es pont ezt jelzi problemanak.
+
+📌 **Ma NEGYEDSZER ugyanaz az osztaly:** `status.json` letezese · `serverRunning: false` ·
+`lastActivityAt` · `waiting-input` — **egy mezo kora vagy neve nem a jelentese.**
+→ `DEV-HANDOFF.md` *(a javitas fejlesztes, nem az en dolgom)*.
+
+### 📅 Datum-javaslat elokeszitve (T-55 folytatas)
+
+⛔ Jovahagyas nelkul **nem irtam be** — az o elet-feladatai.
+**1.** Uzemorvos (118) → **09-15** · **2.** Interfood-rendeles (115) → **09-10**
+**3.** „Bevetelt kell szereznunk" (100) → ⛔ **NEM adok datumot**
+
+⭐ **A 3. az erdemi resz:** ez **nem feladat, hanem CEL**. Datummal csak ujabb lejart tetel lenne
+— a lista mar tele van ilyenekkel. Helyette a **mikromunkak/hackathon** tetelnek adnek datumot,
+mert az **konkret lepes**. 📌 *Egy celt nem lehet hataridovel mozgasba hozni; csak a belole
+kovetkezo lepest.*
+
+### 📧 T-54: jovahagyast kertem, NEM neztem bele
+
+Az e-mail-szuresehez **meg kell merni**, mi arasztja el a fiokot. ⚠️ De az `ma email` **nincs a
+katalogusban** ⇒ a sajat hataskor-kapum szerint **nem az enyem**.
+🙋 Kertem: belenezhetek-e? Felajanlva **felado + targy + darabszam** statisztika, ⛔ tartalom-olvasas
+nelkul. Alternativa: o mondja meg, mi zavarja.
+
+📌 **Ez az elso alkalom, hogy a hataskor-kapu ELORE mukodott** — nem utolag kellett helyreigazitani.
 
 
 ### A következő konkrét lépés

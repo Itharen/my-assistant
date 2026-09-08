@@ -63,7 +63,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 ⚠️ **A ✅ csak IGAZOLÁS után jár.** „Megírtam" ≠ „kész": teszt/mérés/élő próba kell hozzá.
 *(Ugyanaz az elv, mint a képesség-katalógusban a `✅` = owner-jóváhagyás.)*
 
-**Utoljára frissítve:** 2026-09-08 03:10
+**Utoljára frissítve:** 2026-09-08 04:10
 
 ---
 
@@ -83,7 +83,7 @@ mert **az én munkám áll miatta** — a nyilvántartás az enyém, csak a kulc
 | T-51 | 🤖 | 📮 **CC-session üzenetküldés — szabályok ADOPTÁLVA** | ✅ `__agent/references/ccap-session-messaging.md`: a 6 HARD szabály (§7), a végpontok, és a **beazonosított ID-k** — 🔴 a fájl tetején a kötelező „a szabályokat MINDIG előbb olvasd el" figyelmeztetéssel. FDP Assistant: `ccs-eb7533f2-msf45rno` | ⛔ küldés **csak owner-jóváhagyással**; a `status` küldés előtt újra lekérdezendő |
 | T-55 | 🤖 | 🗂️ **Vissza az ORGANIZERHEZ** | ✅ **ELSŐ KÖR MEGVOLT** (`current/tasks/organizer-triage-2026-09-08.md`): 137 tétel · 5 lejárt · 11 dátum nélküli magas prio. 🔴 **Adathiba találva:** a „Napi matrac" leírása *„MINDEN NAP"*, de az ismétlődése `none` ⇒ 3,5 hónapja egyetlen lejárt tételként ül | 🙋 **owner-döntések:** napi ismétlődő legyen? · NZT és OGS kivezethető? · adjunk-e dátumot a top 3 dátumtalannak? |
 | T-53 | 🤝 | 👤 **Owner-profil — KI Ő** | ⭐ **Owner 02:09:** *„nincs is neked feljegyzésed arról, hogy én ki vagyok"* — **igaza volt**. Létrehozva: `current/owner-profile.md`, a **biztosan tudott** részekkel; a hiányzók ⛔ **üresen** hagyva | ⏳ **az ő GPT-s infócsomagjára vár** *(02:18: „majd ezt el ne felejtsem odaadni")* ⇒ **emlékeztetni kell rá** |
-| T-54 | 🤝 | 📧 **E-mail-figyelés beállítása** | Owner 02:16: *„csináltunk neked egy e-mailt, ahol elég sok minden át is van irányítva, de ott most elég nagy a kupi, és elég sok minden flúdolja"* | 🙋 **együtt kell beállítani**: mi az, amit ne kapjon folyton |
+| T-54 | 🤝 | 📧 **E-mail-figyelés beállítása** | ⏸️ **Jóváhagyást kértem a postafiók megnézésére** — ⛔ nincs a katalógusban, tehát nem az én hatásköröm. Felajánlva: **feladó + tárgy + darabszám** statisztika, tartalom-olvasás nélkül | 🙋 belenézhetek? *(Alternatíva: ő mondja meg, mi zavarja)* |
 | T-55 | 🤖 | 🗂️ **Vissza az ORGANIZERHEZ** | 🔴 **Owner 02:16:** *„mintha ellenél távolodva az organizeres feladatoktól, pedig az fontos kulcspontja lesz itt az asszisztensi munkának"* — **igaza van**: a fejlesztési tűzoltás elvitte a figyelmet | felmérni, mi maradt el az organizer-oldalon, és visszaállni rá |
 | T-41 | 🙋 | **Agent a támogatásokra / pályázatokra / mikromunkára** | ⭐ **HATÓKÖR-KORREKCIÓ (owner 2026-09-07 20:49):** *„ez nem a te feladatod lesz, az arra majd egy agentet kell összeállítsunk és elindítsunk"* ⇒ ⛔ **NEM én csinálom.** A mai feltárás (`current/leads/2026-09-07-exploration.md`) az agent **kiindulása** marad, nem kidobott munka | ⏸️ **owner-vezérelt**: az agent összeállítása. ⛔ Magamtól nem indítok agentet (nincs jóváhagyva) |
 | T-22 | 🤝 | 🔊 **Voice control — a DEV DOLGOZIK RAJTA** | ⭐ **Verifikálva 00:05:** 6+ commit, köztük **`ma comm voice-funnel`** — az átviteli arány egy paranccsal, valódi vs. nem-valódi veszteség szétválasztva. A handoff működött: a **mérést** választotta elsőnek, nem a szűrő-állítgatást · 🔴 **02:03 — ÉLŐ ADAT: az eredeti diagnózis MEGDŐLT.** A felvevő szűrője **0**-t dobott el; a szűk keresztmetszet az **STT 5 perces időtúllépése**. A bukott felvétel már **nem vesz el** (retry-sor bekötve). CLI **627/627** | ⏳ **TÖBB MINTA KELL** — 4 kísérlet még „kevés minta". ⛔ A szűrő-küszöbökhöz nem nyúlunk: **mérve nem ott van a hiba** |

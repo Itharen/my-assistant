@@ -139,6 +139,30 @@ Felvéve: `__documentations/BEDROCK-FRS.md` → **BFR-MYASSISTANT-001**, priorit
 🙋 **Ha az owner azt mondja, hogy nyúlhatunk a `dc`-hez, ez a TE feladatod lesz** — addig a BFR a
 csatorna. ⛔ Magadtól ne kezdj bele idegen repóba.
 
+
+---
+
+## 🟡 2026-09-08 04:02 — TÉVES RIASZTÁS a `comm doctor`-ban: a NYUGALOM gyanúsnak látszik
+
+**Mérve:** a `doctor` ezt írta — *„A folyamat él, de az állapot-fájl 43 perce nem frissült —
+elképzelhető, hogy beragadt."*
+
+**A valóság:** `phase: server-runtime`, `pipelineComplete: true`. A pipeline **03:19-kor
+befejeződött**, azóta a szerver fut. ⇒ **Nincs mit frissíteni a `status.json`-ön.**
+
+🔴 **A HIBA LÉNYEGE:** az ellenőrzés a *„régen frissült"*-et **beragadásnak** olvassa — de a
+`server-runtime` fázisban a **frissítés hiánya a NORMÁLIS állapot**. ⇒ Épp a **kívánt** helyzetet
+*(nincs újraépítés, stabil szerver)* jelenti gyanúsnak.
+
+⭐ **És épp most a legfélrevezetőbb:** amióta nincs új commit, a csatorna **végre stabilan él** —
+és pont ezt jelzi problémának.
+
+**Javaslat:** a „beragadt?" gyanú **csak akkor**, ha a fázis **NEM** `server-runtime`
+*(vagy `pipelineComplete: false`)*. `server-runtime` + `complete` esetén a friss **életjel**
+a bizonyíték, nem a fájl kora.
+
+📌 Ugyanaz a hibaosztály, ami ma már négyszer előjött: **egy mező kora/neve nem a jelentése.**
+
 ---
 
 ## 3. Build és teszt
