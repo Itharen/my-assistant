@@ -18,6 +18,12 @@
 // indulási útvonalán lenne, minden szerver-indulás ennyivel csúszna — és a Discord-csatorna
 // ennyivel tovább lenne néma. Ezért csak a **sikeres belépés után**, a háttérben töltjük be.
 
+import { VoiceAnalysisBar } from './voice-analysis-bar.js';
+import {
+  attachAnalysisBarSafely,
+  createConsoleBar,
+  type AnalyzerLike,
+} from './voice-analysis-observer.js';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { VoiceConnection } from '@discordjs/voice';
@@ -145,6 +151,24 @@ export async function loadTransplantedRecorder(): Promise<TransplantedRecorder> 
   };
 
   return module.CV_Recording_ControlService.getInstance();
+}
+
+/**
+ * Az átemelt **elemző** singleton lusta betöltése — a keretenkénti sávhoz.
+ *
+ * ⚠️ Ugyanaz a változóban-tartott hivatkozás, ugyanazzal a mért okkal, mint a felvevőnél:
+ * literállal a TypeScript belehúzná az átemelt fát a fő, `strict` programba.
+ *
+ * ⛔ Az elemzőt **nem módosítjuk** — csak a példányát kérjük el, hogy kívülről ráülhessünk
+ * (`voice-analysis-observer.ts`).
+ */
+export async function loadTransplantedAnalyzer(): Promise<AnalyzerLike> {
+  const specifier: string = '../_modules/voice/_services/cv-analysis.control-service.js';
+  const module = await import(specifier) as {
+    CV_Analysis_ControlService: { getInstance(): AnalyzerLike };
+  };
+
+  return module.CV_Analysis_ControlService.getInstance();
 }
 
 /**
@@ -297,6 +321,15 @@ export async function startVoiceRecording(params: {
   onProbeError?: (detail: string) => void;
   /** Tesztelhetőség: kész szonda átadása. */
   probe?: VoiceDropProbe;
+  /**
+   * 🎨 AZ ÉLŐ, KERETENKÉNTI SZÍNES SÁV betöltője (T-52).
+   *
+   * ⚠️ Cserélhető, hogy a teszt **ne** töltse be a valódi, 19,5 s-es átemelt fát.
+   * ⛔ Ha `null`-t ad vissza, a sáv egyszerűen elmarad — a felvétel ettől nem sérül.
+   */
+  loadAnalyzer?: () => Promise<AnalyzerLike | null>;
+  /** A sáv példánya. Alapból a konzolra ír. */
+  analysisBar?: VoiceAnalysisBar;
 }): Promise<VoiceRecordingResult> {
   if (!params.ownerUserId) {
     return {
@@ -323,6 +356,21 @@ export async function startVoiceRecording(params: {
     const recorder: TransplantedRecorder = await load();
 
     await recorder.initializeRecordingsDirectory();
+
+    // 🎨 AZ ÉLŐ SÁV RÁKÖTÉSE (T-52). Owner: `|` színesen, KERETENKÉNT, beszéd közben.
+    // ⛔ A bukása SOHA nem fatális: a sáv diagnosztika, a felvétel a termék.
+    //
+    // 🔴 MÉRT CSAPDA (2026-09-08 09:47): ha a hívó **lecserélte a felvevőt** (teszt vagy más
+    // gazda), de az elemzőt nem, akkor az alapértelmezés **behúzná a valódi átemelt fát** —
+    // és a teszt-suite futásideje **5 mp-ről 317 mp-re** ugrott. Ezért a kettő EGYÜTT jár:
+    // az átemelt fát **egységként** töltjük, vagy sehogy.
+    await attachAnalysisBarSafely({
+      load: params.loadAnalyzer ?? (params.loadRecorder
+        ? async (): Promise<AnalyzerLike | null> => null
+        : async (): Promise<AnalyzerLike | null> => loadTransplantedAnalyzer()),
+      bar: params.analysisBar ?? createConsoleBar(),
+      onError: (detail: string): void => params.onProbeError?.(detail),
+    });
 
     // ⭐ CSAK a könyvtár létrehozása UTÁN indul: különben az első körök hiába jelentenének
     // „nem olvasható könyvtár"-t egy olyan állapotról, ami egy pillanat múlva rendben lesz.
