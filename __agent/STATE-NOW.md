@@ -8,7 +8,7 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-08 18:06
+**Frissítve:** 2026-09-08 19:10
 
 ## Ma
 
@@ -27,6 +27,20 @@ A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
 4. 📱 **Helyzet-app v1** — belevágjunk? *(Capacitor, saját app)*
 5. 🔓 **Képesség-jóváhagyás** — ⚠️ **25 ⏳ / 1 ✅**: az üresjárati sávom gyakorlatilag ÜRES.
    Javasolt hármas: **C-13** feladat-kezelés · **C-10** státusz-kivonat · **C-19** alvás-ciklus
+
+## 🎧 T-68 KÉSZ (DEV) — ellenőrizve, de az ÉLES igazolás még hátra van
+
+`ma stt pending | transcript <id> | retry <id>` **működik**. ⭐ A hang **a feladás előtt**
+átkerül a ledgerbe (`~/.config/my-assistant/stt-ledger/`) ⇒ többé nem vesz el.
+🔴 **De éles hangon még nem bizonyult:** a 19:00:58-as hangüzenete **1/5**-nél tart — a
+ledger csak a **feladáskor** ír, tehát az igazolás az 5. bukott próba után jön.
+
+⚠️ **Saját közeli hiba:** a `pending` „nincs”-ét és a doctor „1 hang vár”-ját **ellentmondásnak**
+néztem, és majdnem defektként jelentettem. Két **külön szakasz** — a kód jó, a **szóhasználat**
+félrevezető ⇒ **T-69**. ⭐ Az ellenőrzés **előbb**, a jelentés **utána**.
+
+🔴 **Ami változatlanul nyitott:** az STT **5 percenként túllép** — ⛔ az FDP AI-hoz (38321)
+nem nyúlunk. ⇒ A hangüzenetei továbbra sem értelmeződnek.
 
 ## 🟡 A HANG-CSATORNA ÉL — de FLAKY, és az ok-állításom HIBÁS VOLT
 
