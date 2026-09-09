@@ -124,3 +124,44 @@ Minden új code change-nél átfutni:
 
 - **Auto-error-triage** a Dev Agent cron-tickén — friss error-bejegyzések pásztázása + kategorizálás (transient / blocker / fix-required) + akció
 - **Error-coverage smoke** a LDP-ben — minden új code change-nek error-pálya teszttel kell járnia (mock-test a catch ágra)
+
+---
+
+## ⭐ 2026-09-09 03:05 — A PIROS REVIEW HÁROM FAJTÁJA (mérve, egy éjszaka alatt mindhárom)
+
+Ma éjjel mind a három előfordult, és **más-más választ kívánnak**. A „piros a review" önmagában
+**nem diagnózis**:
+
+| # | Fajta | Mit jelent | Helyes válasz |
+|---|---|---|---|
+| 1 | 🔴 **VALÓDI hiba** | a szabály jogosan szól | **javítani** |
+| 2 | ⚠️ **TÉVES riasztás** | a szabály nem látja a valóságot | **megjelölni + INDOKOLNI** |
+| 3 | 📋 **Konvenció-hátralék** | igaz, de nem hiba; tömeges | **owner-döntés** (ütemezés) |
+
+### A három mai eset
+
+**1. Valódi hiba** *(a DEV találta, javítva)*: a `s-status-bar.formatTime` `try/catch`-e **sosem
+sült el**, ezért az érvénytelen időbélyeg **„NaN:NaN"**-ként ment ki · az `isPidAlive` vak
+`catch { false }`-a az **`EPERM`-et is halottnak** mondta *(pedig az azt jelenti: a folyamat ÉL)*,
+így a felügyelő **második példányt** indított volna · a `stt.transcript-ledger` a hangot **csak
+`rename`-mel** mentette, ami köteteken át (`EXDEV`) bukik ⇒ **pont a T-68 célja** szűnt volna meg.
+
+**2. Téves riasztás** *(én oldottam fel)*: az `endpoint-auth-preprocess` **3 „NYITOTT végpontot"**
+jelzett a relay-ben. **Ellenőrizve:** a hitelesítés a task törzsében van, és **fail-closed** —
+beállítatlan titoknál **mindent elutasít**, állandó idejű összehasonlítással, és kivételnél
+**dob**, nem `false`-t ad. ⇒ Megjelölve `dyn-review-disable-next-line`-nal, **teljes indoklással**.
+
+**3. Konvenció-hátralék:** **2 231 találat**, túlnyomórészt `no-as-cast` / `no-plain-function-export`
+/ `one-export-per-file`. Ez **szerkezeti átalakítás**, nem egy kör munkája ⇒ owner elé.
+
+### 🔴 A KÖZÖS SZABÁLY, ami mindhármat összeköti
+
+**Egy állandóan piros ellenőrzés NEM TUD SZÓLNI.** Akár valódi hiba, akár téves riasztás, akár
+hátralék — amíg piros, egy **új, valódi** találat **beleolvad**, és senkinek nem tűnik fel.
+
+⛔ **Ezért a „hagyjuk pirosan" nem semleges döntés**, hanem a jelzés kikapcsolása — csak
+lassabban. ⭐ És ezért a **téves riasztás megjelölése nem elnémítás**, hanem **a jelzés
+helyreállítása**: attól lesz újra igaz, hogy a piros valamit jelent.
+
+📌 **A megjelölés ára:** kötelező az **indoklás a kódban**, méréssel. Indoklás nélküli
+`disable-next-line` = **elnémítás**, és az tilos.
