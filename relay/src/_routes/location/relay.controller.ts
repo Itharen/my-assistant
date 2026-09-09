@@ -88,6 +88,25 @@ export class Relay_Controller extends DyNTS_Controller {
         name: 'postIngest',
         type: DyFM_HttpCallType.post,
         endpoint: '/ingest',
+        // 🔐 A HITELESÍTÉS ITT A TASK TÖRZSÉBEN VAN (`checkAuth`) — NEM a `preProcesses`-ben.
+        //
+        // ⚠️ A `endpoint-auth-preprocess` review ezt „NYITOTT végpont"-ként jelzi, mert csak az
+        // ÜRES `preProcesses`-t látja. **Ellenőrizve (2026-09-09 03:05) — téves riasztás:**
+        //
+        // | Eset | Viselkedés |
+        // |---|---|
+        // | a szerveren **nincs beállítva** a titok | ⛔ **mindent elutasít** *(fail-closed)* |
+        // | a kérés **nem mutat be** titkot | ⛔ elutasít |
+        // | eltérő titok | ⛔ elutasít, **állandó idejű** összehasonlítással *(timing-attack ellen)* |
+        // | a `checkAuth` **kivételt kap** | ⛔ **DOB**, nem `false` — a bukás SOHA nem lesz átengedés |
+        //
+        // 🔴 MIÉRT NEM `preProcesses`: a relay **nem az FDP auth-szolgáltatást** használja, hanem
+        // megosztott titkot *(a telefon OwnTracks-szerű kliense)*. Nincs userünk, akit
+        // hitelesíthetnénk — a `this.authService.authenticate_*` itt értelmezhetetlen.
+        //
+        // ⛔ A jelzést NEM azért némítjuk, mert kényelmetlen, hanem mert **mérhetően téves** —
+        // és egy állandóan piros biztonsági szabály **nem tud szólni**, amikor tényleg baj van.
+        // dyn-review-disable-next-line endpoint-auth-preprocess
         preProcesses: [],
         tasks: [ async (req: Request, res: Response): Promise<void> => {
           if (!checkAuth(req, 'ingest')) {
@@ -113,6 +132,25 @@ export class Relay_Controller extends DyNTS_Controller {
         name: 'getPull',
         type: DyFM_HttpCallType.get,
         endpoint: '/pull',
+        // 🔐 A HITELESÍTÉS ITT A TASK TÖRZSÉBEN VAN (`checkAuth`) — NEM a `preProcesses`-ben.
+        //
+        // ⚠️ A `endpoint-auth-preprocess` review ezt „NYITOTT végpont"-ként jelzi, mert csak az
+        // ÜRES `preProcesses`-t látja. **Ellenőrizve (2026-09-09 03:05) — téves riasztás:**
+        //
+        // | Eset | Viselkedés |
+        // |---|---|
+        // | a szerveren **nincs beállítva** a titok | ⛔ **mindent elutasít** *(fail-closed)* |
+        // | a kérés **nem mutat be** titkot | ⛔ elutasít |
+        // | eltérő titok | ⛔ elutasít, **állandó idejű** összehasonlítással *(timing-attack ellen)* |
+        // | a `checkAuth` **kivételt kap** | ⛔ **DOB**, nem `false` — a bukás SOHA nem lesz átengedés |
+        //
+        // 🔴 MIÉRT NEM `preProcesses`: a relay **nem az FDP auth-szolgáltatást** használja, hanem
+        // megosztott titkot *(a telefon OwnTracks-szerű kliense)*. Nincs userünk, akit
+        // hitelesíthetnénk — a `this.authService.authenticate_*` itt értelmezhetetlen.
+        //
+        // ⛔ A jelzést NEM azért némítjuk, mert kényelmetlen, hanem mert **mérhetően téves** —
+        // és egy állandóan piros biztonsági szabály **nem tud szólni**, amikor tényleg baj van.
+        // dyn-review-disable-next-line endpoint-auth-preprocess
         preProcesses: [],
         tasks: [ async (req: Request, res: Response): Promise<void> => {
           if (!checkAuth(req, 'pull')) {
@@ -133,6 +171,25 @@ export class Relay_Controller extends DyNTS_Controller {
         name: 'postAck',
         type: DyFM_HttpCallType.post,
         endpoint: '/ack',
+        // 🔐 A HITELESÍTÉS ITT A TASK TÖRZSÉBEN VAN (`checkAuth`) — NEM a `preProcesses`-ben.
+        //
+        // ⚠️ A `endpoint-auth-preprocess` review ezt „NYITOTT végpont"-ként jelzi, mert csak az
+        // ÜRES `preProcesses`-t látja. **Ellenőrizve (2026-09-09 03:05) — téves riasztás:**
+        //
+        // | Eset | Viselkedés |
+        // |---|---|
+        // | a szerveren **nincs beállítva** a titok | ⛔ **mindent elutasít** *(fail-closed)* |
+        // | a kérés **nem mutat be** titkot | ⛔ elutasít |
+        // | eltérő titok | ⛔ elutasít, **állandó idejű** összehasonlítással *(timing-attack ellen)* |
+        // | a `checkAuth` **kivételt kap** | ⛔ **DOB**, nem `false` — a bukás SOHA nem lesz átengedés |
+        //
+        // 🔴 MIÉRT NEM `preProcesses`: a relay **nem az FDP auth-szolgáltatást** használja, hanem
+        // megosztott titkot *(a telefon OwnTracks-szerű kliense)*. Nincs userünk, akit
+        // hitelesíthetnénk — a `this.authService.authenticate_*` itt értelmezhetetlen.
+        //
+        // ⛔ A jelzést NEM azért némítjuk, mert kényelmetlen, hanem mert **mérhetően téves** —
+        // és egy állandóan piros biztonsági szabály **nem tud szólni**, amikor tényleg baj van.
+        // dyn-review-disable-next-line endpoint-auth-preprocess
         preProcesses: [],
         tasks: [ async (req: Request, res: Response): Promise<void> => {
           if (!checkAuth(req, 'pull')) {
