@@ -8,12 +8,39 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-09 00:25
+**Frissítve:** 2026-09-09 03:10
 
 ## Ma
 
 **2026-09-08, kedd — AI Summit 2. nap.** Az owner ~02:17-kor feküdt le.
 A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
+
+## 🙋 HÁROM DÖNTÉS VÁR RÁD — ébredéskor egy üzenetben megy ki
+
+⚠️ **Önmagában érthetően fogalmazva** *(`approval-must-be-self-contained.md`)* — nem kell
+megnyitnod semmit. A DEV részletes jelentése: `AGENT_BUS` **AGB-2026-09-09-01**.
+
+### 1️⃣ Hozzányúlhatok az ÁTEMELT CCAP-kódhoz — csak naplózásért?
+9 néma `catch` maradt a `cli/src/_modules/{voice,voice-output,elevenlabs}`-ban. Ezekre él a
+*„nagyon törékeny az a kód, de cserében meg egész jól működött"* szabályod.
+**A kérés:** beírhatunk-e **egyetlen napló-sort** a néma ágakba — a **viselkedés változatlan**,
+csak látszana, ha elnyel valamit. **A) igen, csak naplózás · B) ne nyúljatok hozzá.**
+
+### 2️⃣ A dashboard hibái legyenek hangosak, vagy maradjanak csendesek?
+39 helyen a riport- és adatolvasók hiba esetén ma **üres listát** adnak, nem hibát. A szabály
+azt kérné, hogy **dobjanak**.
+**A)** marad a mai csendes *(de mostantól naplózott)* viselkedés — a review piros marad ·
+**B)** hangos hiba: egy olvashatatlan riport-fájl **500-as hibát** adna a dashboardon üres
+panel helyett. ⚠️ **Ez látható változás.**
+⭐ **A DEV javaslata:** **(B)** a riport- és wave-olvasókra *(épp az a panaszod, hogy a rendszer
+nyugalmat jelent hiba közben)*, **(A)** a naplózásra és a szórásra *(ott a kaszkád rosszabb)*.
+
+### 3️⃣ Ráengedhetjük az autofixet a konvenció-hátralékra?
+A teljes „zöld" ma **2 231 találat** — a többsége **konvenció**, nem hiba *(`no-as-cast` ~80,
+`no-plain-function-export` ~60, `one-export-per-file` ~35, sor-hossz, import-sorrend…).
+Javításuk **szerkezeti átalakítás** az egész kódbázison. Van gépi segítség: `dc rev --fix`.
+**A) ráengedhető** *(egyesével, teszt minden lépés után)* · **B) várjon**, amíg a fontosabb
+dolgok elkészülnek.
 
 ## 🙋 AMI RÁD VÁR
 
@@ -25,15 +52,6 @@ A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
    `BFR-MYASSISTANT-001` leadva. ⭐ A lezárás **regenerálja az ismétlődéseket**.
 3. 🔓 **Képesség-jóváhagyás** — 25 ⏳ / 1 ✅. Az üresjárati sávom gyakorlatilag üres.
 4. 👤 **A cégedről** szóló összeállítás — te jelezted, hogy kell (a profil-kivonat végén).
-
-## 🔴 5 REVIEW-LÉPÉS PIROS — valódi találatok, nem eszközhiba
-
-`dc-review-server` *(error-wrapping, unique-error-codes)* · `client` *(natív dialógus)* ·
-`relay` *(error-wrapping)* · `browser-extension` *(**néma catch** — zero-tolerance hard rule)* ·
-`cli`. Mellette `tsc-transplanted` *(`Buffer`→`BodyInit`)*.
-
-⚠️ **Amíg állandóan piros, a review NEM TUD JELEZNI** — egy új, valódi hiba beleolvad.
-⛔ Kikapcsolni tilos *(owner 08-24: „Semmilyen reviewt ne kapcsolj ki. NEEE!")*. DEV-nek kiadva.
 
 ## ✅ T-68 — ÉLŐBEN IGAZOLVA (00:00)
 
