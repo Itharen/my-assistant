@@ -21,17 +21,19 @@ A két warning lejárt TLS. Server 105/105; C-49 használati jóváhagyásra vá
 **2026-09-08, kedd — AI Summit 2. nap.** Az owner ~02:17-kor feküdt le.
 A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
 
-## ⏳ 35 ÓRA CSEND — a csatorna ÉP, ellenőrizve
+## 🔴 6 ÓRÁS NÉMA KIESÉS — 2026-09-10 09:57 → 16:00 (helyreállítva)
 
-**Utolsó owner-üzenet: 2026-09-08 22:19.** Most 2026-09-10 09:05.
+A gép **~09:57-kor újraindult**, és utána **semmi nem jött vissza**: se `dc ldp`, se szerver,
+se Discord-figyelő, se jelenlét-figyelő. **16:00-kor** indítottam újra mindent.
 
-⛔ **Nem feltételeztem, hogy „csak nem írt".** A szeptember 8-i eset után *(6 órán át a DEV-hez
-mentek az üzenetei)* ez az egyik hibaosztály, amit **mérni kell, nem hinni**.
-✅ **`ma comm audit`: 32 owner-üzenet a csatornán, mind megvan nálunk** *(független lekérdezés
-magától a Discordtól, nem a saját tárunkból)*.
+⭐ **Kár: nulla** — a figyelő backfillje **üresen jött**, a várakozó sor **üres**: az owner a
+kiesés alatt **nem írt**. ⚠️ Ez **szerencse, nem védelem**.
 
-⇒ A csend **valódi**: nem üzenet-vesztés. 🖥️ A gépnél viszont **dolgozott** — ma 06:34-ig
-**376 aktív perc**; azóta tétlen ⇒ alszik. **Ezért nem küldtem semmit** *(`sleep-window-batching`)*.
+📌 **A hibaosztály:** amikor minden leáll, **az is leáll, ami szólna róla** ⇒ a felfedezés
+kizárólag a következő ébredésemen múlik. Ezért került az `ENTRY.md`-be a **0a lépés**
+*(`LastBootUpTime` vs. a jelenlét-napló utolsó mintája)*.
+
+🙋 **Owner-döntés marad:** **autostart boot után** — a gépén futó indítást **nem én állítom be**.
 
 ## 🙋 HÁROM DÖNTÉS VÁR RÁD — ébredéskor egy üzenetben megy ki
 
