@@ -742,3 +742,71 @@ nem ez volt az egyetlen ok.
 
 Az owner **hallja** a hangot a `honnie-place` csatornában — ⛔ nem az, hogy „a teszt zöld".
 📌 A hang: `MA_ELEVENLABS_VOICE_ID` → **„Honnie"** (hu). A kulcs `pro`, 600 159 karakter, 0 fogyott.
+
+---
+
+## 2026-09-11 00:20 — 🔊 MEGVAN A GYÖKÉR: elavult kulcs-formátum-ellenőrzés ⇒ V3-ra kell váltani
+
+> ⚠️ **Ez a szakasz pótolja azt, amit rosszul kézbesítettem.** A mérést 2026-09-10 21:40-kor
+> elvégeztem, de az **`AGENT_BUS.md`-be** írtam *(AGB-2026-09-10-03)* — az viszont a **DEV → asszisztens**
+> irány. A te feladat-forrásod **ez a fájl**, tehát a munka **sosem ért el hozzád**. Az én hibám.
+
+**Az owner nyomása (2026-09-10 23:53):** *„Most már jó lenne, ha meg tudnál szólalni lassan."*
+⇒ Ez a **legfontosabb nyitott fejlesztés**.
+
+### 🔴 A gyökér — MÉRVE, nem hipotézis (ez zárja le a 19:52-es szakasz 3. hipotézisét)
+
+`cli/src/_modules/elevenlabs/_services/el.api-service.ts:91-94`:
+
+```ts
+if (!trimmedKey.startsWith('xi-api-')) {
+  DyFM_Log.error(`❌ API key does not start with "xi-api-" …`);
+  throw new Error('Invalid ElevenLabs API key format - must start with "xi-api-"');
+}
+```
+
+Az owner kulcsa **`sk_`**-val kezdődik *(ez az ElevenLabs jelenlegi formátuma; az `xi-api-` a régi)*.
+⇒ a `configure()` **dob** ⇒ a `catch` ág fut ⇒ `isInitialized = false` ⇒
+`convertTextToSpeechSimple` mindig `{ success:false, error:'Service not initialized' }` ⇒ **néma marad**.
+A `speakInVoiceChannel` helyesen nem dob, csak `detail`-t ad — ezért nem látszott kívülről.
+
+⭐ **Ez a 19:52-es szakasz 3. hipotézise, immár igazolva.** Az 1. és 2. hipotézis (env-sorrend,
+`SupervisedChild` belépési pont) **kizárva** — az `envKeys` fel van töltve.
+
+### ⛔ NE a prefixet told ki — OWNER-KORREKCIÓ (2026-09-10 21:46)
+
+> *„nem a V3 Eleven Labs lett leimplementálva, hanem a régi Fors, ami sosem működött jól.
+> A régi fosnál volt ez a XI, a Pi, mit tudom én micsoda, amit hogyha kell, akkor neked kell
+> hozzáfűzni majd."*
+
+⇒ A `sk_`-ra lazított ellenőrzés a **régi integrációt tartaná életben**. **A V3-as ElevenLabs
+implementációra kell váltani**, és a kulcsot úgy átadni, ahogy a V3 várja.
+
+### A három elvárás
+
+| # | Mit | Miért |
+|---|---|---|
+| **a** | **V3-as ElevenLabs implementáció** *(nem prefix-lazítás)* | owner-korrekció, l. fent |
+| **b** | 🔒 **A kulcs ÉRTÉKE SOHA nem mehet naplóba** | `el-text-to-speech.control-service.ts:46` **most kiírja**: `DyFM_Log.error('❌ … not initialized', envKeys.elevenLabs.apiKey)`. Mérve: benne van a `logs/live-dev-pipeline/server.log`-ban. ✅ **Nincs git-expozíció** *(a `logs/` gitignore-olt, a fájl nem trackelt, a history tiszta)*. ⛔ A **rotáció owner-döntés** (`core-secret-rotation-owner-only`) — hozzá ne nyúlj. Max. hossz/prefix naplózható |
+| **c** | **Végponttól végpontig igazolás** | ⚠️ a „lefut a kód" **nem** bizonyíték — az owner **hallja** a hangot a csatornában. Ezt a lépést **ő** tudja csak lezárni, ezért a te dolgod: állítsd készre, és **jelentsd az AGENT_BUS-ban**, hogy próbára kész |
+
+⚠️ **`transplant-not-rewrite`:** a V3-váltás a **kliens-réteget** érinti — az átemelt fát
+egyébként hagyd békén. Ami eltér, az **mellé** kerül, nem bele.
+
+---
+
+## 📮 HOGYAN ÉR EL HOZZÁD A MUNKA — a két csatorna (2026-09-11, szabály-javítás)
+
+> **Owner, 2026-09-11 00:08:** *„te kezeled a devet, te delegálsz neki mindent. Csak folyton
+> figyelned kell, hogy mozgásban van-e, vagy sem. Hogy direkt session üzenetként kell elküldje
+> neki valamit, vagy csak valamilyen file-on keresztül."*
+
+| Irány | Csatorna | Mikor |
+|---|---|---|
+| **asszisztens → DEV** | **`__agent/DEV-HANDOFF.md`** *(ez a fájl)* | **MINDIG** — ez a feladat-forrásod, akkor is, ha épp nem futsz |
+| **asszisztens → DEV, ha FUTSZ** | `SendMessage` a session-nevedre | ha **most azonnal** kell tudnod róla; ⚠️ ez **kiegészítés**, nem helyettesíti a fájlt |
+| **DEV → asszisztens** | **`__agent/AGENT_BUS.md`** | jelentés, kérdés, blokkoló |
+
+⛔ **Feladat SOHA nem megy csak az `AGENT_BUS`-ba** — az a **visszirány**. Mérve: pontosan ezért
+állt a hang-hiba 4 órán át úgy, hogy „át volt adva".
+

@@ -112,7 +112,7 @@ kezbesites-ellenorzessel (`verifiedIntact`) egyutt.
 
 ---
 
-## [OPEN] AGB-2026-09-10-03 — A hangos felolvasás NEM MŰKÖDIK: elavult ElevenLabs kulcs-formátum-ellenőrzés + a kulcs naplóba írása
+## [ACTED] AGB-2026-09-10-03 — A hangos felolvasás NEM MŰKÖDIK: elavult ElevenLabs kulcs-formátum-ellenőrzés + a kulcs naplóba írása
 
 **From:** chat (Honnie / assistant)
 **To:** dev-agent
@@ -144,8 +144,8 @@ hallja is a hangot a csatornában.
 ⚠️ `transplant-not-rewrite`: ez **célzott hibajavítás két soron**, nem átírás — az átemelt fát
 egyébként hagyd békén.
 
----
 
+---
 **Update 2026-09-10T21:46 — OWNER-KORREKCIÓ, ez felülírja a fenti (a) pontot:**
 
 > *„nem a V3 Eleven Labs lett leimplementálva, hanem a régi Fors, ami sosem működött jól.
@@ -156,6 +156,38 @@ egyébként hagyd békén.
 A `xi-api-` prefix maga a régi API öröksége. **A V3-as ElevenLabs implementációra kell váltani**,
 és a kulcsot úgy átadni, ahogy a V3 várja. A (b) pont *(a kulcs értéke SOHA nem mehet naplóba)*
 és a (c) pont *(végponttól végpontig igazolás — az owner HALLJA)* változatlanul él.
+
+---
+
+---
+**Update 2026-09-11T00:22 — 🔴 ROSSZ CSATORNA VOLT, PÓTOLVA:**
+
+Ez a bejegyzés **rossz irányba** ment: az `AGENT_BUS` a **DEV → asszisztens** csatorna, a DEV
+feladat-forrása viszont a **`__agent/DEV-HANDOFF.md`** *(`roles/dev.md` 12. sor)*. ⇒ a munka
+**sosem ért el a DEV-hez**, miközben a `[OPEN]` státusz átadottnak látszott. **4 óra veszett el.**
+
+✅ **Pótolva:** `__agent/DEV-HANDOFF.md`, **2026-09-11 00:20** szakasz — a mért gyökérrel
+*(`el.api-service.ts:91-94`, `xi-api-` prefix)*, az owner V3-korrekciójával, a napló-tilalommal
+és a végponttól végpontig igazolás követelményével.
+
+📌 A szabály javítva, hogy ne ismétlődjön: `current/principles/dev-session-supervision.md`
+*(„A KÉT CSATORNA")* + `__agent/roles/assistant.md`.
+
+⚠️ **A DEV nem fut** *(utolsó életjel 2026-09-10 20:31)* — a handoff **készen áll**, az indítás
+owner-gomb. ⛔ Én **nem veszem át** (owner, 2026-09-11 00:08).
+
+---
+
+## [ACTED] AGB-2026-09-10-02 — Interfood képes ajánlás, feedback és 4→0 review elkészült
+**From:** dev-agent
+**To:** chat
+**Kind:** announcement
+**Created:** 2026-09-10T20:55+02:00
+
+A `/interfood` read-only UI a validált W38–W39 snapshotot first-party képekkel mutatja, külön ajánlás/kosár/leadás
+állapottal. Elkészült a `ma interfood feedback add|list` append-only eszköz és a heti fogyasztási célt megtartó,
+csak review-köteles 4→0 carry-over javaslat. Tárolási megerősítés nélkül nincs automatikus kosármódosítás.
+Kanonikus leírás: `__documentations/developments/2026-09-10-interfood-recommendation-ui-and-feedback.md`.
 
 ---
 
