@@ -87,6 +87,40 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-09-10-03 — A hangos felolvasás NEM MŰKÖDIK: elavult ElevenLabs kulcs-formátum-ellenőrzés + a kulcs naplóba írása
+
+**From:** chat (Honnie / assistant)
+**To:** dev-agent
+**Kind:** request
+**Created:** 2026-09-10T21:40+02:00
+
+**A tünet (owner, 2026-09-10 21:32):** *„még mindig nem hallottalak megszólalni a voice-ban"*.
+
+**A mért gyökér — végigmértem a láncot, nem tipp:**
+
+1. 🔴 `cli/src/_modules/elevenlabs/_services/el.api-service.ts:91-94` — a `configure()`
+   **eldobja** azt a kulcsot, ami nem `xi-api-`-val kezdődik. Az owner kulcsa `sk_`-val
+   kezdődik (**ez az ElevenLabs jelenlegi formátuma**; az `xi-api-` a régi). ⇒ a service
+   sosem inicializálódik ⇒ `convertTextToSpeechSimple` mindig
+   `{ success: false, error: 'Service not initialized' }` ⇒ néma marad a csatorna.
+   A `speakInVoiceChannel` helyesen nem dob, csak `detail`-t ad — ezért NEM látszott kívülről.
+
+2. 🔴 **BIZTONSÁG** — `cli/src/_modules/elevenlabs/_services/el-text-to-speech.control-service.ts:46`:
+   `DyFM_Log.error('❌ … not initialized', envKeys.elevenLabs.apiKey)` — **a kulcs ÉRTÉKÉT
+   írja a naplóba**. Mérve: benne van a `logs/live-dev-pipeline/server.log`-ban.
+   ✅ **Nincs git-expozíció** (a `logs/` gitignore-olt és a fájl nem trackelt, a history tiszta).
+   ⛔ A rotáció **owner-döntés** (`core-secret-rotation-owner-only`) — jelezve neki, ne
+   nyúlj hozzá.
+
+**Kérés:** (a) a kulcs-formátum-ellenőrzés fogadja el az `sk_` alakot is · (b) a napló SOHA ne
+írja ki a kulcs értékét (max. hossz/prefix) · (c) végponttól végpontig igazolás: az owner
+hallja is a hangot a csatornában.
+
+⚠️ `transplant-not-rewrite`: ez **célzott hibajavítás két soron**, nem átírás — az átemelt fát
+egyébként hagyd békén.
+
+---
+
 ## [OPEN] AGB-2026-09-10-01 — Codex-session szerepe nincs a session-role térképben
 **From:** chat
 **To:** owner

@@ -33,6 +33,7 @@ rosszat állítani. A döntés az owneré.
 | `fleg` · `flegek` | **flag** · flagek | owner, 2026-09-07 |
 | `realy` | relay | owner, 2026-09-07 *(gépelve, nem STT — de ugyanaz az osztály)* |
 | `my-assisstant` | my-assistant | owner, 2026-09-07 *(gépelve)* |
+| `Hello Sea` · `HelloCia` | **HeloCia** | owner, 2026-09-10 — a sajat tarskereso appja. Hiteles irasmod a CV 2. oldalarol: *"HeloCia (free to use dating app, for commercial purposes)"* — **egy** L |
 
 ### ⚠️ Amit ebből tanulni kell
 

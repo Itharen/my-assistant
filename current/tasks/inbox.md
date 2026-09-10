@@ -173,3 +173,35 @@ nem feltételezünk határidőt vagy lezárt rebrandet. Rögzítés, nem publik�
 📌 **TEENDŐ A KÖVETKEZŐ KÖRBEN:** amint az organizer válaszol, **át kell vinni** oda
 *(`fo tasks.create`, due `2026-09-11T09:00+02:00`, magas prioritás)*, és **innen kivezetni**.
 ⛔ Amíg ez nem történt meg, ez a tétel **NEM tekinthető rögzítettnek**.
+
+---
+
+## 🗂️ 2026-09-10 21:19 — gondolat-orkán (5 tétel), MIND az organizerbe rögzítve
+
+> **Forrás:** owner, Discord 21:19. ✅ Az organizer élt, mind az öt tétel **odakerült** —
+> ez itt a lokál tükör org-ref-fel *(`recording-discipline`)*, nem a kanonikus példány.
+
+| Tétel | org-ref | Esedékes | Prio |
+|---|---|---|---|
+| 🖨️ **Nyomtatás a szülinapra** — házi rendszabályok + egyéb szabályok + 50 forintos kiírás | `org:task:6aa3075c766c802935c3b812` | **2026-09-11** ⏰ | 9 |
+| 👕 **FDP-s póló átvétele** a Go Printnél (Alli) | `org:task:6aa3076e766c802935c3b819` | 2026-09-19 (jövő hét) | 6 |
+| 💘 **HeloCia → Release 2** | `org:task:6aa3076f766c802935c3b820` | 2026-10-15 | 5 |
+| 📋 **Rendezvényszervezés** — milyen TEÁOR + milyen engedély/papír (társkereső, rapid randi) | `org:task:6aa30770766c802935c3b827` | 2026-09-20 | 8 |
+| 🔢 **TEÁOR-számok frissítése** — rendezvény + könyvkiadás + könyvárusítás | `org:task:6aa30771766c802935c3b82e` | 2026-09-25 | 8 |
+
+**Owner szó szerint:** *„A Hello Sea-t is szeretném majd a Release 2-ben kiadni… még előtte
+mostanában el kell kezdjünk minél előbb utána nézni, hogy a rendezvényszervezéshez milyen teor
+számok kellenek, és milyen papír kell ahhoz, hogy rendezvényszervezhessünk. Társkereső
+rendezvényt. Ilyen rapid randi-szerű dolgot."* · *„a teor számokat frissíteni kell… annak
+növelni kell a prioritásán, összekötni ezzel a másikkal, hogy könyv kiadásnak is lesz ugye
+teória, illetve a könyvárulásnak."*
+
+### ⚠️ Egy dolgot tisztázni kell
+
+Az owner úgy emlékezett, hogy a **TEÁOR-ról már van feljegyzés** (*„azt hiszem erről van is
+valamilyen feladat feljegyzés, annak növelni kell a prioritásán"*). **Végigkerestem** az egész
+repót és az organizert: **nincs ilyen tétel.** ⇒ A fenti a **TEÁOR első rögzített példánya**,
+nem prioritás-emelés. Ez egy korábbi elmaradt rögzítés nyoma — jelezve az ownernek.
+
+*(A „Hello Sea" STT-torzítás; a termék neve **HeloCia** — l. `current/stt-mishearings.md`.)*
+
