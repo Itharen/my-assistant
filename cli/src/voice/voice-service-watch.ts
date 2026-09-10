@@ -81,7 +81,7 @@ export class VoiceServiceWatch {
 
   private timer: NodeJS.Timeout | null = null;
   private consecutiveFailures: number = 0;
-  private hasLeft: boolean = false;
+  private isLeftBehind: boolean = false;
   private isChecking: boolean = false;
 
   constructor(private readonly options: ServiceWatchOptions) {}
@@ -135,11 +135,11 @@ export class VoiceServiceWatch {
   private async handleAlive(): Promise<void> {
     this.consecutiveFailures = 0;
 
-    if (!this.hasLeft) return;
+    if (!this.isLeftBehind) return;
 
     // ⭐ EZ A MÁSIK FELE: ha csak kilépnénk, de nem térnénk vissza, minden újraindítás után
     // NÉMÁN kimaradnánk a csatornából — az ugyanolyan félrevezető, mint a hamis jelenlét.
-    this.hasLeft = false;
+    this.isLeftBehind = false;
     this.options.onNote?.('A szolgáltatás visszajött — visszalépek a hang-csatornába.');
     await this.options.onRejoin();
   }
@@ -148,7 +148,7 @@ export class VoiceServiceWatch {
   private async handleDead(): Promise<void> {
     this.consecutiveFailures += 1;
 
-    if (this.hasLeft) return;
+    if (this.isLeftBehind) return;
 
     if (this.consecutiveFailures < SERVICE_WATCH_FAILURES_BEFORE_LEAVE) {
       // ⚠️ Az első bukás lehet egy ÚJRAINDULÁS közepe — még nem hazudunk jelenlétet.
@@ -161,7 +161,7 @@ export class VoiceServiceWatch {
     }
     const action: VoiceLifecycleAction = decideVoiceLifecycleAction('service-unreachable');
 
-    this.hasLeft = true;
+    this.isLeftBehind = true;
     this.options.onNote?.(action.reason);
     await this.options.onLeave(action);
   }
@@ -181,10 +181,14 @@ async function defaultProbe(url: string): Promise<boolean> {
     await fetch(url, { signal: controller.signal });
 
     return true;
-  } catch {
-    // ⛔ SZÁNDÉKOSAN NÉMA: ez a függvény *kérdés* — „elérhető-e?". A `false` maga a válasz,
-    // és a hívó (`handleDead`) naplózza a következményt. A hálózati hiba itt a VÁRT eset,
-    // nem rendkívüli esemény.
+  } catch (err) {
+    // ⚠️ A HÁLÓZATI HIBA ITT A VÁRT VÁLASZ — épp azt kérdezzük, elérhető-e. A `false` maga a
+    // felelet, és a KÖVETKEZMÉNYT a hívó naplózza (`handleDead` → „nem válaszol", majd a
+    // kilépés oka). ⛔ Itt mégsem hallgatunk teljesen: a jelentő **hatókörönként
+    // deduplikál**, tehát ha a hiba MÁS lesz (pl. hibás URL, nem elérhetetlenség), az
+    // kiderül — de egy tartós kiesés nem termel riasztás-özönt.
+    SwallowedFailure_Util.report('voice.service-watch.probe', err);
+
     return false;
   } finally {
     clearTimeout(timer);
