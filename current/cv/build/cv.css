@@ -332,12 +332,14 @@ body {
   content: '';
   position: absolute;
   left: 8.9pt;
-  top: 0;
-  bottom: -12pt;
+  /* A karrier-vonalnak VEGIG ossze kell ernie — ezert a ket vege parameter:
+     ahol egy elvalaszto vagy szekcio-cim ekelodik koze, ott athuzzuk rajta. */
+  top: var(--rail-top, 0);
+  bottom: var(--rail-bottom, -12pt);
   width: 1.5pt;
   background: var(--c-body);
 }
-.entry:last-child .entry__rail::before { bottom: 0; }
+.entry:last-child { --rail-bottom: 0; }
 .entry__rail::after {          /* mert: d=8.3pt, kozep x=340.25 */
   content: '';
   position: absolute;
@@ -348,7 +350,7 @@ body {
   background: var(--c-body);
 }
 .entry--nodot .entry__rail::after { display: none; }
-.entry--railtop .entry__rail::before { top: -14pt; }
+.entry--railtop { --rail-top: -14pt; }
 
 .entry__body { padding-left: 0; max-width: var(--body-w, none); }  /* mert: nehany tetel doboza keskenyebb */
 .entry__role {

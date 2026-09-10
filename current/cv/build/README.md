@@ -115,3 +115,25 @@ Ez csak a **bizonyitek**, hogy a stilus atveszi a refaktoralast. A frissites ira
 - **a stilus es az elrendezes marad** — ezert kellett ez a reprodukcio
 
 Reszletek: `current/cv/2026-09-10-review.md`.
+
+---
+
+## ⚠️ Ismert, MÉRT eltérés a kontroll-mintában: az idővonal két vége
+
+A `cv.html` (9.0 reprodukció) **szöveg-geometriája** 341 sorból 337-ben 1,5 pt-on belül egyezik.
+A **karrier-vonal (idővonal) hossza** viszont nem mindenhol:
+
+| Oldal | Eredeti szakaszok | Reprodukció |
+|---|---|---|
+| 1 | 213,6 .. 830,1 | 211,5 .. **803,2** *(26,9 pt-tal rövidebb alul)* |
+| 2 | 10,5..526,4 · 518,2..709,9 · 707,1..821,4 | 32,2..497,2 · 516,8..704,2 · 703,5..821,2 |
+| 3 | hat szakasz, per-tétel Canva-kvirkekkel | öt szakasz, más tagolással |
+
+**Ok:** a reprodukció ellenőrzése a **szövegre** épült; a vektor-elemek közül csak a sáv-geometriát,
+az elválasztókat és a pont/nyíl pozíciókat mértem — a vonal **végeit** nem.
+⇒ 📌 **Tanulság:** ha egy elem *átível* több tételen, a **két végét külön kell mérni** — a közepe
+attól még stimmelhet.
+
+A **10.0-ban ez javítva**: a vonal két vége paraméteres (`--rail-top` / `--rail-bottom`), és mindkét
+oldalon **0 szakadás** — az „Education" elválasztó fölött is átfut *(owner jelezte, 2026-09-10 22:03)*.
+

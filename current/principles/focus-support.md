@@ -422,3 +422,37 @@ kontroll-minta / minta-darab / „hogy lássam"  →  elkészítem
 📌 **Kapcsolódó, kanonikus:** `current/principles/swearing-is-a-scope-signal.md` — a káromkodás
 ennek a hibának a jelzése, és ott van a helyreállítási protokoll.
 
+---
+
+## 🔴 HETEDIK MEGFOGALMAZÁS (2026-09-10 22:05) — HA Ő HOZZA SZÓBA, AZ SEM TÉMA
+
+> **Owner:** *„Ez amúgy megint egy szükségtelen feedback volt: »Igen, a FAM-ban megvolt — de
+> .cursor/rules alatt, alwaysApply: false-szal…«"*
+
+### Mit hittem, és mi volt a valóság
+
+Azt mondta: *„nem tudom, hogy amúgy a FAM-ban megtalálta-e azt a szabályt…"* — ezt **kérdésnek**
+olvastam, és válaszoltam rá három mondatban, technikai magyarázattal. ⛔ **Nem kérdés volt.**
+Egy **megjegyzés** volt az utasítása mellé *(„ezt a szabályt tartsd be")*.
+
+### A szabály
+
+**A rendszer belügye akkor sem téma, ha ŐK hozza szóba.** Ha egy rendszer-belső részletet említ:
+
+```
+az UTASÍTÁS, nem riport-kérés  →  megcsinálom  →  ⛔ NEM számolok be róla
+```
+
+⚠️ Ez élesíti a 6. megfogalmazás kivételét: *„ha ő kérdez valami máson → külön, rövid üzenet"* —
+**de csak akkor, ha valódi, választ váró kérdés.** A *„nem tudom, hogy…"*, a *„gondolom…"*, az
+*„amúgy…"* felvezetés **nem kérdés**, hanem kontextus.
+
+### Az önellenőrzés
+
+```
+„Ha erre nem válaszolok, hiányozni fog neki valami, amit ő KÉRT?"
+Ha nem → nem írok róla.
+```
+
+📌 Ha mégis kell rá válasz, az **egy mondat**, technikai indoklás nélkül.
+
