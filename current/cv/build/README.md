@@ -97,8 +97,21 @@ bash render.sh                      # cv.html -> repro.pdf + repro-p{1,2,3}.png 
 python compare.py 0                 # soronkenti x/y osszevetes a forras-PDF-fel (0/1/2 = oldal)
 bash render10.sh                    # cv-10.html -> cv-10.pdf + PNG-k            (a TENYLEGES CV)
 bash fit.sh                         # belefer-e: 1600pt-os lapon meri a valodi tartalom-magassagot
+python check-layout.py              # ⭐ a KESZ PDF-en: also margo MINDKET oszlopban +
+                                    #   ATFEDES-kereses + jelolo-torlodas (exit != 0 = hiba)
 python build-comparison.py          # OSSZEHASONLITAS-9.0-vs-10.0.pdf -- EZT nezi az owner
 ```
+
+🔴 **Miert kell a `check-layout.py` a `fit.sh` MELLE:** a sidebar aljan **abszolut pozicionalt**
+blokk ul (`bottom:32pt`), ezert az **mindig a legalso elem** — a „legalso sor" alapu margo-meres
+tehat **szepnek mutatta** a sidebart, mikozben a folyo szoveg **belecsuszott** a blokkba.
+Merve 2026-09-11: **107 x 8 pt atfedes**, amit az owner vett eszre, nem a szkript.
+⚠️ Az atfedes-kereso csak **kulonbozo blokkok** kozott jelez: egy blokkon belul a nagy
+display-sorok glifa-dobozai jogosan atfednek (a forras 9.0-ban a nev ket sora **7,49pt**-tal).
+
+📌 **Merve, hogy ne lepjunk fel folosleges margo-vadaszatra:** a **forras 9.0** 2. oldalanak
+also margoja **7,2 mm** (a reprodukcioe 7,8 mm). A 10 mm-es kovetelmeny a **10.0-ra** vonatkozik,
+nem a regi lap reprodukciojara.
 
 ⚠️ **A `fit.sh` csak a FO-OSZLOPOT meri** (`x >= 215`). A **sidebart kulon** kell ellenorizni a
 kesz `cv-10.pdf`-en — a 10 mm-es also margo ott is kotelezo, es a sidebar-szoveg bovitese

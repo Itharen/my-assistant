@@ -145,14 +145,32 @@ kiabál.
 
 ```
 1. változtatás a cv-10.html-ben
-2. bash render10.sh          → cv-10.pdf + PNG-k
-3. bash fit.sh               → belefér-e (10 mm-es alsó margó)
-4. bash render.sh + compare.py → a KONTROLL-MINTA nem mozdult-e
-5. jelölő-audit               → minden pont/nyíl a sorához illeszkedik, nincs torlódás
-6. OSSZEHASONLITAS-9.0-vs-10.0.pdf újraépítése → ezt nézi az owner
+2. bash render10.sh            → cv-10.pdf + PNG-k
+3. bash fit.sh                 → belefér-e (10 mm-es alsó margó, CSAK a fő-oszlop)
+4. ⭐ python check-layout.py   → a KÉSZ PDF-en: alsó margó MINDKÉT oszlopban ·
+                                 ÁTFEDÉS-keresés · jelölő-torlódás   (exit≠0 = hiba)
+5. bash render.sh + compare.py → a KONTROLL-MINTA nem mozdult-e
+6. python build-comparison.py  → OSSZEHASONLITAS-9.0-vs-10.0.pdf → ezt nézi az owner
 ```
 
-⛔ **Csak akkor jelentem késznek, ha mind az öt lefutott.**
+⛔ **Csak akkor jelentem késznek, ha mind a hat lefutott.**
+
+### 🔴 MIÉRT LETT A 4. LÉPÉS — a mérésem VAK volt (2026-09-11 00:37)
+
+> **Owner:** *„a bal oldali szekcióban a végén egymásra csúsznak dolgok"*
+
+A sidebar-ellenőrzésem a **legalsó szöveg-sort** nézte, és abból számolt alsó margót. ⚠️ A
+sidebar alján viszont egy **abszolút pozicionált** blokk ül *(a név + elérhetőségek,
+`bottom:32pt`)* — **az volt mindig a legalsó**, tehát a margó **mindig szépnek látszott**,
+miközben a **folyó szöveg belecsúszott** a blokkba. Mérve: **107 × 8 pt átfedés** a
+*„that put them inside a real product."* és a *„TAHI-TÓTH BALÁZS"* között.
+
+📌 **A hibaosztály:** *az abszolút pozicionált elem kilóg a folyamból, ezért a folyam-alapú
+mérés nem látja.* ⇒ **átfedést KELL keresni**, nem elég a legalsó pontot mérni.
+
+⚠️ **Kalibráció:** az átfedés-kereső csak **különböző blokkok** között jelez. Egy blokkon belül
+a nagy display-sorok glifa-dobozai **jogosan** átfednek — mérve: a forrás 9.0-ban a név két sora
+**7,49 pt**-tal. Ez nem hiba, ez a betűtípus.
 
 ---
 

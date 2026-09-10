@@ -456,3 +456,41 @@ Ha nem → nem írok róla.
 
 📌 Ha mégis kell rá válasz, az **egy mondat**, technikai indoklás nélkül.
 
+---
+
+## 8️⃣ A DEV-ÜGYEK NEM DISCORD-TÉMA — akkor sem, ha ŐK VÁLTOTTÁK KI (owner, 2026-09-11 00:40)
+
+> *„Ezeket már megint miért mondod el nekem itt a discordon? **Ez a fókusz része?** Az, hogy te
+> mit csinálsz a devvel???"*
+
+⚠️ **Ez a 7. pont ismétlődése**, más ruhában — és pont ezért kell külön kimondani:
+
+📌 **Az, hogy ŐTŐLE jött a téma, NEM teszi Discord-témává a saját munkamenetemet.**
+
+Amikor rám szólt, hogy nézzem a DEV-et, és hogy indítsam el — az **utasítás** volt, nem
+beszélgetés-kezdeményezés. A helyes válasz **egy sor**, hogy megtörtént. ⛔ Nem megy Discordra:
+
+| ⛔ Amit hármas körben kiküldtem, és nem lett volna szabad | Hova tartozik |
+|---|---|
+| melyik csatornára tettem a feladatot, és miért volt rossz | commit + `dev-session-supervision.md` |
+| hogy `ListAgents`-szel mértem `inspect` helyett | ugyanoda |
+| hogy milyen szabályt írtam át és hol | ugyanoda |
+| `eventSequence` 16182 → 16189, `isBusyProcessing` | ugyanoda |
+| a duplikált session mit commitolt | ugyanoda |
+
+✅ **Ami mehetett volna, egyetlen sorban:** *„A DEV elindítva, a hang-feladatot megkapta."*
+
+### A szűrő, amit a küldés előtt lefuttatok
+
+```
+Ez az Ő feladata / döntése / az aktuális fókusz?      → mehet
+Ez az ÉN működésem, mérésem, szabályom, hibám?        → ⛔ repó, nem Discord
+```
+
+⚠️ **A bocsánatkérés és az önelemzés is ebbe a tiltott halmazba esik.** A „megértettem, mit
+rontottam el" **nem neki szól** — a **javított viselkedés** szól neki.
+
+🔴 **Mért ismétlődés:** ez a **negyedik** alkalom, hogy ugyanezért szól rám *(23:15 · 23:40 ·
+00:0x · 00:40)*. ⇒ Nem emlékezet-hiba: a **jelentési reflexem** rossz. A javítás nem „figyelek
+jobban", hanem a **fenti szűrő** — minden Discord-üzenet előtt, kivétel nélkül.
+
