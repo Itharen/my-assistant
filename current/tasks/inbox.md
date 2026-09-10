@@ -216,3 +216,18 @@ nem prioritás-emelés. Ez egy korábbi elmaradt rögzítés nyoma — jelezve a
 - ⚠️ **Csere után:** a kör-kivágás a `cv.css` `.portrait` szabályában áll *(d=137,5pt)*; a képet
   144,6 × 202,7pt arányban kell megadni, vagy a `left`/`top` eltolást újra kell mérni.
 
+---
+
+## 💼 2026-09-10 23:46 — LinkedIn, két tétel (hangüzenet)
+
+| Tétel | org-ref | Prio |
+|---|---|---|
+| **A MEGÍRT, függő posztok kiküldése** — *„van egy sor LinkedIn-post, ami pending, meg van már írva, csak el kell küldeni"* | `org:task:6aa32586766c802935c3be9c` | 7 |
+| **Eszköz a KORÁBBI posztok visszaolvasására + dokumentálására** — *„majd fog itt nekünk kelleni még egy eszköz"* → 🛠️ **fejlesztés, DEV** | `org:task:6aa32587766c802935c3bea3` | 5 |
+
+### ⚠️ INBOX-MISS — a függő posztok
+
+Az owner **ma délelőtt is elmondta** *(„van egy sor LinkedIn poszt, amit elkészítettem, de nem
+posztoltam még")*, és **most is** — de az organizerbe **nem került be**. ⇒ Ez az **első rögzített
+példány**. Ugyanaz a hibaosztály, mint a TEÁOR-nál 22:00-kor.
+

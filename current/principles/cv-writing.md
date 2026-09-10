@@ -20,13 +20,31 @@
 
 ### A gyakorlati következmény
 
-- **Nem írunk semmit, ami kizárja az egyik olvasót.** ⛔ Nincs benne „csak vállalkozóként" olyan
-  megfogalmazásban, ami elriasztja a munkáltatót; és nincs „állást keresek", ami gyengíti a B2B-t.
-- A **„HOW I WORK"** blokk pont ezért fogalmaz **feltételként, nem kizárásként**.
+- **Nem írunk semmit, ami kizárja az egyik olvasót.** ⛔ Nincs benne „állást keresek", ami gyengíti
+  a B2B-t — de a **kontraktori forma nem elriasztás, hanem tény**, l. lent.
+- A **„HOW I WORK"** blokk a **munkavégzés formáját** mondja ki, nem azt, hogy kitől fogadunk el munkát.
 - ⭐ **A párhuzamos kapacitás ÉRV, nem kifogás:** az eszközei (agent-orkesztráció, saját
   framework-ök, automatizált tesztelés) miatt **több párhuzamos munkát is el tud vállalni** —
   ezt **hozadékként** kell megfogalmazni, nem korlátként.
 
+### ⚠️ KORREKCIÓ (owner, 2026-09-10 23:45) — a „contractor only" MARAD
+
+> *„A munkáltatónál is csak kontraktor."*
+
+Először túl puhára vettem *(„open to longer, dedicated engagements")* — **rossz volt.**
+A pontos állapot:
+
+| | |
+|---|---|
+| **Kitől fogad el munkát** | ügyféltől ÉS munkáltatótól egyaránt ✅ |
+| **Milyen formában** | ⛔ **kizárólag kontraktorként**, a saját cégén keresztül |
+
+⇒ A CV-ben ez **egy mondat**, ami mindkettőt kimondja: *„Contractor only, through my own company —
+that is the engagement form, whether the work comes from a client or from a company looking to hire.
+Short projects and long, dedicated engagements alike."*
+
+📌 **A tanulság:** a kettős célközönség NEM azt jelenti, hogy minden feltételt fel kell puhítani.
+A **tényeket** nem puhítjuk — csak azt kerüljük, ami **feleslegesen** zár ki egy olvasót.
 ---
 
 ## 2️⃣ Tartalom-szabályok
