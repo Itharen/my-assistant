@@ -182,6 +182,11 @@ a nagy display-sorok glifa-dobozai **jogosan** átfednek — mérve: a forrás 9
 
 ## 5️⃣ Kapcsolódó
 
+⭐ **A BELÉPÉSI PONT: [`current/cv/README.md`](../cv/README.md)** — ott van EGY helyen a
+kiadás-lista *(hónapra dátumozva)*, ez a szabálykönyv, és az eszközök.
+⛔ Új CV-kör **onnan** induljon, ne a build-mappából. *(owner, 2026-09-11 01:32)*
+
+
 - `current/cv/2026-09-10-review.md` — az irány és a névtelenségi tábla
 - `current/cv/build/README.md` — a mérési módszer és a mért értékek
 - `current/cv/fleet-highlights.md` — mi minden van még a flottában, ami CV-értékű
