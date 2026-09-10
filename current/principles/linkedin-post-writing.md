@@ -83,7 +83,7 @@ Kapcsolódó: [[cv-writing]] *(ugyanaz a kettős célközönség)* · [[discord-
 
 ---
 
-## 🖼️ A KÉP-SZABÁLY FELÜLVIZSGÁLATA (owner, 2026-09-11 01:50) — 🙋 DÖNTÉSRE VÁR
+## 🖼️ A KÉP-SZABÁLY — ✅ ELDÖNTVE: AZ ERŐSEK KAPNAK KÉPET (owner, 2026-09-11 01:54)
 
 > *„A régi LinkedIn posztkészítési szabályunkban az volt, hogy a **gyengébb cikkek kapjanak
 > képeket**, de egyre inkább érzem, hogy vagy **mindennek** kéne kapni a képet, vagy pont, hogy
@@ -116,6 +116,23 @@ elérés- vagy reakció-adatot.
 legfontosabbnak, és ahol a kép tényleg hozzáad. Gyenge poszt nem kap képet: azt átírjuk vagy
 kihagyjuk.*
 
-🙋 **Ez a te döntésed** — amíg nem mondod ki, a fenti régi szabály marad érvényben
-*(„csak ahol tényleg hozzáad")*, mert az a kettő között **nem ütközik**.
+### ✅ AZ OWNER DÖNTÉSE — 2026-09-11 01:54
+
+> *„Jó, jó a javaslatod. Menjünk a felé, igen, hogy akkor kapjanak az erősek képet."*
+
+⇒ **ÉRVÉNYES SZABÁLY MOSTANTÓL:**
+
+```
+A kép a KIEMELÉS eszköze.
+  ✅ képet kap      → amit az owner a legfontosabbnak tart, ÉS ahol a kép tényleg hozzáad
+  ⛔ NEM kap képet  → a gyenge poszt. Azt ÁTÍRJUK vagy KIHAGYJUK — a kép nem javítja, csak elfedi
+```
+
+⚠️ **Ez FELVÁLTJA a régi „a gyengébb cikkek kapjanak képet" logikát** *(owner, 01:50: a régi
+szabály volt, de elveti)*. ⛔ A régi heurisztikát **nem alkalmazzuk többé**.
+
+📌 **A fenti, szó szerinti irányelv VÁLTOZATLANUL ÉL mellette** — *„Csak azokhoz adunk képet, ahol
+tényleg hozzáad. Ha generikus AI-stock kép lenne, inkább nincs kép."* A kettő **egy irányba** mutat:
+a döntés azt mondja meg, **melyik** posztoknál keressük a képet, az irányelv pedig azt, hogy
+**milyen** kép fogadható el. Mindkettőnek teljesülnie kell.
 
