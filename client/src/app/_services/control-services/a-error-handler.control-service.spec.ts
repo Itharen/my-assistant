@@ -52,7 +52,14 @@ describe('A_ErrorHandler_ControlService', () => {
     expect(showErrorSpy).toHaveBeenCalledTimes(3);
   });
 
-  it('falls back to console.error when showError itself throws (final-fallback contract)', () => {
+  it('🔴 végső fallback: ha a showError MAGA dob, MINDKÉT hiba látszik a naplóban', () => {
+    // ⚠️ EZ A SPEC 2026-09-10-én ELBUKOTT, és jogosan: a sink `console.error`-ról
+    // `DyFM_Log.error`-ra váltott (a `no-console-log` szabály szerint), és a három külön
+    // argumentum EGY interpolált üzenetté vált.
+    //
+    // ⭐ A SZERZŐDÉS VÁLTOZATLAN, csak az alakja más: (a) a `handleError` nem dob,
+    // (b) a naplóban ott van a felszínre-hozás hibája ÉS az EREDETI hiba is. Ha bármelyik
+    // kimaradna, a fejlesztő pont azt nem tudná meg, ami miatt a lánc elhasalt.
     const showErr: Error = new Error('pipeline-down');
     showErrorSpy.and.throwError(showErr);
     const original: Error = new Error('original-error');
@@ -60,9 +67,11 @@ describe('A_ErrorHandler_ControlService', () => {
     expect(() => svc.handleError(original)).not.toThrow();
 
     expect(consoleErrorSpy).toHaveBeenCalled();
-    const args: unknown[] = consoleErrorSpy.calls.mostRecent().args as unknown[];
-    expect(args[0]).toBe('[A_ErrorHandler] failed to surface error');
-    expect(args[1]).toBe(showErr);
-    expect(args[2]).toBe(original);
+    const logged: string = String((consoleErrorSpy.calls.mostRecent().args as unknown[])[0]);
+
+    expect(logged).toContain('[A_ErrorHandler] failed to surface error');
+    expect(logged).toContain('pipeline-down');
+    // ⭐ A LEGFONTOSABB: az EREDETI hiba sem veszhet el a fallback mögött.
+    expect(logged).toContain('original-error');
   });
 });

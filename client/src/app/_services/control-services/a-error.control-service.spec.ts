@@ -46,13 +46,21 @@ describe('A_Error_ControlService', () => {
     expect(out.source).toBe('my.component.method');
   });
 
-  it('logs to console.error with the [A_Error] prefix and errorCode', () => {
+  it('naplózza az [A_Error] előtagot, a hibakódot ÉS az üzenetet — egy sorban', () => {
+    // ⚠️ EZ A SPEC 2026-09-10-én ELBUKOTT, és jogosan: a sink `console.error`-ról
+    // `DyFM_Log.error`-ra váltott (a `no-console-log` szabály szerint), és a két külön
+    // argumentum EGY interpolált üzenetté vált.
+    //
+    // ⭐ A SZERZŐDÉS VÁLTOZATLAN: az előtag azonosítja a forrást, a kód a grep-elhetőséget
+    // adja, az üzenet pedig azt, hogy MI történt. Mind a három kell — kód nélkül nem
+    // kereshető, üzenet nélkül nem érthető.
     svc.showError(new Error('boom'), 'spec');
 
     expect(consoleErrorSpy).toHaveBeenCalled();
-    const args: unknown[] = consoleErrorSpy.calls.mostRecent().args as unknown[];
-    expect(args[0]).toBe('[A_Error] Error');
-    expect(args[1]).toBe('boom');
+    const logged: string = String((consoleErrorSpy.calls.mostRecent().args as unknown[])[0]);
+
+    expect(logged).toContain('[A_Error]');
+    expect(logged).toContain('boom');
   });
 
   it('emits a toast via DyNX_Message_ControlService.newErrorMessage with verticalPosition=bottom + 10s', () => {
