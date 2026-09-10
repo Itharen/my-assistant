@@ -994,3 +994,55 @@ a felolvasó **mindet** mondja ki, sorrendben.
 API fogad explicit nyelv-paramétert, adjuk át — a **javítható** hibát nem hagyjuk bent azért, mert
 ismerjük. ⛔ De **ne** építs köré nagy detektálás-logikát: egy paraméter, és kész.
 
+---
+
+## 2026-09-11 01:33 — 🔢 A FELOLVASÁSNAK NINCS SORA + a bizonytalanság INDOKA hiányzik
+
+> **Owner, 2026-09-11 01:30 (hang):** *„mintha két üzenetet küldtél, és csak az első került
+> felolvasásra… majd itt bonyolultabb queuing rendszert is kell kialakítsunk"*
+> **01:29:** *„Ha hallottam, de nem értettem biztosan résznél, ott jó lenne, ha kiírnánk azt is,
+> hogy mit hallottál, vagy miért nem lett biztos."*
+
+### (A) 🔴 NINCS SOR — és ezt MÉRTEM, nem feltételezem
+
+```
+grep -n "queue|Queue|inFlight|isSpeaking|busy"  voice-read-aloud.ts  voice-read-aloud-watcher.ts
+  -> 0 talalat
+```
+
+⇒ **Semmi nem sorosítja a lejátszást.** Az owner megfigyelése *(„a másodikat is legeneráltuk,
+csak aztán valahogy nem volt jó a kezelés")* pontosan ezt írja le: a második hang **elkészül**,
+de nincs, ami megvárja az elsőt.
+
+**Amit kérek — FIFO sor a felolvasásra:**
+
+| Szempont | Elvárás |
+|---|---|
+| **sorrend** | érkezési, ⛔ soha nem előz |
+| **veszteség** | ⛔ nulla — ha épp szól egy, a következő **vár**, nem esik ki |
+| **kapcsolódás** | ⚠️ a 01:30-as **darabolás** ugyanennek a sornak a tételei; egy üzenet N darabja **egyben** marad, közéjük más üzenet ⛔ nem ékelődhet |
+| **szüneteltetés** | a 01:20-as *(amíg ő beszél)* a **sorra** hat: a soron lévő megáll, a sor **nem ürül ki** |
+| **láthatóság** | ha a sor **nem ürül** *(pl. 5 tétel fölött)*, az **jelzés** &mdash; a csendes torlódás ugyanaz a hibaosztály, mint a néma csonkolás |
+
+### (B) A bizonytalan átiratnál mondjuk meg, MIT hallottunk és MIÉRT bizonytalan
+
+Ma bizonytalanságnál a `transcribeVoiceMessage` **`null`-t** ad *(helyesen: „inkább ne értsük,
+mint félreértsük")*, és megy a tükör-üzenet. ⚠️ **Ami hiányzik belőle:** maga a **felismert
+szöveg** és a bizonytalanság **oka**.
+
+**Kérés:** a tükör-üzenet tartalmazza mindkettőt, ebben a formában:
+
+```
+🎙️ Hallottalak, de nem vagyok biztos benne.
+   Amit értettem: „<a nyers átirat>"
+   Miért bizonytalan: <ok>            pl. gyanús tagolás · rövid felvétel ·
+                                          nyelv-eltérés · alacsony pontszám
+```
+
+⭐ **Miért ér ez sokat:** így **ő** dönti el, hogy jól hallottam-e — ⛔ nem nekem kell eltalálnom.
+A mai *„nem cselekszem rá"* igaz, de **használhatatlan**: nem tudja, mit ismételjen meg és
+hogyan mondja másképp.
+
+⛔ **Ami NEM változik:** bizonytalan átiratra **továbbra sem cselekszünk**, és a kötegbe
+**továbbra sem** kerül be. Ez a szabály marad — csak a **visszajelzés** lesz használható.
+
