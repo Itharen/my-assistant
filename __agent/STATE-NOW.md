@@ -10,6 +10,24 @@
 
 **Frissítve:** 2026-09-09 16:05
 
+## 🔴 ORGANIZER LEÁLLT — egy SÜRGŐS owner-feladat csak tartalékban van
+
+**Mérve 2026-09-10 19:09:** `fo organizer.ping` és `fo tasks.create` egyaránt **`fetch failed`**.
+
+**Az érintett tétel:** 📞 **Telekom felhívása munkaidőben — letiltották a számát.**
+Owner: *„Nagyon fontos."* Esedékes: **2026-09-11 munkaidőben**.
+
+⚠️ **Ez a tétel NEM tekinthető rögzítettnek**, amíg az organizerbe nem kerül át
+*(`recording-discipline.md`: a lokál-only rögzítés **félrevezető**)*.
+📌 **Tartalék helye:** `current/tasks/inbox.md`.
+
+**TEENDŐ MINDEN KÖVETKEZŐ KÖRBEN**, amíg meg nem történik:
+```bash
+fo organizer.ping          # el-e?
+# ha igen: fo tasks.create --title "📞 Telekom …" --due-date 2026-09-11T09:00:00+02:00 --priority 125
+# majd az inbox.md-ből KIVEZETNI
+```
+
 ## 🔊 FÜGGŐ ÍGÉRET — HANGOS BEJELENTKEZÉS, ha a felolvasás kész
 
 > **Owner, 2026-09-10 19:06 (hangcsatorna):** *„Majd hogyha elkészült ez a fejlesztés és **tudsz
