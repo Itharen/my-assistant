@@ -215,3 +215,29 @@ A make-before-break itt **nem kényelmi kérdés, hanem adatvesztés-megelőzés
    **túléli** a bukást, és senki nem takarítja el.
 3. ⭐ **A timeout ne csendben öljön:** a `tsc-cli` **10 percig** tartotta a ciklust, majd
    kivágódott — és a rendszer **nem jelezte**, hogy közben a CLI nem elérhető.
+
+#### 📊 ADAT 2026-09-10 — a `tsc-cli` az LDP alatt **16×** lassabb, és a RAM NEM magyarázza
+
+| Futás | Környezet | RAM | Idő |
+|---|---|---|---|
+| `tsc-cli` **LDP-lépésként** *(16:00-ás ciklus)* | pipeline-on belül | **49 %** | **355,9 s** |
+| `tsc-cli` **LDP-lépésként** *(09-08 19:07-es ciklus)* | pipeline-on belül | 96,9 % | **> 600 s** *(timeout, kivágva)* |
+| `npx tsc -p cli/tsconfig.json` **kézzel** *(09-08 20:04)* | önállóan | 95,2 % | **22,5 s** |
+
+🔴 **Amit ez ELDÖNT:** a 2026-09-08-i „a RAM az ok" magyarázat **megdőlt**. Most **49 %-os**
+RAM mellett is **356 s** — vagyis a lassulás **nem memória-nyomás**.
+
+⚠️ **Amit NEM állítok:** nem tudom, mi okozza. Lehetőségek, amiket **nem mértem**:
+a `tee-run` burkoló · a lépés-őr *(CPU/RAM mintavételezés)* · más `tsconfig`/inkrementális
+beállítás a pipeline-ban · párhuzamos lépések CPU-versenye. ⛔ Ezt **a bedrock oldalán** lehet
+megnézni, nálam nincs rálátás a lépés-futtatóra.
+
+📌 **Miért fontos ez a kérésnek:** a make-before-break értéke **egyenesen arányos** ezzel az
+idővel. Ha a `tsc-cli` **22 s**, a vakablak elviselhető; ha **356 s**, akkor a `dist` törlése
+**hat percre** megvakítja a CLI-t — és a `600 s`-es timeout **karnyújtásnyira** van attól, hogy
+a `dist` **egyáltalán ne épüljön újra** *(ez 09-08-án meg is történt: 57 perc halott CLI)*.
+
+⭐ **Élő következmény ugyanezen a napon:** az owner **16:05-kor** kérdezte, hogy elindítottam-e
+a szervert. A válasz **nem** volt — mert a szerver a **pipeline végén** indul, és a ciklus a
+`tsc-cli` 356 másodperce miatt még a harmadik lépésnél tartott. A **6 órás kiesés után** ez
+további percek némaság.
