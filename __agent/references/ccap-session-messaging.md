@@ -60,7 +60,7 @@ POST /api/cc-session/:id/prompt      → { content }   ⚠️ VISSZAVONHATATLAN
 
 | Cél | `sessionId` | Címke | Státusz akkor |
 |---|---|---|---|
-| ⭐ **A FEJLESZTŐM** — ide megy MINDEN fejlesztési munka | **`ccs-d5027942-mtroz7ve`** | ALL Projects - My Assistant DEV | `running` |
+| ⭐ **A FEJLESZTŐM** — ide megy MINDEN fejlesztési munka | **`ccs-d5027942-mtroz7ve`** | **My Assistant - DEV** *(az owner nevezte át 2026-09-11 00:51-kor; korábban „ALL Projects - My Assistant DEV")* | `running` |
 | ⭐ **AZ FDP-ASSZISZTENSEM** — FDP-ügyek, könyvelő, bérszámfejtés | **`ccs-e4e4fadf-mtroyj33`** | My FDP Assistant | `running` |
 | **FDP Assistant** *(az owner ezt nevezte meg)* | `ccs-eb7533f2-msf45rno` | ALL Projects - FDP Assistant NEW | `waiting-input` |
 | **Én** *(ide jönnek a Discord-üzenetek)* | `ccs-6f25a888-mtp9a8cx` | My Assistant | `running` |

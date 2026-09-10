@@ -167,3 +167,22 @@ attól még stimmelhet.
 ⚠️ **A kontroll-mintában rögzítettük** a régi nyíl-eltolást (`--arrow-dx: -10.6pt` a `cv.html` 1. oldalán),
 hogy a fenti képlet ne mozdítsa el — az eredetiben a nyíl `x=340,4`.
 
+---
+
+## 🔴 A NEMA RENDER-BUKAS — es az or, ami kifogja (merve 2026-09-11 01:00)
+
+A `render10.sh`-t haromszor futtattam **elnyomott kimenettel** (`>/dev/null 2>&1`), es
+haromszor **ugyanazt a 10,5pt-os rest** mertem, hiaba rovidult a szoveg kozben.
+
+**Az ok:** a Chrome `--print-to-pdf` **nemaan bukott** — a regi `cv-10.pdf` maradt a helyen,
+es minden ra epulo meres a **ROSSZ lapot** merte. A hiba **lathatatlan** volt, mert a mereseim
+"sikeresen" lefutottak, csak egy elavult fajlon.
+
+⛔ **Ket szabaly ebbol:**
+1. **A render kimenetet SOHA nem nyomjuk el.**
+2. A `render10.sh` vege ota **frissesseg-ort** futtat: ha a `cv-10.pdf` **regebbi**, mint a
+   `cv-10.html`, a szkript **hibaval all meg**. ⇒ elavult PDF-en nem lehet tobbe merni.
+
+📌 A hibaosztaly ismeros: *a lepes "lefutott" ≠ a lepes MEGTORTENT.* Ugyanaz, mint a
+`ListAgents`-szel mert DEV-allapot, vagy a sidebar also margoja az abszolut blokk alatt.
+

@@ -10,19 +10,26 @@
 //                                        ElevenLabs TTS → mp3 puffer → Discord hang-kapcsolat
 // ```
 //
-// ⛔ **AZ ÁTEMELT ELEVENLABS-KÓDHOZ NEM NYÚLUNK** — csak **hívjuk**
-// *(`transplant-not-rewrite`)*. A `EL_TextToSpeech_ControlService` megvan, működik, és az
-// API-kulcsot maga olvassa a `FDP_ELEVENLABS_API_KEY`-ből.
+// 🔴 **2026-09-11: ÁTKÖTVE A V3-AS SAJÁT KLIENSRE** *(`voice-tts.client.ts`)*.
 //
-// ⚠️ A betöltés **lusta**, változóban tartott hivatkozással — ugyanaz a mért ok, mint a
-// felvevőnél *(`voice-channel-recorder.ts`)*: literállal a TypeScript **belehúzná** az átemelt
-// fát a fő, `strict` programba, és a hidegindítás sem mehet a figyelő indulási útjára.
+// Korábban az átemelt `EL_TextToSpeech_ControlService`-t hívtuk. Az **soha nem szólalt meg**:
+// a `el.api-service.ts:91-94` a kulcsot `xi-api-` prefixhez kötötte, az owner kulcsa viszont
+// `sk_`-val kezdődik ⇒ `isInitialized = false` ⇒ `'Service not initialized'` minden hívásra.
+//
+// > **Owner-korrekció (2026-09-10 21:46):** *„nem a V3 Eleven Labs lett leimplementálva, hanem
+// > a régi Fors, ami sosem működött jól."* ⇒ ⛔ **nem a prefixet lazítottuk**, hanem V3-ra
+// > váltottunk, a hivatalos SDK-val.
+//
+// ⚠️ `transplant-not-rewrite`: az átemelt fához **NEM nyúltunk** — az új kliens **mellé** került,
+// és ez a modul többé nem hívja a régi utat. ⭐ Ezzel a kulcsot naplózó sor
+// *(`el-text-to-speech.control-service.ts:46`)* sem fut le többé.
 
 import { Readable } from 'node:stream';
 
 import { AudioPlayerStatus, createAudioResource, StreamType, type AudioPlayer } from '@discordjs/voice';
 
 import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
+import { VoiceTts_Client } from './voice-tts.client.js';
 import { readVoiceVolume } from './voice-volume.js';
 
 /**
@@ -52,31 +59,6 @@ export interface SpeakResult {
   characterCount?: number;
 }
 
-/** Az átemelt TTS-szolgáltatás alakja — ⛔ csak amennyit HASZNÁLUNK belőle. */
-interface TransplantedTextToSpeech {
-  convertTextToSpeechSimple(text: string, voiceId: string): Promise<{
-    success: boolean;
-    audioBuffer?: Buffer;
-    characterCount?: number;
-    error?: string;
-  }>;
-}
-
-/**
- * Az átemelt ElevenLabs TTS singleton lusta betöltése.
- *
- * 🔴 A HIVATKOZÁS SZÁNDÉKOSAN VÁLTOZÓBAN ÁLL, nem sztring-literálban — különben a TypeScript
- * belehúzná az átemelt fát a fő, `strict` programba. Ugyanaz a mért ok, mint a felvevőnél.
- */
-export async function loadTransplantedTextToSpeech(): Promise<TransplantedTextToSpeech> {
-  const specifier: string = '../_modules/elevenlabs/_services/el-text-to-speech.control-service.js';
-  const module = await import(specifier) as {
-    EL_TextToSpeech_ControlService: { getInstance(): TransplantedTextToSpeech };
-  };
-
-  return module.EL_TextToSpeech_ControlService.getInstance();
-}
-
 /**
  * A szöveg felolvasása a hang-csatornába.
  *
@@ -89,7 +71,7 @@ export async function loadTransplantedTextToSpeech(): Promise<TransplantedTextTo
  */
 export async function speakInVoiceChannel(
   request: SpeakRequest,
-  loadTts: () => Promise<TransplantedTextToSpeech> = loadTransplantedTextToSpeech,
+  synthesize: typeof VoiceTts_Client.synthesize = VoiceTts_Client.synthesize,
   readVolume: () => Promise<number> = readVoiceVolume,
 ): Promise<SpeakResult> {
   const text: string = request.text.trim();
@@ -105,24 +87,29 @@ export async function speakInVoiceChannel(
   }
 
   try {
-    const tts: TransplantedTextToSpeech = await loadTts();
     // ⭐ AZ OWNER MÁR BEÁLLÍTOTTA: a `.env`-ben ott van a `MA_ELEVENLABS_VOICE_ID`. ⛔ Nem
     // vezetek be helyette új nevet — a hang **owner-döntés** (T-77: „a hangjelentések az
     // övéi"), és két külön kulcs azt jelentené, hogy az ő beállítása némán hatástalan.
     const voiceId: string = (process.env['MA_ELEVENLABS_VOICE_ID'] ?? '').trim()
       || DEFAULT_SPEECH_VOICE_ID;
-    const result = await tts.convertTextToSpeechSimple(text, voiceId);
+    const result = await synthesize({
+      text: text,
+      voiceId: voiceId,
+      apiKey: (process.env['FDP_ELEVENLABS_API_KEY'] ?? '').trim(),
+      // ⚠️ A modell felülírható — mérve a V3 kétszer lassabb (3 543 ms vs. 1 680 ms).
+      ...(((process.env['MA_ELEVENLABS_MODEL_ID'] ?? '').trim())
+        ? { modelId: (process.env['MA_ELEVENLABS_MODEL_ID'] ?? '').trim() }
+        : {}),
+    });
 
-    if (!result.success || !result.audioBuffer || result.audioBuffer.length === 0) {
-      return {
-        spoken: false,
-        detail: `A beszéd-szintézis nem sikerült: ${result.error ?? '(nincs részlet)'}`,
-      };
+    if (!result.ok || !result.audio) {
+      // 🔒 A `detail` az SDK hibája + a modell — ⛔ a KULCS SOSEM kerül bele.
+      return { spoken: false, detail: `A beszéd-szintézis nem sikerült: ${result.detail}` };
     }
 
     // ⚠️ `inlineVolume: true` — a hangerő ITT is állítható legyen, ugyanabból a beállításból,
     // mint a jelzések. Két külön hangerő két külön panaszt szülne.
-    const resource = createAudioResource(Readable.from(result.audioBuffer), {
+    const resource = createAudioResource(Readable.from(result.audio), {
       inputType: StreamType.Arbitrary,
       inlineVolume: true,
     });
@@ -132,8 +119,9 @@ export async function speakInVoiceChannel(
 
     return {
       spoken: true,
-      detail: `Felolvasva (${text.length} karakter).`,
-      ...(result.characterCount === undefined ? {} : { characterCount: result.characterCount }),
+      // ⭐ A MODELL BENNE VAN: a naplóból ki kell derülnie, hogy tényleg a V3 szólalt meg.
+      detail: `Felolvasva (${text.length} karakter, modell: ${result.modelId ?? '?'}).`,
+      ...(result.sentCharacters === undefined ? {} : { characterCount: result.sentCharacters }),
     };
   } catch (err: unknown) {
     SwallowedFailure_Util.report('voice.speaker.speak', err);

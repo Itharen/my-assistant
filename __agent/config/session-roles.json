@@ -9,7 +9,7 @@
     },
     "ccs-d5027942-mtroz7ve": {
       "role": "dev",
-      "label": "ALL Projects - My Assistant DEV",
+      "label": "My Assistant - DEV",
       "claudeSessionId": "5d347e4f-154e-44d3-aa70-a7eff652c94a",
       "rulesFile": "__agent/roles/dev.md"
     }
