@@ -121,3 +121,40 @@ ma comm doctor      # az ELSŐ sora az LDP — 4 állapot:
 Ha nem fut: **`dc ldp`**, saját terminálablakban — és **csak utána** bármi más.
 
 Kód: `cli/src/comm/comm.ldp-check.ts` *(7 teszt, köztük a halott-PID eset)*.
+
+---
+
+## 🔴 2026-09-10 — 6 ÓRÁS NÉMA KIESÉS GÉPINDULÁS UTÁN
+
+**A mérés:**
+
+| Tény | Idő |
+|---|---|
+| Az utolsó jelenlét-minta | **09:26** |
+| A gép újraindult *(uptime-ból visszaszámolva)* | **~09:57** |
+| Én ezt észrevettem | **15:57** |
+| A csatorna újra élt | **16:00** |
+| **Néma kiesés** | **~6 óra** |
+
+**Ami NEM indult el a boot után:** `dc ldp` · a my-assistant szerver · a **Discord-figyelő** ·
+a **jelenlét-figyelő**. ⛔ **Egyik sem indul automatikusan.**
+
+⭐ **A kár ezúttal nulla volt** — a figyelő indulási backfillje **semmit nem talált**, és a
+várakozó sor **üres** volt: az owner a kiesés alatt **nem írt**. ⚠️ Ez **szerencse, nem
+védelem**.
+
+### 📌 A hibaosztály: a rendszer NEM TUDJA JELEZNI a saját halálát
+
+🔴 Amikor minden leáll, **az is leáll, ami szólna róla**. Nincs az a napló, figyelő vagy
+diagnosztika, ami ilyenkor megszólal — a felfedezés **kizárólag a következő ébredésemen** múlik.
+
+⇒ Ezért **a gép-újraindulás ellenőrzése az ELSŐ lépések közé került** (`ENTRY.md` **0a**), a
+`LastBootUpTime` és a jelenlét-napló utolsó mintájának összevetésével. ⚠️ A `comm doctor`
+önmagában **nem elég**: az „nem fut" üzenetet mond, de **nem mondja meg, hogy MIÓTA** — és a
+„most indítsd el" reflex elfedi, hogy **hat órán át néma volt a csatorna**.
+
+### ⚠️ Amit ez a jövőre nézve NYITVA hagy
+
+A valódi megoldás **automatikus indítás boot után** *(feladat-ütemező vagy szolgáltatás)* —
+⛔ ez **owner-döntés**, mert a gépén futó autostartot nem én állítok be. Addig a **0a lépés**
+a kompenzáló kontroll: **felfedezi**, de nem **előzi meg**.
