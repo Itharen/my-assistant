@@ -5,11 +5,25 @@
 > ⚠️ A `one-thing-focus.md` ugyanennek a **duplikátuma**, stale-bannerrel — ne arra hivatkozz.
 > ⭐ Az **első** szabálya engem köt: *„Jelenleg csak rontasz rajta mert **te is csapongsz nagyon**"*.
 
-**Frissítve:** 2026-09-08 16:10
+**Frissítve:** 2026-09-09 15:28
 
 ---
 
 ## 📌 KITŰZVE MOST
+
+> ⏳ **NINCS kitűzött tétel — a válaszára vár.**
+
+🔴 **Az Interfood-rendelés lekerült:** az owner **másik sessionben** intézi
+*(2026-09-10 19:42: „a sok feladatot nem rajtad keresztül fogom elintézni… egy másik sessionben,
+de ugyanebben a workspace-ben")*. ⇒ Nem az enyém, tehát **nem lehet a kitűzöttem sem**.
+
+⭐ **Ezért kérdeztem meg tőle, mi legyen a fókusz** — ez a **numero uno** feladatom:
+*„a fókusz és a feladatokból a priorizálást megfelelően kezelni és **fókuszban tartani engem**"*.
+
+⚠️ **Amíg nincs kitűzött, a hallgatás a helyes** — ⛔ nem töltöm ki mással, és ⛔ nem jelentek
+neki olyasmiről, ami nem a fókusz.
+
+## ⏸️ FOLYTATANDÓ A KERET FRISSÜLÉSE UTÁN
 
 🎯 **Master Prompter** — *(az owner saját sorrendje, 2026-09-08 15:31)*
 
@@ -22,7 +36,7 @@
 ⭐ **Nem én választottam — Ő mondta ki.** Ez a helyes működés: a kitűzés az övé, én
 **nyilván tartom és a helyén tartom** *(`focus-support.md` 7⃣: ⛔ nem viszem el a feladatait)*.
 
-⏰ **Az egyetlen dátumos tétel mellette:** 🍱 Interfood-rendelés — **09-10**.
+⏰ A fejlesztési sorrend változatlan; csak átmenetileg blokkolt a Claude Code keret miatt.
 
 ⚠️ **A korábbi Interfood-javaslatom visszavonva** *(13:10)*: aként ajánlottam kitűzöttnek,
 hogy nem tudtam az ő sorrendjéről — az az üzenete a **DEV**-be érkezett.
