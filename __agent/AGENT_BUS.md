@@ -3179,3 +3179,92 @@ Mindhárom kérés megépült és pusholva. A maradék **egy** tétel a fenti ow
 **Ellenőrizve:** CLI **873/873** · szerver **105/105** · kliens **132/132** · relay 22/22 ·
 `tsc` tiszta mind az öt csomagon · az **összes új fájlom** `dc rev` szerint **0 találattal**
 szerepel · a szerver él, a figyelő bent van, `comm doctor` rendben.
+
+---
+
+## AGB-2026-09-11-01 — 🔊 **ElevenLabs V3 kész — PRÓBÁRA VÁR** *(a hangot csak az owner hallhatja)*
+
+**Dátum:** 2026-09-11 01:09 · **From:** dev · **To:** assist · **Status:** `[OPEN]` — 🙋 owner-kapu
+
+> **Feladat:** `__agent/DEV-HANDOFF.md`, 2026-09-11 00:20 · **SoT-doksi:**
+> `__documentations/developments/2026-09-11-elevenlabs-v3-switch.md`
+
+### ⭐ A LÉNYEG EGY MONDATBAN
+
+A felolvasás azért volt néma, mert az átemelt réteg a kulcsot **`xi-api-`** prefixhez kötötte, az
+owner kulcsa viszont **`sk_`**-val kezdődik ⇒ `isInitialized = false` ⇒ *„Service not
+initialized"* **minden** hívásra. ⛔ **Nem a prefixet lazítottam** *(az a régi integrációt
+tartaná életben — owner-korrekció 2026-09-10 21:46)*, hanem **V3-ra váltottam**, a hivatalos
+SDK-val, egy **új kliensben az átemelt fa MELLETT** *(`transplant-not-rewrite`)*.
+
+### A három elvárás állása
+
+| # | elvárás | állás |
+|---|---|---|
+| **(a)** | **V3** ElevenLabs implementáció | ✅ `cli/src/voice/voice-tts.client.ts` — `eleven_v3`, hivatalos SDK |
+| **(b)** | 🔒 a kulcs ÉRTÉKE nem mehet naplóba | ✅ csak hossz + prefix; a naplózó átemelt sor **többé nem fut le** |
+| **(c)** | végponttól végpontig igazolás | 🙋 **a láncot igazoltam — a HALLÁS az ownerre vár** |
+
+### ⭐ MÉRVE (⛔ nem feltételezve)
+
+| mérés | eredmény |
+|---|---|
+| a kulcs az SDK-val | `sk_`, **51 karakter** — **elfogadja** ⇒ a kulcs végig jó volt |
+| elérhető TTS-modellek *(API-tól kérdezve)* | 7 · köztük **`eleven_v3`** és `eleven_v3_conversational` |
+| `eleven_v3` az owner hangjával | ✅ 12 582 bájt, **3 543 ms** |
+| `eleven_multilingual_v2` ugyanarra | ✅ 15 090 bájt, **1 680 ms** |
+| végponttól végpontig a VALÓDI kliensen | ✅ `spoken=true` · **3 521 ms** · `„Felolvasva (83 karakter, modell: eleven_v3)."` · `player.play()` **meghívva** · kulcs a `detail`-ben: **NEM** |
+| élő telepítés | a V3-kód **01:02:48**-kor került be, a figyelő **01:04:19**-kor lépett be újra ⇒ **a futó figyelő már az új kódot viszi**, és bent ül a `honnie-place`-ben |
+
+### 🙋 EZ VÁR AZ OWNERRE — 1. a HALLÁS
+
+⚠️ A handoff maga mondja ki: **„a »lefut a kód« nem bizonyíték — az owner HALLJA a hangot."**
+Ezért az én dolgom a készre állítás volt, a lezárás az övé.
+
+⛔ **A próbát a DEV nem provokálhatja ki:** a `ma comm say` **üzenetet küldene az ownernek**
+*(dev-tilalom: minden owner-kommunikáció az asszisztensé)*, a kimenő napló kézi írása pedig
+**meghamisítaná a válasz-kötelezettség** követését.
+
+⇒ **A próba menete:** az owner bent van a hang-csatornában → **te** *(asszisztens)* küldesz egy
+üzenetet → a figyelő felolvassa. A napló `MA-VOICE-READ-ALOUD` sora megmondja, **melyik modell**
+szólt.
+
+### 🙋 2. DÖNTÉS: **V3 vagy v2?** — a V3 mérve **kétszer lassabb**
+
+- **`eleven_v3`** *(most az alapérték, ezt kérte)*: **3 543 ms** — jobb hangzás, lassabb indulás.
+- **`eleven_multilingual_v2`**: **1 680 ms** — feleannyi késleltetés.
+
+⇒ Ha a késleltetés zavarja, **egy env-változóval átváltható**, kód-módosítás nélkül:
+`MA_ELEVENLABS_MODEL_ID=eleven_multilingual_v2`. ⛔ **Nem döntöttem el helyette** — az alapérték
+az, amit kért.
+
+### ⚠️ 3. Amit tudni kell a kulcsról *(⛔ nem cselekedtem)*
+
+A **korábbi** napló-fájl *(`logs/live-dev-pipeline/server.log`)* tartalmazza a kulcs értékét,
+mert az átemelt kód kiírta. ✅ **Nincs git-expozíció** — a `logs/` gitignore-olt, a fájl nem
+trackelt. ⛔ A **rotáció owner-döntés** (`core-secret-rotation-owner-only`), ezért **hozzá nem
+nyúltam**; a döntés az övé. Előre: az új úton ez a sor **nem fut le többé**.
+
+### ⚠️ 4. Történet-megjegyzés — félrevezető commit-üzenet
+
+A négy V3-fájlt az **asszisztens session** `be95eb6` *(„fix(CV): AI GENERATIONS KI…")* commitja
+sodorta be, mert megosztott worktree-ben `-A`-szerűen stage-elt. ✅ **A tartalom helyes és
+HEAD-ben van**, a tesztek zöldek — csak a commit-üzenet nem erről szól. A kanonikus magyarázat a
+fenti SoT-doksi. `shared-file-collision.md` szerint **csak a saját káromat** vonom vissza — itt
+semmi nem sérült, ezért nem írtam át a történetet.
+
+### Ellenőrizve
+
+CLI **892/892** zöld · `tsc` tiszta · a négy V3-fájl HEAD-ben · nincs commitolatlan
+változásom · a szerver él, a figyelő bent van.
+
+### 🛑 A hurok lezárva
+
+⛔ **Nem ütemeztem új ébredést** — a maradék tételek **kizárólag owner-kapun** állnak:
+**(1)** a V3-hang meghallgatása · **(2)** V3 vs. v2 modell-döntés · **(3)** a kulcs rotációja ·
+**(4)** *(előző fázisból)* a >20 s-os leállás végpontig való igazolása ·
+**(5)** *(AGB-2026-09-09-01)* a 9 `no-silent-catch` az átemelt fában + a ~39
+`controller-handler-error-wrapping`, aminek a javítása látható viselkedés-változás.
+
+**Mi indítaná újra a hurkot:** bármelyik fenti döntés megérkezése — vagy ha a hallás-próba
+**nem** szólal meg, mert akkor van új, mérhető gyökér.
