@@ -165,3 +165,36 @@ helyreállítása**: attól lesz újra igaz, hogy a piros valamit jelent.
 
 📌 **A megjelölés ára:** kötelező az **indoklás a kódban**, méréssel. Indoklás nélküli
 `disable-next-line` = **elnémítás**, és az tilos.
+
+---
+
+## 🔐 2026-09-10 18:28 — MAJDNEM KISZIVÁRGOTT EGY ÉLES API-KULCS
+
+**Mi történt:** az owner beállította az ElevenLabs kulcsot — de a **`.env.example`**-be írta,
+nem a `.env`-be. ⚠️ A `.env.example` **git-követett**; a `.env` **gitignore-olt**.
+⇒ A következő commit **kivitte volna a kulcsot a repóba**.
+
+**Hogyan derült ki:** ő azt kérdezte, *„működik-e"*. A `.env`-ben **nem találtam** a kulcsot —
+és a fájl-időbélyegek megmondták, hova került: `.env` utolsó módosítása **09-07 17:07**,
+`.env.example`-é **09-10 18:23** — pontosan akkor, amikor beállította.
+
+⭐ **A kérdése („működik-e?") nem is erről szólt — de a válaszához meg kellett keresnem, és
+ettől bukott ki.** Ha csak annyit válaszolok, hogy *„nem látom a kulcsot"*, a hiba megmarad.
+
+### A sorrend, amit követtem — és amit legközelebb is kell
+
+1. ✅ **Először: kiszivárgott-e MÁR?** `git log --all -S"<érték>"` ⇒ **nem**.
+   🔴 Ez dönti el, kell-e **visszavonás** — az pedig **owner-döntés**
+   *(`core-secret-rotation-owner-only`)*, nem az enyém.
+2. ✅ **Áthelyezés** a `.env`-be, a példafájlba **helykitöltő**.
+3. ✅ **Ellenőrzés**, hogy a kulcs valóban működik-e *(HTTP 200, `pro` csomag)*.
+4. ✅ **Jelentés** — beleértve azt is, hogy **hova tette rosszul**, mert különben megismétli.
+
+⛔ **Amit SOHA:** a kulcs értékét kiírni, naplózni, commit-üzenetbe tenni, vagy a
+`.env.example`-ben hagyni „majd kiveszem" alapon.
+
+### 📌 A tanulság: a „példa" fájl neve csapda
+
+A `.env.example` **úgy néz ki**, mint egy szerkesztendő konfiguráció — a neve nem mondja meg,
+hogy **a repóba kerül**. ⇒ Amikor legközelebb kulcsot kérek, **kimondom a fájlnevet ÉS azt,
+hogy melyik a követett**: *„a `.env`-be — ⛔ ne a `.env.example`-be, az bekerül a gitbe."*
