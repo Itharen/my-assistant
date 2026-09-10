@@ -36,9 +36,23 @@ function gcStates(): void {
   }
 }
 
+/**
+ * 🔴 A FUTASIDEI HIVATKOZAS RELATIV, NEM `@cli/...` ALIAS — MERVE 2026-09-10.
+ *
+ * A `tsconfig.json` `paths` bejegyzese (`"@cli/*": ["./../cli/src/*"]`) **csak forditasi
+ * idoben** letezik. A `tsx` futasidoben NEM alkalmazza a dinamikus importra, ezert ez a hivas
+ * `ERR_MODULE_NOT_FOUND: Cannot find package '@cli/...'`-szal bukott.
+ *
+ * ⚠️ ES EZ NEM ELMELETI: a Google- es a Spotify-panel **elesben elromlott** emiatt — a
+ * `getStatus` minden hivasa `MA-*-STATUS-FAILED`-del tert vissza, es a felületen csak annyi
+ * latszott, hogy „nincs adat". A tipus-ellenorzes ZOLD volt, mert forditasi idoben az alias
+ * feloldodik ⇒ a hibat CSAK egy elo hivas tudta megfogni.
+ *
+ * ⭐ A tipus-hivatkozas (`typeof import('@cli/...')`) MARADHAT aliasos: az forditasi idoben dol el.
+ */
 let cliModulePromise: Promise<typeof import('@cli/google/google-assistant.client')> | null = null;
 function loadCliClient(): Promise<typeof import('@cli/google/google-assistant.client')> {
-  cliModulePromise ??= import('@cli/google/google-assistant.client');
+  cliModulePromise ??= import('../../../../cli/src/google/google-assistant.client.js');
   return cliModulePromise;
 }
 

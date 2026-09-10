@@ -28,10 +28,11 @@ import { readVoiceVolume } from './voice-volume.js';
 /**
  * A használt hang azonosítója.
  *
- * ⚠️ Környezeti változóból, alapértékkel: a hang **owner-döntés** *(T-77 mintájára: „a
- * hangjelentések az övéi")*, ezért nem égetjük be véglegesen. Az alapérték az ElevenLabs
- * `Rachel` hangja — ⛔ ez **nem** választás a nevében, csak egy működő kiindulás, amíg nem
- * mond mást.
+ * ⚠️ A `MA_ELEVENLABS_VOICE_ID` környezeti változóból — ⭐ **ezt az owner MÁR beállította**
+ * a `.env`-ben, ezért ezt a nevet használjuk, és ⛔ nem vezetünk be másikat: két külön kulcs
+ * azt jelentené, hogy az ő beállítása némán hatástalan.
+ *
+ * Az alapérték csak akkor él, ha nincs beállítva — ⛔ ez **nem** választás a nevében.
  */
 export const DEFAULT_SPEECH_VOICE_ID: string = '21m00Tcm4TlvDq8ikWAM';
 
@@ -105,7 +106,11 @@ export async function speakInVoiceChannel(
 
   try {
     const tts: TransplantedTextToSpeech = await loadTts();
-    const voiceId: string = (process.env['MA_SPEECH_VOICE_ID'] ?? '').trim() || DEFAULT_SPEECH_VOICE_ID;
+    // ⭐ AZ OWNER MÁR BEÁLLÍTOTTA: a `.env`-ben ott van a `MA_ELEVENLABS_VOICE_ID`. ⛔ Nem
+    // vezetek be helyette új nevet — a hang **owner-döntés** (T-77: „a hangjelentések az
+    // övéi"), és két külön kulcs azt jelentené, hogy az ő beállítása némán hatástalan.
+    const voiceId: string = (process.env['MA_ELEVENLABS_VOICE_ID'] ?? '').trim()
+      || DEFAULT_SPEECH_VOICE_ID;
     const result = await tts.convertTextToSpeechSimple(text, voiceId);
 
     if (!result.success || !result.audioBuffer || result.audioBuffer.length === 0) {

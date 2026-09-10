@@ -7,11 +7,15 @@
 // Global error handler: `uncaughtException` + `unhandledRejection` mindent
 // action-log-ba ír (semmi csendes swallow — `current/principles/error-handling.md`).
 
+// 🔴 EZ AZ ELSŐ IMPORT, ÉS SZÁNDÉKOSAN AZ. A `.env`-et a modul-gráf ELŐTT kell betölteni:
+// az `envKeys` (átemelt kód) importáláskor OLVASSA a `process.env`-et, és a korábbi,
+// lejjebb álló `loadDotEnv(...)` hívás emiatt már késő volt — mérve 2026-09-10, l. a fájl
+// fejlécét. ⛔ Ne rendezd át az importokat úgy, hogy ez ne legyen az első.
+import './bootstrap-env.js';
+
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
-
-import { config as loadDotEnv } from 'dotenv';
 
 import { logAction } from './action-log/action-log.client.js';
 import { EmailToolError, describeEmailError } from './email/email-error.js';
@@ -24,8 +28,8 @@ import {
 import { InterfoodToolError } from './interfood/interfood.error.js';
 import { fail, makeRequestId, writeEnvelope } from './output/envelope.js';
 
-const moduleDirectory: string = dirname(fileURLToPath(import.meta.url));
-loadDotEnv({ path: resolveProjectEnvPath(moduleDirectory) });
+// ⚠️ A `.env` betöltése a `./bootstrap-env.js`-ben van, a LEGELSŐ importként — ide már késő
+// volt (l. az ottani mérést, 2026-09-10).
 
 // Global error handler-ek azonnal kötjük (NEM await, mert sync error-ok
 // import-time-on is fire-elhetnek). A logAction async + Result-tel tér vissza,
@@ -693,18 +697,3 @@ function persistentErrorText(text: string): string {
   return text;
 }
 
-/** src/ és dist/cli/src/ futtatásból is ugyanazt a projekt-root `.env`-et találja meg. */
-function resolveProjectEnvPath(startDirectory: string): string {
-  let directory: string = startDirectory;
-  for (let depth: number = 0; depth < 8; depth += 1) {
-    if (existsSync(resolve(directory, '__agent')) && existsSync(resolve(directory, 'package.json'))) {
-      return resolve(directory, '.env');
-    }
-    const parent: string = dirname(directory);
-    if (parent === directory) {
-      break;
-    }
-    directory = parent;
-  }
-  return resolve(startDirectory, '..', '..', '.env');
-}

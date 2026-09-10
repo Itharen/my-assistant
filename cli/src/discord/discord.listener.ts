@@ -262,6 +262,15 @@ export class DiscordListener {
   private readonly voicePresence: VoiceChannelPresence = new VoiceChannelPresence();
   private readAloud: VoiceReadAloudWatcher | null = null;
 
+  /**
+   * A FOLYAMATBAN LÉVŐ hang-esemény-írások.
+   *
+   * ⭐ MIÉRT KELL NYILVÁNTARTANI: a leállás során írt „kiléptem" sor az EGYETLEN nyoma
+   * annak, hogy tisztán mentünk ki. Ha a folyamat előbb hal meg, mint ahogy az írás
+   * befejeződik, a napló ugyanazt a hazug képet adja, mint eddig: csupa belépés, nulla kilépés.
+   */
+  private readonly pendingVoiceEventWrites: Set<Promise<void>> = new Set<Promise<void>>();
+
   /** 🔍 Az élő eldobás-szonda — a `stop()`-nak le KELL állítania (különben duplán mérne). */
   private dropProbe: VoiceDropProbe | null = null;
 
@@ -433,6 +442,10 @@ export class DiscordListener {
     this.cues = null;
 
     this.voicePresence.leave();
+
+    // ⭐ MEGVÁRJUK a „kiléptem" sor kiírását. ⛔ Enélkül a folyamat kilépne előbb, és a
+    // leállás nyomtalan lenne — a naplóból nem derülne ki, hogy TISZTÁN mentünk ki.
+    await this.flushVoiceEventWrites();
 
     if (!this.client) return;
 
@@ -680,7 +693,18 @@ export class DiscordListener {
     // 🔴 A FIGYELŐ BEKÖTÉSE A BELÉPÉS ELŐTT — különben a belépés eseménye elveszne.
     // Mérve 2026-09-08: 24 belépés / 0 kilépés a naplóban, mert a leválásnak nem volt csatornája.
     this.voicePresence.setEventSink((event: VoiceConnectionEvent): void => {
-      void this.recordVoiceConnectionEvent(event);
+      // 🔴 A PROMISE-T MEGTARTJUK, NEM ELDOBJUK — MÉRVE 2026-09-10 19:38.
+      //
+      // Itt korábban `void` állt, vagyis az írás **versenyzett a folyamat halálával**. A
+      // leállási úton a `stop()` visszatért, a folyamat kilépett, és a „kiléptem" sor
+      // **sosem ért a naplóba** ⇒ pontosan az a 24-belépés / 0-kilépés kép, amit az owner
+      // kifogásolt. A belépésnél nem tűnt fel, mert utána a folyamat még sokáig él.
+      const write: Promise<void> = this.recordVoiceConnectionEvent(event);
+
+      this.pendingVoiceEventWrites.add(write);
+      void write.finally((): void => {
+        this.pendingVoiceEventWrites.delete(write);
+      });
     });
 
     const result = await this.voicePresence.join(this.client, config);
@@ -756,6 +780,18 @@ export class DiscordListener {
    * pulzus-sor **örökre azt mondaná, hogy bent ülünk** — a belépéskor eltett érték sosem
    * romlana el. Épp ez az a fajta hazug diagnózis, ami rosszabb, mint a diagnózis hiánya.
    */
+  /**
+   * Megvárja a folyamatban lévő hang-esemény-írásokat.
+   *
+   * ⚠️ `allSettled`, nem `all`: egy bukott írás nem akadályozhatja meg a többit — és a
+   * leállást sem. A cél az, hogy amit KI TUDUNK írni, az ki is menjen.
+   */
+  private async flushVoiceEventWrites(): Promise<void> {
+    if (!this.pendingVoiceEventWrites.size) return;
+
+    await Promise.allSettled([ ...this.pendingVoiceEventWrites ]);
+  }
+
   private async recordVoiceConnectionEvent(event: VoiceConnectionEvent): Promise<void> {
     const line = describeConnectionEvent(event);
 

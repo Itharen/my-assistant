@@ -3,8 +3,8 @@
 // > **Owner, 2026-09-10 18:27:** *„…és a My Assistant felületén is szeretném tudni állítani."*
 //
 // ⭐ SSOT: a tárolás és az értelmezés a CLI `voice-volume` modulja — a szerver **nem másolja**
-// le, hanem `@cli/...`-en át **ugyanazt** hívja. ⛔ Egy második implementáció azt jelentené,
-// hogy a felület és a `ma voice volume` **eltérő** értéket mutathat ugyanarról a dologról.
+// le, hanem **ugyanazt** hívja. ⛔ Egy második implementáció azt jelentené, hogy a felület és
+// a `ma voice volume` **eltérő** értéket mutathat ugyanarról a dologról.
 //
 // ⚠️ Unauth, mint a `sleep-state`: a dashboard a lokális hálózaton, a saját gépen fut, és a
 // hangerő nem érzékeny adat. *(Ugyanaz a megfontolás, mint a `/api/dashboard/snapshot`-nál.)*
@@ -20,11 +20,24 @@ import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
  * ⚠️ Dinamikus import, a `spotify.data-service` mintája szerint: a CLI-modul a szerver
  * indulásakor még nem feltétlenül fordult le, és egy statikus import a **teljes szervert**
  * megbuktatná emiatt.
+ *
+ * 🔴 A FUTASIDEI HIVATKOZAS RELATIV, NEM `@cli/...` ALIAS — MERVE 2026-09-10.
+ *
+ * A `tsconfig.json` `paths` bejegyzese (`"@cli/*": ["./../cli/src/*"]`) **csak forditasi
+ * idoben** letezik. A `tsx` futasidoben NEM alkalmazza a dinamikus importra, ezert ez a hivas
+ * `ERR_MODULE_NOT_FOUND: Cannot find package '@cli/...'`-szal bukott.
+ *
+ * ⚠️ ES EZ NEM ELMELETI: a Google- es a Spotify-panel **elesben elromlott** emiatt — a
+ * `getStatus` minden hivasa `MA-*-STATUS-FAILED`-del tert vissza, es a felületen csak annyi
+ * latszott, hogy „nincs adat". A tipus-ellenorzes ZOLD volt, mert forditasi idoben az alias
+ * feloldodik ⇒ a hibat CSAK egy elo hivas tudta megfogni.
+ *
+ * ⭐ A tipus-hivatkozas (`typeof import('@cli/...')`) MARADHAT aliasos: az forditasi idoben dol el.
  */
 let cliModulePromise: Promise<typeof import('@cli/voice/voice-volume')> | null = null;
 
 function loadVolumeModule(): Promise<typeof import('@cli/voice/voice-volume')> {
-  cliModulePromise ??= import('@cli/voice/voice-volume');
+  cliModulePromise ??= import('../../../../cli/src/voice/voice-volume.js');
 
   return cliModulePromise;
 }
@@ -43,7 +56,9 @@ export class VoiceVolume_Controller extends DyNTS_Controller {
       new DyNTS_Endpoint_Params({
         name: 'getVoiceVolume',
         type: DyFM_HttpCallType.get,
-        endpoint: '/',
+        // ⚠️ MERVE: a `route: '/voice'` + `endpoint: '/'` a `/api/voice`-ra kepzodik, NEM
+        // `/api/voice/volume`-ra. A kliens az utobbit hivja, ezert az utvonal ITT dol el.
+        endpoint: '/volume',
         preProcesses: [],
         tasks: [ async (_req: Request, res: Response): Promise<void> => {
           res.send(await readVoiceVolumeState());
@@ -53,7 +68,7 @@ export class VoiceVolume_Controller extends DyNTS_Controller {
       new DyNTS_Endpoint_Params({
         name: 'putVoiceVolume',
         type: DyFM_HttpCallType.put,
-        endpoint: '/',
+        endpoint: '/volume',
         preProcesses: [],
         tasks: [ async (req: Request, res: Response): Promise<void> => {
           res.send(await applyVoiceVolume(req.body));
