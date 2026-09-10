@@ -8,12 +8,30 @@
 > történt az `AGENT_BUS.md`-nél: `tail`-lel néztem, és **tévesen jelentettem**, hogy az FDP
 > asszisztens nem válaszolt. ⇒ A nagy fájl **nem hiba, de nem is belépő**.
 
-**Frissítve:** 2026-09-09 03:10
+**Frissítve:** 2026-09-09 16:05
+
+## 🛰️ T-76 — ÉLŐ OVERSEER-FIRST STÁTUSZTÜKÖR
+
+✅ Félórás frissítés; Test/Production Server, Test/Production Webhook, Gateway, Overseer,
+Organizer külön. Élő pulzus: `T-SRV✅ P-SRV✅ T-WH✅ P-WH⚠️ GW⚠️ OVS✅ ORG✅`.
+A két warning lejárt TLS. Server 105/105; C-49 használati jóváhagyásra vár.
 
 ## Ma
 
 **2026-09-08, kedd — AI Summit 2. nap.** Az owner ~02:17-kor feküdt le.
 A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
+
+## ⏳ 35 ÓRA CSEND — a csatorna ÉP, ellenőrizve
+
+**Utolsó owner-üzenet: 2026-09-08 22:19.** Most 2026-09-10 09:05.
+
+⛔ **Nem feltételeztem, hogy „csak nem írt".** A szeptember 8-i eset után *(6 órán át a DEV-hez
+mentek az üzenetei)* ez az egyik hibaosztály, amit **mérni kell, nem hinni**.
+✅ **`ma comm audit`: 32 owner-üzenet a csatornán, mind megvan nálunk** *(független lekérdezés
+magától a Discordtól, nem a saját tárunkból)*.
+
+⇒ A csend **valódi**: nem üzenet-vesztés. 🖥️ A gépnél viszont **dolgozott** — ma 06:34-ig
+**376 aktív perc**; azóta tétlen ⇒ alszik. **Ezért nem küldtem semmit** *(`sleep-window-batching`)*.
 
 ## 🙋 HÁROM DÖNTÉS VÁR RÁD — ébredéskor egy üzenetben megy ki
 
