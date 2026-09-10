@@ -386,8 +386,8 @@ body {
   color: var(--c-dark);
   /* Oldalankent elteroe, mert a ket oldal telitettsege mas — a cel MINDKETTON
      a ~10 mm-es also margo (owner: „legyen tele az a ket oldal"). Mert ertekek. */
-  margin-top: var(--sub-gap-t, 11pt);
-  margin-bottom: var(--sub-gap-b, 5pt);
+  margin-top: var(--sub-gap-t, 9pt);
+  margin-bottom: var(--sub-gap-b, 4pt);
 }
 .sub-head:first-of-type { margin-top: 0; }
 
