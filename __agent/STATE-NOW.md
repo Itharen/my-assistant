@@ -21,19 +21,34 @@ A két warning lejárt TLS. Server 105/105; C-49 használati jóváhagyásra vá
 **2026-09-08, kedd — AI Summit 2. nap.** Az owner ~02:17-kor feküdt le.
 A kész terv: `current/events/2026-09-08-summit-day2-plan.md`.
 
-## 🔴 6 ÓRÁS NÉMA KIESÉS — 2026-09-10 09:57 → 16:00 (helyreállítva)
+## ✅ HELYREÁLLÍTVA — 2026-09-10 18:02, minden felügyelet alatt
 
-A gép **~09:57-kor újraindult**, és utána **semmi nem jött vissza**: se `dc ldp`, se szerver,
-se Discord-figyelő, se jelenlét-figyelő. **16:00-kor** indítottam újra mindent.
+| | Állapot |
+|---|---|
+| my-assistant szerver | ✅ `/health` **200** *(18:00)* |
+| Discord-figyelő | ✅ **a szerver indította** *(pid 53064)* — a kézit leállítottam, a felügyelet átvette |
+| Hang-csatorna | ✅ bent ül *(`MA-VOICE-JOINED` 18:01:53)* |
+| Jelenlét-figyelő | ✅ friss adat, az owner **aktív** |
 
-⭐ **Kár: nulla** — a figyelő backfillje **üresen jött**, a várakozó sor **üres**: az owner a
-kiesés alatt **nem írt**. ⚠️ Ez **szerencse, nem védelem**.
+### 📊 A mai kiesés végösszege
 
-📌 **A hibaosztály:** amikor minden leáll, **az is leáll, ami szólna róla** ⇒ a felfedezés
-kizárólag a következő ébredésemen múlik. Ezért került az `ENTRY.md`-be a **0a lépés**
-*(`LastBootUpTime` vs. a jelenlét-napló utolsó mintája)*.
+**Reboot 09:57 → a szerver újra elérhető 18:00.** Ebből:
+**~6 óra** = **senki nem vette észre** *(erre jött az `ENTRY.md` **0a** lépés)* ·
+**~2 óra** = **maga a pipeline** *(erre való a BFR **(B)** igénye: a szerver induljon elsőnek)*.
 
-🙋 **Owner-döntés marad:** **autostart boot után** — a gépén futó indítást **nem én állítom be**.
+### ⭐ Két saját javítás ÉLESBEN igazolva
+
+- `comm doctor` LDP-sor: *„a pipeline KÉSZ, ezért az állapot-fájl 69 perce **jogosan pihen**.
+  ⚠️ Ez NEM beragadás"* ⇒ a négyszer félrevezető hamis riasztás **megszűnt**.
+- Hang-csatorna sor: *„BE VAN ÁLLÍTVA, de a figyelő még nem jelentett róla"* ⇒ a korábbi
+  **hamis** „nincs beállítva" helyett most **őszinte „nem tudom"**.
+
+### ⚠️ Saját közeli hiba ebben a körben
+
+A jelenlét-figyelőt **„NEM FUT"-ként jelentettem** — a folyamat-keresésem **mintája** nem
+illeszkedett. A **hatás** viszont ott volt: a jelenlét-adat **frissen** érkezett.
+📌 Ugyanaz a lecke harmadszor: **a proxyt mértem, nem a hatást.** A folyamat-lista *proxy*;
+az **adat frissessége** a hatás.
 
 ## 🙋 HÁROM DÖNTÉS VÁR RÁD — ébredéskor egy üzenetben megy ki
 
