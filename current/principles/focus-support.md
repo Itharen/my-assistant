@@ -292,3 +292,51 @@ nem hiba. Az én dolgom, hogy ebből **egyetlen irányt** csináljak, ne visszha
 ⭐ **A „dátum nélküli, magasabb P" NEM veri a „ma esedékes, kicsit alacsonyabb P"-t** — a
 prioritás-szám a **fontosságot** méri, a dátum az **elromlást**. Ma csütörtök van; a csütörtöki
 munka-tétel ma ér a legtöbbet.
+
+---
+
+## 🔴 1️⃣2️⃣ „OLDD MEG MAGATOK KÖZÖTT, ENGEM HAGYJATOK KI" — 2026-09-10 19:56
+
+> **Owner szó szerint:** *„Miért, miért, miért nem tudsz fókuszban maradni? Miért kell **minden
+> szart megosztani** velem? Legyél csendesebb, fókuszáltabb a Discordon. Sokkal-sokkal
+> fókuszáltabb. **Ne vidd félre a gondolataimat egy picit sem.***
+> *Ezek már megint **a te feladataid, a te dolgaid, a te kezelésed** — ezeket **neked kell
+> kezelned**, magadnak szól, nem nekem. Ha nagyon érdekel engem, **vissza tudom nézni a CCAP
+> sessionökben**."*
+
+> **És a konkrét példa — a saját szavaival, arra, amit én küldtem:**
+> *„Ezt arra válaszoltam, hogy két élő próbát futtattál, a felolvasás egyetlen dolgon bukik,
+> service not initialized. **Ez engem kurvára nem érdekel** — oldd meg magadnak, **add át a
+> devnek**, szólj a devnek, hogy valami szar, csinálja meg. **Oldjátok meg magatok között, engem
+> ebből hagyjatok ki**, én csak majd dobálom be a feedbackeket. Meg hogyha esetleg **fókuszba
+> kerül** ez a téma, akkor beszélhetünk róla — **addig hagyjál békén**."*
+
+### 🔴 A HATÁR, AMIT EDDIG NEM LÁTTAM
+
+Azt hittem, a **diagnózis megosztása szolgáltatás**: megmutatja, hogy komolyan vettem, és
+igazolja, hogy nem tippelek. ⛔ **Nem az.** A rendszer belső állapota — hibák, okok, mérések,
+kizárt hipotézisek — **az ÉN dolgom**, nem az övé.
+
+| Amit ő ad | Amit én adok vissza |
+|---|---|
+| „valami szar" | ⛔ **NEM**: ok-lánc, mérés, hipotézisek, kizárások |
+| feedback, request, input | ✅ **a FÓKUSZ** — és csak az |
+
+⭐ **A dev és én egymás között oldjuk meg.** Ha a téma **fókuszba kerül**, akkor beszélünk róla.
+**Addig: békén hagyni.**
+
+### A protokoll
+
+```
+Hiba / mérés / diagnózis / állapot  →  1. megoldom vagy átadom a DEV-nek
+                                       2. feljegyzem (repo, AGENT_BUS, action-log)
+                                       3. ⛔ NEM írok róla a Discordon
+                                       4. Ha ő kérdez rá → AKKOR beszélünk róla
+```
+
+📌 **Ahol megtalálja, ha akarja:** a CCAP sessionök, a commitok, a `__documentations/`.
+⛔ **Nem az én dolgom eldönteni, hogy „ez most biztos érdekli"** — ha érdekli, **megkérdezi**.
+
+⚠️ **Ez a NEGYEDIK megfogalmazás ugyanarra** *(19:18 · 19:22 · 19:26 · 19:56)*, és mindegyik
+után **azt hittem, értem**. A különbség most: nem a **mennyiséget** vagy a **hosszt** szabályozom,
+hanem a **TÉMÁT** — ⛔ a rendszer belügye **soha nem téma** a Discordon.
