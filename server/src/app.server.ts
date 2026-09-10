@@ -39,6 +39,7 @@ import { Dashboard_Controller } from './_routes/dashboard/dashboard.controller';
 import { Spotify_Controller } from './_routes/spotify/spotify.controller';
 import { Google_Controller } from './_routes/google/google.controller';
 import { Version_Controller } from './_routes/version/version.controller';
+import { VoiceVolume_Controller } from './_routes/voice/voice-volume.controller';
 import { SleepState_Controller } from './_routes/sleep-state/sleep-state.controller';
 import { Reports_Controller } from './_routes/reports/reports.controller';
 import { LinkedInWorkspace_Controller } from './_routes/linkedin/linkedin-workspace.controller';
@@ -51,6 +52,7 @@ import { VersionBroadcast_SocketServerService } from './_services/socket-service
 import { DiscordListener_Service } from './_services/discord-listener.service';
 import { PresenceMonitor_Service } from './_services/presence-monitor.service';
 import { SystemPulse_Service } from './_services/system-pulse.service';
+import { ServiceAvailabilityMonitor_Service } from './_services/service-availability-monitor.service';
 import { RelayPuller_Service } from './_services/location/relay-puller.service';
 import { WeatherPoll_Service } from './_services/weather-poll.service';
 
@@ -173,6 +175,12 @@ export class App extends DyNTS_AppExtended {
         route: '/sleep-state',
         controllers: [ SleepState_Controller.getInstance() ],
       }),
+      // 🔊 Owner, 2026-09-10: „a My Assistant felületén is szeretném tudni állítani" —
+      // GET | PUT /api/voice/volume. SSOT: a CLI `voice-volume` modulja, nem masolat.
+      new DyNTS_RoutingModule({
+        route: '/voice',
+        controllers: [ VoiceVolume_Controller.getInstance() ],
+      }),
       // FR #3g Reports panel Phase 1 (cycle 95): GET /api/reports/{frs,cycles,recent-ships}.
       new DyNTS_RoutingModule({
         route: '/reports',
@@ -226,12 +234,16 @@ export class App extends DyNTS_AppExtended {
    *   EGYETLEN útja a helyzet-adathoz — a szerver kívülről szándékosan elérhetetlen, tehát
    *   ha ez a figyelő nem indul el, a helyzet **soha** nem érkezik meg, és a hiánya pontosan
    *   úgy néz ki, mintha az owner nem mozdult volna.
+   * • `ServiceAvailabilityMonitor_Service` (owner, 2026-09-09): a Test/Production Servert
+   *   közvetlenül méri, az Overseer célzott állapotait pedig a webhookok, Gateway, Overseer
+   *   és Organizer külön soraiba tükrözi. Nem duplikálja a teljes Overseer probe-rendszert.
    */
   override async getRootServices(): Promise<unknown[]> {
     return [
       WeatherPoll_Service.getInstance(),
       DiscordListener_Service.getInstance(),
       PresenceMonitor_Service.getInstance(),
+      ServiceAvailabilityMonitor_Service.getInstance(),
       SystemPulse_Service.getInstance(),
       RelayPuller_Service.getInstance(),
     ];

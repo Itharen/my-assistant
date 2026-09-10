@@ -1,0 +1,34 @@
+<div class="i-voice-volume-panel">
+  <h2>🔊 Hang-csatorna hangerő</h2>
+
+  @if (loading()) {
+    <p class="i-muted">Betöltés…</p>
+  } @else {
+    <div class="i-slider-row">
+      <input type="range"
+             [min]="min()" [max]="max()" step="0.05"
+             [(ngModel)]="volume"
+             (change)="handleApply()"
+             [disabled]="saving()"
+             aria-label="Hang-csatorna hangerő">
+      <span class="i-value">{{ +volume | number:'1.2-2' }}</span>
+    </div>
+
+    <p class="i-muted">
+      Sáv: {{ min() }}–{{ max() }} · alapérték {{ defaultVolume() }}
+      <!-- A 2.0-ig erősítés is lehetséges: a jelzés-fájlok halkak lehetnek. -->
+    </p>
+
+    <div class="i-actions">
+      <button type="button" (click)="handleReset()" [disabled]="saving()">Alapértékre</button>
+      <button type="button" (click)="refresh()" [disabled]="saving()">Újraolvasás</button>
+    </div>
+
+    @if (notice(); as msg) {
+      <p class="i-notice">✅ {{ msg }}</p>
+    }
+    @if (error(); as msg) {
+      <p class="i-error">⚠️ {{ msg }}</p>
+    }
+  }
+</div>

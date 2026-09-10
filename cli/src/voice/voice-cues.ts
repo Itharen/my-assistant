@@ -49,6 +49,7 @@ import { access } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
+import { readVoiceVolume } from './voice-volume.js';
 import {
   AudioPlayerStatus,
   StreamType,
@@ -239,6 +240,17 @@ export interface VoiceCuePlayerOptions {
   now?: () => number;
   /** Be van-e kapcsolva. Alapértelmezés: a `MA_VOICE_CUES` környezeti változó. */
   enabled?: () => boolean;
+  /**
+   * 🔊 A hangerő beolvasása lejátszás ELŐTT.
+   *
+   * ⭐ MIÉRT MINDEN LEJÁTSZÁSNÁL, és nem egyszer indulásnál: az owner **menet közben** állítja
+   * *(a felületről vagy `ma voice volume`-mal)*, és a figyelő **napokig fut**. Egy induláskor
+   * beolvasott érték azt jelentené, hogy az állítás csak újraindítás után hallható — vagyis
+   * gyakorlatilag nem működne.
+   *
+   * ⚠️ A fájl-olvasás itt elhanyagolható: egy jelzés amúgy is I/O-t indít (mp3 stream).
+   */
+  readVolume?: () => Promise<number>;
 }
 
 /**
@@ -349,10 +361,21 @@ export class VoiceCuePlayer {
    * — ⛔ nem néma bukásként.
    */
   private async playOnConnection(path: string): Promise<void> {
+    // 🔴 KORÁBBAN `inlineVolume: false` VOLT — vagyis a hangerő **egyáltalán nem volt
+    // állítható**, a jelzés a fájl natív szintjén szólt. Az owner 2026-09-10-i kérése
+    // *(„a My Assistant felületén is szeretném tudni állítani")* ezért nem egy meglévő érték
+    // átállítása volt, hanem az, hogy **legyen egyáltalán mit állítani**.
     const resource = createAudioResource(createReadStream(path), {
       inputType: StreamType.Arbitrary,
-      inlineVolume: false,
+      inlineVolume: true,
     });
+    const readVolume: () => Promise<number> = this.options.readVolume ?? readVoiceVolume;
+    const volume: number = await readVolume();
+
+    // ⚠️ A `volume` akkor is `undefined` lehet, ha az `inlineVolume` be van kapcsolva (a
+    // transzformáció felállítása bukhat) — ezért `?.`, és ⛔ ilyenkor sem hallgatunk el:
+    // a jelzés natív szinten szól, ami rosszabb, mint a kért hangerő, de jobb a semminél.
+    resource.volume?.setVolume(volume);
 
     this.player.play(resource);
   }

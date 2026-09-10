@@ -32,6 +32,29 @@ export interface DiscordSendResult {
   verifiedIntact?: boolean;
   /** A visszaolvasás összegzése. */
   verifyDetail?: string;
+  /**
+   * 🔊 A CÉLOK, ahova ez az EGY üzenet kiment.
+   *
+   * ⭐ MIÉRT LISTA, és miért nem két külön küldés: az owner 2026-09-10-i kérése szerint minden
+   * üzenet **automatikusan** menjen a privát csatornába ÉS a hang-csatornába — de
+   * *„semmiképpen ne kelljen kétszer küldeni"*. ⛔ Két hívás **két üzenet-eseményt** adna a
+   * naplóban és a mérésben, és a napi darabszám látszólag megduplázódna, holott egy dolgot
+   * mondtunk. Ezért: **egy üzenet, több cél, EGY rögzítés**.
+   */
+  targets?: DiscordSendTargetResult[];
+}
+
+/** Egy cél-csatorna, ahova az üzenet megy. */
+export interface DiscordSendTarget {
+  channelId: string;
+  /** `primary` = a fő/privát szöveges csatorna · `voice` = a hang-csatorna szöveges sávja. */
+  role: 'primary' | 'voice';
+}
+
+/** Egy cél kimenetele. */
+export interface DiscordSendTargetResult extends DiscordSendTarget {
+  sent: boolean;
+  detail: string;
 }
 
 /**
@@ -59,7 +82,14 @@ export async function sendDiscordMessage(
   targetChannelId: string = '',
 ): Promise<DiscordSendResult> {
   const token: string = (process.env['MA_DISCORD_BOT_TOKEN'] ?? '').trim();
-  const channelId: string = resolveTargetChannelId(targetChannelId, process.env['MA_DISCORD_CHANNEL_ID']);
+  // 🔊 ALAPÉRTELMEZÉSBEN KÉT CÉL: a fő/privát csatorna ÉS a hang-csatorna szöveges sávja.
+  // A döntés a tiszta `resolveSendTargets`-ben van — l. az ottani indoklást.
+  const targets: DiscordSendTarget[] = resolveSendTargets(
+    targetChannelId,
+    process.env['MA_DISCORD_CHANNEL_ID'],
+    process.env['MA_DISCORD_VOICE_CHANNEL_ID'],
+  );
+  const channelId: string = targets[0]?.channelId ?? '';
   const trimmed: string = text.trim();
 
   if (!trimmed) {
@@ -101,38 +131,57 @@ export async function sendDiscordMessage(
   try {
     await client.login(token);
 
-    const channel = await client.channels.fetch(channelId);
+    const parts: string[] = splitForDiscord(trimmed);
+    const outcomes: DiscordSendTargetResult[] = [];
+    let primaryVerdict: { intact: boolean; detail: string; remedy?: string } | null = null;
 
-    if (!channel || !channel.isTextBased() || !('send' in channel)) {
+    for (const target of targets) {
+      const outcome = await deliverToTarget(client, target, parts);
+
+      outcomes.push(outcome.result);
+
+      // ⚠️ A VISSZAOLVASÁS csak a FŐ célra vonatkozik: az az elsődleges kézbesítés, azon áll
+      // vagy bukik, hogy az owner megkapta-e. A hang-csatorna a MÁSODIK hely, ahol ugyanaz
+      // látszik — ha az bukik, azt a `targets` mutatja, de nem teszi bukottá a küldést.
+      if (target.role === 'primary') primaryVerdict = outcome.verdict;
+    }
+
+    const primarySent: boolean = outcomes.some(
+      (o: DiscordSendTargetResult): boolean => o.role === 'primary' && o.sent,
+    );
+
+    if (!primarySent) {
       return {
         sent: false,
         partCount: 0,
-        detail: `A csatorna nem érhető el, vagy nem szöveges (${channelId}).`,
+        detail: outcomes.find((o) => o.role === 'primary')?.detail
+          ?? 'Nincs elérhető fő csatorna.',
         remedy: 'Ellenőrizd a MA_DISCORD_CHANNEL_ID-t, és hogy a bot látja-e a csatornát.',
+        targets: outcomes,
       };
     }
 
-    const parts: string[] = splitForDiscord(trimmed);
-
-    for (const part of parts) {
-      await (channel as TextBasedChannel & { send: (content: string) => Promise<unknown> }).send(part);
-    }
-
     // G-1: a valasz-kotelezettseg kovetesehez rogzitjuk a kimeno uzenetet.
-    // A `kind` donti el, hogy ez VALASZNAK szamit-e, vagy csak nyugta volt.
+    // ⛔ PONTOSAN EGYSZER, a célok számától FÜGGETLENÜL — l. `DiscordSendResult.targets`.
     await recordOutbound(new Date().toISOString(), kind, trimmed);
 
-    // ⭐ KÜLDÉS UTÁNI VISSZAOLVASÁS (owner-javaslat, 2026-09-07). A `send()` visszatérése
-    // csak azt mondja meg, hogy ELINDULT — azt nem, hogy TELJES EGÉSZÉBEN megérkezett.
-    const verdict = await verifyAgainstChannel(channel, parts);
+    const failed: DiscordSendTargetResult[] = outcomes.filter(
+      (o: DiscordSendTargetResult): boolean => !o.sent,
+    );
 
     return {
       sent: true,
       partCount: parts.length,
-      detail: parts.length === 1 ? 'Elküldve.' : `Elküldve ${parts.length} részletben.`,
-      verifiedIntact: verdict.intact,
-      verifyDetail: verdict.detail,
-      ...(verdict.intact ? {} : { remedy: verdict.remedy }),
+      detail: `${parts.length === 1 ? 'Elküldve' : `Elküldve ${parts.length} részletben`}`
+        + ` · ${outcomes.length - failed.length}/${outcomes.length} cél.`,
+      ...(primaryVerdict === null ? {} : {
+        verifiedIntact: primaryVerdict.intact,
+        verifyDetail: primaryVerdict.detail,
+        ...(primaryVerdict.intact || primaryVerdict.remedy === undefined
+          ? {}
+          : { remedy: primaryVerdict.remedy }),
+      }),
+      targets: outcomes,
     };
   } catch (err: unknown) {
     const message: string = err instanceof Error ? err.message : String(err);
@@ -147,6 +196,61 @@ export async function sendDiscordMessage(
   } finally {
     // A kapcsolatot MINDIG bontjuk — különben a folyamat nem állna le.
     await client.destroy().catch(() => undefined);
+  }
+}
+
+/**
+ * EGY cél kiszolgálása a MÁR bejelentkezett klienssel.
+ *
+ * ⭐ MIÉRT KAPJA A KLIENST: egy küldés = egy bejelentkezés. Célonként új `Client` két gateway-
+ * kapcsolatot nyitna ugyanahhoz a bothoz, ami lassabb és a Discord felé is zajos.
+ *
+ * ⛔ **Nem dob**: egy cél bukása nem viheti magával a többit. A `sent: false` + `detail`
+ * mondja meg, mi történt — a hívó a `targets` listában látja.
+ */
+async function deliverToTarget(
+  client: Client,
+  target: DiscordSendTarget,
+  parts: string[],
+): Promise<{
+  result: DiscordSendTargetResult;
+  verdict: { intact: boolean; detail: string; remedy?: string } | null;
+}> {
+  try {
+    const channel = await client.channels.fetch(target.channelId);
+
+    if (!channel || !channel.isTextBased() || !('send' in channel)) {
+      return {
+        result: {
+          ...target,
+          sent: false,
+          detail: `A csatorna nem érhető el, vagy nem szöveges (${target.channelId}).`,
+        },
+        verdict: null,
+      };
+    }
+
+    for (const part of parts) {
+      await (channel as TextBasedChannel & { send: (content: string) => Promise<unknown> }).send(part);
+    }
+
+    // ⭐ KÜLDÉS UTÁNI VISSZAOLVASÁS (owner-javaslat, 2026-09-07). A `send()` visszatérése
+    // csak azt mondja meg, hogy ELINDULT — azt nem, hogy TELJES EGÉSZÉBEN megérkezett.
+    const verdict = await verifyAgainstChannel(channel, parts);
+
+    return {
+      result: { ...target, sent: true, detail: verdict.detail },
+      verdict: verdict,
+    };
+  } catch (err: unknown) {
+    return {
+      result: {
+        ...target,
+        sent: false,
+        detail: `A küldés nem sikerült: ${err instanceof Error ? err.message : String(err)}`,
+      },
+      verdict: null,
+    };
   }
 }
 
@@ -233,4 +337,50 @@ export function splitForDiscord(text: string): string[] {
  */
 export function resolveTargetChannelId(target: string | undefined, fallback: string | undefined): string {
   return (target ?? '').trim() || (fallback ?? '').trim();
+}
+
+/**
+ * 🔊 HOVA MENJEN AZ ÜZENET — **tiszta függvény**, hálózat nélkül.
+ *
+ * > **Owner, 2026-09-10 18:27:** *„Minden üzeneted amiket küldesz az **automatikusan** kell
+ * > jöjjön a **Voice csatornára és a privát DM** csatornára, anélkül, hogy azt külön
+ * > állítgatnád… **Semmiképpen ne kelljen neked kétszer küldeni**, hanem **by default**."*
+ *
+ * ⚠️ **EZ VISSZAVONJA A `--voice` KAPCSOLÓT** *(`0b44740`, ugyanaznap 18:24)*. A kapcsoló
+ * mögötti indoklásom — *„az megduplázná a mennyiséget"* — **téves volt**: a mennyiség nem a
+ * célok száma, hanem a **mondanivalók** száma. Ugyanaz az egy üzenet két helyen **nem** két
+ * üzenet; az owner pedig azt nézi, ahol épp van.
+ *
+ * ## A három eset
+ *
+ * | bemenet | eredmény |
+ * |---|---|
+ * | **kifejezett** cél *(`targetChannelId`)* | CSAK az — a hívó pontosan tudja, hova akar írni |
+ * | nincs kifejezett cél, a hang-csatorna be van állítva | **fő + hang** |
+ * | nincs kifejezett cél, a hang-csatorna nincs beállítva | csak a fő |
+ *
+ * ⛔ A kifejezett cél SZÁNDÉKOSAN nem duplázódik: erre épül a hangüzenet-tükör és a késve
+ * feloldott átirat *(`ma stt retry`)*, ahol a cél a válasz-referencia csatornája.
+ *
+ * ⚠️ Ha a hang-csatorna azonosítója MEGEGYEZIK a fő csatornáéval, egyszer küldünk — különben
+ * az owner ugyanazt kétszer látná ugyanott.
+ */
+export function resolveSendTargets(
+  explicitTarget: string | undefined,
+  primaryChannelId: string | undefined,
+  voiceChannelId: string | undefined,
+): DiscordSendTarget[] {
+  const explicit: string = (explicitTarget ?? '').trim();
+
+  if (explicit) {
+    return [ { channelId: explicit, role: 'primary' } ];
+  }
+  const primary: string = (primaryChannelId ?? '').trim();
+  const voice: string = (voiceChannelId ?? '').trim();
+  const targets: DiscordSendTarget[] = [];
+
+  if (primary) targets.push({ channelId: primary, role: 'primary' });
+  if (voice && voice !== primary) targets.push({ channelId: voice, role: 'voice' });
+
+  return targets;
 }

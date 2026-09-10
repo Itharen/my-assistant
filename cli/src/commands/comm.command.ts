@@ -87,6 +87,9 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
       text: { type: 'string' },
       file: { type: 'string' },
       long: { type: 'boolean' },
+      // ⚠️ A `--voice` MEGMARAD ELFOGADOTTNAK, de NINCS HATASA: 2026-09-10 ota a
+      // hang-csatorna az ALAPERTELMEZES. Aki (vagy ami) meg igy hivja, ne kapjon
+      // hibat — de ne is hihesse, hogy a kapcsolo dontott valamirol.
       voice: { type: 'boolean' },
       day: { type: 'string' },
       hours: { type: 'string' },
@@ -144,40 +147,24 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
       // gyakorlatilag NULLA infó.
       const result = await sendDiscordMessage(source.text);
 
-      // 🔊 `--voice`: a válasz a HANG-CSATORNÁBA is kimegy.
+      // 🔊 A HANG-CSATORNA MÁR NEM OPCIÓ — ALAPÉRTELMEZÉS.
       //
-      // > **Owner, 2026-09-09 00:18 (hangcsatorna):** *„Amikor ezekre válaszolsz, azt jól lenne,
-      // > ha **itt is látnám**."*
+      // > **Owner, 2026-09-10 18:27:** *„Minden üzeneted amiket küldesz az **automatikusan**
+      // > kell jöjjön a Voice csatornára és a privát DM csatornára… **Semmiképpen ne kelljen
+      // > neked kétszer küldeni**, hanem **by default**."*
       //
-      // ⭐ MIÉRT KELL, holott a fő szöveges csatornába úgyis kimegy: amikor **beszél**, a
-      // hang-csatornát nézi. A másik csatornába érkező válasz ott van, csak **nem ott, ahol ő
-      // épp van** — ez ugyanaz a hiba, amit 2026-09-07-kor a tükör-szövegnél már elkövettünk.
+      // ⛔ EZÉRT TŰNT EL INNEN A `--voice` KAPCSOLÓ *(`0b44740`, ugyanaznap 18:24)*. A mögötte
+      // álló indoklásom — *„az megduplázná a mennyiséget"* — **téves volt**: a mennyiséget a
+      // **mondanivalók** száma adja, nem a célok száma. Ugyanaz az egy üzenet két helyen NEM
+      // két üzenet, az owner pedig azt a felületet nézi, ahol épp van.
       //
-      // ⛔ SZÁNDÉKOSAN NEM AUTOMATIKUS minden üzenetre: az **megduplázná** a mennyiséget, és a
-      // mai mérés szerint (72 üzenet / nap) a mennyiség a fő panasz. A hang-csatornai
-      // beszélgetésre adott válasznál viszont **odavaló**.
-      const alsoVoice: boolean = parsed.values['voice'] === true;
-      const voiceChannelId: string = (process.env['MA_DISCORD_VOICE_CHANNEL_ID'] ?? '').trim();
-      let voiceResult: DiscordSendResult | null = null;
+      // ⭐ A szétosztás a `sendDiscordMessage`-ben van (`resolveSendTargets`), egyetlen
+      // rögzítéssel — a `result.targets` mutatja, hova ment.
 
-      if (alsoVoice) {
-        voiceResult = voiceChannelId
-          ? await sendDiscordMessage(source.text, 'reply', voiceChannelId)
-          : {
-            sent: false,
-            partCount: 0,
-            detail: 'A hang-csatorna nincs beállítva — a tükrözés kimaradt.',
-            remedy: 'MA_DISCORD_VOICE_CHANNEL_ID a `.env`-ben.',
-          };
-      }
+      writeEnvelope(ok(action, requestId, startedAt, result), pretty || !asJson);
 
-      writeEnvelope(
-        ok(action, requestId, startedAt, voiceResult ? { ...result, voiceMirror: voiceResult } : result),
-        pretty || !asJson,
-      );
-
-      // ⚠️ A hang-tükör bukása NEM teszi bukottá a küldést: a fő csatornába kiment.
-      // ⛔ De el sem hallgatjuk — a burokban ott a `voiceMirror`.
+      // ⚠️ A hang-csatorna bukása NEM teszi bukottá a küldést: a fő csatornába kiment.
+      // ⛔ De el sem hallgatjuk — a burokban ott a `targets` lista minden céllal.
       if (!result.sent) process.exitCode = 1;
       return;
     }

@@ -91,4 +91,50 @@ export class I_Integrations_ApiService {
       { body: { text, lang } },
     );
   }
+
+  // ===== Hang-csatorna hangero ==============================================
+
+  /**
+   * GET `/voice/volume` — a jelenlegi hangero ES a SAV.
+   *
+   * ⚠️ A savot (`min`/`max`/`default`) a szerver adja, ⛔ nem egetjuk be a kliensbe: kulonben
+   * a csuszka mast engedne, mint amit a tenyleges ellenorzes elfogad.
+   */
+  async getVoiceVolume(): Promise<{ volume: number; default: number; min: number; max: number }> {
+    return this.Đ_AS.call<{ volume: number; default: number; min: number; max: number }>(
+      new DyNX_ApiCall_Settings({
+        name: 'getVoiceVolume',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/voice/volume',
+      }),
+    );
+  }
+
+  /**
+   * PUT `/voice/volume` — a hangero beallitasa.
+   *
+   * ⭐ A valasz `ok: false` eseten is 200: a `detail` mondja meg, MIERT nem valtozott, es a
+   * `volume` a VALTOZATLAN erteket adja vissza. Egy nyers HTTP-hiba a felületen csak
+   * „valami elromlott"-kent latszana.
+   */
+  async setVoiceVolume(volume: number): Promise<{
+    ok: boolean;
+    volume: number;
+    detail?: string;
+    remedy?: string;
+  }> {
+    return this.Đ_AS.call<
+      { ok: boolean; volume: number; detail?: string; remedy?: string },
+      { volume: number }
+    >(
+      new DyNX_ApiCall_Settings({
+        name: 'setVoiceVolume',
+        type: DyFM_HttpCallType.put,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/voice/volume',
+      }),
+      { body: { volume: volume } },
+    );
+  }
 }

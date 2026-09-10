@@ -149,6 +149,10 @@ async function runTickSubcommand(command: string, args: string[]): Promise<void>
   return (await import('./commands/tick.command.js')).runTickCommand(command, args);
 }
 
+async function runVoiceSubcommand(command: string, args: string[]): Promise<void> {
+  return (await import('./commands/voice.command.js')).runVoiceCommand(command, args);
+}
+
 const COMMAND_TREE: Record<string, Record<string, CommandHandler>> = {
   cast: {
     discover: runDiscoverCommand,
@@ -207,6 +211,13 @@ const COMMAND_TREE: Record<string, Record<string, CommandHandler>> = {
   },
   tick: {
     plan: (args: string[]) => runTickSubcommand('plan', args),
+  },
+  // 🔊 A HANG-CSATORNA hangereje (owner, 2026-09-10: „nekem allithatonak kell lennie").
+  // ⛔ NEM a `volume` parancs: az a Cast-hangszoro a lakasban.
+  // ⚠️ MERT CSAPDA: a `voice-funnel` 593 zold teszt es zold `tsc` mellett FUTASIDOBEN NEM
+  // LETEZETT, mert kimaradt ebbol az engedelyezesi listabol. Ezert van ra elo probam alabb.
+  voice: {
+    volume: (args: string[]) => runVoiceSubcommand('volume', args),
   },
   linkedin: {
     configure: (args: string[]) => runLinkedInSubcommand('configure', args),

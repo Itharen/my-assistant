@@ -1,0 +1,42 @@
+.i-voice-volume-panel {
+  padding: 1rem;
+  border: 1px solid #444;
+  border-radius: 0.5rem;
+
+  h2 { margin-top: 0; }
+
+  .i-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    input[type="range"] { flex: 1; cursor: pointer; }
+
+    .i-value {
+      min-width: 3.5rem;
+      text-align: right;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    }
+  }
+
+  .i-muted {
+    color: var(--ma-fg-muted, #888);
+    font-size: 0.82em;
+    margin: 0.4rem 0 0;
+  }
+
+  .i-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+
+    button {
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      &:disabled { opacity: 0.5; cursor: not-allowed; }
+    }
+  }
+
+  .i-notice { color: var(--ma-accent, #60a5fa); margin-top: 0.5rem; }
+  .i-error { color: #c33; margin-top: 0.5rem; }
+}
