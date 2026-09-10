@@ -1046,3 +1046,54 @@ hogyan mondja másképp.
 ⛔ **Ami NEM változik:** bizonytalan átiratra **továbbra sem cselekszünk**, és a kötegbe
 **továbbra sem** kerül be. Ez a szabály marad — csak a **visszajelzés** lesz használható.
 
+---
+
+## 2026-09-11 01:40 — 🔗 A KÖVETKEZŐ MUNKA: LinkedIn PROFIL + POSZTOK olvasása
+
+> **Owner, 2026-09-11 01:38:** *„most pont jön a trükkös rész, hogy fejlesztési munkák fognak
+> kelleni, hogy tudjad olvasni a LinkedIn profilomat és posztjaimat."*
+
+⭐ **JÓ HÍR — a nehezén túl vagyunk.** Ez **nem** új integráció: a hitelesítés, a lapozás, a
+gyorsítótár és a hibakezelés **már megvan** az inbox-vonalon. Amit hozzá kell tenni, az **egy
+paraméter és két olvasó parancs**.
+
+### A MÉRT állapot
+
+| Ami megvan | Hol |
+|---|---|
+| Member Snapshot API-kliens, lapozással és `NOT_READY`-kezeléssel | `cli/src/linkedin/linkedin.api-client.ts` |
+| OAuth, `r_dma_portability_self_serve` scope, a token a gyökér `.env`-ben | `__documentations/dev/LINKEDIN_INBOX_CLI.md` |
+| gyorsítótár, `doctor`, `configure`, olvasó parancsok | `ma linkedin …` |
+
+### 🔴 A SZŰK KERESZTMETSZET — egyetlen sor
+
+`linkedin.api-client.ts:226`:
+
+```ts
+if (envelope.snapshotDomain !== 'INBOX') {
+  … 'memberSnapshotData returned an unexpected snapshot domain.'
+}
+```
+
+⇒ A kliens **bedrótozva** csak az `INBOX` domaint fogadja el. A LinkedIn viszont **több
+snapshot-domaint** ad ugyanezen a végponton *(profil, megosztások és társaik — a domain-lista a
+`snapshot-domain` doksiban, amire a LINKEDIN_INBOX_CLI.md hivatkozik)*.
+
+### A munkacsomag — EGY funkció
+
+```
+1. a snapshotDomain legyen PARAMÉTER (a mai INBOX az alapérték, ⛔ regresszió nélkül)
+2. domainenkénti gyorsítótár, ugyanabban a mintában, mint az inboxé
+3. két olvasó parancs:  ma linkedin profile show   ·   ma linkedin posts list
+```
+
+| Kikötés | Miért |
+|---|---|
+| ⛔ **read-only marad** | az integráció szándékosan nem küld; ez **nem** változik |
+| ⚠️ **`NOT_READY` a NORMÁLIS első válasz** | a doksi szerint egyes domainek **akár 48 óra** alatt állnak elő. ⛔ Ez **nem hiba** — mondja meg, hogy várni kell, és ⛔ ne ürítse a meglévő gyorsítótárat |
+| **a domain-lista MÉRVE legyen** | ⛔ ne találgassuk a domain-neveket: a `doctor` írja ki, mit ad vissza a fiók |
+| ⛔ **ne told mellé a poszt-KÜLDÉST** | az **külön** probléma *(nincs hozzá scope)*, és `one-function-is-enough` |
+
+📌 **A cél, amiért kell:** az owner LinkedIn-jelenlétét onnan tudjuk gondozni, hogy **látjuk, mit
+írt eddig** — a profil-frissítés és a posztolás ezen az olvasáson áll.
+
