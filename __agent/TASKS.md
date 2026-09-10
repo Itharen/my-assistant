@@ -123,6 +123,13 @@ a darabolás **kikapcsolható marad**, ha rontana.
 | T-40 | 🤖 | 🔴 **Az üzenetek nem jutnak el hozzám az LDP-újraindítások között** | owner 2026-09-07 12:57: *„félek, hogy egy kicsit elsikkadt egy pár üzenet. Itt a LDP-s folyamatos újraindítások között nem perzisztálnak rendesen az üzenetek"* — **MÉRVE, igaza van — de az ok MÁS**: a szelep foglalt sessionbe küldött, a CCAP sorba tette, és onnan **késve, ÜZENETENKÉNT KÜLÖN futásban** érkezett *(nem veszett el)*. ⇒ a foglaltság-kapu javítva | owner 12:57 + saját mérés |
 | T-12 | 🤖 | **Figyelés/riasztás a sikertelen feldolgozásokra** | *„nem ártana valami kezelés, figyelés"* — ⚠️ a T-10 sora már **szól**, ha végleg feladja; ami HIÁNYZIK: a **várakozó sor láthatósága** *(konzol-pulzus + `comm doctor`)* | owner 12:00 |
 
+### LinkedIn — profil, posztok, posztolás
+
+| # | Ki | Feladat | Miért | Forrás |
+|---|---|---|---|---|
+| T-73 | 🤖 | **Posztoló felület** | owner 2026-09-11 01:46: *„kelleni fog majd egy felület is, amivel posztolok"* ⇒ a hivatalos API-n **nincs küldés-scope**, tehát a felület a **piszkozatot** állítja elő, a kiküldés **UBH**-val vagy kézzel megy. ⚠️ A sorrend kötött: olvasás → piszkozat → felület → kiküldés | owner 01:46 |
+| T-74 | 🤖 | **Poszt-piszkozat a `reply draft` mintájában** | az owner terve: *„ugyanúgy, mint ahogy a beszélgetésekhez előkészíted nekem a posztokat"*. A szabályok **megvannak** *(`current/principles/linkedin-post-writing.md`)*; a kalibráció a **48 meglévő poszt** | owner 01:42 + 01:46 |
+
 ### Egyéb
 
 | # | Ki | Feladat | Miért | Forrás |
