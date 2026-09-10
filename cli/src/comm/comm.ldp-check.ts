@@ -96,7 +96,9 @@ export function readLdpStatus(
       };
     }
 
-    const parsed = JSON.parse(readFileSync(statusFile, 'utf-8')) as { pid?: number; phase?: string };
+    const parsed = JSON.parse(readFileSync(statusFile, 'utf-8')) as {
+      pid?: number; phase?: string; pipelineComplete?: boolean;
+    };
     const ageMs: number = now.getTime() - statSync(statusFile).mtimeMs;
     const pid: number | undefined = typeof parsed.pid === 'number' ? parsed.pid : undefined;
 
@@ -122,15 +124,43 @@ export function readLdpStatus(
       };
     }
 
-    if (ageMs > LDP_STATUS_STALE_MS) {
+    // 🔴 A CSENDES PIHENÉS NEM BERAGADÁS — mért hamis riasztás, 2026-09-08/09/10 (négyszer).
+    //
+    // A `stale` ág korábban **feltétel nélkül** azt mondta, hogy „elképzelhető, hogy beragadt",
+    // valahányszor az állapot-fájl régi volt. ⚠️ Csakhogy a **befejezett** pipeline
+    // `server-runtime` fázisban ül, és **nincs mit írnia**: amíg nem érkezik új változás, a
+    // fájl **jogosan** nem frissül. Mérve 2026-09-10 09:01: `538 perce nem frissült` — miközben
+    // a szerver és mindkét figyelő **1 perces** életjellel élt.
+    //
+    // ⇒ Négy körön át vizsgáltam ki, hogy nincs semmi baj. ⭐ Egy diagnosztika, ami rendszeresen
+    // téved, **elszoktat a saját jelzésétől** — pontosan azt a bizalmat éli fel, amiért van
+    // (`current/principles/error-handling.md`: a piros review három fajtája).
+    //
+    // ⛔ NEM hallgatjuk el: a kort továbbra is kiírjuk. Csak nem nevezzük **gyanúnak**, ha a
+    // pipeline **készen van**.
+    const pipelineIdle: boolean = parsed.pipelineComplete === true;
+
+    if (ageMs > LDP_STATUS_STALE_MS && !pipelineIdle) {
       return {
         state: 'stale',
         pid,
         ageMs,
         ...(parsed.phase ? { phase: parsed.phase } : {}),
         detail: `A folyamat (${pid}) él, de az állapot-fájl ${Math.round(ageMs / 60_000)} perce `
-          + 'nem frissült — elképzelhető, hogy beragadt.',
+          + 'nem frissült, és a pipeline SINCS készen — elképzelhető, hogy beragadt.',
         remedy: 'Nézd meg a terminálablakot; ha tényleg áll, indítsd újra: `dc ldp`.',
+      };
+    }
+
+    if (ageMs > LDP_STATUS_STALE_MS) {
+      return {
+        state: 'running',
+        pid,
+        ageMs,
+        ...(parsed.phase ? { phase: parsed.phase } : {}),
+        detail: `Fut (pid ${pid}${parsed.phase ? `, fázis: ${parsed.phase}` : ''}) — a pipeline `
+          + `KÉSZ, ezért az állapot-fájl ${Math.round(ageMs / 60_000)} perce jogosan pihen. `
+          + '⚠️ Ez NEM beragadás: új változásra indul a következő kör.',
       };
     }
 

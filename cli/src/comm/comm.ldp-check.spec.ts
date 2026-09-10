@@ -75,3 +75,57 @@ describe('readLdpStatus', () => {
     expect(readLdpStatus(file, NOW, () => true).state).toBe('absent');
   });
 });
+
+describe('readLdpStatus — 🔴 a CSENDES PIHENÉS nem beragadás (mért hamis riasztás)', () => {
+
+  // Négy körön át vizsgáltam ki, hogy nincs semmi baj. Mérve 2026-09-10 09:01:
+  // „az állapot-fájl 538 perce nem frissült" — miközben a szerver és MINDKÉT figyelő
+  // 1 perces életjellel élt. A befejezett pipeline `server-runtime` fázisban ül, és
+  // nincs mit írnia, amíg nem érkezik új változás.
+
+  it('⭐ KÉSZ pipeline + régi fájl ⇒ `running`, NEM `stale`', () => {
+    const file = writeStatus(
+      { pid: 4242, phase: 'server-runtime', pipelineComplete: true },
+      LDP_STATUS_STALE_MS + 9 * 60 * 60_000,
+    );
+    const status = readLdpStatus(file, NOW, () => true);
+
+    expect(status.state).toBe('running');
+    expect(status.detail).not.toContain('beragadt');
+  });
+
+  it('⛔ de a KORT továbbra is kiírjuk — nem hallgatjuk el', () => {
+    const file = writeStatus(
+      { pid: 4242, phase: 'server-runtime', pipelineComplete: true },
+      LDP_STATUS_STALE_MS + 60_000,
+    );
+
+    expect(readLdpStatus(file, NOW, () => true).detail).toContain('perce');
+  });
+
+  it('🔴 NEM KÉSZ pipeline + régi fájl ⇒ továbbra is `stale` — ez a valódi gyanú', () => {
+    const file = writeStatus(
+      { pid: 4242, phase: 'client-test', pipelineComplete: false },
+      LDP_STATUS_STALE_MS + 60_000,
+    );
+    const status = readLdpStatus(file, NOW, () => true);
+
+    expect(status.state).toBe('stale');
+    expect(status.detail).toContain('beragadt');
+  });
+
+  it('⚠️ HIÁNYZÓ `pipelineComplete` ⇒ gyanú marad — nem feltételezünk készet', () => {
+    const file = writeStatus({ pid: 4242 }, LDP_STATUS_STALE_MS + 60_000);
+
+    expect(readLdpStatus(file, NOW, () => true).state).toBe('stale');
+  });
+
+  it('⛔ a HALOTT folyamat akkor is halott, ha a pipeline kész volt', () => {
+    const file = writeStatus(
+      { pid: 4242, phase: 'server-runtime', pipelineComplete: true },
+      LDP_STATUS_STALE_MS + 60_000,
+    );
+
+    expect(readLdpStatus(file, NOW, () => false).state).toBe('dead');
+  });
+});
