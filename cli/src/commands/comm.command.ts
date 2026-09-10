@@ -19,6 +19,7 @@ import { localTimeHeader } from '../utils/local-time.js';
 import type { CommCheck, CommCheckStatus, CommDoctorReport } from '../comm/comm.models.js';
 import { DiscordBridge } from '../discord/discord.bridge.js';
 import { DiscordListener } from '../discord/discord.listener.js';
+import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 import { sendDiscordMessage, type DiscordSendResult } from '../discord/discord.sender.js';
 import { formatCommHistory, readCommHistory } from '../comm/comm.history.js';
 import { AUDIT_LIMIT, auditDiscordChannel, formatChannelAudit } from '../comm/comm.channel-audit.js';
@@ -30,6 +31,11 @@ import {
 } from '../voice/voice-funnel-report.js';
 import { resolveProjectRoot } from '../utils/project-root.js';
 import { CcapError } from '../ccap/ccap.error.js';
+import {
+  decideVoiceLifecycleAction,
+  VOICE_LEAVE_GRACE_MS,
+  type VoiceLifecycleEvent,
+} from '../voice/voice-lifecycle.js';
 import { fail, makeRequestId, ok, writeEnvelope } from '../output/envelope.js';
 
 const STATUS_ICON: Record<CommCheckStatus, string> = {
@@ -268,11 +274,7 @@ export async function runCommCommand(subcommand: string, args: string[]): Promis
 
       // Siker esetén NEM térünk vissza — a figyelő a folyamat élettartamáig dolgozik.
       process.stdout.write('A figyelő fut. Leállítás: Ctrl+C.\n');
-      await new Promise<void>((resolve) => {
-        process.once('SIGINT', () => {
-          void listener.stop().finally(resolve);
-        });
-      });
+      await waitForShutdown(listener);
 
       return;
     }
@@ -325,4 +327,65 @@ function renderReport(report: CommDoctorReport): string {
   lines.push('');
 
   return lines.join('\n');
+}
+
+/**
+ * 🚪 A FIGYELŐ RENDES LEÁLLÍTÁSA — hogy a hang-csatornából TÉNYLEG kilépjünk.
+ *
+ * > **Owner, 2026-09-10 18:28:** *„amikor leáll a szerver, illetve újraindul, olyankor ki
+ * > kéne lépjél a csatornáról, hogy ne higgyem azt, hogy itt vagy."*
+ *
+ * ## 🔴 A MÉRT GYÖKÉR-OK, amit ez javít
+ *
+ * Itt korábban **CSAK `SIGINT`** volt kezelve. A szerver felügyelője viszont `child.kill()`-t
+ * hív, aminek az alapértelmezett jele a **`SIGTERM`** ⇒ a `listener.stop()` **soha nem futott
+ * le**, a hang-kapcsolat nem bomlott le tisztán, és a bot bent lévőnek látszott.
+ *
+ * ⚠️ **WINDOWSON A JEL SEM ELÉG:** a Node a `child.kill()`-t `TerminateProcess`-re képezi, ami
+ * ⛔ nem elkapható. Ezért a második horgony a **`stdin` bezárulása**: amikor a szülő elmegy
+ * *(rendesen VAGY összeomlással)*, a csővezeték záródik, és azt **azonnal** megkapjuk.
+ *
+ * ⭐ Ez az egyetlen horgony, ami egy **összeomlott** szervert is elfog — egy jel-kezelő nem.
+ */
+async function waitForShutdown(listener: DiscordListener): Promise<void> {
+  await new Promise<void>((resolve) => {
+    let closing: boolean = false;
+
+    const shutdown = (event: VoiceLifecycleEvent): void => {
+      // ⚠️ Több horgony is elsülhet egyszerre (jel + stdin-zárás). A második nem indíthat
+      // MÁSODIK leállítást: az a hang-kapcsolatot félúton bontaná meg.
+      if (closing) return;
+
+      closing = true;
+
+      const action = decideVoiceLifecycleAction(event);
+
+      process.stdout.write(`\n🚪 Leállítás: ${action.reason}\n`);
+
+      void listener.stop()
+        .catch((err: unknown): void => {
+          // ⛔ A leállítás hibája sem lehet néma: ha a kilépés bukott, a bot BENT MARADHAT,
+          // és az ownert pont ez vezeti félre.
+          SwallowedFailure_Util.report('comm.listen.shutdown', err);
+        })
+        .finally((): void => {
+          // A kilépés HÁLÓZATI üzenet — adunk neki időt, hogy kiérjen a gateway-ig.
+          setTimeout(resolve, VOICE_LEAVE_GRACE_MS);
+        });
+    };
+
+    for (const signal of [ 'SIGINT', 'SIGTERM' ] as const) {
+      process.once(signal, (): void => shutdown('signal'));
+    }
+
+    // ⭐ A SZÜLŐ ELTŰNÉSE. A felügyelő `stdio: ['pipe', …]`-pal indít, ezért amikor elmegy,
+    // ez a folyam véget ér. ⛔ SZÁNDÉKOSAN nem a szülő PID-jét figyeljük időzítővel: ez
+    // esemény-vezérelt és azonnali.
+    //
+    // ⚠️ Ha a figyelőt KÉZZEL indították (terminálból), a `stdin` egy tty, ami nem záródik be
+    // magától — ilyenkor ez a horgony egyszerűen nem sül el, és a jel-kezelő dolgozik.
+    process.stdin.on('end', (): void => shutdown('parent-gone'));
+    process.stdin.on('close', (): void => shutdown('parent-gone'));
+    process.stdin.resume();
+  });
 }

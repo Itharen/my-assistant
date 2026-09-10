@@ -15,6 +15,7 @@ import { join } from 'node:path';
 import { Client, Events, GatewayIntentBits, Partials, type Message } from 'discord.js';
 
 import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
+import { decideVoiceJoinPermission } from '../voice/voice-lifecycle.js';
 import { logAction } from '../action-log/action-log.client.js';
 import { DiscordBridge } from './discord.bridge.js';
 import { saveInboxAttachments } from './discord.file-intake.js';
@@ -543,6 +544,30 @@ export class DiscordListener {
     }
 
     if (!this.client) return;
+
+    // 🚪 BELÉPÉS CSAK AKKOR, HA A LÁNC TÉNYLEG KISZOLGÁL (owner, 2026-09-10 18:28).
+    //
+    // 🔴 A MÉRT ESET: egy KÉZZEL indított figyelő ült a hang-csatornában, miközben a szerver
+    // nem futott — az owner ebből azt olvasta, hogy jelen vagyok. A bent-ülés a
+    // **szolgáltatást** hivatott jelezni, nem egy véletlen folyamatot.
+    //
+    // ⚠️ A szöveges figyelés ettől FÜGGETLENÜL működik: csak a hang-jelenlétet tartjuk vissza,
+    // mert az ÍGÉRET — a szöveg-olvasás nem.
+    const permission = decideVoiceJoinPermission(
+      process.stdin.isTTY === true,
+      (process.env['MA_VOICE_ALLOW_UNSUPERVISED'] ?? '').trim() === '1',
+    );
+
+    if (!permission.allowed) {
+      await this.safeLog({
+        kind: 'note',
+        summary: `[discord/listener] MA-VOICE-JOIN-WITHHELD: ${permission.reason}`,
+        extra: { code: 'MA-VOICE-JOIN-WITHHELD' },
+      });
+      this.voicePresenceState = { configured: true, joined: false };
+
+      return;
+    }
 
     // 🔴 A „BE VAN ÁLLÍTVA" TÉNYT AZONNAL RÖGZÍTJÜK — a belépés MEGKÍSÉRLÉSE ELŐTT.
     //

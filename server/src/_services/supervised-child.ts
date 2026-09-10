@@ -14,6 +14,7 @@ import { spawn, type ChildProcess } from 'node:child_process';
 
 import { ProcessAlive_Util } from '../_collections/process-alive.util.js';
 import { emitServerActionLog } from '../_collections/action-log.util.js';
+import { SwallowedFailure_Util } from '../_collections/swallowed-failure.util.js';
 
 import {
   decideSupervisorAction,
@@ -102,10 +103,45 @@ export class SupervisedChild {
     }
 
     if (this.child && this.child.exitCode === null) {
-      this.child.kill();
+      this.requestGracefulExit(this.child);
     }
 
     this.child = null;
+  }
+
+  /**
+   * A gyermek RENDES leállításának kérése — ölés helyett ELŐSZÖR kérés.
+   *
+   * ## 🔴 MIÉRT NEM AZONNALI `kill()`
+   *
+   * A Discord-figyelőnek **hálózati üzenetet** kell kiküldenie, hogy kilépjen a
+   * hang-csatornából. Egy azonnali `kill()` ezt nem engedi ⇒ a Discord szerint a bot
+   * **bent marad**, és az owner azt hiszi, hogy ott vagyunk — miközben épp újraindulunk.
+   *
+   * ⚠️ **Windowson a `kill()` amúgy sem elkapható** (`TerminateProcess`), tehát egy jel-alapú
+   * kérés itt nem is működne. A `stdin` bezárása viszont **platform-független**: a gyermek
+   * `end`/`close` eseményt kap a folyamon, és abból tudja, hogy takarítania kell.
+   *
+   * ⭐ A türelmi idő UTÁN azért ölünk mégis, mert egy beragadt gyermek nem tarthatja fel az
+   * újraindítást — a `SIGKILL`-szerű vég a **második** lépés, nem az első.
+   */
+  private requestGracefulExit(child: ChildProcess): void {
+    // 1. KÉRÉS: a cső bezárása. Ez a gyermek jelzése arra, hogy a szülő végzett vele.
+    try {
+      child.stdin?.end();
+    } catch (err: unknown) {
+      // ⚠️ Ha a cső már zárt, ez dobhat — az viszont épp azt jelenti, hogy a jelzés megvan.
+      SwallowedFailure_Util.report(`${this.config.label}.stdin-end`, err);
+    }
+
+    // 2. TÜRELMI IDŐ, majd ölés — csak ha még él.
+    //
+    // ⚠️ `unref()`: ez az időzítő SOSEM tarthatja életben a szervert. Ha a szülő közben
+    // kilép, az időzítő nem fut le — de akkor nincs is rá szükség: a szülő halálával a cső
+    // magától záródik, és a gyermek onnan tudja, hogy mennie kell.
+    setTimeout((): void => {
+      if (child.exitCode === null) child.kill();
+    }, CHILD_SHUTDOWN_GRACE_MS).unref();
   }
 
   /** Időzített indítás — minden újrapróbálkozás ezen megy át. */
@@ -185,7 +221,16 @@ export class SupervisedChild {
     const child: ChildProcess = spawn(this.config.execute, this.config.args, {
       cwd: this.config.cwd,
       env: process.env,
-      stdio: ['ignore', 'pipe', 'pipe'],
+      // 🔊 A `stdin` SZÁNDÉKOSAN CSŐ, nem `ignore` (2026-09-10).
+      //
+      // ⭐ MIÉRT: ez a cső a gyermek **egyetlen megbízható jelzése arról, hogy a szülő
+      // elment** — akkor is, ha a szerver ÖSSZEOMLIK, és akkor is **Windowson**, ahol a
+      // `child.kill()` `TerminateProcess`-re képződik, és ⛔ **nem elkapható**.
+      //
+      // 🔴 A MÉRT KÁR, amit ez javít: a Discord-figyelő bent maradt a hang-csatornában,
+      // miközben a szerver nem futott — az owner **hamis jelenlétet** látott
+      // *(„azt hiszem, hogy itt vagy, és figyelsz, miközben nem is")*.
+      stdio: ['pipe', 'pipe', 'pipe'],
       windowsHide: true,
     });
 
@@ -364,6 +409,15 @@ let shutdownHooksInstalled: boolean = false;
  * jel-újraküldést jelentene — működne, de a helyes leállás a regisztráció SORRENDJÉN múlna,
  * és egy korán terminálódó folyamat árván hagyná a többi gyermeket.
  */
+/**
+ * Ennyit várunk a gyermek RENDES kilépésére, mielőtt megölnénk.
+ *
+ * ⭐ Bőven elég a hang-csatornából való kilépéshez *(a CLI oldalán a türelmi idő 700 ms)*, és
+ * ⛔ rövidebb, mint az indítási türelmi idő (8 s) — így az újraindítás nem csúszik el, és a
+ * régi gyermek biztosan előbb megy ki, mint ahogy az új belép.
+ */
+const CHILD_SHUTDOWN_GRACE_MS: number = 1_500;
+
 export function registerShutdownHooks(child: SupervisedChild): void {
   supervisedChildren.add(child);
 
