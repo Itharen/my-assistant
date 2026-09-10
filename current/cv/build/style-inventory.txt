@@ -1,0 +1,214 @@
+==================== PAGE 1
+ Archicoco                     10.0 #d9d9d9 n=6    ex: L A N G U A G E S
+ Archicoco                     16.0 #a6a6a6 n=1    ex: Work Experience
+ ArchivoBlack-Regular           8.0 #737373 n=141  ex: F
+ ArchivoBlack-Regular          14.0 #a6a6a6 n=1    ex: S O F T W A R E  D E V E L O P E R
+ Arimo-Bold                     6.0 #d9d9d9 n=5    ex: npm, JSON,  XML,  REST,  Jira,  Azure, Apache
+ Arimo-Bold                     7.0 #737373 n=6    ex: Full-stack Development 
+ Arimo-Bold                     7.0 #d9d9d9 n=22   ex: Hungarian
+ Arimo-Bold                     9.0 #444440 n=3    ex: Future Development
+ Arimo-Regular                  7.0 #737373 n=53   ex: Sep 2021 - Present
+ Arimo-Regular                  8.0 #444440 n=2    ex: HU, Budapest XI., 1113
+ Arimo-Regular                  8.0 #545454 n=1    ex: itharen3@gmail.com
+ Arimo-Regular                  8.0 #a6a6a6 n=1    ex: Remote
+ Assistant-Regular              8.0 #d9d9d9 n=12   ex:  —
+ Assistant-SemiBold             8.0 #d9d9d9 n=1    ex: I have no life and coding is my hobby
+ CAGenerated                   30.9 #545454 n=2    ex: BALÁZS
+--- drawings (non skill-bar) ---
+  f fill=#ffffff stroke=None rect=[0.0 0.0 595.5 842.2] items=1 re
+  f fill=#ffffff stroke=None rect=[0.0 0.0 595.7 842.6] items=1 re
+  f fill=#535353 stroke=None rect=[-9.3 -8.0 215.6 850.1] items=1 re
+  f fill=#535353 stroke=None rect=[431.4 25.5 439.2 37.2] items=10 c
+  f fill=#a6a6a6 stroke=None rect=[230.6 167.5 566.7 177.0] items=1 re
+  f fill=#535353 stroke=None rect=[431.4 46.4 440.9 55.9] items=33 c
+  f fill=#535353 stroke=None rect=[430.6 67.9 440.0 74.2] items=11 c
+  f fill=#535353 stroke=None rect=[431.1 67.5 439.4 71.6] items=5 l
+  f fill=#d9d9d9 stroke=None rect=[24.2 370.9 190.7 385.2] items=1 re
+  f fill=#121517 stroke=None rect=[25.0 389.3 191.1 403.2] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.0 389.3 176.3 403.2] items=1 re
+  f fill=#737373 stroke=None rect=[335.2 213.6 345.6 830.1] items=4 l
+  f fill=#737373 stroke=None rect=[340.4 364.5 349.0 374.4] items=4 l
+  f fill=#121517 stroke=None rect=[25.5 432.8 191.5 446.7] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 432.8 190.0 446.7] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 447.9 191.5 461.7] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 447.9 190.0 461.7] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 462.9 191.5 476.8] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 462.9 190.0 476.8] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 568.2 191.5 582.1] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 568.2 55.5 582.1] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 478.0 191.5 491.8] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 478.0 190.0 491.8] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 493.0 191.5 506.9] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 493.0 176.3 506.9] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 538.1 191.5 552.0] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 538.1 185.2 552.0] items=1 re
+  f fill=#121517 stroke=None rect=[36.8 508.0 191.6 521.9] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 508.0 63.2 521.9] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 523.1 191.5 536.9] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 523.1 176.3 536.9] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 553.2 191.5 567.0] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 553.2 182.0 567.0] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 584.6 191.5 598.4] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 584.6 166.7 598.4] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 599.6 191.5 613.4] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 599.6 176.3 613.4] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 614.6 191.5 628.5] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 614.6 176.3 628.5] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 719.9 191.5 733.8] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 719.9 114.2 733.8] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 629.7 191.5 643.5] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 629.7 100.8 643.5] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 644.7 191.5 658.6] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 644.7 160.6 658.6] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 689.8 191.5 703.7] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 689.8 166.7 703.7] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 659.8 191.5 673.6] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 659.8 98.8 673.6] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 674.8 191.5 688.7] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 674.8 62.1 688.7] items=1 re
+  f fill=#121517 stroke=None rect=[25.5 704.9 191.5 718.7] items=1 re
+  f fill=#d9d9d9 stroke=None rect=[25.5 704.9 125.2 718.7] items=1 re
+  f fill=#737373 stroke=None rect=[340.4 495.1 349.0 504.9] items=4 l
+  f fill=#737373 stroke=None rect=[340.4 579.2 349.0 589.0] items=4 l
+  f fill=#000000 stroke=None rect=[-9.3 -8.0 215.5 849.9] items=1 re
+  f fill=#000000 stroke=None rect=[24.2 370.7 190.6 385.1] items=1 re
+  f fill=#000000 stroke=None rect=[25.0 389.2 191.0 403.0] items=1 re
+  f fill=#000000 stroke=None rect=[25.0 389.2 176.2 403.0] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 432.7 191.5 446.5] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 432.7 190.0 446.5] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 447.7 191.5 461.6] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 447.7 190.0 461.6] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 462.7 191.5 476.6] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 462.7 190.0 476.6] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 477.8 191.5 491.6] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 477.8 190.0 491.6] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 492.8 191.5 506.7] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 492.8 176.2 506.7] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 507.9 63.1 521.7] items=1 re
+  f fill=#000000 stroke=None rect=[36.8 507.9 191.5 521.7] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 522.9 191.5 536.7] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 522.9 176.2 536.7] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 537.9 191.5 551.8] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 537.9 185.2 551.8] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 553.0 191.5 566.8] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 553.0 181.9 566.8] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 568.0 191.5 581.8] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 568.0 55.5 581.8] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 584.3 191.5 598.2] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 584.3 166.6 598.2] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 599.4 191.5 613.2] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 599.4 176.2 613.2] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 614.4 191.5 628.3] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 614.4 176.2 628.3] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 629.4 191.5 643.3] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 629.4 100.8 643.3] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 644.5 191.5 658.3] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 644.5 160.6 658.3] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 659.5 191.5 673.4] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 659.5 98.8 673.4] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 674.5 191.5 688.4] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 674.5 62.1 688.4] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 689.6 191.5 703.4] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 689.6 166.6 703.4] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 704.6 191.5 718.5] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 704.6 125.2 718.5] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 719.7 191.5 733.5] items=1 re
+  f fill=#000000 stroke=None rect=[25.4 719.7 114.1 733.5] items=1 re
+  f fill=#000000 stroke=None rect=[431.2 25.5 439.0 37.1] items=1 re
+  f fill=#000000 stroke=None rect=[431.2 46.4 440.6 55.9] items=1 re
+  f fill=#000000 stroke=None rect=[430.4 67.4 439.8 74.2] items=1 re
+  f fill=#000000 stroke=None rect=[230.5 167.4 566.5 177.0] items=1 re
+  f fill=#000000 stroke=None rect=[335.1 213.5 345.5 829.8] items=1 re
+  f fill=#000000 stroke=None rect=[340.3 364.4 348.9 374.2] items=1 re
+  f fill=#000000 stroke=None rect=[340.3 494.9 348.9 504.7] items=1 re
+  f fill=#000000 stroke=None rect=[340.3 578.9 348.9 588.8] items=1 re
+==================== PAGE 2
+ Archicoco                     10.0 #d9d9d9 n=1    ex: D Y N A M O
+ Archicoco                     14.0 #d9d9d9 n=5    ex: F U T .
+ Arimo-Bold                     7.0 #737373 n=5    ex: Framework Development (Design, develop and do
+ Arimo-Bold                     8.0 #d9d9d9 n=24   ex: F U
+ Arimo-Bold                     9.0 #444440 n=6    ex: Fornax ICT KFT.
+ Arimo-Regular                  7.0 #737373 n=70   ex: Mar 2019 - Sep 2019
+ Arimo-Regular                  8.0 #a6a6a6 n=3    ex: Budapest
+ Arimo-Regular                  8.0 #ffffff n=3    ex: Budapest, Budatétény, 1223
+ Assistant-Regular              8.0 #ffffff n=42   ex: I'm looking for a project assignment where I
+--- drawings (non skill-bar) ---
+  f fill=#ffffff stroke=None rect=[0.0 0.0 595.5 842.2] items=1 re
+  f fill=#ffffff stroke=None rect=[0.0 0.0 595.7 842.6] items=1 re
+  f fill=#535353 stroke=None rect=[-10.5 -8.0 214.3 850.1] items=1 re
+  f fill=#737373 stroke=None rect=[335.0 518.4 345.4 710.2] items=4 l
+  f fill=#ffffff stroke=None rect=[36.7 747.7 44.5 759.4] items=10 c
+  f fill=#ffffff stroke=None rect=[36.7 768.6 46.2 778.1] items=33 c
+  f fill=#ffffff stroke=None rect=[35.9 790.1 45.3 796.4] items=11 c
+  f fill=#ffffff stroke=None rect=[36.4 789.7 44.7 793.9] items=5 l
+  f fill=#737373 stroke=None rect=[335.0 10.5 345.4 526.5] items=4 l
+  f fill=#737373 stroke=None rect=[335.0 707.3 345.4 821.8] items=4 l
+  f fill=#737373 stroke=None rect=[340.2 46.4 348.8 56.2] items=4 l
+  f fill=#737373 stroke=None rect=[340.2 158.1 348.8 167.9] items=4 l
+  f fill=#ffffff stroke=None rect=[34.2 614.8 62.3 615.5] items=1 re
+  f fill=#ffffff stroke=None rect=[62.3 614.8 176.8 615.5] items=1 re
+  f fill=#ffffff stroke=None rect=[34.2 256.5 62.3 257.2] items=1 re
+  f fill=#ffffff stroke=None rect=[62.3 256.5 110.4 257.2] items=1 re
+  f fill=#737373 stroke=None rect=[340.2 335.8 348.8 345.7] items=4 l
+  f fill=#000000 stroke=None rect=[-10.5 -8.0 214.2 849.9] items=1 re
+  f fill=#000000 stroke=None rect=[36.7 747.4 44.5 759.1] items=1 re
+  f fill=#000000 stroke=None rect=[36.7 768.3 46.1 777.8] items=1 re
+  f fill=#000000 stroke=None rect=[35.9 789.4 45.3 796.1] items=1 re
+  f fill=#000000 stroke=None rect=[334.9 10.5 345.3 526.4] items=1 re
+  f fill=#000000 stroke=None rect=[340.1 46.4 348.7 56.2] items=1 re
+  f fill=#000000 stroke=None rect=[340.1 158.0 348.7 167.9] items=1 re
+  f fill=#000000 stroke=None rect=[340.1 335.7 348.7 345.6] items=1 re
+  f fill=#000000 stroke=None rect=[334.9 518.2 345.3 709.9] items=1 re
+  f fill=#000000 stroke=None rect=[334.9 707.1 345.3 821.4] items=1 re
+==================== PAGE 3
+ Archicoco                     10.0 #d9d9d9 n=7    ex: C O N T R A C T O R
+ Archicoco                     12.0 #a6a6a6 n=3    ex: Hobbies
+ Archicoco                     13.0 #d9d9d9 n=4    ex: M Y
+ Archicoco                     16.0 #a6a6a6 n=1    ex: Education
+ Arimo-Bold                     8.0 #444440 n=8    ex: Budapest University
+ Arimo-Bold                     8.0 #d9d9d9 n=39   ex: F U
+ Arimo-Bold                     9.0 #444440 n=4    ex: Fornax ICT KFT.
+ Arimo-Italic                   7.0 #737373 n=1    ex: after 
+ Arimo-Regular                  6.0 #737373 n=7    ex: 2013 - 2015
+ Arimo-Regular                  7.0 #737373 n=42   ex: Jun 2016 - Nov 2017
+ Arimo-Regular                  8.0 #a6a6a6 n=2    ex: Budapest
+ Arimo-Regular                  8.0 #ffffff n=6    ex: Budapest, Budatétény, 1223
+ Assistant-Regular              8.0 #ffffff n=19   ex: Since I'm the CEO of my own company, I'm
+ BigShouldersDisplay-Bold      14.0 #000000 n=1    ex: IT HARE
+--- drawings (non skill-bar) ---
+  f fill=#ffffff stroke=None rect=[0.0 0.0 595.5 842.2] items=1 re
+  f fill=#ffffff stroke=None rect=[0.0 0.0 595.7 842.6] items=1 re
+  f fill=#a6a6a6 stroke=None rect=[234.6 468.7 570.7 478.3] items=1 re
+  f fill=#535353 stroke=None rect=[-10.5 -8.0 214.3 850.1] items=1 re
+  f fill=#737373 stroke=None rect=[334.8 303.7 345.2 347.4] items=4 l
+  f fill=#a6a6a6 stroke=None rect=[234.6 294.2 570.7 303.7] items=1 re
+  f fill=#737373 stroke=None rect=[334.8 338.8 345.2 387.2] items=4 l
+  f fill=#737373 stroke=None rect=[334.8 379.1 345.2 421.3] items=4 l
+  f fill=#737373 stroke=None rect=[334.8 182.0 345.2 294.2] items=4 l
+  f fill=#737373 stroke=None rect=[334.8 20.1 345.2 52.2] items=4 l
+  f fill=#737373 stroke=None rect=[334.8 44.3 345.2 190.4] items=4 l
+  f fill=#ffffff stroke=None rect=[40.2 647.6 48.0 659.3] items=10 c
+  f fill=#ffffff stroke=None rect=[40.1 668.5 49.6 678.0] items=33 c
+  f fill=#ffffff stroke=None rect=[39.4 690.0 48.8 696.3] items=11 c
+  f fill=#ffffff stroke=None rect=[39.9 689.6 48.2 693.8] items=5 l
+  f fill=#ffffff stroke=None rect=[40.2 748.3 48.0 760.0] items=10 c
+  f fill=#ffffff stroke=None rect=[40.1 769.2 49.6 778.8] items=33 c
+  f fill=#ffffff stroke=None rect=[39.4 790.7 48.8 797.0] items=11 c
+  f fill=#ffffff stroke=None rect=[39.9 790.3 48.2 794.5] items=5 l
+  f fill=#737373 stroke=None rect=[340.1 750.4 412.8 751.0] items=1 re
+  s fill=None stroke=#000000 rect=[29.6 258.4 183.4 412.3] items=8 l
+  f fill=#000000 stroke=None rect=[-10.5 -8.0 214.2 849.9] items=1 re
+  f fill=#000000 stroke=None rect=[40.2 647.4 48.0 659.0] items=1 re
+  f fill=#000000 stroke=None rect=[40.2 668.3 49.6 677.8] items=1 re
+  f fill=#000000 stroke=None rect=[39.4 689.3 48.8 696.1] items=1 re
+  f fill=#000000 stroke=None rect=[40.2 748.1 48.0 759.7] items=1 re
+  f fill=#000000 stroke=None rect=[40.2 768.9 49.6 778.5] items=1 re
+  f fill=#000000 stroke=None rect=[39.4 790.0 48.8 796.7] items=1 re
+  f fill=#000000 stroke=None rect=[334.7 20.1 345.0 52.2] items=1 re
+  f fill=#000000 stroke=None rect=[334.7 44.3 345.0 190.3] items=1 re
+  f fill=#000000 stroke=None rect=[334.7 182.0 345.0 294.1] items=1 re
+  f fill=#000000 stroke=None rect=[234.5 294.1 570.5 303.6] items=1 re
+  f fill=#000000 stroke=None rect=[334.7 303.6 345.0 347.3] items=1 re
+  f fill=#000000 stroke=None rect=[334.7 338.7 345.0 387.1] items=1 re
+  f fill=#000000 stroke=None rect=[334.7 379.0 345.0 421.2] items=1 re
+  f fill=#000000 stroke=None rect=[234.5 468.5 570.5 478.1] items=1 re

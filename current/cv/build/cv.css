@@ -1,0 +1,432 @@
+/* ============================================================================
+   CV — style sheet reconstructed from the source PDF (cv-9.0-2026-09-10.pdf).
+   Minden ertek MERT, nem becsult: a PDF span-jeibol (font/meret/szin) es a
+   vektor-rajzokbol (sav-geometria, oszlop-hatarok) szarmazik.
+   Merve: 2026-09-10, PyMuPDF-fel. Reszletek: build/style-inventory.txt
+   ========================================================================== */
+
+@import url('fonts/fonts.css');
+
+:root {
+  /* --- lap-geometria (a forras-PDF: 595.5 x 842.25 pt) --- */
+  --page-w: 595.5pt;
+  --page-h: 842.25pt;
+
+  /* --- oszlopok --- */
+  --sidebar-w: 215.6pt;      /* a sotet sav jobb szele */
+  --sidebar-pad-x: 24.4pt;   /* szoveg 24.2 .. 191.5 */
+  --main-l: 230.6pt;         /* fo-oszlop bal szele */
+  --main-w: 336.1pt;         /* 566.7 - 230.6 */
+  --meta-w: 100pt;           /* ceg / datum al-oszlop (szoveg x=230.6) */
+  --rail-w: 20.4pt;          /* idovonal savja — a tartalom igy x=351.0-nel kezdodik */
+  /* A forras Canvaban keszult, ezert oldalankent (sot tetelenkent) enyhen
+     eltolodik a rács. Ezeket parameterkent visszuk, hogy a reprodukcio pontos
+     legyen, de a szerkezet egysegben maradjon. Mert ertekek. */
+  --li-indent: 11.9pt;       /* lista szint-lepcso */
+  --list-lh: 9.34pt;         /* lista sorkoz */
+  --s-text-lh: 10.67pt;      /* sidebar bekezdes sorkoz */
+
+  /* --- szinek (mert) --- */
+  --c-sidebar-bg: #545454;
+  --c-light:      #d9d9d9;   /* sidebar szoveg + sidebar cimek */
+  --c-mid:        #a6a6a6;   /* display cimek, elvalaszto, "Remote" */
+  --c-body:       #737373;   /* fo-oszlop torzsszoveg + idovonal */
+  --c-dark:       #444440;   /* ceg + pozicio */
+  --c-name:       #545454;
+  --c-track:      #121517;   /* keszseg-sav ures resze */
+  --c-white:      #ffffff;
+
+  /* --- tipografia (mert) --- */
+  --f-display: 'Archicoco', 'Saira Stencil One', Impact, sans-serif;
+  --f-name:    'Antonio', 'Archivo Narrow', Impact, sans-serif;
+  --f-role:    'Archivo Black', 'Arial Black', sans-serif;
+  --f-body:    'Arimo', Arial, Helvetica, sans-serif;
+  --f-soft:    'Assistant', 'Arimo', Arial, sans-serif;
+
+  /* Canva ~0.047em betukozt tesz MINDEN szovegdobozra, kiveve a fo-oszlop
+     bullet-listait — ott a mert szelesseg-arany 1.001 (azaz nincs koz). */
+  --track: 0.047em;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+@page { size: A4; margin: 0; }
+
+html, body { background: #fff; }
+
+body {
+  font-family: var(--f-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.page {
+  position: relative;
+  width: var(--page-w);
+  height: var(--page-h);
+  overflow: hidden;
+  background: #fff;
+  page-break-after: always;
+}
+.page:last-child { page-break-after: auto; }
+
+/* --- oldal-szintu racs-eltolasok, a forras-PDF-bol merve --- */
+.page--p2 { --main-l: 229.7pt; --main-w: 341.8pt; --rail-w: 25.5pt; --sidebar-pad-x: 26.2pt; }
+.page--p3 { --main-l: 234.6pt; --sidebar-pad-x: 25.0pt; }
+.page--p3 .s-contact { padding-left: 15.2pt; }
+.page--p3 .s-contact li { gap: 11.0pt; }
+
+/* ---------------------------------------------------------------- SIDEBAR */
+
+.sidebar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--sidebar-w);
+  padding: 0 var(--sidebar-pad-x);
+  background: var(--c-sidebar-bg);
+  color: var(--c-light);
+}
+
+/* sidebar szekcio-cim: Archicoco 10pt, betukozzel, kozepre */
+.s-head {
+  font-family: var(--f-display);
+  font-size: 10pt;
+  font-weight: 400;
+  color: var(--c-light);
+  text-align: center;
+  letter-spacing: 0.306em;  /* mert: a szelesseg igy egyezik a forrassal */
+  text-indent: 0.306em;     /* a betukoz utolso "res"-enek kompenzalasa */
+  line-height: 1.2;
+}
+.s-head--lg { font-size: 13pt; line-height: 1.385; text-indent: 0; }  /* mert */
+.s-box-expect .s-head { text-indent: 0; margin-right: 8.2pt; }  /* mert: a doboz kozepe */
+.s-box-expect .s-text { width: 163pt; }   /* mert: a szovegdoboz 20.4..182.9 */
+.s-head--plain { letter-spacing: normal; text-indent: 0; margin-right: 6.4pt; }  /* mert: az "Other knowledge" nem betukozott */
+
+/* sidebar bekezdes: Assistant 8pt / 10.65pt sorkoz */
+.s-text {
+  font-family: var(--f-soft);
+  font-size: 8pt;
+  line-height: var(--s-text-lh);
+  letter-spacing: var(--track);
+  color: var(--c-light);
+}
+.s-text + .s-text { margin-top: var(--s-text-lh); }   /* mert: egy ures sor */
+.s-text--cont + .s-text { margin-top: 0; }            /* egybefuggo szovegdoboz (1. oldal) */
+.s-text--semi { font-weight: 600; }
+.s-text a { color: inherit; }
+
+/* portre — mert: kor d=137.5pt, teteje y=40.2pt; a kep 144.56 x 202.66pt,
+   a kor bal szelehez kepest -3.7pt-rol indul, es a kor vagja alul */
+.portrait {
+  position: relative;
+  width: 137.5pt; height: 137.5pt;
+  margin: 40.2pt auto 0;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.portrait img {
+  position: absolute;
+  left: -3.7pt; top: 0;
+  width: 144.6pt; height: 202.7pt;
+}
+
+/* --- keszseg- / nyelv-savok (mert: sav 166pt szeles, 15.05pt osztas) --- */
+/* mert: cimke-sor osztasa 15.04pt, a sav 2.1pt vastag, a cimke teteje ala 9.7pt-tel */
+.bars--lang   { margin-top: 8.1pt; }
+.bars--skills { margin-top: 7.4pt; }
+.bars--skills .bar { height: 15.04pt; }
+.bars--lang   .bar { height: 17.14pt; }
+.bars--lang   .bar__track { top: 9.6pt; }
+.bar {
+  position: relative;
+}
+.bar__label {
+  font-family: var(--f-body);
+  font-weight: 700;
+  font-size: 7pt;
+  line-height: 1;
+  letter-spacing: var(--track);
+  color: var(--c-light);
+}
+.bar__track {
+  position: absolute;
+  left: 0; right: 0;
+  top: 10.6pt;
+  height: 2.1pt;
+  background: var(--c-track);
+}
+.bar__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--c-light);
+}
+
+/* "Other knowledge" torzs: Arimo Bold 6pt, sorkizart */
+.s-fineprint {
+  font-family: var(--f-body);
+  font-weight: 700;
+  font-size: 6pt;
+  line-height: 8pt;          /* mert */
+  letter-spacing: var(--track);
+  color: var(--c-light);
+  text-align: left;         /* mert: NEM sorkizart — a 4. sor az eredetiben sincs kifeszitve */
+}
+
+/* sidebar lablec — ceg / szemely blokk */
+.s-block-title {
+  font-family: var(--f-body);
+  font-weight: 700;
+  font-size: 8pt;
+  line-height: 11.34pt;      /* mert */
+  letter-spacing: 0.298em;   /* mert */
+  margin-right: 2.4pt;       /* mert: a blokk kozepe balra tolodik */
+  text-align: center;
+  color: var(--c-light);
+}
+.s-contact { margin-top: 3.4pt; padding-left: 9.7pt; }
+.s-contact li {
+  display: flex;
+  align-items: center;
+  gap: 11.84pt;              /* mert: ikon 10.3pt, a szoveg x=57.7 */
+  list-style: none;
+  font-size: 8pt;
+  line-height: 1;
+  letter-spacing: var(--track);
+  color: var(--c-white);
+  padding: 3.9pt 0;          /* mert osztas: 19.75pt */
+}
+.s-contact svg { flex: none; width: 10pt; height: 12pt; fill: var(--c-white); }
+
+/* IT HARE emblema */
+/* mert: a kep 172.57 x 171.82pt, bal szele x=20.35 */
+.emblem { position: relative; width: 172.57pt; margin-top: 24.4pt; margin-left: -4.65pt; }
+.emblem img { display: block; width: 100%; }
+.emblem__word {
+  position: absolute;
+  left: 0; right: 0; bottom: 15%;
+  text-align: center;
+  font-family: 'Big Shoulders Display', var(--f-role);
+  font-weight: 700;
+  font-size: 14pt;
+  letter-spacing: 0.06em;
+  color: #000;
+}
+
+/* ------------------------------------------------------------- FO OSZLOP */
+
+.main {
+  position: absolute;
+  top: 0;
+  left: var(--main-l);
+  width: var(--main-w);
+  height: 100%;
+}
+
+/* --- fejlec --- */
+.name {
+  font-family: var(--f-name);
+  font-weight: 700;
+  font-size: 30.9pt;
+  line-height: 1.2;
+  color: var(--c-name);
+  letter-spacing: var(--track);
+  padding-top: 15.6pt;
+  margin-left: 4.4pt;
+}
+
+.contact-head {
+  position: absolute;
+  top: 20pt;
+  left: 200pt;
+}
+.contact-head li {
+  display: flex;
+  align-items: center;
+  gap: 12pt;
+  list-style: none;
+  font-size: 8pt;
+  line-height: 1;
+  letter-spacing: var(--track);
+  color: var(--c-dark);
+  padding: 3.9pt 0;          /* mert osztas: 19.75pt */
+}
+.contact-head svg { flex: none; width: 10pt; height: 12pt; fill: var(--c-name); }
+
+/* szerep-sorok: Archivo Black, eros betukozzel, kozepre */
+.roles { margin-top: 12pt; text-align: center; }
+.role {
+  padding-left: 9pt;        /* mert: a kozepre zart sorok kozepe x=403.1 */
+  font-family: var(--f-role);
+  font-weight: 400;
+  color: var(--c-body);
+  font-size: 8pt;
+  line-height: 1.67;
+  letter-spacing: 0.304em;  /* mert */
+  text-indent: 0.304em;
+}
+.role--lead {
+  padding-left: 0;
+  text-align: left;
+  margin-left: 4.4pt;
+  font-size: 14pt;
+  color: var(--c-mid);
+  letter-spacing: 0.308em;  /* mert */
+  text-indent: 0;           /* balra zart sor — nincs kompenzacio */
+  line-height: 1.35;
+}
+
+/* vizszintes elvalaszto (mert: #a6a6a6, teljes fo-oszlop-szelesseg) */
+.rule {
+  height: 1.25pt;
+  background: var(--c-mid);
+  margin: 12pt 0 6.7pt;
+}
+
+/* display szekcio-cim: Archicoco 16pt (12pt a kisebbeknel) */
+.h-section {
+  font-family: var(--f-display);
+  font-weight: 400;
+  font-size: 16pt;
+  line-height: 1.2;
+  letter-spacing: var(--track);
+  color: var(--c-mid);
+  margin-bottom: 12pt;
+}
+.h-section--sm { font-size: 12pt; }
+
+/* --- tapasztalat-tetel: meta | idovonal | tartalom --- */
+.entry {
+  display: grid;
+  grid-template-columns: var(--meta-w) var(--rail-w) 1fr;
+  column-gap: 0;
+}
+.entry__meta { padding-top: 0.5pt; }
+.entry__org {
+  font-weight: 700;
+  font-size: 9pt;
+  line-height: 12.1pt;       /* mert */
+  letter-spacing: var(--track);
+  color: var(--c-dark);
+}
+.entry__place {
+  margin-top: -1.7pt;        /* mert sor-osztas: 11.1pt */
+  font-size: 8pt;
+  line-height: 11.1pt;       /* mert */
+  letter-spacing: var(--track);
+  color: var(--c-mid);
+}
+.entry__date {
+  font-size: 7pt;
+  line-height: 1.3;
+  letter-spacing: var(--track);
+  color: var(--c-body);
+  margin-top: 2.9pt;
+}
+
+/* idovonal */
+.entry__rail { position: relative; }
+.entry__rail::before {          /* mert: x 339.50..341.00 */
+  content: '';
+  position: absolute;
+  left: 8.9pt;
+  top: 0;
+  bottom: -12pt;
+  width: 1.5pt;
+  background: var(--c-body);
+}
+.entry:last-child .entry__rail::before { bottom: 0; }
+.entry__rail::after {          /* mert: d=8.3pt, kozep x=340.25 */
+  content: '';
+  position: absolute;
+  left: 5.5pt;
+  top: 0;
+  width: 8.3pt; height: 8.3pt;
+  border-radius: 50%;
+  background: var(--c-body);
+}
+.entry--nodot .entry__rail::after { display: none; }
+.entry--railtop .entry__rail::before { top: -14pt; }
+
+.entry__body { padding-left: 0; max-width: var(--body-w, none); }  /* mert: nehany tetel doboza keskenyebb */
+.entry__role {
+  font-weight: 700;
+  font-size: 9pt;
+  line-height: 1.2;
+  letter-spacing: var(--track);
+  color: var(--c-dark);
+  margin-bottom: 10.8pt;
+}
+
+/* --- listak: harom szint, mert behuzasokkal (7pt / 9.3pt sorkoz) --- */
+.list, .list ul {
+  font-size: 7pt;
+  line-height: var(--list-lh);
+  color: var(--c-body);
+  list-style: none;
+}
+.list li { position: relative; padding-left: var(--li-indent); }
+.list > li { margin-top: 9.35pt; }        /* mert: egy ures sor */
+.list > li.gap2 { margin-top: 18.7pt; }   /* mert: ket ures sor (1. oldal) */
+.list > li:first-child { margin-top: 0; }
+.list > li::before {
+  content: '';
+  position: absolute;
+  left: 3.5pt; top: 3.4pt;
+  width: 2.4pt; height: 2.4pt;
+  border-radius: 50%;
+  background: var(--c-body);
+}
+.list ul { margin-left: 0; }
+.list ul > li::before {
+  content: '';
+  position: absolute;
+  left: 3.8pt; top: 3.2pt;
+  width: 2.4pt; height: 2.4pt;
+  border-radius: 50%;
+  background: none;
+  border: 0.5pt solid var(--c-body);
+}
+.list ul ul > li::before {
+  content: '';
+  position: absolute;
+  left: 4.0pt; top: 3.4pt;
+  width: 2.2pt; height: 2.2pt;
+  border-radius: 0;
+  border: none;
+  background: var(--c-body);
+}
+.list b { font-weight: 700; }
+.list.tight > li,
+.list .tight > li { margin-top: 0; }
+
+/* nyilas jelolo egy-egy kiemelt tetelnel (a forrasban dekoracio) */
+.arrow { position: relative; }
+.arrow::after {
+  content: '';
+  position: absolute;
+  /* mert: a nyil MINDIG x=340.3-nal all (az idovonalon), a lista-szinttol
+     fuggetlenul — ezert a vizszintes eltolas parameter. */
+  left: var(--arrow-dx, -10.6pt);
+  top: -0.5pt;
+  border-left: 8.7pt solid var(--c-body);
+  border-top: 5.45pt solid transparent;
+  border-bottom: 5.45pt solid transparent;
+}
+
+/* --- tanulmanyok: kisebb alcimek --- */
+.entry--edu .entry__meta { width: 86pt; }   /* mert: 234.6..319.1 */
+.entry--edu .entry__org  { font-size: 8pt; line-height: 11.14pt; }
+.entry--edu .entry__role { font-size: 8pt; line-height: 11.14pt; margin-bottom: 0.6pt; }  /* mert: a cim es a ceg-blokk egy vonalban */
+.entry__sub { padding-left: 7.8pt; font-size: 6pt; line-height: 8.1pt; letter-spacing: var(--track); color: var(--c-body); }
+
+/* --- prozai zaro szekciok (Why me? / My preferences / Hobbies) --- */
+.prose {
+  width: 334.5pt;            /* mert: 234.6..568.1 */
+  font-size: 7pt;
+  line-height: 9.34pt;       /* mert */
+  letter-spacing: var(--track);
+  color: var(--c-body);
+}
+.prose i { font-style: italic; }
+.prose a { color: inherit; }
