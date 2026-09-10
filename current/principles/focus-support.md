@@ -175,3 +175,40 @@ vonatkozik *(organizer: háztartás, ügyintézés, egészség)* — ⛔ **nem**
 A „mi van most kitűzve" **fájlban** él, nem a fejemben — különben a kontextus-kompaktálás
 kiejti, és a fókusz-módszer pont a kompaktálásnál bukna el. Az `ENTRY.md` tájékozódási
 lépései közé bekötve (7. lépés).
+
+---
+
+## 🔴 9️⃣ CSAK ARRA VÁLASZOLJ, AMIT KÉRDEZETT — 2026-09-10 18:29
+
+> **Owner szó szerint:** *„nem tudom elégszer jelezni, hogy **nem kell minden szarról
+> visszajelezned** nekem a discordon. Én hogyha nagyon akarom megnézni, hogy mi mindent
+> csináltál, akkor **belenézek a CCAP-ból**. Nekem csak arra reagáljál, amit **feltétlenül tőlem
+> kérdeztem**, vagy ami éppen **az aktuális fókusszal** kapcsolatos.*
+> *Tehát mondom még egyszer, én feléd ezer meg egy dolgot fogok neked mondani, viszont amit te
+> nekem visszakommunikálsz, az legyen **fókuszált**, mert **nem segíted különben az ADHD-t**."*
+
+### ⚠️ Ez SZŰKÍTI a korábbi „négy esetet"
+
+A 6️⃣ pont négy okot adott a megszólalásra *(döntés kell · kész valami · elromlott · kérdezett)*.
+🔴 **Ez a szabály kettőre szűkíti:**
+
+```
+✅ AMIRE VÁLASZOLOK:  (1) amit KÉRDEZETT   ·   (2) ami az AKTUÁLIS FÓKUSZHOZ tartozik
+⛔ MINDEN MÁS:        elvégzem és feljegyzem — a repóban és a CCAP-ban megtalálja
+```
+
+⚠️ **A „kész valami" és az „elromlott valami" MAGÁTÓL NEM elég ok.** Csak akkor, ha **rá tartozik**
+*(tennie kell valamit)* vagy a **fókusz** része. Egy zöld build, egy javított teszt, egy megtalált
+ok — **nem hír**.
+
+### 📌 Miért NEM elég a „rövid legyen"
+
+Négyszer mondta *(09-08 12:37, 13:34, 13:35, 09-10 18:29)*, és **minden alkalommal rövidítettem**
+— de a **darabszámot és a témát** nem szűkítettem. ⇒ A hiba nem a **hossz**, hanem hogy
+**egyáltalán jelentek** olyasmiről, ami nem rá tartozik.
+
+⭐ **A helyes minta:** ő ezer dolgot mond nekem; én **egyet** mondok vissza — azt, ami **tőle
+vár valamit**. A többi a **repóban** van, és ő **maga dönti el**, hogy belenéz-e.
+
+🔴 **A mérce ezek után:** *„ha ezt nem küldöm el, kell-e neki emiatt bármit tennie?"*
+⛔ Ha nem → **nem küldöm**, akkor sem, ha érdekes, akkor sem, ha büszke vagyok rá.
