@@ -939,3 +939,58 @@ támogat explicit `language` paramétert, azt kell átadni; ha nem, akkor a vál
 üzenetként ér hozzám, és **rossz munkát indíthatok el belőle**. Ez ugyanaz a hibaosztály, mint a
 néma render-bukás: a lépés „lefutott", csak nem azt csinálta, amit kellett.
 
+---
+
+## 2026-09-11 01:30 — ✂️ A FELOLVASÁS LEVÁGJA A VÉGÉT — ne csonkoljunk, DARABOLJUNK
+
+> **Owner, 2026-09-11 01:28 (hang):** *„az üzeneteidnél most így levágja a végét, és azt mondja,
+> hogy a folytatás írásban… túl hosszú az üzenet, akkor szét kéne bontani. Itt majd akkor alapos
+> kezelés kell, illetve, hogy lehetőleg ne [vágjunk] le semmit."*
+
+### A MÉRT viselkedés
+
+`cli/src/voice/voice-speech-text.ts`:
+
+```ts
+export const SPEECH_MAX_CHARS: number = 700;
+...
+return lastStop > SPEECH_MAX_CHARS / 2
+  ? `${head.slice(0, lastStop + 1)} A többi írásban.`
+  : `${head.trimEnd()}… A többi írásban.`;
+```
+
+⇒ **700 karakter fölött a maradék ELVÉSZ a hang-csatornán.** Nem hiba, nem figyelmeztetés:
+a függvény **csonkolt szöveget ad vissza**, és a hívó nem tudja, hogy volt még.
+
+**Mérve a mai üzeneteimen:** 328 · 611 · 632 · 694 · 1006 · **1441** karakter.
+⇒ Kettő közülük **ténylegesen csonkult**, és a leghosszabbnak **több mint a fele** veszett el.
+
+### Amit kérek
+
+**Csonkolás helyett DARABOLÁS:** a szöveg **mondathatáron** bomoljon ≤700 karakteres részekre, és
+a felolvasó **mindet** mondja ki, sorrendben.
+
+| Szempont | Elvárás |
+|---|---|
+| **veszteség** | ⛔ **nulla** — ez a kérés lényege |
+| **határ** | mondathatár, ahogy most is; ha nincs, akkor szóhatár, ⛔ soha szó közepén |
+| **jelzés** | ha több rész lesz, a **darabszám** hangozzon el egyszer az elején *(„négy részben mondom")*, ⛔ ne minden rész végén |
+| **megszakíthatóság** | ⚠️ a 01:20-as szakasz *(szüneteltetés, amíg ő beszél)* **erre is** vonatkozik: ha a 2. rész közben megszólal, a 3. **ne** induljon el |
+| **`SPEECH_MAX_CHARS`** | maradjon a **darab** mérete, ne a teljes szövegé |
+
+⚠️ **A tesztek:** a `voice-speech-text.spec.ts`-ben van már fedezet a csonkolásra — azt **át kell
+írni** a darabolásra, ⛔ nem törölni.
+
+📌 **A másik fele nem a tiéd:** hogy az üzeneteim **ilyen hosszúak**, az **az én hibám**, és a
+`current/principles/discord-message-style.md`-ben javítom. A darabolás a **hálóz**, nem a megoldás.
+
+---
+
+## 2026-09-11 01:30 — ℹ️ Az idegen nyelvű átirat: owner-visszajelzés
+
+> *„amikor ilyen más nyelvet érzékel, az előfordulhat, az transzkript-hiba."*
+
+⇒ Az owner **ismeri és elfogadja** a jelenséget. ⚠️ Ettől a 01:24-es szakasz kérése **él**: ha az
+API fogad explicit nyelv-paramétert, adjuk át — a **javítható** hibát nem hagyjuk bent azért, mert
+ismerjük. ⛔ De **ne** építs köré nagy detektálás-logikát: egy paraméter, és kész.
+

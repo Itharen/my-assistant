@@ -315,3 +315,38 @@ tokenizalható határjel — az ő szemének viszont **majdnem láthatatlan**: a
 📌 **A tanulság osztalya:** *ami sűrített és pontos NEKEM, az lehet olvashatatlan NEKI.*
 Ugyanaz a hibatípus, mint a túl hosszú jelentés: nem az információ rossz, hanem a **formája**.
 
+---
+
+## 7⃣ 🔊 A HOSSZ MOST MÁR HALLHATÓ IS — 700 karakter a beszéd-határ
+
+> **Owner, 2026-09-11 01:28:** *„az üzeneteidnél most így levágja a végét, és azt mondja, hogy a
+> folytatás írásban… túl hosszú az üzenet."*
+
+⭐ **Ami eddig csak kényelmetlen volt, az most MÉRHETŐ veszteség.** A felolvasás **700 karakternél**
+elvágja a szöveget *(`voice-speech-text.ts`)*, és a maradék **nem hangzik el**.
+
+🔴 **Mérve a saját mai üzeneteimen:** 328, 611, 632, 694, 1006, **1441** karakter.
+⇒ Kettő **ténylegesen csonkult**; a leghosszabbnál a tartalom **több mint fele** elveszett hangban.
+
+### A határ, amit tartok
+
+```
+CÉL:     ≤ 400 karakter   — ez kényelmesen elfér egy megszólalásban
+PLAFON:  ≤ 700 karakter   — e fölött a hang-csatornán VESZTESÉG keletkezik
+```
+
+⚠️ **A darabolás nem mentesít.** A fejlesztés majd több részletben mondja ki a hosszút — de attól
+még **négy percig** fogok beszélni hozzá egy CV-javításról. A rövidség **az én dolgom**, a
+darabolás csak a **háló**.
+
+### Mit vágok ki elsőként, ha nem fér bele
+
+| Sorrend | Mi megy ki |
+|---|---|
+| 1. | a **mérési számok** *(pt, karakter, darabszám)* — a repóban megvannak |
+| 2. | a **hogyan** *(melyik fájl, melyik paraméter, milyen sorrendben)* |
+| 3. | az **indoklás** *(miért így és nem úgy)* |
+| 4. | a **saját tanulságom** — ez soha nem neki szól |
+
+✅ **Ami MARAD:** mi változott a számára · mit kell tennie · milyen döntés vár rá.
+
