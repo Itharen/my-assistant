@@ -291,6 +291,18 @@ export class VoiceCuePlayer {
     connection.subscribe(this.player);
   }
 
+  /**
+   * A hang-kapcsolatra kötött lejátszó — a FELOLVASÁS is ezt használja.
+   *
+   * ⭐ MIÉRT UGYANEZ, és miért nem egy második lejátszó: egy hang-kapcsolatra egyszerre
+   * **egy** lejátszó szólhat értelmesen. Két külön lejátszóval a jelzés és a felolvasás
+   * **egymásba beszélne** — így viszont a `AudioPlayerStatus.Idle` ellenőrzés természetes
+   * módon megvédi mindkettőt.
+   */
+  get audioPlayer(): AudioPlayer {
+    return this.player;
+  }
+
   /** Lekötés — a kapcsolat bontásakor. */
   detach(): void {
     this.player.stop(true);

@@ -16,6 +16,9 @@ import { Client, Events, GatewayIntentBits, Partials, type Message } from 'disco
 
 import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 import { decideVoiceJoinPermission } from '../voice/voice-lifecycle.js';
+import { VoiceReadAloudWatcher } from '../voice/voice-read-aloud-watcher.js';
+import { speakInVoiceChannel } from '../voice/voice-speaker.js';
+import { resolveOutboundLogPath } from './discord.reply-tracker.js';
 import { logAction } from '../action-log/action-log.client.js';
 import { DiscordBridge } from './discord.bridge.js';
 import { saveInboxAttachments } from './discord.file-intake.js';
@@ -257,6 +260,7 @@ export class DiscordListener {
 
   /** 🔊 A hang-csatornai jelenlét — owner: „mindig ülj bent amikor megy a my assistant". */
   private readonly voicePresence: VoiceChannelPresence = new VoiceChannelPresence();
+  private readAloud: VoiceReadAloudWatcher | null = null;
 
   /** 🔍 Az élő eldobás-szonda — a `stop()`-nak le KELL állítania (különben duplán mérne). */
   private dropProbe: VoiceDropProbe | null = null;
@@ -422,6 +426,9 @@ export class DiscordListener {
     await this.missedSpeech?.stop();
     this.missedSpeech = null;
 
+    this.readAloud?.stop();
+    this.readAloud = null;
+
     this.cues?.detach();
     this.cues = null;
 
@@ -529,6 +536,96 @@ export class DiscordListener {
    * 🔴 A HIÁNYZÓ KONFIGURÁCIÓ NEM HIBA, DE NEM IS NÉMA: ha nincs megadva a szerver/csatorna,
    * naplózzuk — így később nem kell találgatni, miért nem ül bent.
    */
+  /**
+   * 🗣️ A FELOLVASÓ INDÍTÁSA — a kimenő napló figyelése.
+   *
+   * > **Owner, 2026-09-10 18:27:** *„És a voice-ra, hogyha ott vagyok, akkor **fel is olvasod**."*
+   *
+   * ## ⭐ HOGYAN TUDJUK, HOGY BENT VAN — mérés, nem feltevés
+   *
+   * A `GuildVoiceStates` intent már be van kötve, tehát a gyorsítótárban ott van, ki van a
+   * csatornában. ⛔ NEM a beszéd-eseményekből következtetünk: aki bent ül és hallgat, az is
+   * bent van — és épp neki szól a felolvasás.
+   *
+   * ⚠️ A jelenlétet MINDEN üzenetnél újra kérdezzük. Egy induláskor eltárolt érték azt
+   * jelentené, hogy a közben kilépő ownernek is „felolvasnánk" a semmibe, a belépőnek pedig
+   * nem — és a hiba mindkét irányban NÉMA lenne.
+   */
+  private async startReadAloud(): Promise<void> {
+    const ownerId: string = (process.env['MA_DISCORD_USER_ID'] ?? '').trim();
+    const config = readVoicePresenceConfig();
+
+    if (!ownerId || !config) {
+      await this.safeLog({
+        kind: 'note',
+        summary: '[discord/listener] MA-VOICE-READ-ALOUD-OFF: hiányzik az owner-azonosító '
+          + 'vagy a hang-csatorna beállítása — nincs felolvasás.',
+        extra: { code: 'MA-VOICE-READ-ALOUD-OFF' },
+      });
+
+      return;
+    }
+
+    this.readAloud?.stop();
+    this.readAloud = new VoiceReadAloudWatcher({
+      logPath: resolveOutboundLogPath(),
+      isOwnerPresent: (): boolean => this.isOwnerInVoiceChannel(ownerId, config.channelId),
+      speak: async (text: string): Promise<void> => {
+        const player = this.cues?.audioPlayer;
+
+        if (!player) return;
+
+        const result = await speakInVoiceChannel({ text: text, player: player });
+
+        // ⛔ A felolvasás kimenetele SOSEM néma: a `spoken: false` OKA is naplózódik,
+        // különben csak annyi látszana, hogy „nem szólalt meg".
+        await this.safeLog({
+          kind: result.spoken ? 'note' : 'error',
+          summary: `[discord/listener] MA-VOICE-READ-ALOUD: ${result.detail}`,
+          extra: {
+            code: 'MA-VOICE-READ-ALOUD',
+            spoken: result.spoken,
+            ...(result.characterCount === undefined ? {} : { characterCount: result.characterCount }),
+          },
+        });
+      },
+      onNote: (detail: string): void => {
+        void this.safeLog({
+          kind: 'note',
+          summary: `[discord/listener] MA-VOICE-READ-ALOUD-SKIP: ${detail}`,
+          extra: { code: 'MA-VOICE-READ-ALOUD-SKIP' },
+        });
+      },
+    });
+
+    await this.readAloud.start();
+  }
+
+  /**
+   * Bent van-e az owner a hang-csatornában?
+   *
+   * ⚠️ A `voiceStates` gyorsítótárból olvasunk — ezt a `GuildVoiceStates` intent tartja
+   * frissen, tehát ez MÉRT állapot, nem feltevés.
+   *
+   * ⛔ Hibát nem dob: ha a gyorsítótár nem elérhető, az ÓVATOS válasz a `false` — inkább ne
+   * olvassunk fel a semmibe, mint hogy egy hibás olvasás miatt beszéljünk hozzá, amikor
+   * nincs is ott. A szöveg mindkét esetben megérkezik.
+   */
+  private isOwnerInVoiceChannel(ownerId: string, voiceChannelId: string): boolean {
+    try {
+      const guild = this.client?.guilds.cache.find(
+        (candidate): boolean => candidate.voiceStates.cache.has(ownerId),
+      );
+      const state = guild?.voiceStates.cache.get(ownerId);
+
+      return state?.channelId === voiceChannelId;
+    } catch (err: unknown) {
+      SwallowedFailure_Util.report('discord.listener.isOwnerInVoiceChannel', err);
+
+      return false;
+    }
+  }
+
   private async joinVoiceChannel(): Promise<void> {
     const config = readVoicePresenceConfig();
 
@@ -753,6 +850,13 @@ export class DiscordListener {
       },
     });
     this.cues.attach(connection);
+
+    // 🗣️ FELOLVASÁS, HA AZ OWNER BENT VAN (owner, 2026-09-10 18:27: „a voice-ra, hogyha ott
+    // vagyok, akkor fel is olvasod").
+    //
+    // ⭐ A KIMENŐ NAPLÓT figyeljük, nem új csatornát: a `recordOutbound` minden üzenetet
+    // beír oda PONTOSAN EGYSZER. Így a felolvasás nem hoz létre új üzenet-eseményt.
+    await this.startReadAloud();
 
     const result = await startVoiceRecording({
       connection: connection,
