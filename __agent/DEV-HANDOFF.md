@@ -1140,3 +1140,42 @@ GET /rest/memberSnapshotData?q=criteria&domain=MEMBER_SHARE_INFO  -> 200
 
 ⛔ **Ez a három külön lépés — `one-function-is-enough`.** Most **csak az olvasás** a feladat.
 
+---
+
+## 2026-09-11 01:55 — 🔀 PRIORITÁS-VÁLTÁS: a PROFIL-FRISSÍTÉS az első
+
+> **Owner, 2026-09-11 01:52:** *„most az első majd az kell legyen, hogy a **profilt kéne
+> frissítsük**. Amúgy lehet, hogy ahhoz is adhatnál majd egy felületet, meg valami **easy to use,
+> copy-paste-es megoldást**, ugye azt sem tudjuk automatizálni teljesen."*
+
+⭐ **Az olvasás ELKÉSZÜLT — kézzel.** Nem kell megvárni a CLI-t:
+
+```
+python scripts/linkedin-archive.py
+  ✅ 48 poszt   -> current/linkedin/posts/          (egy fájl = egy poszt)
+  ✅ profil     -> current/linkedin/profile-current.json  (7 pozicionálási mező)
+```
+
+⇒ A **01:40-es** munkacsomag *(`snapshotDomain`-paraméterezés + `profile show` / `posts list`)*
+ettől **nem esik el** — de már **nem blokkol semmit**, tehát ⛔ **nem sürgős**.
+
+### 🥇 AMI MOST AZ ELSŐ: a profil-frissítés felülete
+
+**A korlát, amit tudni kell:** a hivatalos API **read-only** ⇒ a profilt **nem tudjuk átírni**.
+Az owner is így mondta: *„azt sem tudjuk automatizálni teljesen."*
+
+⇒ **A cél nem az automatizálás, hanem a SÚRLÓDÁS-MENTES ÁTVITEL.**
+
+| Amit a felület adjon | Miért |
+|---|---|
+| **mezőnként** a mostani és a javasolt szöveg, egymás mellett | a LinkedIn-en is mezőnként kell beilleszteni |
+| **egy gomb = egy mező vágólapra** | ⭐ ez a lényeg: *„easy to use, copy-paste-es"*. ⛔ Ne egy nagy blobot adjon |
+| **karakterszám + a LinkedIn limitje** mezőnként | a headline 220, a summary/about 2600 karakter — ha túllóg, ott derüljön ki, ne a beillesztésnél |
+| **„beillesztettem" pipa** mezőnként | különben nem tudja, hol tartott, ha félbeszakad |
+
+📌 **Az adat készen áll:** `current/linkedin/profile-current.json` a **mostani** állapot; a
+**javasolt** szöveget én írom meg *(asszisztensi munka, a 2026-09-es CV-ből)*. A felületnek csak
+a kettőt kell egymás mellé tennie.
+
+⛔ **Ne told mellé** a poszt-felületet *(T-73)* — az ugyanez a minta lesz, de **külön** kör.
+

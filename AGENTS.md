@@ -358,6 +358,7 @@ vagy futtass esedékes recurring flow-t.
 | Tri-tier (cli/server/client) AI-quick-ref | `__agent/references/architecture.md` |
 | Pattern-megfelelőségi audit | `__agent/references/pattern-audit.md` |
 | Organizer integráció részletek | `__agent/references/organizer{,-modules,-cli-setup}.md` |
+| 🔗 **LinkedIn** — a posztok archívuma + a profil pozicionálása | `current/linkedin/README.md` *(48 poszt; frissítés: `python scripts/linkedin-archive.py`)* |
 | 📄 **CV** — kiadások, szabályok, eszközök EGY helyen | `current/cv/README.md` *(a legfrissebb: `current/cv/releases/2026-09/`)* |
 | Ki vagy te, mi a szereped (Honnie) | `__agent/IDENTITY.md` |
 | A MINDEN workflow-ra érvényes szabályok | `__agent/workflow-rules.md` |
