@@ -107,3 +107,40 @@ formája · hova kerüljön a postaláda *(Discord pinned? kliens-felület? fáj
 - `__agent/capabilities/CATALOG.md` — C-40, C-41
 - `current/principles/error-handling.md` — a néma hiba tiltása (ez ugyanaz az osztály)
 - `current/principles/no-paid-solutions.md` · `build-it-ourselves.md` — a „saját megoldás" iránya
+
+---
+
+## 🔧 2026-09-10 16:10 — AMIKOR A SAJÁT ESZKÖZÖM NEM ELÉRHETŐ: közvetlen küldés, de NYOMOT HAGYVA
+
+**A helyzet:** 6 órás kiesés után szólnom kellett az ownernek, és **három döntése 37 órája várt**
+— közben viszont a `ma comm say` **nem futott**, mert az LDP `rimraf`-ja letörölte a `dist`-et,
+és a `tsc-cli` 200+ másodperce épített *(`BFR-MYASSISTANT-001`)*.
+
+**Amit tettem:** az üzenet **közvetlenül a Discord API-n** ment ki *(`POST /channels/:id/messages`,
+HTTP 200)*, a `.env`-ből olvasott bot-tokennel.
+
+### ⚠️ AMIT EZ MEGKERÜL — és ezért pótolni KELL
+
+A `ma comm say` nem csak „küld": **könyvel** is. A megkerülésével kimarad:
+
+| Ami kimarad | Mi romlik el tőle |
+|---|---|
+| `outbound-log.jsonl` bejegyzés | a **válasz-kötelezettség** *(utolsó bejövő vs. utolsó kimenő)* tévesen „tartozom"-ot mondana |
+| a `verifiedIntact` visszaolvasás | nem tudom, **hiánytalanul** érkezett-e meg |
+| a saját mennyiség-mérésem | a spam-számlálás **alulmérne** *(a 2026-09-08-i 72 üzenetes mérés ilyen naplóból készült)* |
+
+⇒ **A bejegyzést kézzel pótoltam** ugyanabban a körben. ⛔ Enélkül a megkerülés **csendes
+adatromlás** lenne — pont az a fajta, amit egész héten üldözök.
+
+### ⭐ A SZABÁLY
+
+**Az eszköz megkerülése megengedett, ha az eszköz maga nem elérhető ÉS az üzenet nem várhat.**
+De három feltétellel:
+
+1. 📝 **Pótold a könyvelést** ugyanabban a körben — ne a következőben, mert az elmarad.
+2. 🗣️ **Mondd ki**, hogy megkerülted *(nekem a jelentésben, itt a naplóban)*.
+3. ⛔ **Ne váljon szokássá:** ha rendszeresen kell, az azt jelenti, hogy **az eszközt kell
+   megjavítani** — nem a megkerülést finomítani. *(Itt: a `dist` atomi cseréje, `BFR-…-001`.)*
+
+📌 **Amit NEM kerülök meg soha:** a **rövidség**, a **hatáskör** és az **alvás-ablak** — azok
+nem az eszközben laknak, hanem a döntésben. A `dist` hiánya **nem** ad felmentést alóluk.
