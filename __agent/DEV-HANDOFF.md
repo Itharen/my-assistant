@@ -1179,3 +1179,52 @@ a kettőt kell egymás mellé tennie.
 
 ⛔ **Ne told mellé** a poszt-felületet *(T-73)* — az ugyanez a minta lesz, de **külön** kör.
 
+---
+
+## 2026-09-11 02:00 — 🔴 62,5% ÁTVITEL: a hangot MEG KELL ŐRIZNI, nem eldobni
+
+> **Owner, 2026-09-11 01:57:** *„megint ment át egy nagy adag beszédem, és ezt amúgy alaposan
+> kezelni kéne… biztosítani kéne azt, hogy **elmenthessem a hangüzeneteimet**… minél többet
+> beszélek, annál fontosabb, hogy ez **el legyen mentve, és ne kelljen újra elmondanom, mert nem
+> mindig tudom ugyanúgy**."*
+
+### 📊 A MÉRÉS — ez nem panasz, ez adat
+
+```
+ma comm voice-funnel --day 2026-09-11
+  🟡 ÁTVITELI ARÁNY: 62,5%   (24 megszólalásból)
+  🎚️  a felvevő eldobta ............. 3
+  ❌  felismerés után elveszett ..... 6
+  🔊 ELVESZETT HANG: 1,1 másodperc
+```
+
+### ⭐ A PONTOS OLVASAT — ⛔ ne javítsd rossz helyen
+
+A `droppedAfterTranscribe` *(a „❌ felismerés után elveszett" 6 darab)* a kódban azt jelenti:
+**„eljutott a felismerésig, de nem lett belőle használható szöveg"**. ⚠️ Ebbe **beletartozik a
+SZÁNDÉKOS eldobás is** — a bizonytalan átiratnál helyesen adunk `null`-t
+*(„inkább ne értsük, mint félreértsük")*.
+
+🔴 **De az ownernek ez ugyanaz az élmény:** beszélt, és nem ért el hozzám.
+
+⇒ **A hiba nem az, hogy nem cselekszünk a bizonytalanra. A hiba, hogy ELDOBJUK.**
+
+### A KÉRÉS: MEGŐRZÉS, több rétegben
+
+> *„ezt többféleképpen biztosítani kéne"*
+
+| Réteg | Mit |
+|---|---|
+| **1. a nyers HANG** | a felvétel **maradjon meg** *(dátumozva, a `~/.config/my-assistant/` alatt)*, **mielőtt** bármi downstream történne. ⛔ Ha később bármi elhasal, a forrás **újrafeldolgozható** |
+| **2. a nyers ÁTIRAT** | akkor is mentsük, ha **bizonytalan** vagy ha nem megy a kötegbe. ⭐ Ez ugyanaz a tétel, mint a **01:33-as (B)** pont: ott a **megmutatásáról** volt szó, itt a **megőrzéséről** — egy megoldás fedi le a kettőt |
+| **3. a VESZTESÉG legyen LÁTHATÓ** | ha egy megszólalás nem ért célba, az ne csak egy számláló legyen a riportban: **szóljon** *(ugyanaz az elv, mint a néma csonkolásnál és a néma render-bukásnál)* |
+
+⚠️ **A megőrzés ELSŐBBSÉGET élvez a tisztaság előtt.** Jobb egy zajos, bizonytalan felvétel a
+lemezen, mint egy tiszta rendszer, amiben elveszett, amit mondott. ⛔ Ez **nem** azt jelenti,
+hogy bizonytalan átiratra cselekszünk — az a szabály **változatlan**.
+
+🔒 A hangfelvételek **személyes adatok** ⇒ a gitignore-olt lokál tár, ⛔ nem a repó.
+
+📌 **Miért ez a legfontosabb most:** az owner **ezen a csatornán dolgozik** velem. Egy elveszett
+mondat nála **nem újramondható** ugyanúgy — a saját szavaival: *„nem mindig tudom ugyanúgy"*.
+
