@@ -10,6 +10,23 @@
 
 **Frissítve:** 2026-09-09 16:05
 
+## 🔊 FÜGGŐ ÍGÉRET — HANGOS BEJELENTKEZÉS, ha a felolvasás kész
+
+> **Owner, 2026-09-10 19:06 (hangcsatorna):** *„Majd hogyha elkészült ez a fejlesztés és **tudsz
+> már beszélni**, akkor **jelentkezz be, hogy halljam**."*
+
+🔴 **EZ EGY IGÉRET, AMIT NEM SZABAD ELFELEJTENI** — és nem az emlékezetemre bízom.
+
+**A kiváltó feltétel:** a hang-felolvasás *(T-59 / a DEV 2. pontja)* **készen van és működik**.
+**A teendő akkor:** **hangosan** megszólalni a `honnie-place` csatornában — nem szövegben
+jelenteni, hogy „kész", hanem **hallhatóan bejelentkezni**.
+
+**Az ellenőrzés minden körben:** `git log --oneline -8` → van-e a felolvasást lezáró DEV-commit,
+és `ma comm doctor` → bent ülünk-e a hang-csatornában.
+⚠️ ⛔ **Ne a saját megérzésemre** — a DEV `AGENT_BUS`-jelentése vagy a commit a bizonyíték.
+
+📌 **A hang adott:** `MA_ELEVENLABS_VOICE_ID` → „Honnie" *(hu, generated)*, a kulcs `pro`.
+
 ## 🛰️ T-76 — ÉLŐ OVERSEER-FIRST STÁTUSZTÜKÖR
 
 ✅ Félórás frissítés; Test/Production Server, Test/Production Webhook, Gateway, Overseer,
