@@ -4,7 +4,28 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-08 04:10
+**Utoljára frissítve:** 2026-09-10 21:29
+
+---
+
+## 🎯 AKTUÁLIS FÓKUSZ (2026-09-10) — CV-frissítés
+
+> Az alábbi „Hol tartunk" blokk a **Discord-hyperplanra** vonatkozik (az lezárult/él).
+> A **mostani fókusz** az owner CV-je.
+
+| Lépés | Állapot |
+|---|---|
+| A 9.0 CV archiválása + tételes elemzés | ✅ `current/cv/2026-09-10-review.md` |
+| Az owner iránya rögzítve (AI-fókusz · B2B · 2 oldal · stílus marad · ⛔ GDE MIT/TERA nincs · kiadatlan FDP-termékek névtelenül) | ✅ |
+| **A jelenlegi CV teljes reprodukciója HTML/CSS-ből** | ✅ **KÉSZ** — `current/cv/build/` · 341 sorból 337 egyezik 1,5pt-on belül · commit `6003797` |
+| A 3→2 oldalas szűkítés | ⏸️ **OWNER-DÖNTÉSRE VÁR** — mi maradjon a 3. oldalról (elküldve Discordra 2026-09-10 21:28; javaslat: a régi munkahelyek maradnak, a *Why me / My preferences / Hobbies* megy ki) |
+| Az AI/B2B tartalmi átírás | ⏳ a döntés után |
+
+**Amit a reprodukció tanított a forrásról** (a részletek: `current/cv/build/README.md`):
+a Canva ~0,047em betűközt tesz minden szövegdobozra a bullet-listák kivételével · az `Archicoco`
+display-font Canva-exkluzív, de subsetelve beágyazva van a PDF-be (a három oldal darabjait
+egyesítettük; **hiányzik** a `J Q Z j q v z`, a számjegyek és a magyar ékezetek) · a forrás
+oldalanként eltolt rácson áll, és 13 helyen kézi sortörést tartalmaz.
 
 ---
 
