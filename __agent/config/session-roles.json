@@ -1,0 +1,22 @@
+{
+  "_comment": "SESSION -> SZEREP. Owner-jovahagyas: 2026-09-10 18:49 ('ok'). Miert letezik: a DEV es az asszisztens UGYANABBAN a workspace-ben fut, tehat ugyanazt a CLAUDE.md-t olvassa. A 268. sor feltetel nelkul azt mondta, hogy 'A neved: Honnie' — ezt a DEV is beolvasta.",
+  "roles": {
+    "ccs-6f25a888-mtp9a8cx": {
+      "role": "assistant",
+      "label": "My Assistant",
+      "claudeSessionId": "3fbced7d-9876-4fd6-8d92-f5b993859748",
+      "rulesFile": "__agent/roles/assistant.md"
+    },
+    "ccs-d5027942-mtroz7ve": {
+      "role": "dev",
+      "label": "ALL Projects - My Assistant DEV",
+      "claudeSessionId": "5d347e4f-154e-44d3-aa70-a7eff652c94a",
+      "rulesFile": "__agent/roles/dev.md"
+    }
+  },
+  "fallback": {
+    "role": "unknown",
+    "rulesFile": "__agent/roles/unknown.md",
+    "why": "Ha nem tudod eldonteni, KI vagy, ne talalgass: az unknown.md megmondja, mit szabad (keveset) es hogyan derithetd ki."
+  }
+}
