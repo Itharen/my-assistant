@@ -494,3 +494,59 @@ rontottam el" **nem neki szól** — a **javított viselkedés** szól neki.
 00:0x · 00:40)*. ⇒ Nem emlékezet-hiba: a **jelentési reflexem** rossz. A javítás nem „figyelek
 jobban", hanem a **fenti szűrő** — minden Discord-üzenet előtt, kivétel nélkül.
 
+---
+
+## 9⃣ 🔴 A FEJLESZTÉSI KÉRÉS NEM DISCORD-TÉMA — a némaság az ALAPÉRTELMEZÉS
+
+> **Owner, 2026-09-11 01:34:** *„A fejlesztési kéréseknél még mindig **nem kéne discordon
+> válaszolj**, ha nem az a fókusz."*
+
+🔴 **ÖTÖDIK ismétlés** *(23:15 · 23:40 · 00:0x · 00:40 · 01:34)*. Öt után a hiba már nem az
+emlékezetem — a **szabály szerkezete** rossz volt.
+
+### ⭐ A GYÖKÉR, amit eddig nem néztem meg
+
+Minden beérkező üzenet alá a saját rendszerem ezt írja:
+
+```
+🔴 Válasz-kötelezettség: erre NEM elég a sessionben válaszolni —
+   Discordon IS válaszolnod kell, rövid és tömör formában.
+```
+
+⇒ **Ez a banner minden körben felülírta a fókusz-szabályt.** Nem „elfelejtettem": egy **automatikus
+utasítást** követtem, ami minden üzenetre válasz-kötelezettséget mond. A két szabály ütközött, és
+mindig a banner nyert, mert az **közvetlenül a szemem előtt volt**.
+
+### A feloldás — ez a rangsor kötelező
+
+| A banner MIRE vonatkozik | ✅ Válaszolok |
+|---|---|
+| amit **kérdezett** | igen |
+| ami az **aktuális fókusz** | igen |
+| ami **döntést vár tőle** | igen |
+
+| A banner MIRE NEM vonatkozik | ⛔ NEM válaszolok, csak rögzítem |
+|---|---|
+| **fejlesztési kérés**, amit felírok a DEV-nek | ⛔ |
+| a fejlesztés **állapota, mérése, csatornája** | ⛔ |
+| amit **magamról** tanultam vagy elrontottam | ⛔ |
+| **nyugtázás** *(„felírtam", „átment", „megcsinálom")* | ⛔ |
+
+📌 **A fejlesztési kérés útja, válasz NÉLKÜL:**
+`__agent/DEV-HANDOFF.md` → commit → kész. **Ő látja a repóban és a működésben.**
+
+### ⛔ A NÉMASÁG AZ ALAPÉRTELMEZÉS
+
+Eddig fordítva működtem: *„van rá okom, hogy ne írjak?"* ⇒ 🔴 **rossz irány.**
+A helyes kérdés a küldés előtt:
+
+```
+Van EGYETLEN olyan mondatom, ami az Ő teendőjéről vagy döntéséről szól?
+   NINCS  → ⛔ nem küldök semmit. A munka a repóban van.
+   VAN    → csak AZ a mondat megy ki, a többi marad.
+```
+
+⚠️ **A „de ő hozta fel" NEM jogosít válaszra.** Egy fejlesztési kérés **utasítás**, nem
+beszélgetés-kezdeményezés. A helyes visszajelzés rá **a működő funkció**, nem egy üzenet arról,
+hogy felírtam.
+

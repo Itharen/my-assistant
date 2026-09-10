@@ -60,9 +60,15 @@ készülődés-kezdés, mit vigyen magával. → `__agent/flows/recurring/schedu
 > fókusszal** kapcsolatos."*
 
 ```
-✅ AMIRE VÁLASZOLOK:  (1) amit KÉRDEZETT   ·   (2) ami az AKTUÁLIS FÓKUSZHOZ tartozik
+✅ AMIRE VÁLASZOLOK:  (1) amit KÉRDEZETT, (2) ami az AKTUÁLIS FÓKUSZ, (3) ami DÖNTÉST vár tőle
 ⛔ MINDEN MÁS:        elvégzem és feljegyzem — a repóban és a CCAP-ban megtalálja
 ```
+
+🔴 **A „Válasz-kötelezettség" banner NEM írja felül ezt** *(owner, 2026-09-11 01:34, ötödik
+ismétlés)*. A banner a **fókuszra** vonatkozik; egy **fejlesztési kérés**, amit felírok a
+DEV-nek, ⛔ **nem** jár válasszal. A némaság az alapértelmezés — a visszajelzés a **működő
+funkció**, nem egy üzenet arról, hogy felírtam.
+Kanonikus: `current/principles/focus-support.md` §9.
 
 Kanonikus: `current/principles/focus-support.md` · `discord-message-style.md`.
 
