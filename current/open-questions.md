@@ -822,3 +822,16 @@ Memory Compression **10,5 GB** · `chrome` **9,7 GB**.
 🔴 **Amit ez jelent:** a *„nem indítottam újra"* nem elméleti mulasztás volt — **mérhetően
 elveszi a hang-csatornát és a hangfelismerést**. ⇒ Az `ENTRY.md` §0 kivételébe felvéve:
 a **RAM-nyomás** önálló ok az újraindításra, függetlenül attól, hogy „minden zöld".
+
+## Q-2026-09-10-01 — A munka-ellenőrzés HÉTFŐ vagy KEDD?
+
+- **Kategória:** recurring · **Fontosság:** `m` · **Státusz:** `open` · **Felvéve:** 2026-09-10 19:55
+
+**Az owner leírása (19:50):** a hétvégi automatizmusokat *„ezeket kell **hétfőn** ellenőrizni,
+hogy minden rendben ment-e"*.
+
+**Az organizerben viszont:** *„💼 Munka — generálások és események ellenőrzése **(kedd)**"*
+`P=116`, lejárt 2026-09-01 óta *(a csütörtöki párja mellett)*.
+
+⇒ **Hétfő vagy kedd?** ⛔ Nem írtam át — lehet, hogy szándékosan kedd *(egy nap ráhagyás)*,
+és lehet, hogy elcsúszott. A válasz eldönti, mikor kell szólnom.
