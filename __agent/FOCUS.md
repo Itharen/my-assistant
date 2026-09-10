@@ -11,19 +11,28 @@
 
 ## 📌 KITŰZVE MOST
 
-🎯 **💬 LinkedIn — a várakozó válaszok megírása** *(organizer, `P=112`)*
+🎯 **💬 LinkedIn** — de az owner **átrendezte a sorrendet** *(2026-09-10 20:19)*:
 
-**Miért ez lett — az előző kitűzött LEZÁRULT:**
+> *„A LinkedIn dolgokhoz **előre kéne vegyük**, hogy **ellenőrizni kéne a CV-met**, meg
+> gondoskodni róla, hogy **tudjál segíteni a CV-m frissítésében**, valamint valószínűleg lehet,
+> hogy a **LinkedIn profilomat is frissíteni** kellene."*
 
-> **Owner, 2026-09-10 19:50:** *„**Ma már ezeket a feladatokat letudtam**, most még majd
-> éjfél után rá kéne nézni, hogy mennyire sikerült az agentnek követnie az új szabályokat."*
+```
+1. 📄 CV — ellenőrzés, majd frissítés (segítek)     ← ELŐRE VÉVE
+2. 👤 LinkedIn PROFIL frissítése                     ← valószínűleg
+3. 💬 A várakozó VÁLASZOK megírása                   ← eredetileg ez volt az első
+```
 
-⇒ A csütörtöki munka-tétel **kész**. ⛔ Nem tartom kitűzöttként, ami már megvan.
+⭐ **Van értelme a sorrendjének:** ha valakinek válaszol és az megnézi a profilját, akkor a
+**profil már legyen rendben**. ⇒ A válasz *(3)* **értékesebb**, ha az *(1)–(2)* megvan.
 
-**Miért a LinkedIn a következő:** owner, 2026-09-09 00:18: *„**kurva sokan várnak
-LinkedIn-en**, hogy válaszoljak nekik"* ⇒ **másokat blokkol**, és a legmagasabb prioritású
-tétel, ami **ma este ténylegesen elvégezhető**. *(Az Üzemorvos `P=118` — de az utánanézés,
-nem romlik el ma este; a Telekom már holnap 9:00-ra ütemezve.)*
+### ⛔ BLOKKOLÓ AZ 1. LÉPÉSNÉL — a CV nincs meg nálam
+
+**Mérve 2026-09-10 20:20:** a workspace-ben **nincs CV-fájl** *(a találatok mind kód:
+`cv-*.const.js` = „computer voice", nem önéletrajz)*.
+
+⇒ **Kell tőle a CV** — fájlként az `__agent/inbox/`-ba, vagy meg kell mondania, hol van.
+⛔ Amíg nincs meg, az 1. lépés **nem indulhat**, és a 2–3. sem érdemes.
 
 ## ⏰ IDŐ-HORGONY MA ESTÉRE — ÉJFÉL UTÁN
 
