@@ -1097,3 +1097,46 @@ snapshot-domaint** ad ugyanezen a végponton *(profil, megosztások és társaik
 📌 **A cél, amiért kell:** az owner LinkedIn-jelenlétét onnan tudjuk gondozni, hogy **látjuk, mit
 írt eddig** — a profil-frissítés és a posztolás ezen az olvasáson áll.
 
+---
+
+## 2026-09-11 01:45 — ✅ MEGMÉRTEM ÉLESBEN: MINDKÉT DOMAIN AZONNAL AD ADATOT
+
+⭐ **A 01:40-es szakasz feltevése MEGDŐLT — jó irányba.** Az owner kérésére elindítottam a
+lekérést, és **nem kell 48 órát várni**: mindkét domain **azonnal, HTTP 200-zal** válaszolt.
+
+```
+GET /rest/memberSnapshotData?q=criteria&domain=PROFILE            -> 200
+GET /rest/memberSnapshotData?q=criteria&domain=MEMBER_SHARE_INFO  -> 200
+```
+
+| Domain | Amit visszaad |
+|---|---|
+| **`PROFILE`** | 1 rekord, **13 mező**: `Headline`, `Summary`, `Industry`, `Geo Location`, `Websites`, `Address`, `Zip Code`, `First Name`, `Last Name`, `Maiden Name`, `Birth Date`, `Twitter Handles`, `Instant Messengers` |
+| **`MEMBER_SHARE_INFO`** | **48 poszt**, mezők: `ShareCommentary`, `Date`, `Visibility`, `ShareLink`, `SharedUrl`, `MediaUrl`. Időtartomány: **2026-03-26 … 2026-08-25** |
+
+⇒ **A domain-nevek ezzel MÉRVE vannak**, ⛔ nem kell találgatni. A `NOT_READY`-ág maradjon bent
+*(más domaineknél előfordulhat)*, de a **profil és a posztok ma is élnek**.
+
+### Ami ebből következik a munkacsomagra
+
+- A `snapshotDomain`-paraméterezés **ugyanaz** marad, csak most már **tudjuk**, mi jön vissza —
+  a gyorsítótár-sémát a fenti **valódi mezőnevekre** lehet szabni.
+- ⚠️ **`ShareCommentary` = maga a poszt szövege.** Ez a legértékesebb mező: erre épül a
+  poszt-történet olvasása és a hivatkozás.
+- 🔒 A `PROFILE` **személyes adatot** is visz *(cím, irányítószám, születési dátum)*. ⛔ A
+  gyorsítótár ugyanoda menjen, ahova az inboxé *(`~/.config/my-assistant/linkedin/`, gitignore-olt)*,
+  és ⛔ **ezek a mezők soha ne kerüljenek naplóba vagy Discord-üzenetbe**.
+
+### 📌 AZ OWNER TERVE — a posztok útja (2026-09-11 01:42)
+
+> *„ugyanúgy, mint ahogy a beszélgetésekhez előkészíted nekem a posztokat"* ·
+> *„Például az UBH-nak hívják"*
+
+| Lépés | Hogyan |
+|---|---|
+| **olvasás** | ✅ hivatalos API, `MEMBER_SHARE_INFO` — **ma is működik** |
+| **poszt-piszkozat** | ugyanaz a minta, mint a `reply draft`: lokálisan készül, ⛔ nem megy ki magától |
+| **kiküldés** | ⛔ az API-n **nincs rá scope** ⇒ **UBH** *(`unblockable-browser-handler-tool`)* vagy kézzel |
+
+⛔ **Ez a három külön lépés — `one-function-is-enough`.** Most **csak az olvasás** a feladat.
+
