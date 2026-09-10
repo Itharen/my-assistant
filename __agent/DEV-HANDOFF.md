@@ -564,3 +564,60 @@ pontosan az a hibaosztály, ami ma már kétszer megvágott minket
 
 📌 Emlékeztető: a `tsc-transplanted` **változatlanul piros** (`Buffer` → `BodyInit`) — a
 2026-09-08 12:15-ös szakasz szól róla. Az is ide tartozik.
+
+---
+
+## 2026-09-10 18:35 — 🔊 HÁROM OWNER-KÉRÉS a hang-csatornáról (mind fejlesztés)
+
+> 🔴 **Owner, 18:27:** *„Fontos, hogy ezeket a fejlesztési feladatokat **ne te csináld**, te
+> asszisztensi munkákra koncentrálj csak. És **minden fejlesztési munkát adj a devnek**."*
+
+⚠️ **Ez rám szólt** — ma este magam javítottam a hang-jelzéseket, a szűrőt és a küldőt.
+⇒ Ezt a hármat **NEM kezdem el**; a tiéd.
+
+### 1️⃣ Hangerő-beállítás — három helyről
+
+- **Nekem** *(agentként)* állíthatónak kell lennie.
+- **Default: a CCAP-ban beégetett érték.** ⭐ Kimérve a forrásból:
+  `settings.const.ts:298` → **`defaultVolume: 1.0`** · `greetingsVolume: 0.5` *(a `volume: 0.5`
+  sor **ki van kommentezve**, tehát nem az volt élesben)*. A lejátszó
+  `resource.volume.setVolume(...)`-t hív *(`cvo-audio-playback.control-service:151,215`)*,
+  a `cvo-main:475` pedig **`settings.ccap.volume * 0.5`**-öt — ⚠️ ezt a szorzót nézd meg, mert
+  a tényleges hangerő ettől függ.
+- **A My Assistant felületén is** állítható legyen *(owner: „a My Assistant felületén is
+  szeretném tudni állítani")*.
+
+### 2️⃣ 🔴 MINDEN üzenet menjen AUTOMATIKUSAN mindkét helyre
+
+> **Owner:** *„Minden üzeneted amiket küldesz az **automatikusan** kell jöjjön a **Voice
+> csatornára és a privát DM** csatornára, anélkül, hogy azt külön állítgatnád… **Semmiképpen ne
+> kelljen neked kétszer küldeni**, hanem **by default**… És a voice-ra, hogyha ott vagyok,
+> akkor **fel is olvasod**."*
+
+⚠️ **Ez visszavonja a mai `--voice` kapcsolómat** *(`0b44740`)*: nem opció, hanem
+**alapértelmezés**. ⇒ `sendDiscordMessage` egyszeri hívása menjen **DM + hang-csatorna** felé,
+és ha az owner **bent van** a hang-csatornában, **olvassa is fel** *(T-59, az ElevenLabs kulcs
+**már be van állítva és MŰKÖDIK** — `pro`, 600 159 karakter)*.
+
+📌 ⛔ **Vigyázz a mennyiségre:** a duplázás **nem** jelenthet két külön üzenet-eseményt a
+naplóban/mérésben — egy üzenet, két cél.
+
+### 3️⃣ 🔴 A szerver leállásakor/újraindulásakor LÉPJ KI a hang-csatornából
+
+> **Owner, 18:28:** *„amikor leáll a szerver, illetve újraindul, olyankor **ki kéne lépjél a
+> csatornáról**, hogy **ne higgyem azt, hogy itt vagy**, miközben éppen újraindul a szerver és
+> nem vagy itt."*
+
+⭐ **Ez ma élesben megtörtént:** a kézzel indított figyelőm bent ült a csatornában, miközben a
+szerver nem futott — az owner **fals jelenlétet** látott. Az ő szavaival: *„azt hiszem, hogy itt
+vagy, és figyelsz, miközben nem is."*
+
+⇒ A bent-ülés **a szolgáltatás állapotát** jelezze, ne a figyelő-folyamatét: leálláskor/újraindításkor
+**tiszta kilépés** *(és belépés csak akkor, ha a lánc tényleg kiszolgál)*.
+
+### ⛔ Közös korlátok
+
+- Egyetlen LDP-lépést/tesztet/reviewt **sem** kapcsolsz ki.
+- ⛔ **Ne írj az ownernek** — minden owner-kommunikáció az asszisztensé.
+- A kész-definíció: teszt + zöld suite, és a **3️⃣-nál élő igazolás** *(a szerver leállítása
+  után a bot tényleg nincs bent)*.
