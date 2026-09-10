@@ -69,7 +69,7 @@ saját CLI (`dye2e`). **98,37% coverage, 254 spec.** Mellette az `fdp-e2e-helper
 
 | Mi | Miért nem |
 |---|---|
-| **OGS-projects** *(Oldlight Gaming Studio: goldaholic, oldlight-bot, oldlight-site)* | 🔴 **Nem tudom igazolni, hogy az ő munkája és megnevezhető-e.** A repó egy **másik GitHub-szervezeté** (`Oldlight-Games-Studio`), és az owner-profilban nincs róla semmi. ⇒ **owner-kérdés**, nem feltételezés |
+| **OGS-projects** *(Oldlight Gaming Studio: goldaholic, oldlight-bot, oldlight-site)* | ⛔ **LEZÁRVA — owner-döntés, 2026-09-11 00:08:** *„Az OG-es, Old Light Game Studio dolgokat ne vegyük bele a CV-be."* Nem kérdés többé. *(Az eredeti ok, amiért kérdés volt: a repó egy másik GitHub-szervezeté — `Oldlight-Games-Studio` —, és az owner-profilban nincs róla semmi.)* |
 | Konkrét ügyfélnevek a szerződéses munkákból | a CV eddig sem nevezte meg őket |
 | STALE-projects | elavult vonal, nem erősít |
 

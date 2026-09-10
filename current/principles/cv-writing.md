@@ -64,6 +64,18 @@ vagy alkudozásnak, vagy panasznak hangzik — mindkettő gyengít.
 📌 **A szórend számít:** a második opciót **a mondat végére** tesszük, mert amit előbb olvasnak,
 azt hiszik a fő ajánlatnak.
 
+### ⛔ DÖNTÉS (owner, 2026-09-11 00:08) — az OGS / Oldlight Gaming Studio NEM kerül bele
+
+> *„(Az OG-es, Old Light Game Studio dolgokat ne vegyük bele a CV-be.)"*
+
+Ez lezárja azt a kérdést, amit a flotta-felderítés nyitott *(`fleet-highlights.md`: a repók egy másik
+GitHub-szervezet alatt vannak, ezért nem tudtam eldönteni, megnevezhető-e)*. ⛔ **Se név, se utalás,
+se „egy játékstúdió" körülírás** — a körülírás ugyanúgy azonosítható, és a tiltás a **tényre** szól,
+nem a szóra.
+
+📌 A ⛔-lista ezzel: **GDE MIT / TERA** · **kiadatlan FDP-termékek neve** · **párhuzamos kapacitás**
+· **OGS / Oldlight**.
+
 ### ⛔ TILTÁS (owner, 2026-09-10 23:47) — a párhuzamos kapacitás NEM PUBLIKUS
 
 > *„Az semmiképpen ne szerepeljen a CV-ben meg sehol. A publikus közönség felé, hogy több munkát
