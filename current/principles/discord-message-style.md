@@ -290,3 +290,28 @@ megszegjem?"* Ha a válasz „semmi", a szabály **nincs bevezetve**, csak leír
 **Javítva:** `discord.receipt.ts` → `shouldSendDeliveryNotice()` — egyetlen üzenetre **néma**,
 kettőtől felfelé szól *(így a 2026-09-07-es „most ment el x üzeneted" kérés is teljesül)*.
 4 teszt, CLI **760/760**.
+
+---
+
+## 6⃣ ⛔ A KOZEPPONT-ELVALASZTO (`·`) TILOS — nekem jelent valamit, neki nem
+
+> **Owner, 2026-09-11 01:01:** *„Ezt a jelet ne használd, mert ez az emberi szemnek nagyon alig
+> érzékelhető. Ez számodra jelent valamit, az embereknek kevésbé."*
+
+⚠️ **Ez nem esztétikai kérés, hanem OLVASHATÓSÁGI.** A `·` számomra egy tiszta,
+tokenizalható határjel — az ő szemének viszont **majdnem láthatatlan**: a felsorolás
+összefolyó szöveggé válik.
+
+⛔ **Sehol nem használom:** Discord-üzenetben, CV-ben, doksiban, commit-üzenetben.
+
+### Mit használjak helyette
+
+| Amit eddig `·`-tal | Amit helyette |
+|---|---|
+| felsorolás egy soron belül | **vessző** vagy **pontosvessző** |
+| két külön gondolat | **külön mondat** vagy **gondolatjel** (`—`) |
+| több tétel felsorolása | **valódi lista** (`-`) vagy **táblázat** |
+
+📌 **A tanulság osztalya:** *ami sűrített és pontos NEKEM, az lehet olvashatatlan NEKI.*
+Ugyanaz a hibatípus, mint a túl hosszú jelentés: nem az információ rossz, hanem a **formája**.
+

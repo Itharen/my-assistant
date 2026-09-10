@@ -107,6 +107,9 @@ hogy hány megbízás fut párhuzamosan.
 | 4 | 🔒 **Kiadatlan FDP-termékek NÉV NÉLKÜL** | *„egyelőre nincsenek release-eink"* — a **képesség** a termék, nem a név |
 | 5 | ✅ **Nyilvános dolgok maradnak**: a cég, Dynamo, WarBots, HeloCia | van nyilvános oldaluk / már megnevezettek |
 | 5b | ⛔ **OGS / Oldlight Gaming Studio NEM szerepelhet** | owner-döntés, 2026-09-11 — a teljes indoklás és a körülírás-tilalom a fenti §1 „DÖNTÉS" blokkban |
+| 8 | ⛔ **Nincs „(in-house, pre-release)"-szerű zárójeles minősítés** | **owner, 2026-09-11 01:00:** *„Nem kell kiemelni ezeket, elég, hogy csináltam ilyeneket."* A **képesség** a tény; a készultségi állapot **gyengíti**, nem erősíti. ⚠️ A kiadatlan termékek **név nélkülisége** érvényben marad — az más szabály |
+| 9 | ⛔ **A `·` középpont-elválasztó TILOS** | *„az emberi szemnek nagyon alig érzékelhető"*. Helyette vessző, pontosvessző, gondolatjel vagy valódi lista. Kanonikus: `discord-message-style.md` |
+| 10 | ✅ **A „miért váltott" történet ERŐSÍT** | **owner, 2026-09-11 01:02:** a GitHub Actions-t **ismeri**, és azért épített sajátot, mert **kinőtte**. ⭐ Ez több, mint a két képesség külön: a **döntés indoklása** mutatja a szintet |
 | 6 | **Két oldal**, mindkettő **tele** | *„legyen tele az a két oldal"* |
 | 7 | **A stílus és az elrendezés NEM változik** | a 9.0 kontroll-minta ellen mérve |
 
