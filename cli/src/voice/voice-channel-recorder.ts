@@ -198,6 +198,18 @@ export async function handleFinishedRecording(params: {
    */
   onRecognitionFailed?: (info: { audio: Uint8Array; filename: string; failure: string }) => void;
   transcribe?: typeof transcribeAudio;
+  /**
+   * 🔊 A FELDOLGOZÁS ELKEZDŐDÖTT — közvetlenül a felismerés hívása előtt.
+   *
+   * 🔴 MIÉRT LETT KÜLÖN, MÉRT OWNER-PANASZBÓL (2026-09-10 18:07, hangcsatorna):
+   * *„még mindig a typing hangot hallom, pedig ennek a hangnak akkor kéne lejátszódni, amikor
+   * elkezdett feldolgozni az üzeneteket, és nem pedig amikor elkezdett felvenni."*
+   *
+   * ⚠️ A jelzés eddig a **megszólalás észlelésekor** szólt (`onSpeechAttempt`) — vagyis akkor,
+   * amikor **elkezdett beszélni**. A hang viszont a CCAP `typing.mp3`-ja, ami nála
+   * **„dolgozom rajta"**-t jelent. ⇒ A hang jó volt, a **pillanat** rossz.
+   */
+  onProcessingStart?: () => void;
   read?: typeof readFile;
 }): Promise<RecordingHandled> {
   if (params.userId !== params.ownerUserId) {
@@ -225,6 +237,10 @@ export async function handleFinishedRecording(params: {
       detail: `A felvétel NEM olvasható: ${error instanceof Error ? error.message : String(error)}`,
     };
   }
+
+  // 🔊 Innentől TÉNYLEG dolgozunk rajta — a felvétel megvan és olvasható.
+  // ⛔ Nem korábban: a „hallak" és a „dolgozom rajta" NEM ugyanaz a pillanat.
+  params.onProcessingStart?.();
 
   const result = await transcribe({
     audio: audio,
@@ -307,6 +323,8 @@ export async function startVoiceRecording(params: {
   onHandled?: (outcome: RecordingHandled) => void;
   /** 🔴 Minden ERZEKELT megszolalasnal hivodik — ez teszi lathatova a nema eldobast. */
   onSpeechAttempt?: (stats: SpeechAttemptStats) => void;
+  /** 🔊 Továbbadva a `handleFinishedRecording`-nak — a feldolgozás kezdetén szól. */
+  onProcessingStart?: () => void;
   /**
    * 🔍 Minden NÉMÁN ELDOBOTT felvételnél hívódik — másodpercben megadva, mennyi hang veszett el.
    *
@@ -390,6 +408,7 @@ export async function startVoiceRecording(params: {
         channelId: params.channelId,
         bridge: bridge,
         ...(params.onRecognitionFailed ? { onRecognitionFailed: params.onRecognitionFailed } : {}),
+        ...(params.onProcessingStart ? { onProcessingStart: params.onProcessingStart } : {}),
       })
         .then((outcome: RecordingHandled): void => params.onHandled?.(outcome))
         .catch((error: unknown): void => {

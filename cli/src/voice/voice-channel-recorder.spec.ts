@@ -365,3 +365,60 @@ describe('classifyRecordingOutcome — három kimenetel, három kód', () => {
     })).toBe('MA-VOICE-SPEECH-SKIPPED');
   });
 });
+
+describe('onProcessingStart — 🔊 a „dolgozom rajta" jelzés PILLANATA (owner, 2026-09-10)', () => {
+
+  // Owner a hangcsatornan: „meg mindig a typing hangot hallom, pedig ennek a hangnak akkor kene
+  // lejatszodni, amikor elkezdett FELDOLGOZNI az uzeneteket, es nem pedig amikor elkezdett
+  // FELVENNI." => a hang jo volt, a pillanat rossz.
+
+  it('⭐ a felismerés ELŐTT szól — nem a felvételkor', async () => {
+    const { bridge } = makeBridge();
+    const sorrend: string[] = [];
+
+    await handleFinishedRecording({
+      ...BASE,
+      bridge: bridge,
+      read: READ_OK as never,
+      onProcessingStart: (): void => void sorrend.push('jelzes'),
+      transcribe: (async (): Promise<unknown> => {
+        sorrend.push('felismeres');
+
+        return { ok: true, text: 'szia', detail: '', elapsedMs: 1, suspicious: false };
+      }) as never,
+    });
+
+    expect(sorrend).toEqual(['jelzes', 'felismeres']);
+  });
+
+  it('⛔ IDEGEN beszélőnél NEM szólal meg — nem is dolgozunk rajta', async () => {
+    const { bridge } = makeBridge();
+    let szolt = false;
+
+    await handleFinishedRecording({
+      ...BASE,
+      userId: 'valaki-mas',
+      bridge: bridge,
+      read: READ_OK as never,
+      transcribe: makeStt() as never,
+      onProcessingStart: (): void => { szolt = true; },
+    });
+
+    expect(szolt).toBe(false);
+  });
+
+  it('⛔ OLVASHATATLAN felvételnél sem — ott nincs mit feldolgozni', async () => {
+    const { bridge } = makeBridge();
+    let szolt = false;
+
+    await handleFinishedRecording({
+      ...BASE,
+      bridge: bridge,
+      read: (async (): Promise<never> => { throw new Error('nincs fajl'); }) as never,
+      transcribe: makeStt() as never,
+      onProcessingStart: (): void => { szolt = true; },
+    });
+
+    expect(szolt).toBe(false);
+  });
+});

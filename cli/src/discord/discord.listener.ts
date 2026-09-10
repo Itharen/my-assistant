@@ -737,10 +737,14 @@ export class DiscordListener {
       // 🔴 A NEMA ELDOBAS LATHATOVA TETELE. Owner 22:08: „beszéltem, beszéltem, tulajdonképpen
       // annak egy százaléka lett aztán transzkriptálva". Enelkul sem o, sem en nem tudjuk,
       // HANY megszolalas veszett el — es a szuro allitgatasa puszta talalgatas lenne.
+      // 🔊 A „dolgozom rajta" jelzés — a FELDOLGOZÁS kezdetén, nem a felvételkor.
+      onProcessingStart: (): void => void this.cues?.play('heard'),
       onSpeechAttempt: (stats: SpeechAttemptStats): void => {
-        // 🔊 „HALLAK" — ez a legkorabbi pont, ahol barmit mondhatunk. ⛔ A fek miatt nem
-        // szolal meg minden mondatnal; ez SZANDEKOS (`voice-cues.ts`).
-        void this.cues?.play('heard');
+        // 🔇 ITT MAR NEM SZOLALUNK MEG — owner, 2026-09-10 18:07 (hangcsatorna):
+        // „meg mindig a typing hangot hallom, pedig ennek a hangnak akkor kene lejatszodni,
+        //  amikor elkezdett feldolgozni az uzeneteket, es nem pedig amikor elkezdett felvenni."
+        // A hang (CCAP `typing.mp3`) nala „dolgozom rajta"-t jelent => a PILLANAT volt rossz,
+        // nem a hang. Atkerult az `onProcessingStart`-ra (l. lentebb).
 
         void this.safeLog({
           kind: 'note',
