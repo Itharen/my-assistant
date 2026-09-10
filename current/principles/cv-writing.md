@@ -106,6 +106,7 @@ hogy hány megbízás fut párhuzamosan.
 | 3 | ⛔ **GDE MIT / TERA nem szerepelhet** | owner-döntés, 2026-09-10 |
 | 4 | 🔒 **Kiadatlan FDP-termékek NÉV NÉLKÜL** | *„egyelőre nincsenek release-eink"* — a **képesség** a termék, nem a név |
 | 5 | ✅ **Nyilvános dolgok maradnak**: a cég, Dynamo, WarBots, HeloCia | van nyilvános oldaluk / már megnevezettek |
+| 5b | ⛔ **OGS / Oldlight Gaming Studio NEM szerepelhet** | owner-döntés, 2026-09-11 — a teljes indoklás és a körülírás-tilalom a fenti §1 „DÖNTÉS" blokkban |
 | 6 | **Két oldal**, mindkettő **tele** | *„legyen tele az a két oldal"* |
 | 7 | **A stílus és az elrendezés NEM változik** | a 9.0 kontroll-minta ellen mérve |
 
@@ -126,6 +127,14 @@ kiabál.
 - **Minden geometriai állítás MÉRT**, nem szemre: `fit.sh` *(illeszkedés)* + `compare.py` *(egyezés)*.
 - **Nyomtatási alsó margó ≥ ~10 mm** minden oszlopban — különben a nyomtató levágja.
 - **Egy sorba EGY jelölő** — pont vagy nyíl, nem mindkettő *(kétszer is torlódott)*.
+- 🔴 **A KARRIER-VONAL NEM ÉRHET HOZZÁ SEMMIHEZ** *(owner, 2026-09-11 00:07)*: az „Education"
+  elválasztót **nem metszheti ÉS nem érintheti** *(látható rés kell — mérve 3,75 pt mindkét
+  oldalon)*, és a **legutolsó ponton nem lóghat túl**. ⚠️ A vonal vége **két** paraméter: a saját
+  tétel `--rail-h`-ja **és** a fölötte lévő tétel `--rail-bottom`-ja — az utóbbi némán átnyúlik.
+- 📐 **MAXIMUM EGY BEHÚZÁS** *(owner, 2026-09-11 00:07)*: *„a pontok túl vannak tabolva… kéne egy
+  szép header és a betabolások, de most már a header is egy tabolás."* ⇒ a tételen belüli
+  al-fejléc a doboz **bal szélén** áll *(`.sub-head`, nulla behúzás)*, a hozzá tartozó pontok
+  **egy** lépcsővel bentebb. ⛔ Fejléc-listaelem + beágyazott lista *(= dupla tabolás)* **TILOS**.
 - ⚠️ **Ami több tételen átível** *(karrier-vonal)*, annak a **két végét külön kell mérni**.
 - ⚠️ **Ami oldalanként eltérő rácson ül**, azt **képlettel** kell kötni, nem fix számmal
   *(a nyíl-eltolás a `--rail-w`-tól függ)*.

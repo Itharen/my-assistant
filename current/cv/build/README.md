@@ -146,8 +146,9 @@ attól még stimmelhet.
 | Hol | Hogyan | Miért |
 |---|---|---|
 | a vonal két vége | paraméteres: `--rail-top` / `--rail-bottom` / `--rail-h` | tételenként állítható |
-| az „Education" elválasztónál | **megszakad** — a vonal nekiütközik felülről, és közvetlenül alatta folytatódik | ez az eredeti viselkedés, és az owner is ezt kérte *(22:03 → 22:30 → 23:28)* |
+| az „Education" elválasztónál | **megszakad, LÁTHATÓ RÉSSEL** — mérve **3,75 pt** felül és alul egyaránt | ⚠️ **owner-korrekció 2026-09-11 00:07:** *„az education elválasztó vonalat nem metszheti, és **nem érintheti**"*. A korábbi „nekiütközik felülről" viselkedés ezzel **elavult** — akkor a felső szakasz 679,5-nél végződött, az elválasztó 675,75..677,25-nél: **átmetszette**. Paraméterek: `--rail-bottom:-0.5pt` *(felső)* + `--rail-top:-34.5pt` *(alsó)* |
 | a legutolsó tétel alatt | a vonal a **pontnál ér véget** (`--rail-h: 4.2pt`) | *„az A-level alatt nem kéne vonal legyen, onnan indul a vonal"* |
+| ⚠️ a legutolsó pont **fölötti** szakasz | `--rail-bottom:-6.75pt` a *Civil Engineering* tételen | 🔴 **Mért csapda:** a `--rail-h` csak a **saját** tétele vonalát fogja meg — a **fölötte lévő** tétel `--rail-bottom:-12pt`-je viszont **átnyúlt rajta** és 793,5-ig futott, 3 pt-tal a pont **alja alá**. A „vége a vonalnak" tehát **két** paraméter, nem egy. Mérve 2026-09-11: most 786,75-nél áll, a pont (782,25..790,50) **belsejében** |
 | a nyilas jelölők | a talpuk **a vonalon** áll — `left: calc(8.9pt - var(--rail-w))` | ⚠️ **KÉPLET, nem fix szám:** a vonal x-e a `--rail-w`-tól függ, ami oldalanként eltér (20,4 / 25,5pt). Fix értékkel a 2. oldalon 6pt-tal a vonal mellé csúszott |
 
 ⚠️ **A kontroll-mintában rögzítettük** a régi nyíl-eltolást (`--arrow-dx: -10.6pt` a `cv.html` 1. oldalán),

@@ -71,7 +71,8 @@ body {
 .page:last-child { page-break-after: auto; }
 
 /* --- oldal-szintu racs-eltolasok, a forras-PDF-bol merve --- */
-.page--p2 { --main-l: 229.7pt; --main-w: 341.8pt; --rail-w: 25.5pt; --sidebar-pad-x: 26.2pt; }
+.page--p2 {
+  --sub-gap-t: 10.5pt; --sub-gap-b: 4.5pt;   /* a 2. oldal tomor: ott nincs tartalek */ --main-l: 229.7pt; --main-w: 341.8pt; --rail-w: 25.5pt; --sidebar-pad-x: 26.2pt; }
 .page--p3 { --main-l: 234.6pt; --sidebar-pad-x: 25.0pt; }
 .page--p3 .s-contact { padding-left: 15.2pt; }
 .page--p3 .s-contact li { gap: 11.0pt; }
@@ -371,6 +372,24 @@ body {
   color: var(--c-dark);
   margin-bottom: 10.8pt;
 }
+
+/* Al-cim egy tetelen BELUL (a Future Development Program Kft. blokk fejlecei).
+   Owner (2026-09-11 00:07): „a pontok tul vannak tabolva… kéne egy szép header
+   és a betabolások, de most már a header is egy tabolás." ⇒ a fejlec a doboz BAL
+   SZELEN all (nulla behuzas), a hozza tartozo pontok EGY lepcsovel bentebb. */
+.sub-head {
+  position: relative;                 /* hogy az .arrow jelolo ra tudjon ulni */
+  font-weight: 700;
+  font-size: 8pt;
+  line-height: 1.2;
+  letter-spacing: var(--track);
+  color: var(--c-dark);
+  /* Oldalankent elteroe, mert a ket oldal telitettsege mas — a cel MINDKETTON
+     a ~10 mm-es also margo (owner: „legyen tele az a ket oldal"). Mert ertekek. */
+  margin-top: var(--sub-gap-t, 16pt);
+  margin-bottom: var(--sub-gap-b, 6pt);
+}
+.sub-head:first-of-type { margin-top: 0; }
 
 /* --- listak: harom szint, mert behuzasokkal (7pt / 9.3pt sorkoz) --- */
 .list, .list ul {
