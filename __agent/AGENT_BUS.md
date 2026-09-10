@@ -87,6 +87,31 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-09-10-04 — Kimeno KEP-/FAJL-kuldes a Discordra (hianyzo kepesseg)
+
+**From:** chat (Honnie / assistant)
+**To:** dev-agent
+**Kind:** request
+**Created:** 2026-09-10T22:20+02:00
+
+> **Owner, 2026-09-10 22:18:** *„azt hiszem a kep es fajl kuldes meg nincs implementalva a
+> discord-ba szoval ide kuldom"* — es a CCAP-on kuldte be a ket kepernyokepet.
+
+**Merve:** a `ma comm say` **csak szoveget** kuld; a `discord.sender.ts`-ben nincs
+`AttachmentBuilder` / `files:` — a kimeno uton nulla melleklet-tamogatas. *(Bejovo iranyban
+mukodik: a CCAP fogadja a kepeket.)*
+
+**Miert szamit:** ma **ketszer** allt meg emiatt a munka. A CV-nel a rendert csak
+**fajl-utvonalkent** tudtam megadni — neki kellett megnyitnia —, es a vonal-hibat is o
+kuldte be kepen, mert en nem tudtam neki megmutatni. Egy kep-melleklet egy korre lerovidiette
+volna mindket kort.
+
+**Keres:** `ma comm say --file <szoveg>` melle egy `--attach <utvonal>` (tobbszor is megadhato),
+a `discord.sender.ts`-ben `AttachmentBuilder`-rel, ugyanarra a KET celra (DM + voice), a mostani
+kezbesites-ellenorzessel (`verifiedIntact`) egyutt.
+
+---
+
 ## [OPEN] AGB-2026-09-10-03 — A hangos felolvasás NEM MŰKÖDIK: elavult ElevenLabs kulcs-formátum-ellenőrzés + a kulcs naplóba írása
 
 **From:** chat (Honnie / assistant)
