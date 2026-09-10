@@ -11,23 +11,27 @@
 
 ## 📌 KITŰZVE MOST
 
-🎯 **💼 Munka — generálások és események ellenőrzése** *(organizer, `P=116`)*
+🎯 **💬 LinkedIn — a várakozó válaszok megírása** *(organizer, `P=112`)*
 
-**Miért EZ — és miért ÉN döntöttem:**
+**Miért ez lett — az előző kitűzött LEZÁRULT:**
 
-> **Owner, 2026-09-10 19:46:** *„Többnyire **neked kell majd megmondanod, hogy mi a következő
-> fókusz**, mivel egymillió inputot adok be, és abból **egy output kéne**."*
+> **Owner, 2026-09-10 19:50:** *„**Ma már ezeket a feladatokat letudtam**, most még majd
+> éjfél után rá kéne nézni, hogy mennyire sikerült az agentnek követnie az új szabályokat."*
 
-| Érv | Adat |
-|---|---|
-| **Ma van a napja** | ma **csütörtök**, a tétel neve: *(csütörtök)* |
-| **A legmagasabb prioritású LEJÁRT** | `P=116` — az 5 lejárt közül a legmagasabb *(a másik 116-os a keddi párja)* |
-| **Régóta nyitva** | **2026-08-27 óta** |
-| **Munka** | ez fizetett munka, nem opcionális |
+⇒ A csütörtöki munka-tétel **kész**. ⛔ Nem tartom kitűzöttként, ami már megvan.
 
-⛔ **Amit NEM választottam, és miért:** Üzemorvos `P=118` *(dátum nélküli — nem romlik el ma)* ·
-Interfood `P=115` *(az owner **másik sessionben** intézi)* · LinkedIn `P=112` *(dátum nélküli)* ·
-Telekom *(már ütemezve holnap 9:00-ra)*.
+**Miért a LinkedIn a következő:** owner, 2026-09-09 00:18: *„**kurva sokan várnak
+LinkedIn-en**, hogy válaszoljak nekik"* ⇒ **másokat blokkol**, és a legmagasabb prioritású
+tétel, ami **ma este ténylegesen elvégezhető**. *(Az Üzemorvos `P=118` — de az utánanézés,
+nem romlik el ma este; a Telekom már holnap 9:00-ra ütemezve.)*
+
+## ⏰ IDŐ-HORGONY MA ESTÉRE — ÉJFÉL UTÁN
+
+> *„most még majd **éjfél után rá kéne nézni**, hogy mennyire sikerült az agentnek követnie az
+> új szabályokat."*
+
+🔴 **Ez az ő teendője, nem az enyém** — de **emlékeztetnem kell rá** éjfél után.
+⛔ Előtte ne hozzam szóba: az csak elviszi a figyelmét a mostani fókuszról.
 
 ## ⏸️ FOLYTATANDÓ A KERET FRISSÜLÉSE UTÁN
 
