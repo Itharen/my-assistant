@@ -81,3 +81,41 @@ túlmagyarázott"*, *„ne legyen okoskodós"*. Ezek pontosan azok a hibák, ami
 Kapcsolódó: [[cv-writing]] *(ugyanaz a kettős célközönség)* · [[discord-message-style]] ·
 `__agent/TASKS.md` T-72, T-73.
 
+---
+
+## 🖼️ A KÉP-SZABÁLY FELÜLVIZSGÁLATA (owner, 2026-09-11 01:50) — 🙋 DÖNTÉSRE VÁR
+
+> *„A régi LinkedIn posztkészítési szabályunkban az volt, hogy a **gyengébb cikkek kapjanak
+> képeket**, de egyre inkább érzem, hogy vagy **mindennek** kéne kapni a képet, vagy pont, hogy
+> **az erősebbeknek**, hogy jobban felhívják a figyelmet azokra a témákra."*
+
+### 📊 Amit MÉRTEM a 48 meglévő posztból
+
+| Mérés | Érték |
+|---|---|
+| posztok | **48** *(2026-03-26 … 2026-08-25)* |
+| `MediaUrl` kitöltve | **0** |
+| `SharedUrl` *(link-megosztás)* | **0** |
+| szöveghossz | medián **728** karakter *(287 … 984)* |
+
+⚠️ **Ezt NEM szabad túlértelmezni:** a `MediaUrl` üressége azt bizonyítja, hogy **az export nem ad
+vissza média-hivatkozást**, ⛔ **nem** azt, hogy egyik poszt sem kapott képet. A natív
+kép-feltöltés lehet, hogy egyszerűen nem jelenik meg ebben a mezőben.
+📌 Ami **biztos**: ebből az adatból a kép **hatását nem lehet mérni** — a snapshot nem visz
+elérés- vagy reakció-adatot.
+
+### 💡 A JAVASLATOM: **az ERŐSEKNEK**
+
+| Miért | |
+|---|---|
+| **A kép erősítő, nem mankó** | amit felerősítesz, az kapja a figyelmet. A gyenge poszt erősítése azt jelenti, hogy a **leggyengébb** tartalomra megy a legtöbb figyelem |
+| **A „mindegyik" ütközik a saját szabályoddal** | *„Ha generikus AI-stock kép lenne, inkább nincs kép."* Ha kötelező a kép, előbb-utóbb **tölteléket** gyártunk — pont azt, amit tiltottál |
+| ⭐ **A gyenge posztnál nem a kép a megoldás** | ha egy poszt gyenge, a **posztot** kell megerősíteni vagy elhagyni. A kép ilyenkor **elfedi** a bajt, nem javítja. A saját szabályod is ezt mondja: *„A posztok mutassák a profizmust, ne a vívódást."* |
+
+⇒ **A javasolt szabály:** *a kép a kiemelés eszköze — azokra a posztokra megy, amiket TE tartasz a
+legfontosabbnak, és ahol a kép tényleg hozzáad. Gyenge poszt nem kap képet: azt átírjuk vagy
+kihagyjuk.*
+
+🙋 **Ez a te döntésed** — amíg nem mondod ki, a fenti régi szabály marad érvényben
+*(„csak ahol tényleg hozzáad")*, mert az a kettő között **nem ütközik**.
+
