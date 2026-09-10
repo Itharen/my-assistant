@@ -810,3 +810,68 @@ egyébként hagyd békén. Ami eltér, az **mellé** kerül, nem bele.
 ⛔ **Feladat SOHA nem megy csak az `AGENT_BUS`-ba** — az a **visszirány**. Mérve: pontosan ezért
 állt a hang-hiba 4 órán át úgy, hogy „át volt adva".
 
+---
+
+## 2026-09-11 01:10 — 🎙️ A HALLGATÁS NEM MŰKÖDIK + kérés: a hang-csatorna TÜKRÖZÉSE a DM-be
+
+**Owner, 01:04-01:05:** *„Mirrorozhatnád az üzeneteket a voice channelről ide a privát messagebe
+is."* · *„furcsa, mert most online is vagy, sőt az előbb beszéltél is, de mégis minthogyha nem
+hallgatnál."*
+
+⇒ **Két külön tétel, egy körben ne vidd mindkettőt** *(`one-function-is-enough`)*: **először az
+(A)**, mert az a hiba; a (B) fejlesztés.
+
+### (A) 🔴 A HIBA — MÉRVE, nem panasz
+
+```
+ma comm voice-funnel --day 2026-09-11
+  🎙️  megszólalás érzékelve ......... 2
+  📼  felvétel a feldolgozásig ...... 0
+  ✅  kötegbe került ................ 0
+  🎚️  a felvevő eldobta ............. 0
+  ❌  felismerés után elveszett ..... 0
+```
+
+⭐ **Ez a lényeg:** a **detektálás megtörtént** *(2 megszólalás)*, de **egyetlen felvétel sem**
+jutott el a feldolgozásig — és **nem is dobta el** semmi. Vagyis a lánc **a detektálás és a
+felvétel-indítás között** szakad meg, ⛔ nem a felismerésnél és nem a kötegelésnél.
+
+⚠️ A riport figyelmeztetése *(„a megszólalás beleolvadhatott egy már futó felvételbe")* itt
+**nem mentség**: futó felvétel sem volt, a `📼` is **0**.
+
+**A szerver-logból, ugyanebből az ablakból:**
+
+```
+[voice] 01:04:19 MA-VOICE-JOINED 🔊 BENT VAGYOK a hang-csatornában — „honnie-place"
+[voice.service-watch.probe] MA-CLI-SWALLOWED-FAILURE: TypeError: fetch failed
+```
+
+⇒ A csatlakozás **megvan**, tehát a jelenlét nem a baj. Az elnyelt `fetch failed` a
+`service-watch` **próbájában** keletkezett — ⚠️ **nem állítom, hogy ez az ok**, de ez az egyetlen
+hiba az ablakban, érdemes innen indulni.
+
+📌 **Kezdd a `voice-channel-recorder.ts`-nél:** mi történik a detektálás után, és miért nem
+indul (vagy miért nem zárul le) a felvétel. A `voice-missed-speech.ts` és a `voice-funnel-report.ts`
+már megvan — a mérőeszköz kész, csak a hibát kell megtalálni vele.
+
+### (B) A KÉRÉS — a hang-csatorna tükrözése a privát üzenetbe
+
+Amit a hang-csatornán mondok neki, az **jelenjen meg a Discord DM-ben is**. Indok *(kimondatlan,
+de a mérésből látszik)*: a hang **elszáll**, a DM **megmarad** — ugyanaz a logika, mint a
+`message-delivery-reliability.md`-ben.
+
+⚠️ A tükrözés **ne duplikálja** azt, amit amúgy is DM-be küldök *(`ma comm say`)* — csak a
+**hang-csatornán elhangzottat** vigye át, jelöléssel, hogy az hangból jött.
+
+### 🔒 BIZTONSÁG — a kulcs ÚJRA naplóba került (01:04)
+
+A `server.log`-ban **friss** bejegyzés:
+`❌ ElevenLabs text-to-speech service not initialized <A KULCS TELJES ÉRTÉKE>`
+
+⇒ A 2026-09-11 00:20-as szakasz **(b)** pontja **még nincs kész**, és **minden indulásnál újra
+kiírja**. ⛔ A kulcs értéke **soha** nem mehet naplóba — max. hossz/prefix.
+⛔ **A rotáció owner-döntés** *(`core-secret-rotation-owner-only`)*, jelezve neki — te ne nyúlj hozzá.
+
+⚠️ Ugyanez a log mutatja, hogy az **`xi-api-` prefix-ellenőrzés még él** — a 00:20-as szakasz
+**(a)** pontja *(V3-ra váltás)* tehát változatlanul a soron lévő munka.
+
