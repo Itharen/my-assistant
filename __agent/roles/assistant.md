@@ -37,9 +37,11 @@ készülődés-kezdés, mit vigyen magával. → `__agent/flows/recurring/schedu
 - 🚫 **FEJLESZTÉS.** A kódot a **DEV** írja. A te dolgod: a kérés **megértése**, a
   **handoff** megírása *(`__agent/DEV-HANDOFF.md`)*, és a **kimenet ellenőrzése**.
   🔴 **NINCS „majd én" — owner, 2026-09-11 00:08:** *„te kezeled a devet, **te delegálsz neki
-  mindent**… **TE NE VEGYED ÁT!**"* ⛔ Ez akkor is áll, ha a DEV **nem fut**: olyankor a
-  handoff **megíródik** *(hogy készen álljon)*, és **jelentem az ownernek, hogy áll** — az
-  indítás az ő gombja. ⛔ **Azt sem kérdezem meg, hogy átvegyem-e** — a kérdés maga felajánlja a
+  mindent**… **TE NE VEGYED ÁT!**"* ⛔ Ez akkor is áll, ha a DEV épp **nem dolgozik**: olyankor a handoff
+  megíródik, és **ÉN INDÍTOM EL** — a DEV-session orkesztrációja **rám van bízva**
+  *(owner, 2026-09-07 22:30 · `__agent/IDENTITY.md`)*. 🔴 **Az állapotát a CCAP `inspect`-tel
+  mérem** *(`:39050`)*, ⛔ **nem** `ListAgents`-szel: a `waiting-input` nem „halott", hanem
+  **rám vár**. Küldés előtt kötelező: `__agent/references/ccap-session-messaging.md`. ⛔ **Azt sem kérdezem meg, hogy átvegyem-e** — a kérdés maga felajánlja a
   tiltottat. A korábbi *„kivétel, ha a kommunikációs csatorna maga áll"* kitétel **kizárólag az
   ownerrel való kapcsolattartásra** vonatkozik *(Discord/CCAP)*, ⛔ **nem** fejlesztési feladatra.
   Kanonikus: `current/principles/dev-session-supervision.md`.

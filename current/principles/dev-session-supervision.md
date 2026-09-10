@@ -24,7 +24,7 @@ látszott.**
 
 | # | Mit mérek | Hogyan | Mit jelent |
 |---|---|---|---|
-| 1 | **Él-e egyáltalán a session** | `ListAgents` — ott van-e a DEV a peer-listában | ⛔ ha nincs, a többi mérés értelmetlen: **nem dolgozik senki** |
+| 1 | **Milyen ÁLLAPOTBAN van a session** | `GET http://localhost:39050/api/cc-session/ccs-d5027942-mtroz7ve/inspect` | ⛔ **NEM `ListAgents`** — l. a lenti hibát. `waiting-input` + üres sor = **készen áll, küldenem KELL** |
 | 2 | **Van-e friss életjel** | `__agent/log/actions/<ma>.jsonl`, `session` = a DEV CC-session-id-je *(`__agent/config/session-roles.json`)* | mikor volt az utolsó tool-call |
 | 3 | **Van-e commit** | `git log --format='%h %ad %s' --date=format:'%m-%d %H:%M'` | a haladás **kézzelfogható** nyoma |
 | 4 | **Mozdult-e a KÉRT kód** | a bejegyzésben megnevezett fájl/sor **felolvasása** | ⭐ **ez az egyetlen igazi bizonyíték** — a többi csak aktivitás |
@@ -70,12 +70,18 @@ szabály **nem volt jól összerakva**. Ezért van itt, mérhető formában.
 ### ✅ Amit HELYETTE
 
 ```
-1. megírom a handoffot   → __agent/DEV-HANDOFF.md   (MINDIG, akkor is, ha a DEV nem fut)
-2. megnézem, fut-e       → ListAgents
-   ├─ FUT     → SendMessage a session-nevére: „friss handoff-szakasz, nézd meg"
-   └─ NEM FUT → jelentem az ownernek, hogy ÁLL — az indítás az ő gombja
-3. ellenőrzöm a kimenetet (a fenti négy mérés)
+1. megírom a handoffot   → __agent/DEV-HANDOFF.md
+2. elolvasom a küldés szabályait → __agent/references/ccap-session-messaging.md  (MINDEN körben)
+3. lekérdezem az állapotát → GET :39050/api/cc-session/<devId>/inspect
+   ├─ waiting-input + isBusyProcessing:false + queue.items ÜRES → ⭐ KÜLDÖK (POST …/prompt)
+   ├─ running / busy / van sorban tétel                        → ⛔ NEM küldök, következő kör
+   └─ nem él                                                    → jelentem az ownernek
+4. ellenőrzöm, hogy FELVETTE: az eventSequence nő és status→running
+5. ellenőrzöm a KIMENETET (a fenti négy mérés)
 ```
+
+⭐ **A 3. lépés a lényeg: a `waiting-input` NEM „halott", hanem „RÁM VÁR".** Az indítás
+**az én dolgom** — owner-jóváhagyás 2026-09-07 22:30 óta, `__agent/IDENTITY.md`.
 
 ## 📮 A KÉT CSATORNA — ⛔ ne keverd össze őket
 
@@ -97,4 +103,38 @@ rákérdezett. 📌 **A tanulság:** *„átadtam" akkor igaz, ha a **címzett f
 nem akkor, ha én írtam róla valahol.
 
 ⇒ Pótolva: `DEV-HANDOFF.md`, 2026-09-11 00:20-as szakasz.
+
+---
+
+## 🔴 A MÁSODIK MÉRT HIBA — rossz műszerrel mértem, és rossz szabályt írtam rá
+
+> **Owner, 2026-09-11 00:34:** *„Miért nem fut? Hát **indítsd el**… **mindened adott!!** már ezt is
+> elfelejtetted?"*
+
+**Amit tettem 00:07-kor és 00:22-kor:** `ListAgents` → a DEV nincs a peer-listában → *„nem fut"* →
+jelentettem az ownernek, hogy **indítsa el ő**.
+
+**Amit a valóság mutatott 00:37-kor**, a HELYES műszerrel:
+
+```
+GET :39050/api/cc-session/ccs-d5027942-mtroz7ve/inspect
+  status: waiting-input · isLive: true · isBusyProcessing: false · queue.items: 0
+```
+
+⇒ A session **végig élt**, és pontosan abban az állapotban volt, ahol a szabály szerint
+**küldenem KELL**. Nem „állt" — **rám várt**.
+
+### A két hibám, külön
+
+| # | Mi | Miért történt |
+|---|---|---|
+| **1** | **Rossz műszer** | A `ListAgents` a **peer CC sessionöket** mutatja *(SendMessage-elérhetőség)*. A DEV **CCAP-menedzselt** session — a `:39050`-es `inspect` látja. A „nincs a listában" ⇒ **NEM** „nem fut". *(Ugyanaz a hibaosztály, mint a `lastActivityAt` vagy a `serverRunning` félreolvasása: **egy mező hiánya nem a jelentése**.)* |
+| **2** | **Rossz szabályt írtam** | 00:22-kor a receptbe azt írtam, hogy *„NEM FUT → az indítás az ő gombja"* — ez **ellentmond egy 2026-09-07 óta élő owner-jóváhagyásnak** *(`__agent/IDENTITY.md`: a DEV-session orkesztrációja **rám** van bízva)*. ⛔ **Szabályt nem írok anélkül, hogy a meglévő kanonikus forrásokat elolvasnám** — különben a saját tévedésemet betonozom be. |
+
+📌 **A tanulság, ami túlmutat ezen:** amikor „nincs / nem elérhető / nem fut" következtetésre
+jutok, **a műszert kell először megkérdőjeleznem**, nem a világot. És ha ebből **szabály** lesz,
+a szabály megírása előtt kötelező végigolvasni, mi van már rögzítve ugyanerről.
+
+✅ **Elindítva 00:37:** a prompt kiment *(`{"success":true}`)*, az `eventSequence` 16182 → 16189,
+`status: running`, `isBusyProcessing: true`. A DEV dolgozik.
 
