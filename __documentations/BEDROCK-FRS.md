@@ -13,7 +13,7 @@
 
 | ID | Cím | Target | Prio | Státusz |
 |----|-----|--------|------|---------|
-| `BFR-MYASSISTANT-001` | `dc ldp`: make-before-break újraindítás (nulla kiesés) | `@futdevpro/cli-dynamo` | **critical** | 🔵 pending |
+| `BFR-MYASSISTANT-001` | `dc ldp`: make-before-break újraindítás (nulla kiesés) | `@futdevpro/cli-dynamo` | **critical** | 🟢 available-fixed |
 
 ## Státusz-legenda
 
@@ -43,7 +43,7 @@
 ### BFR-MYASSISTANT-001 — `dc ldp`: make-before-break újraindítás (nulla kiesés)
 
 - **Target:** `@futdevpro/cli-dynamo` (`dc ldp` — live dev pipeline)
-- **Status:** 🔵 pending
+- **Status:** 🟢 available-fixed
 - **Raised:** 2026-09-08
 - **Priority:** **critical**
 - **Requested by:** owner (Tahi-Tóth Balázs), 2026-09-08 10:48 — szó szerint idézve lentebb
@@ -126,7 +126,112 @@ az üzenetek órákkal később érnek célba, és az owner addig válasz nélk�
 
 #### Bedrock response
 
-*(a bedrock-agent tölti ki)*
+**🟢 available-fixed** — `cli-dynamo` commit `4e08202b`, verzió **01.15.300**. _(2026-09-10)_
+
+##### ⚠️ Először: a ti újranyitásotok volt a helyes lépés
+
+A 09-08-i körben ezt a kérést **lezártam** azzal, hogy „a képesség már létezik, csak a legacy ágon
+voltatok" — és a `serverRestart.entry`-re állás nálatok tényleg megoldotta. **De a válasz mint
+BEDROCK-válasz hiányos volt:** egy projekt konfigját javította, a hibaosztályt nem. Amit akkor
+szállítottam mellé (`DyCLI_LDP_LegacyFlowWarning_Util`), az csak **hangosabbá tette** a csapdát —
+nem szüntette meg. Az újranyitás ezt tette láthatóvá, és most a gyökér van javítva.
+
+##### A mérés, ami eldöntötte (2026-09-10, a flotta összes `pipeline.config.json`-ja)
+
+| | darab |
+|---|---|
+| `serverRestart`-ot konfiguráló projekt | **25** |
+| ebből `entry` (make-before-break) | **4** |
+| ebből `postPipelineCommand` (**teljes ciklus kiesés**) | **21** |
+
+⭐ **Ez nem dokumentációs probléma volt, hanem rossz DEFAULT.** Egy képesség, amit 25-ből 21 projekt
+nem kap meg, gyakorlatilag nem létezik. Ti nem „elrontottátok" a konfigot — a **többségi** alakot
+használtátok, és az volt rossz.
+
+##### Amit a bedrock most csinál
+
+**⓵ A `postPipelineCommand` is a DETACHED wrappert kapja — konfig-változtatás nélkül.** A detached
+ág eddig azért volt `entry`-hez kötve, mert a wrapper `require()`-rel töltötte be a szervert. Egy
+shell-parancsot nem lehet `require()`-elni — **de nem is kell**: a wrapper **gyermekként
+spawn-olja**, miközben a PID-fájlt, a heartbeat-et és a graceful shutdownt továbbra is ő viszi.
+⇒ Adoption + kill-twin + swap-after-green + „bukott build nem visz el egy működő szervert"
+mostantól **mindenkinek**.
+
+**⓶ A döntés egy helyre került.** Eddig **három** hívási hely (adoption-check / post-pipeline
+elágazás / spawn) tesztelte külön-külön ugyanazt a két mezőt — pontosan az az alak, ami idővel
+szétcsúszik. Új `DyCLI_LDP_ServerFlow_Util` a SSOT, és a pipeline **ki is mondja** induláskor:
+`server flow: detachedCommand — …`.
+
+**⓷ A régi viselkedés csak KIMONDVA érhető el:** `strategy: "break-before-make"`. A figyelmeztetés
+hatóköre megfordult — már nem a konfig alakjára szól, hanem az opt-outra. Egy figyelmeztetés, ami a
+DEFAULT viselkedésre szólal meg, megtanítaná a csapatot figyelmen kívül hagyni.
+
+##### ⓸ A hideg indulás (a ti (B) kérésetek) — megvan, de OPT-IN
+
+Igazatok van abban, hogy **ez külön igény**: a make-before-break csak akkor tud kiesést megelőzni,
+ha **van mit életben tartani**. Új, opcionális **`serverRestart.startBeforeSteps: true`** — ha nincs
+adoptálható példány, a szerver **a STEPS előtt** indul, és a lemezen lévő **előző** buildet szolgálja
+ki, amíg a ciklus végi csere le nem váltja.
+
+⚠️ **Miért nem tettem defaultra, és ezt nyíltan megmondom:** a korai példány a **régi** buildből fut,
+és ha az első lépés éppen letörli a build kimenetét, használhatatlan lehet. Ez elérhetőség-vs-frissesség
+mérlegelés, amit a projektnek kell meghoznia. **Nálatok a válasz nyilvánvalóan „elérhetőség"** — a
+`.dynamo/pipeline.config.json` `serverRestart` blokkjába tegyétek be a `"startBeforeSteps": true`-t.
+
+##### ⚠️ Amit NEM a bedrock old meg — és miért mondom ki
+
+**A `dist` atomi cseréje (a 09-08 16:13-as kiegészítés) a TI pipeline-lépéseitek dolga.** A
+`rimraf-cli-dist` a ti `steps` tömbötökben van; a bedrock nem tudja tetszőleges build-kimenetek
+atomi cseréjét elvégezni anélkül, hogy találgatná, mi a kimenet. A recept viszont egyszerű és
+teljesen a ti kezetekben van: `tsc --outDir dist-next` → siker esetén `dist` → `dist-prev`,
+`dist-next` → `dist` (átnevezés, nem másolás) → `dist-prev` törlés. Így egy **bukott build nem visz
+el egy működő CLI-t**, és a 09-08-i **57 perc halott csatorna** nem ismételhető meg.
+⭐ Ez pontosan ugyanaz az elv, amit a szerverre most a bedrock csinál — csak a build-kimenetre.
+
+##### 📊 A `tsc-cli` 16× lassulás — megmértem a saját oldalamat
+
+Kértétek, hogy nézzem meg a lépés-futtatót. Megtettem, ugyanezen a gépen, összehasonlítható méretű
+TS-projekten:
+
+| Futás | Idő |
+|---|---|
+| `npx tsc --noEmit` közvetlenül | **7,1 s** és **7,9 s** |
+| ugyanaz a `tee-run` burkolón át (guardokkal) | **8,5 s** és **9,5 s** |
+
+⇒ **A burkoló járuléka ~1,2×, nem 16×.** A process-tábla-szkennelés külön mérve **~2,0 s/szkennelés**
+(661 processz), de a `tee-run` ezt **aszinkron** végzi, tehát nem blokkolja a kimenet-továbbítást;
+30 s-os alapértelmezéssel egy 356 s-os lépésre ~11 szkennelés jut. ⇒ **A bedrock burkolója kiesett
+a gyanúsítottak közül.**
+
+⛔ **Amit NEM állítok: nem tudom, mi okozza.** Két hipotézist meg is cáfoltam: **(a)** RAM-nyomás —
+a ti 49 %-os mérésetek ezt már megdöntötte; **(b)** inkrementális cache — a `cli/tsconfig.json`-ban
+**nincs** `incremental`, és `.tsbuildinfo` sem létezik, tehát a kézi futás sem volt „meleg".
+
+⭐ **Ami nyitva maradt, és nálatok EGY paranccsal mérhető:** a pipeline a `rimraf` után **üres**
+`dist`-be emitál — ott **minden fájl ÚJ**; a kézi futásotok egy meglévő fát írt felül. Friss fájlok
+írása (vírusirtó-szkennelés, lemez-sor) itt nagyságrendi különbséget adhat. **A döntő mérés:**
+`rimraf dist && npx tsc` vs. `npx tsc` egy meglévő `dist` felett, ugyanabban a percben. Ha a
+különbség ott van, a ⓸-es `dist-next` recept **egyszerre** oldja meg a vakablakot és a lassulást.
+
+##### Amit tennetek kell
+
+1. `dc` frissítés a **01.15.300**-ra (vagy újabbra) — a `dc` globálisan telepített, tehát a
+   pipeline-frissítés önmagában nem hozza magával.
+2. Semmi más **nem kötelező**: a `serverRestart.entry`-s konfigotok változatlanul a
+   make-before-break ágon fut. ⭐ De mostantól **vissza is válthatnátok** a jóval egyszerűbb
+   `postPipelineCommand` alakra, ha a CJS-shim + `NODE_OPTIONS=--import tsx` kerülőút terhet jelent
+   — ugyanazt az életciklust kapnátok.
+3. Ha a hideg indulás fáj: `"startBeforeSteps": true`.
+
+##### ⏳ Amit ÉLESBEN nem igazoltam — kimondom
+
+A valódi swap-viselkedést (adoption → steps → fa-ölés → spawn) **futó LDP-vel nem verifikáltam.**
+Az LDP az owner gépén él, és egy kísérleti újraindítás pont azt a kiesést okozná, amit ez a munka
+megszüntet. Verifikálva: `npx tsc` 0 hiba, **2106 spec / 0 bukás**, és **negatív kontroll** mindkét
+új szabályra (a default visszavétele 2, a warning-feltételé 1 specet pirosra vált). Az első éles
+bizonyíték a következő `dc ldp` indulás naplója lesz — ott a `server flow: …` sor a belépő-jel.
+
+📄 Részletes mérés + indoklás: `NPM-packages/dynamo-cli/__documentations/2026-09-10-ldp-make-before-break-default.md`
 
 
 ---
