@@ -649,3 +649,46 @@ env-olvasás. ⇒ A bekötés a **hívó** oldalán van.
 
 **Ez a 2. pont (automatikus küldés) záró darabja:** *„a voice-ra, hogyha ott vagyok, akkor
 **fel is olvasod**"*.
+
+---
+
+## 2026-09-10 19:18 — 🔔 A SZOLGÁLTATÁS-FIGYELŐ ÉSZLEL, DE NEM ÉRTESÍT
+
+> **Owner, 19:13:** *„hogyha nem elérhetőek a szerverek bármelyik, akkor azt **mindenképpen
+> jelezd nekem, ez nagyon fontos**. Elméletileg már van implementációnk… de nem biztos, hogy ez
+> aktív."*
+
+**Mérve (`GET /api/healthz` → `services`, 19:16):**
+
+| | |
+|---|---|
+| A figyelő **aktív**, be van kötve | `app.server.ts:246` (root-service) ✅ |
+| **Észlelte** a kiesést | mind a **7 cél** `unreachable`, **28 egymást követő bukás** |
+| Mióta | `lastHealthyAt: 01:33` ⇒ **~15,7 óra** |
+| 🔴 **Értesített bárkit?** | **NEM** — sem az asszisztenst, sem az ownert |
+
+### A feladat: a hiányzó láncszem az ÉRTESÍTÉS
+
+Az adat egy végponton ül, amit **valakinek le kell kérdeznie**. ⇒ 15,7 órán át senki nem tudta,
+hogy állnak a szerverek. **A megfigyelés önmagában nem riasztás.**
+
+**Amit kérünk:** ha egy cél `unreachable`-be **vált** *(vagy N bukás után)*, az **magától**
+jusson el az ownerhez a szokásos csatornán. ⛔ Ne az legyen, hogy „ott van a `healthz`-ben".
+
+📌 **Állapot-váltásra** szóljon, ne minden körben — különben **15,7 órán át percenként** üzenne.
+⚠️ **A mennyiség itt kockázat:** az owner fő panasza a sok üzenet *(`discord-message-style.md`)*.
+⇒ **Váltáskor egyszer**, és **helyreálláskor egyszer**.
+
+### ⚠️ Két mért csapda, amit a megoldásnak kezelnie kell
+
+1. **30 perces mintavétel** (`intervalMs: 1800000`) ⇒ az állapot **fél óráig téves** lehet
+   **mindkét irányban**. Élő példa ugyanabból a percből: a figyelő szerint az **Organizer
+   `unreachable`**, miközben **sikeresen létrehoztam benne egy feladatot** *(19:14)*.
+   ⇒ Riasztás előtt **érdemes egy friss próbát** tenni, hogy ne küldjünk hamis riasztást.
+2. A `lastHealthyAt` **hiányozhat** *(Production Webhook, Gateway: `-`)* ⇒ a „mióta" nem mindig
+   számolható. ⛔ Ne dobjon `NaN`-t vagy „ismeretlen óta"-t a felhasználó felé.
+
+### ⛔ Korlátok
+
+⛔ Egyetlen ellenőrzést sem kapcsolsz ki · ⛔ ne írj az ownernek *(a csatorna az asszisztensé — a
+riasztás is az ő nevében megy)* · ✅ teszt + zöld suite.
