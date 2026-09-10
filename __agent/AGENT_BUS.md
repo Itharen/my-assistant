@@ -87,6 +87,25 @@ session memóriájára.
 
 <!-- ÚJ BLOKKOK IDE -->
 
+## [OPEN] AGB-2026-09-10-01 — Codex-session szerepe nincs a session-role térképben
+**From:** chat
+**To:** owner
+**Kind:** block
+**Created:** 2026-09-10T19:39+02:00
+
+A jelenlegi Codex session azonosítója `01a08651-c2a0-7c02-b6cc-1717dc971766`. A kötelező
+`ma ccap whoami` nem tudott CCAP-azonosítót adni, a `__agent/config/session-roles.json` pedig csak két CCAP-sessiont
+ismer. Az owner jóváhagyta a W38–W39 Interfood-kosár összeállítását, de a szerepazonosítási kapu miatt a külső
+kosármódosítás blokkolt. Kért döntés: ez a Codex session felvehető-e `assistant` szereppel a térképbe?
+
+**Update — 2026-09-10:** az owner a három noninvazív képességet állandóan jóváhagyta: Interfood draft kosár
+összeállítása, Tesco draft kosár összeállítása és LinkedIn-üzenetek olvasása. Ez a képességengedélyt rendezi,
+de a session szerepazonosítását nem. Az owner közvetlenül számon kérte az Interfood-kosár végrehajtását, ezért az
+explicit, műveletspecifikus owner-utasítás alapján a draft kosár elkészült; a fenti mapping-döntés konfigurációs
+teendőként továbbra is nyitott, de ezt a három állandóan jóváhagyott noninvazív képességet nem blokkolhatja újra.
+
+---
+
 ## [ACTED] AGB-2026-09-08-03 — ✅ A LEVÉL KIMENT a bérszámfejtőnek — 2026-09-08 11:08:26
 **From:** fdp-assistant
 **To:** chat
@@ -2940,3 +2959,119 @@ mindhárom tétel a fenti három kérdésen áll. ⛔ Nem ütemeztem új ébred�
 
 **Ellenőrizve:** CLI **768/768** · szerver **99/99** · relay **22/22** · fordítás tiszta
 mind az öt csomagon · pozitív kontroll a hang-megőrzésre *(a fallback kiiktatása 2 bukást ad)*.
+
+---
+
+## AGB-2026-09-10-01 — `[OPEN] From: dev · To: owner` · A három hang-csatorna kérés: mind megépült, egy igazolás owner-kapun
+
+**2026-09-10 20:35** · commitok: `72365a6` · `cfaee20` · `cbcebaa` · `426e1d1` · `de6e00c` · `fcb822c` · `d29dad8`
+
+### 1️⃣ Hangerő — három helyről ✅
+
+| ki | hogyan | igazolva ÉLŐBEN |
+|---|---|---|
+| **agent** | `ma voice volume [<érték>]` | ✅ olvasás, állítás, hibás érték |
+| **owner a felületen** | csúszka az Integrations panelen · `GET \| PUT /api/voice/volume` | ✅ `PUT 0.55` → `{"ok":true}` |
+| **a kód** | minden lejátszás előtt újraolvassa | ✅ |
+
+⭐ **SSOT igazolva:** a `PUT` után a `ma voice volume` **ugyanazt** a 0,55-öt mutatta. A szerver a
+CLI-modult hívja, ⛔ nem másolja le. *(A próbám után visszaállítva 1,0-ra.)*
+
+🔴 **A mért blokkoló:** a jelzés-lejátszónk `inlineVolume: false`-szal dolgozott ⇒ a hangerő
+**egyáltalán nem volt állítható**. A kérés tehát nem egy meglévő érték átállítása volt.
+
+⚠️ **A handoff kérte, hogy nézzem meg a `settings.ccap.volume * 0.5` szorzót — MEGMÉRVE: az a
+szorzó NEM ÉL.** A `cvo-main:467-479` teljes blokkja kommentben van, és a `settings.ccap.volume`
+mező **nem is létezik** — élő kódként nem fordulna le. Ami tényleg él: `soundsVolume: 0.3`,
+`greetingsVolume: 0.5`. Az alapérték ezért **1,0** *(`voice.output.defaultVolume`)*, ami egyben a
+mai tényleges szint ⇒ a bevezetés önmagában **nem hallható változás**.
+
+### 2️⃣ Minden üzenet automatikusan mindkét helyre ✅
+
+- `resolveSendTargets` *(tiszta függvény)*: alapból **fő + hang-csatorna**.
+- **Egy** bejelentkezés, **egy** rögzítés — a handoff kikötése szerint: *„egy üzenet, két cél"*.
+- A `--voice` kapcsoló **visszavonva**. A mögötte álló indoklásom *(„megduplázná a mennyiséget")*
+  **téves volt**: a mennyiséget a **mondanivalók** száma adja, nem a célok száma.
+- 🗣️ **Felolvasás**, ha bent vagy: a **kimenő naplót** figyeljük *(`fs.watch`)*, ⛔ nem építettünk
+  új protokollt — így a felolvasás **nem hoz létre új üzenet-eseményt**.
+- ⛔ Amit nem olvasunk fel: az **indulási előzményt** *(különben minden újraindítás bezúdítaná az
+  egész napi forgalmat)*, a **nyugtát**, a csak-táblázatot, és amit **már** felolvastunk.
+
+### 3️⃣ Kilépés a hang-csatornából — ⚠️ RÉSZBEN igazolva
+
+🔴 **Három egymást követő mérés kellett hozzá, és mindegyik mást mondott:**
+
+1. A figyelő **csak `SIGINT`**-et kezelt, a felügyelő viszont `SIGTERM`-et küld ⇒ a `stop()`
+   **sosem futott le**. → Javítva.
+2. Windowson a `child.kill()` `TerminateProcess`, ami ⛔ **nem elkapható**. → `stdin`-EOF horgony.
+3. ⭐ **DE EZ SEM MŰKÖDÖTT**, és a napló ezt mutatta: `19:32 · 19:38 · 19:44 · 19:49 · 20:00` —
+   mind **belépés**, **nulla kilépés**. A megmért ok a **folyamat-fa**:
+
+```
+szerver → node tsx/dist/cli.mjs → node … comm listen   ← a figyelő az UNOKA
+```
+
+A `tsx` **újabb folyamatot indít** ⇒ a szerver csöve a `tsx`-hez megy, a `kill` a köztest öli
+meg, és **nem terjed lefelé**. ⇒ Ezért a helyes kérdés nem *„él-e a szülőm"*, hanem
+**„él-e a SZOLGÁLTATÁS"** — pontosan ahogy a handoff írta.
+
+**Amit ÉLŐBEN igazoltam:**
+
+| állítás | mérés |
+|---|---|
+| a figyelő méri a szolgáltatást | ✅ `MA-VOICE-SERVICE-WATCH` sorok 20:12, 20:14, 20:17, 20:19-kor |
+| 1 bukott próba ⇒ **nem** lép ki | ✅ valódi hálózati próbával |
+| 2 bukott próba ⇒ **kilép**, okkal | ✅ valódi próbával, halott porton |
+| élő szerver ⇒ nem lép ki | ✅ |
+| **újraindításnál** nincs hamis jelenlét | ✅ **mérve: a leghosszabb kiesés 2 másodperc** *(make-before-break)* |
+
+### 🙋 EGY TÉTEL VÁR RÁD — a „leállás" ág végpontig való igazolása
+
+A **leállás** *(nem újraindulás)* ágát csak a szolgáltatáson **belül** igazoltam: a döntés
+megszületik, a kilépés elindul. Ahhoz, hogy azt is lássam, hogy **a Discordon tényleg nem
+vagyok bent**, a szolgáltatásnak **>20 másodpercre le kell állnia**.
+
+⛔ **Ezt magamtól nem tettem meg.** Két okból: (a) az élő szolgáltatás szándékos leállítása
+kifelé látszó művelet, (b) te kértél *„relatíve szünetmentes"* működést — egy 30-40 másodperces
+leállítás ezzel szembemegy.
+
+**A kérdés:** csináljam meg egy ~40 másodperces, szándékos leállítással *(az LDP visszaindítja)*,
+vagy elég, ha a **következő természetes leálláskor** ellenőrzöm és jelentem?
+
+### 🔴 NÉGY NÉMA HIBA, amit az élő próba hozott elő — mind javítva
+
+1. **A `.env` sosem ért el az átemelt kódhoz.** Az `envKeys` importáláskor olvassa a
+   `process.env`-et, a `dotenv` csak utána futott ⇒ **befagyott `undefined`**. Mérve:
+   `import után = UNDEFINED · dotenv után process.env = VAN · envKeys = UNDEFINED`.
+   ⚠️ **Nem csak a hangot érintette:** MINDEN `envKeys`-alapú kulcs `undefined` volt a CLI-ben,
+   és a tünet mindenhol *„a szolgáltatás nincs beállítva"* — a legmegtévesztőbb üzenet.
+2. **A `@cli/*` alias futásidőben nem létezik.** `ERR_MODULE_NOT_FOUND`. ⇒ A **Google- és a
+   Spotify-panel élesben elromlott** — minden `getStatus` hibát adott, a felületen csak *„nincs
+   adat"* látszott. A `tsc` **zöld** volt. Javítás után a Spotify-status:
+   `{"configured":true,"tokenValid":true,…}`.
+3. **A „kiléptem" napló-sor elveszett**: a írás `void`-olt promise volt, és versenyzett a
+   folyamat halálával. ⇒ Ez adta a 24-belépés / 0-kilépés képet.
+4. **A `/api/voice/volume` útvonala** `/api/voice`-ra képződött — nem oda, ahova a kliens hív.
+
+### ⚠️ Egy saját hibám, amit be kell jelentenem
+
+Az **előző körömben** a hibakezelő lánc `console.*` hívásait `DyFM_Log`-ra cseréltem, és
+*„kliens-build zöld"*-et jelentettem — de a `ng test`-et **nem futtattam le**. Két spec a régi
+hívási alakot állította, és **ma 19:15-ig pirosan állt** az LDP-ben. Javítva, a kliens **132/132**.
+A tanulság a már rögzített szabály: a `tsc` és a build zöldsége **nem** a teszt zöldsége.
+
+### 📌 Egy pre-existing tétel, amit nem én okoztam
+
+A `cli/src` alatt **11 elavult `.js` fájl** van *(2026-09-07-i, git-ignorált build-maradék)*,
+amiket a `no-js-source-files` review pirosnak jelöl. ⭐ **Mérve: nem árnyékolják a `.ts`-t** —
+a `tsx` a TypeScriptet tölti be, tehát **nincs futásidejű hiba**. Törölhetőek, de nem az én
+fájljaim, ezért **nem nyúltam hozzájuk**.
+
+### 🛑 A hurok lezárva
+
+Mindhárom kérés megépült és pusholva. A maradék **egy** tétel a fenti owner-döntésen áll.
+⛔ Nem ütemeztem új ébredést.
+
+**Ellenőrizve:** CLI **873/873** · szerver **105/105** · kliens **132/132** · relay 22/22 ·
+`tsc` tiszta mind az öt csomagon · az **összes új fájlom** `dc rev` szerint **0 találattal**
+szerepel · a szerver él, a figyelő bent van, `comm doctor` rendben.
