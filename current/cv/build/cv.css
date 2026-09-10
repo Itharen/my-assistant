@@ -238,8 +238,10 @@ body {
 .contact-head {
   position: absolute;
   top: 20pt;
-  left: 200pt;
+  left: 200pt;               /* mert: a 9.0 kontakt-szovege x=452.4-nel all */
 }
+/* A 10.0-ban hosszabb a ceges e-mail — csak OTT toljuk balra, a reprodukcio nem mozdulhat. */
+.contact-head--wide { left: 186pt; white-space: nowrap; }
 .contact-head li {
   display: flex;
   align-items: center;
