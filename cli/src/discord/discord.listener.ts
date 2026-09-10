@@ -17,6 +17,7 @@ import { Client, Events, GatewayIntentBits, Partials, type Message } from 'disco
 import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 import { decideVoiceJoinPermission } from '../voice/voice-lifecycle.js';
 import { VoiceReadAloudWatcher } from '../voice/voice-read-aloud-watcher.js';
+import { VoiceServiceWatch } from '../voice/voice-service-watch.js';
 import { speakInVoiceChannel } from '../voice/voice-speaker.js';
 import { resolveOutboundLogPath } from './discord.reply-tracker.js';
 import { logAction } from '../action-log/action-log.client.js';
@@ -270,6 +271,7 @@ export class DiscordListener {
    * befejeződik, a napló ugyanazt a hazug képet adja, mint eddig: csupa belépés, nulla kilépés.
    */
   private readonly pendingVoiceEventWrites: Set<Promise<void>> = new Set<Promise<void>>();
+  private serviceWatch: VoiceServiceWatch | null = null;
 
   /** 🔍 Az élő eldobás-szonda — a `stop()`-nak le KELL állítania (különben duplán mérne). */
   private dropProbe: VoiceDropProbe | null = null;
@@ -435,6 +437,9 @@ export class DiscordListener {
     await this.missedSpeech?.stop();
     this.missedSpeech = null;
 
+    this.serviceWatch?.stop();
+    this.serviceWatch = null;
+
     this.readAloud?.stop();
     this.readAloud = null;
 
@@ -549,6 +554,47 @@ export class DiscordListener {
    * 🔴 A HIÁNYZÓ KONFIGURÁCIÓ NEM HIBA, DE NEM IS NÉMA: ha nincs megadva a szerver/csatorna,
    * naplózzuk — így később nem kell találgatni, miért nem ül bent.
    */
+  /**
+   * 🩺 A SZOLGÁLTATÁS-FIGYELŐ INDÍTÁSA.
+   *
+   * > **Owner, 2026-09-10 18:28:** *„amikor leáll a szerver, illetve újraindul, olyankor ki
+   * > kéne lépjél a csatornáról, hogy ne higgyem azt, hogy itt vagy."*
+   *
+   * ⭐ A kilépés UTÁN is élünk: a szerver lehet, hogy csak **újraindul**. Amikor visszajön,
+   * **visszalépünk** — mert a néma kimaradás ugyanolyan félrevezető, mint a hamis jelenlét.
+   */
+  private startServiceWatch(): void {
+    const healthUrl: string = (process.env['MA_SERVER_HEALTH_URL'] ?? '').trim()
+      || 'http://localhost:39335/api/healthz';
+
+    this.serviceWatch?.stop();
+    this.serviceWatch = new VoiceServiceWatch({
+      healthUrl: healthUrl,
+      onLeave: async (action): Promise<void> => {
+        this.voicePresence.leave();
+        // ⭐ MEGVÁRJUK a napló-írást: a „kiléptem" sor az EGYETLEN nyoma annak, hogy
+        // tisztán mentünk ki. (Ez az a hiba, ami a 24-belépés / 0-kilépés képet adta.)
+        await this.flushVoiceEventWrites();
+        await this.safeLog({
+          kind: 'note',
+          summary: `[discord/listener] MA-VOICE-SERVICE-LEFT: ${action.reason}`,
+          extra: { code: 'MA-VOICE-SERVICE-LEFT' },
+        });
+      },
+      onRejoin: async (): Promise<void> => {
+        await this.joinVoiceChannel();
+      },
+      onNote: (detail: string): void => {
+        void this.safeLog({
+          kind: 'note',
+          summary: `[discord/listener] MA-VOICE-SERVICE-WATCH: ${detail}`,
+          extra: { code: 'MA-VOICE-SERVICE-WATCH' },
+        });
+      },
+    });
+    this.serviceWatch.start();
+  }
+
   /**
    * 🗣️ A FELOLVASÓ INDÍTÁSA — a kimenő napló figyelése.
    *
@@ -893,6 +939,11 @@ export class DiscordListener {
     // ⭐ A KIMENŐ NAPLÓT figyeljük, nem új csatornát: a `recordOutbound` minden üzenetet
     // beír oda PONTOSAN EGYSZER. Így a felolvasás nem hoz létre új üzenet-eseményt.
     await this.startReadAloud();
+
+    // 🩺 A HANG-JELENLÉT A SZOLGÁLTATÁST JELEZZE, NE A FOLYAMATOT (owner, 2026-09-10 18:28).
+    // ⚠️ MÉRVE: a jel- és `stdin`-alapú horgony hatástalan, mert a `tsx` közbeiktat egy
+    // folyamatot, és a figyelő a szerver UNOKÁJA — l. `voice-service-watch.ts` fejlécét.
+    this.startServiceWatch();
 
     const result = await startVoiceRecording({
       connection: connection,
