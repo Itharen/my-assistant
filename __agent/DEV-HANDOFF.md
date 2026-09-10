@@ -911,3 +911,31 @@ a türelmi idő letelt   → a felolvasás ONNAN folytatódik, ahol abbamaradt
 ⛔ **`one-function-is-enough`:** ez **EGY** funkció. Ne told mellé a tükrözést *(01:10-es szakasz
 (B) pont)* ugyanabban a körben.
 
+---
+
+## 2026-09-11 01:24 — ✅ A HALLGATÁS MEGVAN — és egy MÉRT átirat-hiba mellé
+
+⭐ **A 01:10-es szakasz (A) pontja MEGOLDÓDOTT:** két hangüzenet **átért hozzám** a DM-be,
+tehát a felvétel elindul, a felismerés lefut, és a **tükrözés is működik** *(a (B) pont is)*.
+⛔ Ezt a két tételt **ne** vidd tovább.
+
+### 🔴 AMI VISZONT ROSSZ: a nyelv-felismerés
+
+A két átirat közül az **első** ez lett:
+
+```
+"Jag måste bara vara en falla om en gång."
+```
+
+⇒ **Svéd.** Az owner **magyarul** beszélt. A második átirat ugyanabban a percben **helyes magyar**
+lett, tehát a lánc alapvetően jó — a nyelv-felismerés viszont **üzenetenként dönt**, és el tud
+tévedni.
+
+**A kérés:** a felismerés **nyelve legyen rögzítve magyarra**, ne találgasson. ⚠️ Ha az API
+támogat explicit `language` paramétert, azt kell átadni; ha nem, akkor a válasz nyelvét
+**ellenőrizni** kell, és eltérésnél újra kérni.
+
+📌 **Miért nem kozmetika:** a félrehallott átirat **nem hibaként** jelenik meg — teljes értékű
+üzenetként ér hozzám, és **rossz munkát indíthatok el belőle**. Ez ugyanaz a hibaosztály, mint a
+néma render-bukás: a lépés „lefutott", csak nem azt csinálta, amit kellett.
+
