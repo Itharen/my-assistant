@@ -374,10 +374,51 @@ Minden további téma VÁR — vagy a repóba megy.
 | Új feladat, amihez input kéne | ⏸️ **vár**, amíg fókuszba kerül — vagy magamnak oldom meg |
 | Biztonsági / rendszer-ügy | 📌 repó + AGENT_BUS, ⛔ nem Discord *(kivéve: valódi, azonnali kár)* |
 
-### ⭐ ÉS AMI EBBŐL A LEGFONTOSABB: NE KÉRDEZZEK, HANEM CSINÁLJAM
+### ⛔ EZ A PONT HIBÁS VOLT — l. a 6. megfogalmazást alatta
 
-Amikor blokkolt voltam a *„mi maradjon a CV 3. oldaláról"* döntésen, **rákérdeztem**. Rossz.
-Van javaslatom → **meg kell csinálni**, és a **kész dolgot** megmutatni. Ő konkrét eredményre
-sokkal olcsóbban reagál, mint egy nyitott kérdésre. *(`working-style`: „a Definition of Done-t
-TE mondod ki".)* ⛔ A kérdés is **zaj**, ha a válasz nélkül is tudok haladni.
+> ~~*„NE KÉRDEZZEK, HANEM CSINÁLJAM.* Van javaslatom → meg kell csinálni, és a kész dolgot
+> megmutatni."*~~ — **2026-09-10 21:52-kor ez okozta a következő kiakadást.** A szűk tanulság
+> jó volt *(ne kérdezzek rá arra, amit a KÉRT HATÓKÖRÖN BELÜL magam is eldönthetek)*, de
+> hatókör-bővítési engedélyként olvastam. Javítva lentebb.
+
+---
+
+## 🔴 HATODIK MEGFOGALMAZÁS (2026-09-10 21:50) — A KÉRT HATÓKÖR A HATÁR
+
+> **Owner:** *„nem azt kértem, hogy a kétoldalas verziót csináld meg, azt kértem, hogy
+> reprodukáld egy az egyben a jelenlegi verziót, hogy lássam, hogy ugyanaz a stílus…"*
+> · *„A kiakadásom csak arról szólt, hogy nem láttam még előtte a valódi reprodukciós mintát,
+> hogy lássam, hogy tényleg jó lesz-e az irány."*
+
+### A három hiba, egymásra épülve
+
+| # | Hiba | Miért történt |
+|---|---|---|
+| 1 | **Nem kért munkát végeztem** — a 2 oldalas verziót jóváhagyás nélkül | a saját, 40 perccel korábban írt „ne kérdezz, csináld" szabályom |
+| 2 | **A kontroll-mintát nem hagytam jóváhagyni** — továbbmentem, mielőtt LÁTTA volna | a **saját mérésemet** (337/341 sor) vettem igazolásnak |
+| 3 | **Visszajelentettem, mit írtam fel** — mind az 5 feladatot felsoroltam | pedig ezt már **korábban is tiltotta** |
+
+### ⭐ A 2. a legfontosabb — és ez teljesen új
+
+**A saját mérésem NEM az ő jóváhagyása.** A kontroll-minta azért készül, hogy **ŐK nézze meg**.
+Amíg nem mondta, hogy rendben, a következő lépés **nem indulhat el** — akkor sem, ha én
+matematikailag bizonyítottam, hogy jó.
+
+```
+kontroll-minta / minta-darab / „hogy lássam"  →  elkészítem
+                                              →  MEGMUTATOM
+                                              →  MEGÁLLOK
+                                              →  amíg ő nem mondja: mehet
+```
+
+### A javított változat az elhagyott pont helyett
+
+| Helyzet | Mit teszek |
+|---|---|
+| Döntés **a kért hatókörön BELÜL** (hogyan, milyen sorrendben, melyik technikával) | ✅ eldöntöm magam, nem kérdezek |
+| A **hatókör kiterjesztése** (új deliverable, következő fázis, „ha már itt tartunk") | ⛔ **NEM** — befejezem a kértet és megállok |
+| Kontroll-minta / verifikációs lépés | ⛔ **NEM megyek tovább** a jóváhagyása nélkül |
+
+📌 **Kapcsolódó, kanonikus:** `current/principles/swearing-is-a-scope-signal.md` — a káromkodás
+ennek a hibának a jelzése, és ott van a helyreállítási protokoll.
 

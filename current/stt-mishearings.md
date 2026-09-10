@@ -34,6 +34,7 @@ rosszat állítani. A döntés az owneré.
 | `realy` | relay | owner, 2026-09-07 *(gépelve, nem STT — de ugyanaz az osztály)* |
 | `my-assisstant` | my-assistant | owner, 2026-09-07 *(gépelve)* |
 | `Hello Sea` · `HelloCia` | **HeloCia** | owner, 2026-09-10 — a sajat tarskereso appja. Hiteles irasmod a CV 2. oldalarol: *"HeloCia (free to use dating app, for commercial purposes)"* — **egy** L |
+| `fan` · `a fanban` | **FAM** (FDP Agent Memory) | owner, 2026-09-10 — *"A fan tipikus felrehallasa a FAM-nak."* |
 
 ### ⚠️ Amit ebből tanulni kell
 
