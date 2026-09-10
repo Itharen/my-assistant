@@ -31,8 +31,8 @@
     <p class="s-text">I design and run AI systems end to end &mdash; agent orchestration, local and
       hosted LLMs, vector memory and the tooling around them &mdash; on a decade of full-stack
       engineering. I own the whole chain: architecture, implementation, deployment, people.</p>
-    <p class="s-text">What a company buys is not a pair of hands: a working system and the team that
-      can keep it running.</p>
+    <p class="s-text">What a company buys is not a pair of hands: a working system, and the
+      infrastructure that keeps delivering it.</p>
 
     <h2 class="s-head s-head--plain" style="margin-top:8pt">AI Stack</h2>
     <p class="s-fineprint" style="margin-top:6.6pt">Agent orchestration: multi-agent workflows, role-separated
@@ -103,21 +103,19 @@
         <ul class="list">
           <li class="arrow"><b>AI Systems &amp; Agent Orchestration</b>
             <ul class="tight">
-              <li>Designed and operate a multi-agent orchestration platform: parallel LLM coding sessions,
-                MCP tooling, shared vector memory and machine-readable rule sets (in-house, pre-release)</li>
+              <li>Designed and operate a multi-agent orchestration platform: parallel LLM coding
+                sessions, MCP tooling and shared vector memory (in-house, pre-release)</li>
               <li>Self-hosted ~30B models running next to hosted APIs &mdash; cost, latency and data
                 residency stay under control</li>
-              <li>Multiple vector-DB solutions in production: embedding pipelines and scoped, versioned
-                retrieval over own document corpora</li>
+              <li>Embedding pipelines and scoped, versioned retrieval over own document corpora</li>
               <li>AI-driven document / policy / FAQ relation bots</li>
               <li>Speech pipeline end to end: speech&rarr;text intake with retry and a transcript ledger,
                 plus text&rarr;speech output</li>
-              <li>Using and refining Hugging Face models; several AI providers integrated inside one
-                application (LangSmith, OpenAI, Anthropic, Leonardo, Hyperhuman, ElevenLabs)</li>
-              <li>Model types in production use: text-to-text, text-to-image, image-to-text, speech-to-text,
-                text-to-speech, function calling and structured output</li>
-              <li>AI tooling that speeds up development itself &mdash; and continuous local experimentation,
-                rather than only consuming existing services</li>
+              <li>A local-first vector-memory service of my own: six scoped knowledge stores behind a
+                single MCP and REST interface, with swappable embedding providers &mdash; the retrieval
+                layer other AI tools plug into</li>
+              <li>Machine-readable rule sets governing a <b>73-repository</b> estate: every agent in it
+                reads, and obeys, the same standards</li>
             </ul>
           </li>
           <li class="arrow gap2"><b>Software Architecture &amp; Full-stack Delivery</b>
@@ -128,17 +126,20 @@
                 NodeMailer, FS &middot; C#, Unity (2D, 3D)</li>
               <li><b>Dynamo</b> &mdash; my own framework family, designed, documented and maintained:
                 a dynamic Angular-Material front-end kit, a NodeTS-MongoDB back end, shared full-stack
-                models and a code-generating CLI that converts and reads code from the command line</li>
+                models and a code-generating CLI</li>
               <li>A unified internal component kit built on top of it, plus several in-house products
                 currently in pre-release on that stack</li>
             </ul>
           </li>
           <li class="arrow gap2"><b>DevOps &amp; Delivery</b>
             <ul class="tight">
-              <li>Docker environments with microservice architecture; CI/CD workflow development and
-                pipeline orchestration</li>
-              <li>Server configuration: Windows Server, Apache, Nginx, file sharing</li>
-              <li>Networking configuration: router, LAN and network setup</li>
+              <li>Built and operate an in-house CI/CD orchestrator: webhook intake, a coalescing job
+                queue with priority ageing, containerised runners, per-step reporting, encrypted
+                secrets and role-based access &mdash; not a hosted CI, ours</li>
+              <li>Auto-generated end-to-end test suites from typed form models (Playwright): typed,
+                overridable, diffable, with form-coverage and Core-Web-Vitals diagnostics</li>
+              <li>Docker environments with microservice architecture across ~20 services</li>
+              <li>Server and network configuration: Windows Server, Apache, Nginx, routing, LAN</li>
             </ul>
           </li>
           <li class="arrow gap2"><b>Own Products &amp; Research</b>
@@ -184,10 +185,12 @@
       modifications no longer need a specialist.</p>
 
     <h2 class="s-head" style="margin-top:16pt">HOW I WORK</h2>
-    <p class="s-text" style="margin-top:2.5pt">Contractor only &mdash; I am the CEO of my own
-      company.</p>
+    <p class="s-text" style="margin-top:2.5pt">I work through my own company, and I am open to
+      longer, dedicated engagements as well as project work.</p>
     <p class="s-text">Full remote, with the usual exceptions: onboarding, getting to know the
       systems, and consultation with customers.</p>
+    <p class="s-text">Because the tooling above absorbs the repetitive work, I can carry more than
+      one engagement at a time without either of them slowing down.</p>
     <p class="s-text">Flexible conditions, and open to more than a standard week when a delivery
       needs it. I prefer to be in control of the problems I take on.</p>
 
@@ -326,7 +329,7 @@
     <div class="rule" style="margin-top:6pt"></div>
     <h2 class="h-section">Education</h2>
 
-    <article class="entry entry--edu" style="margin-top:5pt;--rail-top:-34.5pt">
+    <article class="entry entry--edu" style="margin-top:3pt;--rail-top:-32.5pt">
       <div class="entry__meta">
         <div class="entry__org">Budapest University Of Technology And Economics</div>
       </div>
