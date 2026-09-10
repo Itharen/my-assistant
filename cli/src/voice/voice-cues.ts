@@ -72,9 +72,43 @@ export type VoiceCue =
   | 'error';
 
 /** A jelzés → fájl hozzárendelés. ⭐ Cseréhez elég a fájlt kicserélni, a kód marad. */
+/**
+ * 🔴 A CCAP EREDETI LEKÉPEZÉSE — visszaellenőrizve a forrásban, 2026-09-10.
+ *
+ * > **Owner (2026-09-10 18:09, hangcsatorna):** *„ez egy furcsa hang, ami eddig nem létezett,
+ * > szerintem ezt most szülted valahonnan… Vissza kéne nézned nagyon alaposan, hogy a CCAP-ba
+ * > milyen eseményhez milyen hangok társultak, azt kéne reprodukáljuk, az már egy jól behangolt
+ * > hangok voltak."*
+ *
+ * ⭐ **IGAZA VOLT.** A `cue-understood.mp3` a `11L-subtle,_warm,_mallow-1752274832820.mp3`
+ * másolata volt — az a fájl a CCAP `sounds/` mappájában ott van, **de EGYETLEN eseményhez sem
+ * volt kötve**. Vagyis nem reprodukáltuk a CCAP-ot: **választottunk** egy hangot.
+ *
+ * **A CCAP tényleges eseménye → hang párosítás** *(forrás: `ccap/discord-bot/src`)*:
+ *
+ * | CCAP-esemény | hang | hol |
+ * |---|---|---|
+ * | a **felismerés elindul** | `whoosh.mp3` | `cv-elevenlabs-speech-recognition:170`, `cv-local-speech-recognition:78` |
+ * | eredmény **elfogadva** *(`OK` / `MISPELLED`)* · legjobb blokk kiválasztva | `typing.mp3` | `cv-result-review:178,185`, `cv-recording:908` |
+ * | eredmény **kétes** *(`OUTOFCONTEXT`)* | `hmmm.mp3` | `cv-result-review:200` |
+ * | **korai** eldobás *(osztályozás bukott, nincs zöld blokk)* | `early-skip` | `cv-processing:99`, `cv-recording:857,936` |
+ * | eldobás | `skip.mp3` | `cv-processing:225` |
+ * | hiba | `error.mp3` | — |
+ *
+ * ⚠️ **Ez megfordítja a korábbi `heard` jelentését is:** a `typing` a CCAP-ban **nem** a
+ * „hallak", hanem az **„elfogadtam az eredményt"**. A „most kezdem feldolgozni" a `whoosh`.
+ *
+ * ⚠️ **MÉRT KOMPROMISSZUM:** a `whoosh.mp3` **77 kB / ~4,7 s** — jóval hosszabb a többinél
+ * *(a `typing` 9,5 kB / 0,44 s)*. Ezért került korábban elutasításra. ⇒ Most **bekerül**,
+ * mert az owner a **CCAP hűségét** kérte — de ha zavaróan hosszú, az **owner-döntés**, nem
+ * az én ízlésem. *(`current/principles/transplant-not-rewrite.md` szelleme: a működő eredetit
+ * reprodukáljuk, nem „jobbítjuk".)*
+ */
 const CUE_FILES: Record<VoiceCue, string> = {
-  heard: 'cue-heard.mp3',
-  understood: 'cue-understood.mp3',
+  // 🔊 „most kezdem feldolgozni" — a CCAP-ban `whoosh.mp3`.
+  heard: 'cue-processing.mp3',
+  // ✅ „elfogadtam az eredményt" — a CCAP-ban `typing.mp3`.
+  understood: 'cue-heard.mp3',
   dropped: 'cue-dropped.mp3',
   unsure: 'cue-unsure.mp3',
   error: 'cue-error.mp3',

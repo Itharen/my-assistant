@@ -70,7 +70,8 @@ describe('VoiceCuePlayer — hallható visszajelzés a hang-csatornában', () =>
     await player.play('understood');
 
     expect(conn.subscribeCalls).toBe(1);
-    expect(played[0]).toContain('cue-understood.mp3');
+    // ⚠️ 2026-09-10 ÓTA a CCAP eredetije: az „elfogadtam" hang a `typing.mp3` (= `cue-heard.mp3`).
+    expect(played[0]).toContain('cue-heard.mp3');
   });
 
   it('⭐ minden jelzéshez SAJÁT fájl tartozik', async () => {
@@ -249,5 +250,49 @@ describe('resolveSoundsDir — 🔴 a `cwd` NEM befolyásolhatja (mért hiba, 20
   it('✅ a feloldott könyvtárban TÉNYLEG ott vannak a hangok', () => {
     // ⛔ Nem eleg, hogy „ad egy utvonalat" — a hiba pont az volt, hogy ADOTT egyet, csak rosszat.
     expect(existsSync(join(resolveSoundsDir(), 'cue-heard.mp3'))).toBe(true);
+  });
+});
+
+describe('CUE_FILES — 🔴 a CCAP EREDETI párosítása (owner: „azt kéne reprodukáljuk")', () => {
+
+  // Owner, 2026-09-10 18:09: „ez egy furcsa hang, ami eddig nem letezett, szerintem ezt most
+  // szulted valahonnan... Vissza kene nezned nagyon alaposan, hogy a CCAP-ba milyen esemenyhez
+  // milyen hangok tarsultak."
+  //
+  // IGAZA VOLT: a regi `cue-understood.mp3` a 11L-subtle,_warm,_mallow-... masolata volt, ami a
+  // CCAP-ban EGYETLEN esemenyhez sem volt kotve. Ezek a tesztek lezarjak a valodi parositast.
+
+  it('⭐ „most kezdem feldolgozni" = a CCAP `whoosh` — nem a typing', async () => {
+    const { player, played } = makePlayer();
+    const conn = makeConnection();
+
+    player.attach(conn.connection);
+    await player.play('heard');
+
+    expect(played[0]).toContain('cue-processing.mp3');
+  });
+
+  it('⭐ „elfogadtam az eredményt" = a CCAP `typing`', async () => {
+    const { player, played } = makePlayer();
+    const conn = makeConnection();
+
+    player.attach(conn.connection);
+    await player.play('understood');
+
+    expect(played[0]).toContain('cue-heard.mp3');
+  });
+
+  it('⛔ EGYETLEN jelzés sem mutathat a CCAP-ban NEM HASZNÁLT hangra', async () => {
+    // A `11L-...mallow` fajl letezik a CCAP mappajaban, de nincs esemenyhez kotve.
+    // Ha barmelyik jelzes ra mutatna, az megint "valasztas" lenne, nem reprodukcio.
+    for (const cue of ['heard', 'understood', 'dropped', 'unsure', 'error'] as VoiceCue[]) {
+      const { player, played } = makePlayer();
+      const conn = makeConnection();
+
+      player.attach(conn.connection);
+      await player.play(cue);
+
+      expect(played[0]).not.toContain('cue-understood.mp3');
+    }
   });
 });
