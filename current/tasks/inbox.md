@@ -205,3 +205,14 @@ nem prioritás-emelés. Ez egy korábbi elmaradt rögzítés nyoma — jelezve a
 
 *(A „Hello Sea" STT-torzítás; a termék neve **HeloCia** — l. `current/stt-mishearings.md`.)*
 
+---
+
+## 📷 2026-09-10 22:25 — CV: a portré fotó frissítése (TODO, nem sürgős)
+
+> **Owner:** *„egyelőre nem most de majd a képet is frissítenünk kell (todo task)"*
+
+- **org-ref:** `org:task:6aa312f6766c802935c3ba31` · prio 4 · határidő nincs
+- A mostani kép a 9.0 CV-ből kivágott `current/cv/build/portrait.png`.
+- ⚠️ **Csere után:** a kör-kivágás a `cv.css` `.portrait` szabályában áll *(d=137,5pt)*; a képet
+  144,6 × 202,7pt arányban kell megadni, vagy a `left`/`top` eltolást újra kell mérni.
+

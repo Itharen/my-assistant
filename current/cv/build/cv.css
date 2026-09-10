@@ -267,6 +267,15 @@ body {
   letter-spacing: 0.304em;  /* mert */
   text-indent: 0.304em;
 }
+/* A 9.0-ban a vezeto sor BALRA ZART (mert: x=235.0) — ott a hosszu „SOFTWARE DEVELOPER"
+   majdnem kitoltotte az oszlopot, ezert nezett ki kozepesnek. Rovidebb szovegnel ez elcsuszik,
+   ezert a 10.0 a `--center` valtozatot hasznalja. ⛔ A kontroll-minta NEM valtozhat. */
+.role.role--lead--center {
+  padding-left: 9pt;
+  text-align: center;
+  margin-left: 0;
+  text-indent: 0.308em;
+}
 .role--lead {
   padding-left: 0;
   text-align: left;
