@@ -86,5 +86,6 @@ saját CLI (`dye2e`). **98,37% coverage, 254 spec.** Mellette az `fdp-e2e-helper
 >
 > **Across a 73-repository fleet** governed by machine-readable rules that every AI agent in it obeys.
 
-⭐ **És ez adja meg a párhuzamos kapacitás indoklását is:** nem azért tud több munkát vinni, mert
-gyorsan gépel, hanem mert **megépítette hozzá az infrastruktúrát**.
+⛔ **AMI NEM MEHET BELE:** hogy ezek miatt **több munkát tud párhuzamosan vinni**. Owner,
+2026-09-10 23:47: *„ezt nem fogom senkinek az orrára kötni."* A **képesség** megy ki, a **kapacitás**
+nem. L. `current/principles/cv-writing.md` §1 tiltás.

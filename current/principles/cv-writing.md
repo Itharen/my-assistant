@@ -23,9 +23,7 @@
 - **Nem írunk semmit, ami kizárja az egyik olvasót.** ⛔ Nincs benne „állást keresek", ami gyengíti
   a B2B-t — de a **kontraktori forma nem elriasztás, hanem tény**, l. lent.
 - A **„HOW I WORK"** blokk a **munkavégzés formáját** mondja ki, nem azt, hogy kitől fogadunk el munkát.
-- ⭐ **A párhuzamos kapacitás ÉRV, nem kifogás:** az eszközei (agent-orkesztráció, saját
-  framework-ök, automatizált tesztelés) miatt **több párhuzamos munkát is el tud vállalni** —
-  ezt **hozadékként** kell megfogalmazni, nem korlátként.
+- ⛔ **A PÁRHUZAMOS KAPACITÁS SEHOL NEM JELENIK MEG** — l. a tiltást alább.
 
 ### ⚠️ KORREKCIÓ (owner, 2026-09-10 23:45) — a „contractor only" MARAD
 
@@ -45,6 +43,26 @@ Short projects and long, dedicated engagements alike."*
 
 📌 **A tanulság:** a kettős célközönség NEM azt jelenti, hogy minden feltételt fel kell puhítani.
 A **tényeket** nem puhítjuk — csak azt kerüljük, ami **feleslegesen** zár ki egy olvasót.
+
+### ⛔ TILTÁS (owner, 2026-09-10 23:47) — a párhuzamos kapacitás NEM PUBLIKUS
+
+> *„Az semmiképpen ne szerepeljen a CV-ben meg sehol. A publikus közönség felé, hogy több munkát
+> végzek egyszerre, **ezt nem fogom senkinek az orrára kötni**."*
+
+⛔ **Sem a CV-ben, sem a LinkedIn-en, sem semmilyen kifelé menő anyagban** nem jelenhet meg, hogy
+több munkát visz egyszerre — sem tényként, sem érvként, sem burkoltan („kapacitásom van", „több
+megbízást is tudok vinni").
+
+⚠️ **Én írtam be tévesen**, mert 23:29-kor ő maga említette *(„Lévén több párhuzamos munkát is el
+tudok vállalni ezekkel az eszközökkel")*. ⇒ 📌 **A HIBA OSZTÁLYA, amit meg kell tanulni:**
+
+> **Amit magáról mond nekem, az NEM automatikusan publikálható.**
+> Az **indoklás neki szól**, nem a közönségnek. Kapacitás, elérhetőség, más ügyfelek, terhelés,
+> magánélet → **alapértelmezésben BELSŐ**. Ha nem mondta ki, hogy mehet kifelé, akkor **nem megy**.
+
+✅ **Ami MARAD** *(a képesség igen, a következménye nem)*: az eszközök, a framework-ök, az
+automatizált tesztelés, az agent-orkesztráció — ezek **erősítenek**, és önmagukban nem árulják el,
+hogy hány megbízás fut párhuzamosan.
 ---
 
 ## 2️⃣ Tartalom-szabályok
