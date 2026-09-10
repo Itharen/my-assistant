@@ -11,6 +11,18 @@
 
 ## Aktív
 
+### 2026-09-03 — Heti LinkedIn-posztolás
+
+| Task | Org-ref | Ismétlődés / időzítés | Status |
+|---|---|---|---|
+| 💼 **LinkedIn — heti posztolás** | `org:task:6a98e83e482367e7f640c1d4` | heti minta elmentve: `intervalBased`, 7 nap; nap/időpont és első esedékesség nincs megadva | 🟡 nyitva · időzítés pontosítandó |
+
+A heti feladat a posztok elkészülését és megjelenését követi; külön a blokkolt
+LinkedIn-üzenetküldéstől. A korábbi heti 2–3 posztos cél nem lett visszavonva.
+Utolsó teljesítés: ismeretlen. Dátumhorgony nélkül az Organizer még nem képez
+időzített példányokat; külön emlékeztető nincs aktiválva. Ez nem automatikus
+publikálási engedély. Részletes owner-input: `current/principles/recurring-tasks.md`.
+
 ### 2026-09-02 — Zenei előadói történetszál
 
 | Task | Org-ref | Előfeltétel / határidő | Status |
@@ -136,3 +148,28 @@ nem feltételezünk határidőt vagy lezárt rebrandet. Rögzítés, nem publik�
 | 2027-01-20 | 55 000 Ft | `org:task:6a1f7a667550efa6b0e01240` |
 | 2027-04-20 | 55 000 Ft | `org:task:6a1f7a687550efa6b0e01246` |
 | 2027-07-20 | 53 000 Ft | `org:task:6a1f7a697550efa6b0e0124c` |
+
+---
+
+## 📞 TELEKOM — FELHÍVNI MUNKAIDŐBEN (letiltották a számot)
+
+- **Felvéve:** 2026-09-10 19:09 · **Forrás:** owner, hangcsatorna 19:08
+- **Esedékes:** **2026-09-11 (péntek) munkaidőben** — a rögzítéskor (19:08) már késő volt
+- **Prioritás:** 🔴 **nagyon magas** *(az owner szava: „Nagyon fontos")*
+
+> **Owner szó szerint:** *„Elő került egy fontos munka, amit majd fel kell írni, hogy **a
+> telekomot fel kell hívni munkaidőben**. Nagyon fontos, úgy tűnik, hogy **letiltották a
+> számomat**, ami hát basszus, na."*
+
+**Miért sürgős:** letiltott számmal **nem érhető el**, és ő sem tud hívni ⇒ ez **minden más
+ügyintézést blokkol** *(orvos, hivatal, munka, kétfaktoros belépések)*.
+
+### 🔴 EZ ITT CSAK TARTALÉK — az organizerbe KELL kerülnie
+
+⚠️ **Az organizer NEM ÉRHETŐ EL** *(mérve 2026-09-10 19:09: `fo organizer.ping` és
+`fo tasks.create` egyaránt **`fetch failed`**)*. A `recording-discipline.md` szerint ez
+**P0 blokkoló**, és a lokál-only rögzítés **félrevezető** — ezért:
+
+📌 **TEENDŐ A KÖVETKEZŐ KÖRBEN:** amint az organizer válaszol, **át kell vinni** oda
+*(`fo tasks.create`, due `2026-09-11T09:00+02:00`, magas prioritás)*, és **innen kivezetni**.
+⛔ Amíg ez nem történt meg, ez a tétel **NEM tekinthető rögzítettnek**.
