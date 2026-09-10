@@ -11,17 +11,23 @@
 
 ## 📌 KITŰZVE MOST
 
-> ⏳ **NINCS kitűzött tétel — a válaszára vár.**
+🎯 **💼 Munka — generálások és események ellenőrzése** *(organizer, `P=116`)*
 
-🔴 **Az Interfood-rendelés lekerült:** az owner **másik sessionben** intézi
-*(2026-09-10 19:42: „a sok feladatot nem rajtad keresztül fogom elintézni… egy másik sessionben,
-de ugyanebben a workspace-ben")*. ⇒ Nem az enyém, tehát **nem lehet a kitűzöttem sem**.
+**Miért EZ — és miért ÉN döntöttem:**
 
-⭐ **Ezért kérdeztem meg tőle, mi legyen a fókusz** — ez a **numero uno** feladatom:
-*„a fókusz és a feladatokból a priorizálást megfelelően kezelni és **fókuszban tartani engem**"*.
+> **Owner, 2026-09-10 19:46:** *„Többnyire **neked kell majd megmondanod, hogy mi a következő
+> fókusz**, mivel egymillió inputot adok be, és abból **egy output kéne**."*
 
-⚠️ **Amíg nincs kitűzött, a hallgatás a helyes** — ⛔ nem töltöm ki mással, és ⛔ nem jelentek
-neki olyasmiről, ami nem a fókusz.
+| Érv | Adat |
+|---|---|
+| **Ma van a napja** | ma **csütörtök**, a tétel neve: *(csütörtök)* |
+| **A legmagasabb prioritású LEJÁRT** | `P=116` — az 5 lejárt közül a legmagasabb *(a másik 116-os a keddi párja)* |
+| **Régóta nyitva** | **2026-08-27 óta** |
+| **Munka** | ez fizetett munka, nem opcionális |
+
+⛔ **Amit NEM választottam, és miért:** Üzemorvos `P=118` *(dátum nélküli — nem romlik el ma)* ·
+Interfood `P=115` *(az owner **másik sessionben** intézi)* · LinkedIn `P=112` *(dátum nélküli)* ·
+Telekom *(már ütemezve holnap 9:00-ra)*.
 
 ## ⏸️ FOLYTATANDÓ A KERET FRISSÜLÉSE UTÁN
 

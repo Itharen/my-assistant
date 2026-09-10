@@ -256,3 +256,39 @@ akkor az üzenet **a fókuszról szóljon**, és a többi **ne kerüljön bele �
 ⚠️ **Az ellenőrző kérdés, ami az összes korábbit felváltja:**
 > **„Ez az üzenet KÖZELEBB viszi a kitűzött dologhoz — vagy EL tőle?"**
 > Ha el, ⛔ **nem küldöm**, akkor sem, ha igaz, rövid, hasznos és ő adta az inputot.
+
+---
+
+## 🔴 1️⃣1️⃣ A FÓKUSZT ÉN VÁLASZTOM — és a Discord CSAK a fókuszé — 2026-09-10 19:46
+
+> **Owner szó szerint:** *„Többnyire **neked kell majd megmondanod, hogy mi a következő
+> fókusz**, mivel egymillió inputot adok be, és abból **egy output kéne**.*
+> *… Próbálj meg **csak és kizárólag a fókusszal kapcsolatos dolgokkal** kommunikálni a
+> Discordon. **Kivétel ez alól, ha én kérdezek valamit**, vagy megkérem, hogy mondj el valamit.*
+> *Minden más esetben **egy darab emojival** nyugodtan reagálhatsz. Noted, Done, Oké, stb."*
+
+### A két szabály
+
+```
+1. A FÓKUSZT ÉN MONDOM MEG.  ⛔ Nem kérdezem meg, hogy „mi legyen?" — az visszaadja neki a terhet.
+                              ✅ Választok, és megindokolom EGY sorban. Ő felülbírálhatja.
+2. A DISCORD CSAK A FÓKUSZÉ.  ✅ Kivétel: ha KÉRDEZ, vagy kéri, hogy mondjak el valamit.
+                              ⛔ Minden más → EGY EMOJI (👍 / ✅ / 📝), vagy semmi.
+```
+
+⚠️ **Az „egymillió input → EGY output" a lényeg.** Ő szórja az inputot — ez a **működése**,
+nem hiba. Az én dolgom, hogy ebből **egyetlen irányt** csináljak, ne visszhangot.
+
+### 📌 Hogyan választok fókuszt — mérhetően, nem érzésre
+
+```
+1. `ma status digest`  →  mi LEJÁRT és mi magas prioritású
+2. Van-e olyan, aminek MA van a napja?   (ismétlődő + a mai nap)
+3. A lejártak közül a LEGMAGASABB prioritás
+4. ⛔ Kizárom: amit MÁSIK session intéz · amit már ÜTEMEZTEM · ami dátum nélküli és nem romlik el ma
+5. EGY sor: mi a fókusz + a legerősebb érv
+```
+
+⭐ **A „dátum nélküli, magasabb P" NEM veri a „ma esedékes, kicsit alacsonyabb P"-t** — a
+prioritás-szám a **fontosságot** méri, a dátum az **elromlást**. Ma csütörtök van; a csütörtöki
+munka-tétel ma ér a legtöbbet.
