@@ -121,6 +121,19 @@ egyébként hagyd békén.
 
 ---
 
+**Update 2026-09-10T21:46 — OWNER-KORREKCIÓ, ez felülírja a fenti (a) pontot:**
+
+> *„nem a V3 Eleven Labs lett leimplementálva, hanem a régi Fors, ami sosem működött jól.
+> A régi fosnál volt ez a XI, a Pi, mit tudom én micsoda, amit hogyha kell, akkor neked kell
+> hozzáfűzni majd."*
+
+⇒ ⛔ **NE** a formátum-ellenőrzést told ki `sk_`-ra — az a **régi** integrációt tartaná életben.
+A `xi-api-` prefix maga a régi API öröksége. **A V3-as ElevenLabs implementációra kell váltani**,
+és a kulcsot úgy átadni, ahogy a V3 várja. A (b) pont *(a kulcs értéke SOHA nem mehet naplóba)*
+és a (c) pont *(végponttól végpontig igazolás — az owner HALLJA)* változatlanul él.
+
+---
+
 ## [OPEN] AGB-2026-09-10-01 — Codex-session szerepe nincs a session-role térképben
 **From:** chat
 **To:** owner
