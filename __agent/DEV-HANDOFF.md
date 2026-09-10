@@ -692,3 +692,53 @@ jusson el az ownerhez a szokásos csatornán. ⛔ Ne az legyen, hogy „ott van 
 
 ⛔ Egyetlen ellenőrzést sem kapcsolsz ki · ⛔ ne írj az ownernek *(a csatorna az asszisztensé — a
 riasztás is az ő nevében megy)* · ✅ teszt + zöld suite.
+
+---
+
+## 2026-09-10 19:52 — 🔊 A FELOLVASÁS BLOKKOLÓJA: „Service not initialized" — és NEM az env-sorrend
+
+**Az owner kérdése (19:46):** *„Mikor lesz már hangod? már szeretnék szóban is beszélgetni…"*
+⇒ Ez most **az ő legfontosabb nyitott kérése** a hang-vonalon.
+
+**Mérve — két élő próba, két külön figyelő-példánnyal:**
+
+| Idő | Figyelő indult | Eredmény |
+|---|---|---|
+| 19:47:27 | régi *(a `de6e00c` fix ELŐTT)* | `MA-VOICE-READ-ALOUD: A beszéd-szintézis nem sikerült: **Service not initialized**` |
+| 19:50:04 | **19:49:33** *(a fix UTÁN, dist 19:46)* | **UGYANAZ** |
+
+### 🔴 AMIT KIZÁRTAM — ⛔ ne itt keresd
+
+**Az env-sorrend NEM a hiba.** Közvetlenül a **buildből** mérve:
+
+```
+import('./dist/cli/src/bootstrap-env.js')            → process.env kulcs: JELEN (51 kar.)
+import('./dist/.../env-keys.const.js') → envKeys.elevenLabs.apiKey: JELEN (51 kar.)
+```
+
+⇒ A `bootstrap-env` **helyesen** megtalálja a gyökér `.env`-et *(a `__agent`+`package.json`
+páros alapján)*, és az `envKeys` **fel van töltve**. A te `de6e00c` javításod **jó** — csak
+nem ez volt az egyetlen ok.
+
+### ⇒ Ahol viszont ÉRDEMES nézni
+
+`el-text-to-speech.control-service.ts` `initializeService()` a **konstruktorban** fut, és
+`isInitialized`-et állít. A `convertTextToSpeech` ezt a **befagyott** állapotot nézi.
+
+**Hipotézisek — ⚠️ EGYIKET SEM MÉRTEM, ne hidd el egyiket sem:**
+1. A szolgáltatás **singletonként** korábban jött létre, mint ahogy a `.env` betöltődött abban a
+   **konkrét folyamatban** *(a saját mérésem külön processzben futott — az nem bizonyítja a
+   figyelő processzét)*.
+2. A figyelőt a szerver **`SupervisedChild`-ként** indítja — lehet, hogy nem a `main.ts`
+   belépési ponton át, tehát a `bootstrap-env` **nem fut le** ott.
+3. Az `elevenlabs_AS.configure()` **dob** *(a `catch` ág fut)* — a hibaüzenet az `error`-ágon is
+   ugyanez lenne. ⭐ A `DyFM_Log.error('❌ …not initialized', apiKey)` sor **kiírná** — érdemes
+   megnézni a figyelő **saját** kimenetét, nem csak az action-logot.
+
+⭐ **A leggyorsabb mérés:** a figyelő processzében naplózz **egyetlen sort** indulásnál —
+*„elevenlabs apiKey jelen: igen/nem"* ⛔ (az értéket **soha** ne). Ez egy körben eldönti az 1–2. pontot.
+
+### Kész-definíció
+
+Az owner **hallja** a hangot a `honnie-place` csatornában — ⛔ nem az, hogy „a teszt zöld".
+📌 A hang: `MA_ELEVENLABS_VOICE_ID` → **„Honnie"** (hu). A kulcs `pro`, 600 159 karakter, 0 fogyott.
