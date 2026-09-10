@@ -93,9 +93,16 @@ Ezeket a `cv.css` `:root` + `.page--pN` valtozoi, illetve a `cv.html` inline `--
 ## Hasznalat
 
 ```bash
-bash render.sh                      # cv.html -> repro.pdf + repro-p{1,2,3}.png
+bash render.sh                      # cv.html -> repro.pdf + repro-p{1,2,3}.png  (KONTROLL-MINTA)
 python compare.py 0                 # soronkenti x/y osszevetes a forras-PDF-fel (0/1/2 = oldal)
+bash render10.sh                    # cv-10.html -> cv-10.pdf + PNG-k            (a TENYLEGES CV)
+bash fit.sh                         # belefer-e: 1600pt-os lapon meri a valodi tartalom-magassagot
+python build-comparison.py          # OSSZEHASONLITAS-9.0-vs-10.0.pdf -- EZT nezi az owner
 ```
+
+⚠️ **A `fit.sh` csak a FO-OSZLOPOT meri** (`x >= 215`). A **sidebart kulon** kell ellenorizni a
+kesz `cv-10.pdf`-en — a 10 mm-es also margo ott is kotelezo, es a sidebar-szoveg bovitese
+eszrevetlenul viszi el.
 
 A `render.sh` Chrome headless `--print-to-pdf`-et hasznal. ⚠️ A Chrome **abszolut** utvonalat var
 (`file:///$WD/…`), kulonben `Access is denied`.

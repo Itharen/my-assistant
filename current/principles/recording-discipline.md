@@ -48,3 +48,41 @@ a user nem látja, nem onnan él → "félrevezető". A rögzítés célja, hogy
 - `__agent/SOURCE_OF_TRUTH.md` — modulonkénti organizer vs lokál
 - `current/principles/ssot.md` — egy adat = egy kanonikus forrás
 - `current/feature-requests/kitchen-note-capture.md` — capture-csatorna a rögzítés súrlódásának csökkentésére
+
+---
+
+## 🔁 ORGANIZER-KIESÉS UTÁN: A PÓTLÁS KÖTELEZŐ (owner, 2026-09-10 23:51)
+
+> *„Időnként előfordul, hogy valami miatt nem elérhető az organizer, amikor újra elérhetővé válik,
+> akkor **pótolni kell ezeket a felírásokat**."*
+
+A lokál tartalék *(`current/tasks/inbox.md`)* **nem végállapot, hanem VÁRÓLISTA**. A kiesés
+önmagában nem mentesít — csak **elhalasztja** a rögzítést.
+
+### A protokoll
+
+```
+organizer nem elérhető
+  → 1. a tétel a current/tasks/inbox.md-be, JÓL LÁTHATÓ „⏳ PÓTLANDÓ" jelöléssel
+  → 2. ⛔ a tétel NEM tekinthető rögzítettnek
+  → 3. a KÖVETKEZŐ körben, amikor az organizer válaszol: ÁTVINNI
+  → 4. a lokál bejegyzést ✅ PÓTOLVA-ra állítani, az org-ref-fel
+```
+
+### ⚠️ Mikor kell ránézni
+
+**Minden körben, amikor az organizerhez nyúlok** *(`fo organizer.ping` sikeres)* — az a pillanat a
+kapu. ⛔ Nem elég „majd ha eszembe jut": a `⏳ PÓTLANDÓ` jelölésre **rá kell keresni**:
+
+```bash
+grep -n "⏳ PÓTLANDÓ" current/tasks/inbox.md
+```
+
+### 🔴 Miért kritikus
+
+Egy `⏳ PÓTLANDÓ` bejegyzés **pontosan úgy néz ki, mint egy kész feljegyzés**, ha nincs megjelölve —
+és akkor csendben elvész. Ugyanaz a hibamód, mint az elmaradt rögzítés, csak késleltetve.
+
+📌 **Az állapot 2026-09-10 23:55-kor:** a 19:09-es kiesés egyetlen tétele *(Telekom)* **pótolva**
+(`org:task:6aa2e568766c802935c3b258`); nyitott pótlandó **nincs**.
+

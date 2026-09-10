@@ -44,6 +44,26 @@ Short projects and long, dedicated engagements alike."*
 📌 **A tanulság:** a kettős célközönség NEM azt jelenti, hogy minden feltételt fel kell puhítani.
 A **tényeket** nem puhítjuk — csak azt kerüljük, ami **feleslegesen** zár ki egy olvasót.
 
+### ➕ PONTOSÍTÁS (owner, 2026-09-10 23:52) — a kontraktori formán BELÜL van sorrend
+
+> *„elsősorban **projektmegbízásokat** keresünk, de hogyha **alvállalkozói munkakörben** szeretnének
+> foglalkoztatni, az is **járható út** lehet. ( Ha megfizetik.)"*
+
+A „contractor only" **nem egy homogén blokk** — van benne preferencia-sorrend:
+
+| Sorrend | Forma | Hogy jelenik meg a CV-ben |
+|---|---|---|
+| **1.** | **projektmegbízás** *(rövid és hosszú egyaránt)* | „Project engagements first, short and long alike" |
+| **2.** | **alvállalkozói munkakör** | „a subcontractor arrangement also works" — ⚠️ *járható*, nem *egyenrangú* |
+
+⛔ **A „( Ha megfizetik.)" BELSŐ** — a CV-be nem kerül. Ez az ő döntési szempontja, nem a
+közönségnek szóló üzenet *(ugyanaz az osztály, mint a párhuzamos kapacitás fent: **amit magáról
+mond nekem, az nem automatikusan publikálható**)*. Az árazás **tárgyalási** kérdés; a CV-be írva
+vagy alkudozásnak, vagy panasznak hangzik — mindkettő gyengít.
+
+📌 **A szórend számít:** a második opciót **a mondat végére** tesszük, mert amit előbb olvasnak,
+azt hiszik a fő ajánlatnak.
+
 ### ⛔ TILTÁS (owner, 2026-09-10 23:47) — a párhuzamos kapacitás NEM PUBLIKUS
 
 > *„Az semmiképpen ne szerepeljen a CV-ben meg sehol. A publikus közönség felé, hogy több munkát

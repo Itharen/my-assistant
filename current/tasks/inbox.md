@@ -164,15 +164,13 @@ nem feltételezünk határidőt vagy lezárt rebrandet. Rögzítés, nem publik�
 **Miért sürgős:** letiltott számmal **nem érhető el**, és ő sem tud hívni ⇒ ez **minden más
 ügyintézést blokkol** *(orvos, hivatal, munka, kétfaktoros belépések)*.
 
-### 🔴 EZ ITT CSAK TARTALÉK — az organizerbe KELL kerülnie
+### ✅ PÓTOLVA — az organizerben van
 
-⚠️ **Az organizer NEM ÉRHETŐ EL** *(mérve 2026-09-10 19:09: `fo organizer.ping` és
-`fo tasks.create` egyaránt **`fetch failed`**)*. A `recording-discipline.md` szerint ez
-**P0 blokkoló**, és a lokál-only rögzítés **félrevezető** — ezért:
+⚠️ Az organizer 2026-09-10 19:09-kor **nem volt elérhető** *(`fo organizer.ping` és
+`fo tasks.create` egyaránt `fetch failed`)*, ezért ez a fájl volt a tartalék.
 
-📌 **TEENDŐ A KÖVETKEZŐ KÖRBEN:** amint az organizer válaszol, **át kell vinni** oda
-*(`fo tasks.create`, due `2026-09-11T09:00+02:00`, magas prioritás)*, és **innen kivezetni**.
-⛔ Amíg ez nem történt meg, ez a tétel **NEM tekinthető rögzítettnek**.
+✅ **Pótolva:** `org:task:6aa2e568766c802935c3b258` *(prio 125)* — ellenőrizve 2026-09-10 23:55.
+Ez a bejegyzés innentől **történeti**, nem teendő.
 
 ---
 

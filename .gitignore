@@ -49,3 +49,7 @@ server/data/
 cli/recordings/
 cli/_assets/voice-outputs/
 recordings/
+
+# CV build — a fit.sh atmeneti probe-fajljai (nem artefakt, minden meresnel ujragenerálódik)
+current/cv/build/probe.html
+current/cv/build/probe.pdf
