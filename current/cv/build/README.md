@@ -134,6 +134,15 @@ az elválasztókat és a pont/nyíl pozíciókat mértem — a vonal **végeit**
 ⇒ 📌 **Tanulság:** ha egy elem *átível* több tételen, a **két végét külön kell mérni** — a közepe
 attól még stimmelhet.
 
-A **10.0-ban ez javítva**: a vonal két vége paraméteres (`--rail-top` / `--rail-bottom`), és mindkét
-oldalon **0 szakadás** — az „Education" elválasztó fölött is átfut *(owner jelezte, 2026-09-10 22:03)*.
+### A 10.0 karrier-vonala — a MÉRT, végleges viselkedés
+
+| Hol | Hogyan | Miért |
+|---|---|---|
+| a vonal két vége | paraméteres: `--rail-top` / `--rail-bottom` / `--rail-h` | tételenként állítható |
+| az „Education" elválasztónál | **megszakad** — a vonal nekiütközik felülről, és közvetlenül alatta folytatódik | ez az eredeti viselkedés, és az owner is ezt kérte *(22:03 → 22:30 → 23:28)* |
+| a legutolsó tétel alatt | a vonal a **pontnál ér véget** (`--rail-h: 4.2pt`) | *„az A-level alatt nem kéne vonal legyen, onnan indul a vonal"* |
+| a nyilas jelölők | a talpuk **a vonalon** áll — `left: calc(8.9pt - var(--rail-w))` | ⚠️ **KÉPLET, nem fix szám:** a vonal x-e a `--rail-w`-tól függ, ami oldalanként eltér (20,4 / 25,5pt). Fix értékkel a 2. oldalon 6pt-tal a vonal mellé csúszott |
+
+⚠️ **A kontroll-mintában rögzítettük** a régi nyíl-eltolást (`--arrow-dx: -10.6pt` a `cv.html` 1. oldalán),
+hogy a fenti képlet ne mozdítsa el — az eredetiben a nyíl `x=340,4`.
 

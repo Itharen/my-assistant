@@ -345,6 +345,7 @@ body {
      ahol egy elvalaszto vagy szekcio-cim ekelodik koze, ott athuzzuk rajta. */
   top: var(--rail-top, 0);
   bottom: var(--rail-bottom, -12pt);
+  height: var(--rail-h, auto);
   width: 1.5pt;
   background: var(--c-body);
 }
@@ -420,7 +421,7 @@ body {
   position: absolute;
   /* mert: a nyil MINDIG x=340.3-nal all (az idovonalon), a lista-szinttol
      fuggetlenul — ezert a vizszintes eltolas parameter. */
-  left: var(--arrow-dx, -10.6pt);
+  left: var(--arrow-dx, calc(8.9pt - var(--rail-w)));
   top: -0.5pt;
   border-left: 8.7pt solid var(--c-body);
   border-top: 5.45pt solid transparent;
