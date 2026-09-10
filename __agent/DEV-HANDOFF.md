@@ -875,3 +875,39 @@ kiírja**. ⛔ A kulcs értéke **soha** nem mehet naplóba — max. hossz/prefi
 ⚠️ Ugyanez a log mutatja, hogy az **`xi-api-` prefix-ellenőrzés még él** — a 00:20-as szakasz
 **(a)** pontja *(V3-ra váltás)* tehát változatlanul a soron lévő munka.
 
+---
+
+## 2026-09-11 01:20 — 🔇 NE BESZÉLJÜNK EGYSZERRE: a felolvasás álljon meg, amíg ő beszél
+
+> **Owner, 2026-09-11 01:15:** *„amikor elkezdek beszélni, és amíg beszélek, meg utána még talán
+> plusz pár másodpercig szüneteltetni kéne a felolvasást. Aztán újra folytatni. (Hogy ne
+> beszéljünk egyszerre.)"*
+
+⚠️ **Ez a HALLGATÁS-hiba UTÁN jön** *(01:10-es szakasz)* — amíg a felvétel el sem indul, addig
+nincs mihez igazítani a szüneteltetést. ⛔ Ne kezdd ezzel.
+
+### Az elvárt viselkedés
+
+```
+ő beszélni kezd        → a felolvasás AZONNAL szünetel
+amíg beszél            → szünetel
+elhallgat              → +néhány másodperc türelmi idő
+a türelmi idő letelt   → a felolvasás ONNAN folytatódik, ahol abbamaradt
+```
+
+### Amit érdemes végiggondolni
+
+| Kérdés | Miért számít |
+|---|---|
+| **szünet vagy megszakítás?** | Az owner **„aztán újra folytatni"**-t mondott ⇒ **folytatás**, nem újrakezdés és nem eldobás. A mondat közepén elvágott hang és a teljes újramondás **egyaránt rossz** |
+| **mi a jelforrás?** | A megszólalás-detektálás **már megvan** *(a tölcsér-riport `🎙️ megszólalás érzékelve` sora számol)* — ⛔ ne építs másikat, ezt kösd rá |
+| **mennyi a türelmi idő?** | *„talán plusz pár másodperc"* ⇒ **paraméter**, ne beégetett szám. Alapérték 2-3 s, és állítható ugyanott, ahol a hangerő |
+| **saját magamra ne süljön el** | ⚠️ A saját felolvasásom is hang a csatornában. Ha a detektor **engem** hall meg, végtelen szünetbe kerülünk — ezt **méréssel** zárd ki, ne feltételezéssel |
+
+📌 **Kapcsolódó, már meglévő darabok:** `voice-read-aloud.ts`, `voice-read-aloud-watcher.ts`,
+`voice-channel-recorder.ts`, `voice-volume.ts` *(a hangerő már paraméteres és három helyről
+állítható — a türelmi idő ugyanezt a mintát követheti)*.
+
+⛔ **`one-function-is-enough`:** ez **EGY** funkció. Ne told mellé a tükrözést *(01:10-es szakasz
+(B) pont)* ugyanabban a körben.
+
