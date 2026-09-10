@@ -43,6 +43,21 @@ export interface IncomingDiscordMessage {
 export interface MessageFilterConfig {
   /** A dedikált csatorna, ahol az ownerrel beszélgetünk. */
   allowedChannelId: string;
+  /**
+   * 🔊 A HANG-CSATORNA szöveges része — innen is elfogadunk.
+   *
+   * > **Owner (2026-09-10 18:22, hangcsatorna):** *„a Voice Channel-re ha írok, akkor az nem
+   * > kerül feldolgozásra, pedig szeretném, hogy azok is feldolgozásra kerüljenek, ne csak a
+   * > Voice üzeneteim, hanem hogyha **gépelve írok a Voice Channel csetjére**."*
+   *
+   * ⭐ **Miért természetes:** amikor a hang-csatornában van, **ott is gépel** — nem vált át a
+   * másik csatornára csak azért, hogy leírjon egy pontosítást. *(Épp ezt tette: a `whoosh`
+   * jelentését gépelve küldte, miközben beszélgettünk.)*
+   *
+   * ⛔ **Ez NEM tágítja, KI írhat nekem:** az owner-szűrő (`allowedAuthorId`) változatlan.
+   * Csak azt tágítja, **HONNAN** fogadjuk el ugyanattól az embertől.
+   */
+  allowedVoiceChannelId?: string;
   /** Az owner Discord felhasználó-azonosítója. */
   allowedAuthorId: string;
 }
@@ -81,7 +96,11 @@ export function filterIncomingMessage(
     return { accepted: false, reason: 'Bot küldte (köztük a sajátunk) — visszhang-hurok elkerülése.' };
   }
 
-  if (message.channelId !== config.allowedChannelId) {
+  const voiceChannelId: string = (config.allowedVoiceChannelId ?? '').trim();
+  const fromAllowedChannel: boolean = message.channelId === config.allowedChannelId
+    || (voiceChannelId !== '' && message.channelId === voiceChannelId);
+
+  if (!fromAllowedChannel) {
     return {
       accepted: false,
       reason: `Nem a dedikált csatornából jött (${message.channelId}).`,
@@ -137,6 +156,7 @@ export function filterIncomingMessage(
 export function readMessageFilterConfig(): MessageFilterConfig {
   return {
     allowedChannelId: (process.env['MA_DISCORD_CHANNEL_ID'] ?? '').trim(),
+    allowedVoiceChannelId: (process.env['MA_DISCORD_VOICE_CHANNEL_ID'] ?? '').trim(),
     allowedAuthorId: (process.env['MA_DISCORD_USER_ID'] ?? '').trim(),
   };
 }

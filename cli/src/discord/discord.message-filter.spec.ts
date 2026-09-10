@@ -174,3 +174,48 @@ describe('filterIncomingMessage — HANGUZENET (regresszio)', () => {
     expect(filterIncomingMessage(message(), CONFIG).hasAudio).toBeFalsy();
   });
 });
+
+describe('🔊 A HANG-CSATORNA szöveges része is elfogadott (owner, 2026-09-10 18:22)', () => {
+
+  // Owner: „a Voice Channel-re ha irok, akkor az nem kerul feldolgozasra, pedig szeretnem, hogy
+  // azok is feldolgozasra keruljenek... hogyha gepelve irok a Voice Channel csetjere."
+
+  const CONFIG = {
+    allowedChannelId: 'text-1',
+    allowedVoiceChannelId: 'voice-1',
+    allowedAuthorId: 'owner-1',
+  };
+
+  const owner = (channelId: string) => ({
+    channelId: channelId,
+    authorId: 'owner-1',
+    authorName: 'Itharen',
+    content: 'a whoosh egy „elküldve" hang',
+    isFromBot: false,
+  });
+
+  it('⭐ az owner GÉPELT üzenete a HANG-csatornából ELFOGADVA', () => {
+    expect(filterIncomingMessage(owner('voice-1') as never, CONFIG).accepted).toBe(true);
+  });
+
+  it('✅ a fő szöveges csatorna változatlanul megy', () => {
+    expect(filterIncomingMessage(owner('text-1') as never, CONFIG).accepted).toBe(true);
+  });
+
+  it('⛔ IDEGEN csatorna továbbra is elutasítva', () => {
+    expect(filterIncomingMessage(owner('valami-mas') as never, CONFIG).accepted).toBe(false);
+  });
+
+  it('🔴 NEM tágítja, KI írhat: más szerző a hang-csatornából is ELUTASÍTVA', () => {
+    const masik = { ...owner('voice-1'), authorId: 'valaki-mas' };
+
+    expect(filterIncomingMessage(masik as never, CONFIG).accepted).toBe(false);
+  });
+
+  it('⚠️ ha a hang-csatorna NINCS beállítva, a viselkedés a régi marad', () => {
+    const nincsVoice = { allowedChannelId: 'text-1', allowedAuthorId: 'owner-1' };
+
+    expect(filterIncomingMessage(owner('voice-1') as never, nincsVoice).accepted).toBe(false);
+    expect(filterIncomingMessage(owner('text-1') as never, nincsVoice).accepted).toBe(true);
+  });
+});
