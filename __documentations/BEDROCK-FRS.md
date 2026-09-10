@@ -241,3 +241,33 @@ a `dist` **egyáltalán ne épüljön újra** *(ez 09-08-án meg is történt: 5
 a szervert. A válasz **nem** volt — mert a szerver a **pipeline végén** indul, és a ciklus a
 `tsc-cli` 356 másodperce miatt még a harmadik lépésnél tartott. A **6 órás kiesés után** ez
 további percek némaság.
+
+#### 🆕 KÉT KÜLÖN IGÉNY — az owner kérdése élesítette (2026-09-10 16:38)
+
+> **Owner:** *„Ezeknek nem egybe kéne lennie, amúgy? Mindennek a my-assistant szerverben?"*
+
+⭐ **A válasz: DE IGEN — és így is van.** A szerver a gazda: `SupervisedChild`-ként **ő indítja
+és tartja életben** a Discord-figyelőt és a jelenlét-figyelőt, és **újraindítja** őket, ha
+kiesnek *(`discord-listener.service.ts:52`, `presence-monitor.service.ts:61`)*.
+
+🔴 **Tehát a szerkezet NEM hibás.** A kérdés viszont láthatóvá tett egy különbséget, ami eddig
+összecsúszott ebben a kérésben:
+
+| # | Igény | Mikor számít | Mit old meg |
+|---|---|---|---|
+| **A** | **Make-before-break** — a **futó** példány szolgáljon ki, amíg az új indulhat | **meleg** ciklusnál *(commit → új kör)* | a ~10 perces kiesés ciklusonként |
+| **B** | 🆕 **A szerver induljon ELŐSZÖR, ne utoljára** | **hideg** indulásnál *(boot, első `dc ldp`)* | ⛔ itt **nincs** régi példány, amit életben tarthatnánk — az **(A) nem segít** |
+
+**A (B) mért ára ma:** a gép 09:57-kor újraindult; a `dc ldp` 16:00-kor elindult; a szerver
+**16:40-kor még mindig nem** felelt — mert a pipeline a **`dc-review-cli`-nél** tartott, és a
+szerver-indítás a **legutolsó** lépés. ⇒ **40+ perc**, amíg a rendszer a saját szolgáltatását
+egyáltalán elindítja.
+
+📌 **A kompenzáló kontroll, amit ilyenkor kézzel csinálok** — külön `ma comm listen` —
+**működik, de ára van**: az így indított figyelő **kívül esik a felügyeleten**, tehát ha
+kiesik, **senki nem indítja újra**. Vagyis a kerülőút **pont azt a tulajdonságot veszi el**,
+amiért a szerver a gazda.
+
+⇒ **Kérés (B):** a `serverRestart`/indítás legyen a ciklus **ELEJÉN** hideg induláskor —
+a build és a review **utána**, a már futó szerver mellett. *(Ez az (A) természetes párja: a
+szolgáltatás sosem várja meg az ellenőrzéseket.)*
