@@ -53,3 +53,46 @@ kockáztatná. ⇒ Ugyanaz a próba, mint [[uncertain-requests]]-nél:
 - [[uncertain-requests]] · [[no-approval-for-obvious-fixes]] — a három szabály együtt húzza meg
   a határt aközött, hogy mikor nyúlok hozzá valamihez és mikor nem
 - [[build-it-ourselves]] — miért a saját, meglévő megoldást emeljük át
+
+---
+
+## 🔴 2026-09-10 — „ÁTEMELTÜK" A HANGOKAT, DE NEM A JELENTÉSÜKET
+
+> **Owner (hangcsatorna, 18:09):** *„ez egy furcsa hang, ami eddig nem létezett, szerintem ezt
+> most szülted valahonnan, nem is értem hogyan és honnan. **Vissza kéne nézned nagyon alaposan,
+> hogy a CCAP-ba milyen eseményhez milyen hangok társultak, azt kéne reprodukáljuk** — az már
+> egy jól behangolt hangok voltak."*
+
+**Amit tettünk:** a CCAP `sounds/` mappájából **átmásoltuk a fájlokat** — és utána **magunk
+párosítottuk** őket eseményekhez. A `cue-understood.mp3` a `11L-subtle,_warm,_mallow-…`
+másolata lett, ami a CCAP-ban **EGYETLEN eseményhez sem volt kötve**.
+
+**Amit a forrás mond** *(visszaellenőrizve `ccap/discord-bot/src`-ben)*:
+
+| esemény | hang | ahol |
+|---|---|---|
+| felismerés **indul** | `whoosh` | `cv-*-speech-recognition` |
+| eredmény **elfogadva** | `typing` | `cv-result-review:178,185` |
+| eredmény **kétes** | `hmmm` | `cv-result-review:200` |
+| korai eldobás | `early-skip` | `cv-processing:99` |
+
+🔴 **A `typing` tehát nem „hallak", hanem „elfogadtam".** Emiatt hallotta **rossz pillanatban**
+— és emiatt tűnt „idegennek" a siker-hang, ami valóban nem is a CCAP-é volt.
+
+### ⭐ A TANULSÁG: az átemelés nem a FÁJLOKRA vonatkozik, hanem a VISELKEDÉSRE
+
+Az **eszközkészlet** átmásolása **nem** átemelés. A `transplant-not-rewrite` lényege, hogy a
+**működő viselkedést** visszük át — és a viselkedés itt a **párosítás**: melyik esemény melyik
+hangot szólaltatja meg. **A fájlok csak a nyersanyag.**
+
+```
+❌ „Átemeltük a hangokat."          → 5 mp3 a mappában
+✅ „Átemeltük a hang-visszajelzést." → esemény → hang, ahogy az eredetiben volt
+```
+
+📌 **Az ellenőrző kérdés, ami elmaradt:** *„a FORRÁSBAN melyik sor játssza le ezt a fájlt?"*
+Egy `grep playSound` megadta volna — **egy perc alatt**. Helyette a fájlnevekből következtettem
+a jelentésre, és a nevek **mást sugalltak**, mint a használat.
+
+⚠️ **És a hibát nem én vettem észre, hanem az owner — HALLÁS után.** Ez a legdrágább fajta
+visszajelzés: a felhasználó veszi észre azt, amit egy `grep` megmutatott volna.
