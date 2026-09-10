@@ -621,3 +621,31 @@ vagy, és figyelsz, miközben nem is."*
 - ⛔ **Ne írj az ownernek** — minden owner-kommunikáció az asszisztensé.
 - A kész-definíció: teszt + zöld suite, és a **3️⃣-nál élő igazolás** *(a szerver leállítása
   után a bot tényleg nincs bent)*.
+
+---
+
+## 2026-09-10 18:56 — 🔑 A FELOLVASÁSHOZ MINDEN ADOTT: kulcs + hang megvan
+
+> **Owner, 18:54:** *„Állítottam be az ENV-be egy **Voice ID**-t is, majd azt szeretném, hogy
+> **azt használd**. (`MA_ELEVENLABS_VOICE_ID`)"*
+
+**Ellenőrizve élőben (18:56) — mindkettő működik:**
+
+| Env-változó | Állapot |
+|---|---|
+| `FDP_ELEVENLABS_API_KEY` | ✅ **érvényes** — `pro` csomag, 600 159 karakter keret, 0 elhasználva |
+| `MA_ELEVENLABS_VOICE_ID` | ✅ **létező hang** — név: **`Honnie`**, `category: generated`, `labels.language=hu` |
+
+⭐ Az owner **magyar nyelvre generált, „Honnie" nevű hangot** adott — ⛔ **ne írd felül** semmilyen
+alapértelmezéssel, és ⛔ ne égess be másik `voiceId`-t. Ha az env hiányzik, **ne találgass**:
+naplózz és hagyd ki a felolvasást *(a néma kihagyás jobb, mint idegen hangon megszólalni)*.
+
+📌 **Mindkettő a `.env`-ben van** *(gitignore-olt)*, a `.env.example`-ben csak helykitöltő.
+⛔ **Soha ne írd a kulcsot vagy az azonosítót naplóba, commit-üzenetbe vagy hibaszövegbe.**
+
+⚠️ Az átemelt `el-text-to-speech.control-service` a `voiceId`-t **kérés-paraméterként** várja
+*(`el-text-to-speech-request.interface.ts:18`)* — tehát a hívónak kell átadnia; nincs benne
+env-olvasás. ⇒ A bekötés a **hívó** oldalán van.
+
+**Ez a 2. pont (automatikus küldés) záró darabja:** *„a voice-ra, hogyha ott vagyok, akkor
+**fel is olvasod**"*.
