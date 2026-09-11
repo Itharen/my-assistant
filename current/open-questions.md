@@ -871,3 +871,33 @@ el, **melyik olvasót** kell mögé tenni és **mit** kell engedélyezni.
 📌 A kérdés **második fele** ugyanilyen fontos, és csak ő tudja: *mit jelentenek a bejegyzései* —
 milyen címkézést használ, mi számít mítingnek, mi csak blokkolt idő.
 *(`org:task:6aa3c192766c802935c3db46`)*
+
+### Q-2026-09-11-03 — tároljam-e a Wi-Fi jelszavakat? *(meta / biztonság, `m`)*
+
+**Státusz:** `open` · **Felvéve:** 2026-09-11 17:05
+
+> **Owner (hang):** *„lehet, hogy kellene egy kis segítség. Mit gondolsz? **Nagyon para
+> letárolni Wi-Fi jelszavakat** neked valahova, hogy meg tudd nekem mondani, ha kérem?"*
+
+### A válaszom — ⛔ nem a tárolás a kockázat
+
+🔴 **A visszamondás a veszélyes, nem a letárolás.** Mérve ma *(10:46, owner)*: ha bent van a
+**voice-csatornán**, minden Discord-üzenetem **hangosan is elhangzik**. ⇒ Wi-Fi jelszót
+**pont akkor** kérne, amikor **vendég van** — vagyis amikor a felolvasás a legrosszabb.
+*(Ma 18:30-tól élesben ez a helyzet.)*
+
+### A javaslatom — sorrendben
+
+1. 📶 **Vendég-hálózat + QR-kód** *(kinyomtatva / telefonon)* — ⭐ **ez az igazi megoldás**: így
+   **soha senkinek nem kell kimondani** semmit, és a **fő jelszó nem utazik**.
+2. 🔒 Ha kell a tárolás: **gitignorált helyi tár** *(`~/.config/my-assistant/`)* — ⛔ **soha**
+   a repóba *(git-trackelt és **pusholva** van)*, ⛔ soha `.env.example`-be.
+3. ⛔ **Visszamondás CSAK DM-ben, soha hangosan** — a felolvasó útra tiltólistás mező.
+
+### Amit tőle kell tudni
+
+- ❓ **Van vendég-hálózat a routeren?** *(ez dönti el, kell-e egyáltalán a tárolás)*
+- ❓ Ha igen: a fő jelszót **akarja-e** nálam, vagy elég a vendég-QR?
+
+📌 A döntés után **szabállyá** kell tenni *(`private-topics-and-audience` kiterjesztése:
+„titok-mezők soha a felolvasó útra")*.
