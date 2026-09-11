@@ -10,7 +10,20 @@
 
 ## 📋 A JAVASLAT — másold ki
 
-### 1️⃣ Fő ütemezés — **20 percenként** *(owner állította, 2026-09-07)*
+> ⛔ **ELAVULT AZ ALATTA LÉVŐ „20 perc" — MÉRVE 2026-09-11 02:51.**
+> **Owner:** *„megnéztem, és most jelenleg **három órásra** van állítva az ütemezésed, amúgy **a
+> CCAP-ban él a valóság**."*
+>
+> 🔴 **A SZABÁLY, AMI EBBŐL LETT:** az ütemezés **SSOT-ja a CCAP**, ⛔ **nem ez a fájl**. Ez a
+> dokumentum **leírás**, nem beállítás — és most **bizonyítottan eltért** a valóságtól.
+> ⇒ Mielőtt bármit az ütemezés gyakoriságára alapoznék, **a CCAP-ban kell ránézni**.
+>
+> ⚠️ **A KÖVETKEZMÉNY, ami nem nyilvánvaló:** 3 órás raszterrel **nincs garancia** arra, hogy egy
+> adott órában egyáltalán lefutok. Egy **időzített** teendő *(ébresztés, esemény-előkészítés)*
+> ⛔ **NEM építhető** a fő ütemezésre — arra **külön** `ScheduleWakeup` kell.
+> Kapcsolódó: `current/principles/wake-escalation.md`.
+
+### 1️⃣ Fő ütemezés — ⛔ ELAVULT ÉRTÉK: **20 percenként** *(owner állította, 2026-09-07; 2026-09-11-re már 3 óra)*
 
 **Üzenet (ez a kanonikus szöveg):**
 

@@ -32,11 +32,11 @@ hangos ébresztés **fölösleges zaj**.
 
 ## ⚠️ A MÉRT IDŐZÍTÉSI KOCKÁZAT — ezt tudni kell
 
-A fő ütemezés **20 percenként** fut *(`__agent/SCHEDULE.md`)*. A 4. lépcső viszont egy **5-10
-perces ablakot** kér az esemény előtt.
+🔴 **MÉRVE 2026-09-11 02:51 (owner):** a fő ütemezés **NEM 20 perc, hanem 3 ÓRA** — *„a CCAP-ban
+él a valóság"*. A `SCHEDULE.md` 20 perces értéke **elavult**.
 
-🔴 **20 perces raszterrel egy 5-10 perces ablak kimaradhat**: a tick eshet T−20-ra és T−0-ra is,
-a kettő között pedig nincs kör.
+⇒ **3 órás raszterrel az 5-10 perces ablak nem hogy kimaradhat — jó eséllyel KI IS MARAD.**
+Előfordulhat, hogy **09:00 és 12:00 között egyáltalán nem futok le**.
 
 ⇒ **Ezért az időzített ébresztésnél ⛔ NEM hagyatkozom a fő ütemezésre**: a kritikus lépcsőre
 **külön `ScheduleWakeup`-ot** kell kérni, az ablak elejére.
@@ -59,3 +59,23 @@ amiért nem tudok helytállni.
 
 Kapcsolódó: [[day-boundary-is-sleep]] · [[sleep-system]] · [[cast-notifier-defaults]] ·
 [[message-delivery-reliability]] · `__agent/flows/recurring/schedule-guardian/`
+
+---
+
+## 🥇 AZ ŐSZINTE SZEREPOSZTÁS (owner, 2026-09-11 02:51)
+
+> *„Be fogok állítani magamnak mindenféle ébresztőt, és általában ez szokott működni, és föl
+> szoktam tudni kelni, csak **akarok egy ilyen tesztet is**, ami hogyha felébredek, **nem fog
+> elsülni**, de azért jó lenne, ha felírnánk, meg **úgy ez lenne az alap**."*
+
+| Ki | Szerep |
+|---|---|
+| **az ő saját ébresztője** | 🥇 **az elsődleges** — ez működik, ezen múlik, hogy felkel |
+| **az én eszkalációm** | 🧪 **teszt + tartalék** — ha ébren van, **el sem sül** |
+
+⭐ **De „az alap" — vagyis a viselkedés ATTÓL MÉG ALAPÉRTELMEZETT.** ⛔ Nem kell külön kérnie:
+minden időzített eseménynél **magamtól** lefuttatom a létrát.
+
+📌 **Ettől lesz ez tiszta:** nem ígérek megbízhatóságot, amit nem tudok tartani — de a **rendszeres
+próbálkozást** igen. És minden lefutás **adat** arról, hogy működik-e.
+
