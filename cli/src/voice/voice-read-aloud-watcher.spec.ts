@@ -28,6 +28,8 @@ describe('VoiceReadAloudWatcher', () => {
   let root: string;
   let logPath: string;
   let spokenTexts: string[];
+  /** ⭐ Az ÁTADOTT azonosítók — a sor és a napló ezen találja meg az üzenetet. */
+  let spokenIds: string[];
   let notes: string[];
   let watcher: VoiceReadAloudWatcher | null = null;
   let ownerPresent: boolean;
@@ -36,8 +38,9 @@ describe('VoiceReadAloudWatcher', () => {
     return new VoiceReadAloudWatcher({
       logPath: logPath,
       isOwnerPresent: (): boolean => ownerPresent,
-      speak: async (text: string): Promise<void> => {
+      speak: async (text: string, id: string): Promise<void> => {
         spokenTexts.push(text);
+        spokenIds.push(id);
       },
       onNote: (detail: string): void => {
         notes.push(detail);
@@ -49,6 +52,7 @@ describe('VoiceReadAloudWatcher', () => {
     root = await mkdtemp(join(tmpdir(), 'ma-read-aloud-'));
     logPath = join(root, 'outbound-log.jsonl');
     spokenTexts = [];
+    spokenIds = [];
     notes = [];
     ownerPresent = true;
   });
@@ -130,6 +134,19 @@ describe('VoiceReadAloudWatcher', () => {
 
     await expectAsync(watcher.start()).toBeResolved();
     expect(notes.some((n: string): boolean => n.includes('még nem létezik'))).toBeTrue();
+  });
+
+  it('⭐ az AZONOSÍTÓT is átadja — enélkül a sor-jelzés nem visszakereshető', async (): Promise<void> => {
+    // A sor jelzései („2/4 darab", „tartva") csak akkor érnek valamit, ha meg lehet mondani,
+    // MELYIK üzenetről szólnak. Az azonosító a bejegyzés `sentAt`-ja.
+    await writeFile(logPath, '', 'utf-8');
+    watcher = makeWatcher();
+    await watcher.start();
+
+    await appendFile(logPath, line('2026-09-11T03:20:00+02:00', 'Kész a javítás.'), 'utf-8');
+    await settle();
+
+    expect(spokenIds).toEqual(['2026-09-11T03:20:00+02:00']);
   });
 
   it('a CSONKA utolsó sor nem buktatja meg a feldolgozást', async (): Promise<void> => {

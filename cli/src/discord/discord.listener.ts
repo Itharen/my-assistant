@@ -18,6 +18,8 @@ import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 import { decideVoiceJoinPermission } from '../voice/voice-lifecycle.js';
 import { VoiceReadAloudWatcher } from '../voice/voice-read-aloud-watcher.js';
 import { VoiceUtteranceArchive_Util } from '../voice/voice-utterance-archive.js';
+import { VoicePlaybackIdle_Util } from '../voice/voice-playback-idle.js';
+import { VoiceSpeechQueue } from '../voice/voice-speech-queue.js';
 import { VoiceServiceWatch } from '../voice/voice-service-watch.js';
 import { speakInVoiceChannel } from '../voice/voice-speaker.js';
 import { resolveOutboundLogPath } from './discord.reply-tracker.js';
@@ -281,6 +283,15 @@ export class DiscordListener {
   /** 🔊 A hang-csatornai jelenlét — owner: „mindig ülj bent amikor megy a my assistant". */
   private readonly voicePresence: VoiceChannelPresence = new VoiceChannelPresence();
   private readAloud: VoiceReadAloudWatcher | null = null;
+
+  /**
+   * 🔢 A felolvasás sora.
+   *
+   * ⭐ MIÉRT A FIGYELŐN KÍVÜL: a sornak **túl kell élnie** a napló-figyelő újraindítását.
+   * Ha a sor a figyelővel együtt jönne létre, egy újracsatlakozás **kiürítené** a várakozó
+   * üzeneteket — pontosan az a veszteség, amit a sor megszüntet.
+   */
+  private speechQueue: VoiceSpeechQueue | null = null;
 
   /**
    * A FOLYAMATBAN LÉVŐ hang-esemény-írások.
@@ -644,28 +655,57 @@ export class DiscordListener {
       return;
     }
 
+    // 🔢 A SOR — ⭐ EGY üzenet sem esik ki azért, mert épp szól egy másik.
+    //
+    // > **Owner, 2026-09-11 01:30 (hang):** *„mintha két üzenetet küldtél, és csak az első
+    // > került felolvasásra… majd itt bonyolultabb queuing rendszert is kell kialakítsunk"*
+    //
+    // 🔴 A MÉRT GYÖKÉR: a `speakInVoiceChannel` a `player.play()` után AZONNAL visszatér, tehát
+    // az itteni `await` csak az INDÍTÁST várta meg. A második üzenet nem-`Idle` lejátszóba
+    // futott, és — helyesen — `spoken: false`-szal visszalépett. ⇒ Semmi nem sorosított.
+    this.speechQueue = new VoiceSpeechQueue({
+      speak: (text: string): Promise<{ spoken: boolean; detail: string }> => this.speakOnePart(text),
+      // 🔴 EZ A HIÁNYZÓ DARAB: a lejátszás VÉGÉNEK kivárása, esemény-alapon.
+      waitForIdle: (): Promise<boolean> => {
+        const player = this.cues?.audioPlayer;
+
+        // ⚠️ Nincs lejátszó ⇒ nincs mire várni. ⛔ A `false` itt félrevezető lenne: nem
+        // időtúllépés történt, egyszerűen nincs hang-kapcsolat.
+        return player ? VoicePlaybackIdle_Util.wait(player) : Promise.resolve(true);
+      },
+      onNote: (detail: string): void => {
+        void this.safeLog({
+          kind: 'note',
+          summary: `[discord/listener] MA-VOICE-READ-ALOUD: ${detail}`,
+          extra: { code: 'MA-VOICE-READ-ALOUD' },
+        });
+      },
+      // 🔴 A TORLÓDÁS LÁTHATÓ. A csendes felhalmozódás ugyanaz a hibaosztály, mint a néma
+      // csonkolás: a rendszer „működik", csak az üzenetek percekkel késve szólalnak meg.
+      onBacklog: (info: { depth: number; parts: number }): void => {
+        void this.safeLog({
+          kind: 'error',
+          summary: `[discord/listener] MA-VOICE-READ-ALOUD-BACKLOG: ${info.depth} üzenet `
+            + `(${info.parts} darab) VÁR felolvasásra — a sor nem ürül.`,
+          extra: {
+            code: 'MA-VOICE-READ-ALOUD-BACKLOG',
+            depth: info.depth,
+            parts: info.parts,
+            remedy: 'Ha ez tartósan fennáll, vagy a lejátszás akadt be, vagy több üzenet megy '
+              + 'ki, mint amennyi kimondható — az utóbbi a Discord-üzenet HOSSZÁN javítható.',
+          },
+        });
+      },
+    });
+
     this.readAloud?.stop();
     this.readAloud = new VoiceReadAloudWatcher({
       logPath: resolveOutboundLogPath(),
       isOwnerPresent: (): boolean => this.isOwnerInVoiceChannel(ownerId, config.channelId),
-      speak: async (text: string): Promise<void> => {
-        const player = this.cues?.audioPlayer;
-
-        if (!player) return;
-
-        const result = await speakInVoiceChannel({ text: text, player: player });
-
-        // ⛔ A felolvasás kimenetele SOSEM néma: a `spoken: false` OKA is naplózódik,
-        // különben csak annyi látszana, hogy „nem szólalt meg".
-        await this.safeLog({
-          kind: result.spoken ? 'note' : 'error',
-          summary: `[discord/listener] MA-VOICE-READ-ALOUD: ${result.detail}`,
-          extra: {
-            code: 'MA-VOICE-READ-ALOUD',
-            spoken: result.spoken,
-            ...(result.characterCount === undefined ? {} : { characterCount: result.characterCount }),
-          },
-        });
+      // ⚠️ A felolvasás innentől CSAK SORBA TESZ — ⛔ nem játszik le közvetlenül. A
+      // sorosítás (és a lejátszás végének kivárása) a `VoiceSpeechQueue` dolga.
+      speak: async (text: string, id: string): Promise<void> => {
+        this.speechQueue?.enqueue({ id: id, parts: [text] });
       },
       onNote: (detail: string): void => {
         void this.safeLog({
@@ -1091,6 +1131,37 @@ export class DiscordListener {
     // újracsatlakozás különben két mintavételezőt hagyna ugyanazon a könyvtáron.
     this.dropProbe?.stop();
     this.dropProbe = result.probe ?? null;
+  }
+
+  /**
+   * 🔊 EGY DARAB kimondása — a sor ezt hívja.
+   *
+   * @returns a megszólalás kimenetele. ⚠️ ⛔ **NEM** a lejátszás vége — azt a sor a
+   *   `VoicePlaybackIdle_Util`-lal várja ki.
+   *
+   * ⛔ Hibát SOHA nem dob: a felolvasás kísérő funkció. ⚠️ De ⛔ nem is néma — a `spoken: false`
+   * OKA is naplóba kerül, különben csak annyi látszana, hogy „nem szólalt meg".
+   */
+  private async speakOnePart(text: string): Promise<{ spoken: boolean; detail: string }> {
+    const player = this.cues?.audioPlayer;
+
+    if (!player) {
+      return { spoken: false, detail: 'Nincs hang-kapcsolat — nincs mibe felolvasni.' };
+    }
+
+    const result = await speakInVoiceChannel({ text: text, player: player });
+
+    await this.safeLog({
+      kind: result.spoken ? 'note' : 'error',
+      summary: `[discord/listener] MA-VOICE-READ-ALOUD: ${result.detail}`,
+      extra: {
+        code: 'MA-VOICE-READ-ALOUD',
+        spoken: result.spoken,
+        ...(result.characterCount === undefined ? {} : { characterCount: result.characterCount }),
+      },
+    });
+
+    return { spoken: result.spoken, detail: result.detail };
   }
 
   /**

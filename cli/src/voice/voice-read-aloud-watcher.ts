@@ -37,8 +37,14 @@ export interface ReadAloudWatcherOptions {
   logPath: string;
   /** Bent van-e az owner a hang-csatornában — MÉRT tény, minden döntés előtt újra kérdezzük. */
   isOwnerPresent: () => boolean;
-  /** A tényleges felolvasás. */
-  speak: (text: string) => Promise<void>;
+  /**
+   * A tényleges felolvasás.
+   *
+   * ⭐ Az `id` *(a bejegyzés `sentAt`-ja)* **azonosítja** a felolvasást a sorban és a naplóban.
+   * ⚠️ Enélkül a sor-jelzések *(„2/4 darab", „tartva")* nem lennének visszakereshetők ahhoz az
+   * üzenethez, amelyikről szólnak.
+   */
+  speak: (text: string, id: string) => Promise<void>;
   /** Naplózás — ⛔ a kihagyás OKA sem lehet néma. */
   onNote?: (detail: string) => void;
 }
@@ -126,7 +132,10 @@ export class VoiceReadAloudWatcher {
           continue;
         }
 
-        await this.options.speak(decision.text);
+        // ⚠️ A hívás MÁR NEM a lejátszás végét várja meg: a sorba tétel gyors, a
+        // sorosítást a `VoiceSpeechQueue` végzi. ⭐ Ez szándékos — különben a napló-figyelő
+        // egy hosszú felolvasás teljes hosszáig nem látná a következő bejegyzést.
+        await this.options.speak(decision.text, entry.sentAt);
       }
     } catch (err: unknown) {
       SwallowedFailure_Util.report('voice.read-aloud.handleChange', err);
