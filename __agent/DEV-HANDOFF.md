@@ -1404,8 +1404,23 @@ megírva**.
 | **A** — mégis van valamilyen megszakítás *(pl. a lejátszó akad, ha jön a bejövő hang)* | akkor ez **véletlen** viselkedés, és a hiszterézis **rá is vonatkozik** |
 | **B** — a hang **magától darabos** *(hálózat, puffer, `SupervisedChild`)* | ⭐ akkor ez **MÁS hiba**, és a szüneteltetés **nem javítja** |
 
-🔴 **Ezt MÉRÉSSEL kell eldönteni, mielőtt bármit írsz:** szólal-e meg a darabosság **akkor is**,
-ha az owner **nem beszél**? Ha igen → **B**, és külön hiba.
+### ✅ MEGVÁLASZOLVA — 2026-09-11 02:43, owner
+
+> *„**nem volt darabos a hangod**, csak egy pillanatra, és azt hittem, hogy azért, mert… **Ja nem,
+> hülye vagyok, pont azt mondtad, hogy még az hátra van.**"*
+
+⇒ **A „B" olvasat KIZÁRVA.** ⛔ Nincs külön lejátszási/hálózati hiba, **ne nyomozz utána** — ez a
+vizsgálat **lekerült** a listáról.
+
+⇒ Marad a **hiszterézis-követelmény** *(lent)*, de már **nem hibajavításként**, hanem a 01:20-as
+tétel **tervezési részleteként**, amikor sorra kerül.
+
+⭐ **És megvan a HUMÁN indok is, egy mondatban** — az owner ugyanabban az üzenetben:
+> *„ugye **éppen beszéltem és ezért nem nagyon tudtam figyelni**."*
+
+📌 **Ezért nem kényelmi funkció a szüneteltetés:** amíg ő beszél, **nem hallja**, amit mondok.
+Ha közben beszélek, az a mondat **elveszett** — ugyanaz a veszteség, mint a csonkolásnál, csak a
+másik irányban.
 
 ### A KÖVETELMÉNY — ez a 01:20-as tétel PONTOSÍTÁSA
 
