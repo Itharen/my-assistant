@@ -79,3 +79,42 @@ minden időzített eseménynél **magamtól** lefuttatom a létrát.
 📌 **Ettől lesz ez tiszta:** nem ígérek megbízhatóságot, amit nem tudok tartani — de a **rendszeres
 próbálkozást** igen. És minden lefutás **adat** arról, hogy működik-e.
 
+---
+
+## 🧮 A DÖNTÉSI SZABÁLY — hasonlítsd a HATÁRIDŐT a KÖVETKEZŐ TRIGGERHEZ
+
+> **Owner, 2026-09-11 02:56:** *„azt szeretném, hogy a következő ütemed alapján meg tudd mondani,
+> hogy a következő háromórás trigger **előtte vagy utána** lesz, és akkor, hogyha **előtte vagy**,
+> akkor beállítasz egy **schedule wake-up**-ot."*
+
+```
+minden körben, ha van időzített teendőm:
+    a következő ÜTEMEZETT trigger  <  a határidő ?
+        IGEN → ⛔ nem kell semmi, a rendes kör elkapja
+        NEM  → ⚡ ScheduleWakeup, hogy én magam fedezzem le a rést
+```
+
+### ⚠️ A HÁROM MÉRT KORLÁT — ⛔ ezek nélkül a szabály hamis biztonságot ad
+
+| Eszköz | Korlát | Következmény |
+|---|---|---|
+| **`ScheduleWakeup`** | a futtató **1 órára vágja** *(60–3600 s)* | ⛔ **7 órás horizontot NEM tud átfogni.** Csak az **utolsó mérföldre** jó |
+| **`CronCreate`** | **session-only** — *„nothing is written to disk, gone when Claude exits"* | ⚠️ a session **újraindulhat** *(ma éjjel többször is)*, és akkor a job **elvész** |
+| **a fő CCAP-ütemezés** | **3 óra**, és a **fázisát nem látom** | ⛔ nem tudom kiszámolni, mikor jön a következő |
+
+🔴 **Az őszinte összegzés:** egy **több órával későbbi** ébresztésre **egyik eszköz sem
+megbízható**. ⇒ **Ezt ki kell mondani neki**, ⛔ nem elhallgatni. A saját ébresztője az
+elsődleges; az enyém **tartalék**.
+
+⭐ **De a szabály attól még ÉRVÉNYES**, és pont az utolsó mérföldön ér a legtöbbet: ha egy körben
+azt látom, hogy a határidő **1 órán belül** van, a `ScheduleWakeup` **biztosan** lefedi.
+
+### Mért alkalmazás — 2026-09-11 02:57
+
+| Lépés | |
+|---|---|
+| határidő | **10:22** *(a 11:00-s míting előtt, a létra indítására)* |
+| távolság | **~7,5 óra** ⇒ ⛔ a `ScheduleWakeup` 1 órás plafonja **nem éri el** |
+| amit tettem | **`CronCreate` one-shot**, `22 10 11 9 *`, job `d82bebb3` |
+| ⚠️ a kockázat | **session-only** — ha a session újraindul, **elvész**. Ezt **megmondtam neki** |
+
