@@ -3622,3 +3622,111 @@ ott áll indoklással.
 
 **Mi indítana újra:** a megadott naptár-engedély *(akkor élesben is lemérem a napot)* · vagy a
 *„kezdd el a poszt-felületet"* · vagy egy konkrét hibaszöveg.
+
+---
+
+## AGB-2026-09-11-06 — 🎙️ A HOSSZÚ HANGÜZENET VÉGE MEGVAN — és a mért ok NEM az volt, amit vártunk
+
+**From:** dev · **To:** assistant · **Időpont:** 2026-09-11 16:40 · **Commit:** `95ef2a4` + `2f0503a`
+
+### 🔬 ELŐSZÖR MÉRTEM — a kikötés szerint, ⛔ nem javítottam hipotézisre
+
+**Alany:** a megőrzött **56,9 mp**-es felvétel. ⭐ *(Az 1. tétel — a hang megőrzése — nélkül ez
+a mérés lehetetlen lett volna: a hang már nem létezne.)*
+
+| Próba | Eredmény |
+|---|---|
+| **felezés** | teljes fájl **295** kar · felezve **279 + 348 = 627** kar ⇒ a 2. fél szövege **egyáltalán nem** szerepel a teljes átiratban |
+| **prefix-sorozat** | 28 mp → 280 kar · **30 mp → 295 kar** · 32 / 35 / 40 / 56 mp → **295 kar, szó szerint ugyanazzal a véggel** |
+| **fejléc-kizárás** | a felvevő fejléce 22 369,6 mp-et állít, de **javított** fejléccel a válasz **karakterre azonos** |
+
+🔴 **A GYÖKÉR: a felismerő 30,0 másodperces ablaka**, hosszú-hang darabolás nélkül.
+
+### ⭐ AMIT A MÉRÉS KIZÁRT — és ez a legfontosabb következmény
+
+| A handoff mindhármat felvetette | Mérés |
+|---|---|
+| a **szegmentálás** *(`AfterSilence` 1000 ms)* | ⛔ **NEM** — a 34-57 mp-es felvételek **teljes hosszban** a lemezen vannak |
+| a **felvevő** dobja el | ⛔ **NEM** — ugyanaz |
+| a **felismerés utáni** út | ⛔ **NEM** — a csonka szöveg **hiánytalanul** bekerült a kötegbe |
+
+🔴 ⇒ **A 9. tételben leszögezett beszéd-észlelést NEM kell megváltoztatni**, tehát
+**nincs szükség owner-döntésre** róla. ⭐ Ezt **mérés** mondja ki, ⛔ nem feltevés.
+
+### 🔴 KÉT KÜLÖNBÖZŐ VESZTESÉG — a handoff összevonta őket, és ezt meg kell mondanom
+
+**A) A csonkolás** *(ez az owner panasza)*: a 30 mp-en túli beszéd nem kerül az átiratba.
+⚠️ **A mérésben ✅ SIKERKÉNT szerepelt**, hiszen bekerült a kötegbe ⇒ a **78%-os arány nem is
+látta**. Aznap a 84 felvételből **11 volt 28 mp felett** *(13%)*, és azok a szövegük
+**40-50%-át** vesztették el.
+
+**B) A 23 „felismerés után elveszett"**: ⛔ **NEM elveszett mondatok.** A megőrzött hang szerint
+mind a 12 `uncertain` felvétel **0,3-2,3 másodperces** *(légzés, mondat-farok)*, amibe a
+felismerő `„Thank you."`-t hallucinált. **Mind 01-03 h és 13 h között** — ⛔ **15:53/15:54-kor
+egy sem.** ⇒ A töltelék-őr **jól dolgozik**; ezen az ágon nincs mit megmenteni.
+
+⚠️ **Ebből az is következik, hogy a 78% pesszimista**: a nevezőben 23 másodperc alatti töredék
+is benne van. ⭐ Ezért a tölcsér most **megnevezi** őket — ⛔ **de nem vonja ki** az arányból:
+a metrikát nem szépítjük.
+
+### ✅ A JAVÍTÁS ÉS AZ IGAZOLÁS
+
+A 30 mp-nél hosszabb hangot **≤28 mp-es darabokra** bontjuk, **csendnél** vágva *(mért küszöb:
+1502 keret, `p25=504` ⇒ a szünet 200 alatt)*, és az átiratokat összefűzzük.
+⛔ **Az FDP AI szolgáltatáshoz nem nyúltam** *(`fdp-ai-never-restart`)* — a darabolás teljesen a
+mi oldalunkon van.
+
+| Felvétel | Előtte | Most |
+|---|---|---|
+| 56,9 mp | 295 kar | **641** kar *(3 részlet)* |
+| **34,2 mp — az owner 15:53-as üzenete** | 299 kar | **445** kar *(2 részlet)* |
+| 8,8 mp | 96 kar | 96 kar, darabolás nélkül — **változatlan út** |
+
+🔴 **A DÖNTŐ BIZONYÍTÉK:** a 15:53-as üzenetből előkerült a hiányzó vég —
+
+> *„Majd erre föl kell írjunk egy **évente ismétlődő**, de mindig **egy-két hónappal korábbra**
+> kerülő **adategyeztetési feladatot a dominó telefonhoz**."*
+
+⭐ **Pontosan az a mondat**, amit az owner ezután **kétszer** próbált megismételni. *(⚠️ Neked:
+ez egy **valódi, eddig elveszett owner-kérés** — évente ismétlődő dominó-adategyeztetés, mindig
+1-2 hónappal előbbre csúsztatva. ⛔ Nem az én dolgom rögzíteni, de nem hallgatom el.)*
+
+### 🔴 A TECHNIKAI KORLÁT KIMONDVA — ⛔ néma csonkolás nincs
+
+```
+🎙️ gépi átirat · 🧩 3 részletben ismerve (30 mp-es ablak)
+🎙️ gépi átirat · 🔴 1 részlet felismerése ELBUKOTT — a szöveg HIÁNYOS
+🎙️ gépi átirat · ⚠️ 1 vágás beszéd közben esett — ott szó csúszhatott el
+```
+
+📊 A tölcsér új sorai: `🧩 darabolva ismerve (>30 mp)` és
+`⏱️ ebből N a másodperc alatti töredék (nem mondat)`.
+
+### ✅ Ellenőrzés
+
+CLI **1120 / 1120** *(+45 új spec)* · `tsc` tiszta · **pozitív kontroll ×3** *(darabolás
+kikapcsolva → 13 bukás · hiány-jelzés elhallgatva → 1 bukás · töredék-számolás kikapcsolva →
+2 bukás)* · `dc rev` **2397 → 2397** **három egymást követő körön**, a két új fájlon **0**
+találat · a `cv-*.ts` fájlokon a `git diff` **ÜRES**.
+
+⚠️ **Két hibát a saját tesztem fogott meg** *(nem az owner)*: a végig hangos hangnál a vágás a
+sáv elejére esett *(5 mp veszteség darabonként)*, és a hiány-jelzést **kiszorította** az arány-őr
+indoklása. Mindkettő javítva, teszt őrzi.
+
+### 🛑 A hurok lezárva
+
+⛔ **Nem ütemeztem új ébredést.** A négy nyitott tétel mindegyike **rajtam kívüli kapun** áll:
+
+| Tétel | Mire vár |
+|---|---|
+| **14** *(hosszú hang)* | a **listener újraindulására** — a futó példány még a régi kódot viszi; ⛔ nem indítom újra *(a szerver a gazda)* |
+| **13** *(naptár)* | `ma email auth --account default` — böngésző + az owner kattintó jóváhagyása |
+| **11** *(poszt-felület)* | az owner sorrendjére *(profil → posztok → üzenetek)* |
+| **12** *(„mindenféle hiba")* | a **konkrét** hibaszövegre |
+
+**Mi indítana újra:** az első hosszú hangüzenet a listener-újraindulás után *(akkor élesben
+lemérem)* · a megadott naptár-engedély · a *„kezdd el a poszt-felületet"* · vagy egy konkrét
+hibaszöveg.
+
+📌 Doksi: `__documentations/dev/VOICE_LONG_AUDIO.md` · `SKILLS.md` · terv:
+`__agent/plans/voice-reliability/PROCESS-CONTROL.md` *(14. tétel)*.
