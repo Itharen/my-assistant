@@ -144,3 +144,33 @@ De három feltétellel:
 
 📌 **Amit NEM kerülök meg soha:** a **rövidség**, a **hatáskör** és az **alvás-ablak** — azok
 nem az eszközben laknak, hanem a döntésben. A `dist` hiánya **nem** ad felmentést alóluk.
+
+---
+
+## ⛔ A KÜLDŐ PARANCSOT SOHA NE FUTTASD LE KÉTSZER — mérve 2026-09-11 03:12
+
+🔴 **Mi történt:** elküldtem az üzenetet `ma comm say --file`-lal, láttam a `targets` blokkot, majd
+**újra lefuttattam ugyanazt a parancsot**, hogy a JSON `ok` mezőjét is kiolvassam. ⇒ **Az üzenet
+kétszer ment ki**, és ezt a `comm history` vissza is igazolta *(két azonos `03:12`-es bejegyzés)*.
+
+⚠️ **A csapda nem a figyelmetlenség, hanem a diagnosztikai reflex**: a `ma comm say` **nem lekérdezés,
+hanem MŰVELET**. Egy `curl`-t nyugodtan újrafuttatok, hogy jobban lássam a választ — ⛔ egy küldést
+soha.
+
+### A recept
+
+```bash
+OUT=$(PYTHONIOENCODING=utf-8 ma comm say --file /tmp/msg.txt)   # EGYSZER fut
+echo "$OUT" | python3 -c "import sys,json; print(json.load(sys.stdin)['ok'])"
+echo "$OUT" | tail -20                                          # ugyanabbol a valtozobol
+```
+
+⭐ **Az elv általánosan:** **állapotot változtató parancs kimenetét CSAK változóba/fájlba fogva
+vizsgálom.** Ez a `ma comm say`-en túl érvényes: `fo *.create/update`, `linkedin reply`,
+`cast notify`, `POST /api/sch/jobs` — mind ilyen.
+
+📌 **Ha mégis megtörtént:** ⛔ ne küldjek egy harmadik üzenetet bocsánatkérésként — az **még több
+zaj**. A duplikátum látszik, a tanulság ide kerül. *(`discord-message-style.md`: „ebből következik
+számára teendő vagy döntés?" — nem.)*
+
+Kapcsolódó: [[discord-message-style]] · [[focus-support]] · [[post-development-verification]]
