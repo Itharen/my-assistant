@@ -16,8 +16,9 @@
 // ⭐ EZÉRT ez a modul **nem „tisztít", hanem FORDÍT**: a jelentést viszi át abba a formába,
 // ahol a hallás is érti. A `→` nem eltűnik, hanem *„ebből következik"* lesz belőle.
 //
-// ⛔ NEM rövidít és NEM összegez: az a tartalom megváltoztatása lenne. Ami elhangzik, az
-// **ugyanaz**, amit írtam — csak kimondhatóan.
+// ⛔ NEM rövidít, NEM összegez és ⛔ **NEM CSONKOL**: az a tartalom megváltoztatása lenne. Ami
+// elhangzik, az **ugyanaz**, amit írtam — csak kimondhatóan. A **hossz** kezelése a
+// `voice-speech-split.ts` dolga: az **darabol**, nem vág le.
 
 /** Egy csere-szabály: mit mire. */
 interface SpeechRule {
@@ -62,7 +63,14 @@ const SIGNAL_EMOJI: Record<string, string> = {
   '📌': 'megjegyzés: ',
 };
 
-/** A beszéd-szöveg felső hossza — e fölött a felolvasás önmagában terhelő lenne. */
+/**
+ * EGY felolvasott **darab** felső hossza.
+ *
+ * 🔴 2026-09-11: a jelentése megváltozott. Korábban a **teljes szöveg** felső korlátja volt, és
+ * ⛔ ami fölé nyúlt, az **elveszett**. Mostantól a **darab** mérete — a teljes szövegnek
+ * **nincs** korlátja, mert a `VoiceSpeechSplit_Util` **darabol** *(a feladat kikötése:
+ * „a `SPEECH_MAX_CHARS` maradjon a darab mérete, ne a teljes szövegé")*.
+ */
 export const SPEECH_MAX_CHARS: number = 700;
 
 /**
@@ -126,14 +134,15 @@ export function prepareSpeechText(text: string): string {
     .replace(/:\s*\./gu, '.')
     .trim();
 
-  if (out.length <= SPEECH_MAX_CHARS) return out;
-
-  // ⚠️ A vágás MONDATHATÁRON: félbeszakadt mondat hangban félreérthető. Ha nincs mondatvég a
-  // sávban, karakteren vágunk — de akkor KIMONDJUK, hogy van még.
-  const head: string = out.slice(0, SPEECH_MAX_CHARS);
-  const lastStop: number = Math.max(head.lastIndexOf('. '), head.lastIndexOf('! '), head.lastIndexOf('? '));
-
-  return lastStop > SPEECH_MAX_CHARS / 2
-    ? `${head.slice(0, lastStop + 1)} A többi írásban.`
-    : `${head.trimEnd()}… A többi írásban.`;
+  // 🔴 ITT KORÁBBAN CSONKOLÁS VOLT — 2026-09-11-én kivéve.
+  //
+  // > **Owner, 2026-09-11 01:28 (hang):** *„az üzeneteidnél most így levágja a végét… szét
+  // > kéne bontani… lehetőleg **ne [vágjunk] le semmit**."*
+  //
+  // A régi kód a 700 karakter fölötti részt **eldobta** *(`„… A többi írásban."`)*, és a hívó
+  // ⛔ nem tudta, hogy volt még. ⇒ A hossz-kezelés a **`VoiceSpeechSplit_Util`** dolga: az
+  // **darabol**, nem csonkol.
+  //
+  // ⭐ EZ A FÜGGVÉNY MOSTANTÓL CSAK FORDÍT, és ⛔ soha nem veszít tartalmat.
+  return out;
 }

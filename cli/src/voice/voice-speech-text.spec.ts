@@ -75,20 +75,32 @@ describe('prepareSpeechText — a díszek eltűnnek, a JELENTÉS marad', () => {
 
   describe('a hossz', () => {
 
-    it(`a ${SPEECH_MAX_CHARS} karakter fölötti szöveg MONDATHATÁRON vágódik`, () => {
+    // 🔴 ÁTÍRVA 2026-09-11 — a CSONKOLÁSRÓL a NEM-CSONKOLÁSRA.
+    //
+    // > **Owner, 2026-09-11 01:28 (hang):** *„az üzeneteidnél most így levágja a végét… szét
+    // > kéne bontani… lehetőleg **ne [vágjunk] le semmit**."*
+    //
+    // ⚠️ A tesztek ⛔ NEM lettek törölve *(a feladat kikötése)*: ugyanazt a bemenetet vizsgálják,
+    // csak a **helyes** elvárással. A hossz-kezelés a `VoiceSpeechSplit_Util` dolga.
+
+    it(`🔴 a ${SPEECH_MAX_CHARS} karakter fölötti szöveg TELJES EGÉSZÉBEN megmarad`, () => {
       const long: string = `${'Ez egy teljes mondat. '.repeat(60)}vég`;
       const spoken: string = prepareSpeechText(long);
 
-      expect(spoken.length).toBeLessThan(SPEECH_MAX_CHARS + 40);
-      // ⭐ A vágás TÉNYE elhangzik: enélkül az owner azt hinné, hogy ennyi volt az egész.
-      expect(spoken).toContain('A többi írásban.');
-      expect(spoken).toContain('mondat.');
+      // ⭐ A LÉNYEG: hosszabb a határnál, és ez így HELYES — nem ez a függvény vág.
+      expect(spoken.length).toBeGreaterThan(SPEECH_MAX_CHARS);
+      // 🔴 A régi csonkolás nyoma SEHOL nem jelenhet meg.
+      expect(spoken).not.toContain('A többi írásban.');
+      expect(spoken.endsWith('vég')).toBeTrue();
     });
 
-    it('mondathatár nélkül karakteren vág — de a folytatás tényét KIMONDJA', () => {
+    it('⛔ mondathatár NÉLKÜL sem vág — és nem is jelez csonkolást', () => {
       const spoken: string = prepareSpeechText('szó '.repeat(400));
 
-      expect(spoken).toContain('A többi írásban.');
+      expect(spoken).not.toContain('A többi írásban.');
+      expect(spoken).not.toContain('…');
+      // A 400 „szó " ⇒ 1600 karakter, szóközök összevonása után is jóval a határ fölött.
+      expect(spoken.length).toBeGreaterThan(SPEECH_MAX_CHARS);
     });
 
     it('a sávon belüli szöveg érintetlen', () => {

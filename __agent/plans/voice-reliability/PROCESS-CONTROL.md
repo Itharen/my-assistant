@@ -6,7 +6,7 @@
 > és a **sorrend** van.
 > **Ez a fájl az enyém (DEV).** A `DEV-HANDOFF.md` az asszisztensé — ⛔ oda nem írok státuszt.
 
-**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 02:35
+**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 03:40
 
 ---
 
@@ -26,9 +26,10 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | # | Tétel | Forrás | Állapot | Dátum |
 |---|---|---|---|---|
 | **1** | 🎙️ **MEGŐRZÉS** — nyers hang + nyers átirat + látható veszteség | 02:00 + 01:33 (B) | ✅ **KÉSZ** — CLI 917/917, pozitív kontroll lefuttatva | 2026-09-11 02:32 |
-| **2** | 🔢 **FIFO SOR** a felolvasásra | 01:33 (A) | ⏳ **SORON** | — |
-| **3** | ✂️ **DARABOLÁS** csonkolás helyett | 01:30 | ⬜ hátra *(a 2-re épül)* | — |
-| **4** | 🔇 **SZÜNETELTETÉS**, amíg az owner beszél | 01:20 | ⬜ hátra *(a 2-re épül)* | — |
+| **2** | 🔢 **FIFO SOR** a felolvasásra | 01:33 (A) | ✅ **KÉSZ** — commit `0e0bd73`, CLI 935/935 | 2026-09-11 03:20 |
+| **2b** | 🧹 **NAPLÓ-ÁRADÁS** *(élő ellenőrzésből jött elő)* | — | ✅ **KÉSZ** — a napló 95%-a zaj volt | 2026-09-11 03:30 |
+| **3** | ✂️ **DARABOLÁS** csonkolás helyett | 01:30 | ✅ **KÉSZ** — CLI 956/956 | 2026-09-11 03:40 |
+| **4** | 🔇 **SZÜNETELTETÉS**, amíg az owner beszél | 01:20 | ⏳ **SORON** *(`hold()`/`release()` már megvan)* | — |
 | **5** | 🌐 **NYELV-PARAMÉTER** a felismerésnek | 01:24 + 01:30 | ⬜ hátra | — |
 | **6** | 🔗 **LinkedIn PROFIL-FRISSÍTŐ felület** | 01:55 | ⬜ hátra | — |
 
@@ -115,9 +116,120 @@ tesztek zöldek, fel van tolva — csak a commit-üzenet félrevezető. *(Az els
 
 ---
 
+## ✅ 2. TÉTEL — FIFO SOR (2026-09-11 03:20, commit `0e0bd73`)
+
+**A mért gyökér:** a `speakInVoiceChannel` a `player.play()` **után azonnal visszatér**, tehát a
+figyelő `await`-je csak az **indítást** várta meg. A második üzenet nem-`Idle` lejátszóba futott,
+és — helyesen — `spoken: false`-szal visszalépett. ⇒ **Semmi nem sorosított.**
+
+| fájl | mi |
+|---|---|
+| `voice-speech-queue.ts` | FIFO sor: sorrend · nulla veszteség · **csoport** · `hold()`/`release()` · torlódás-jelzés |
+| `voice-playback-idle.ts` | a lejátszás **végének** kivárása *(`entersState`, esemény-alapon)*, 180 s felső korláttal |
+
+⭐ **A csoport-garancia a 3. tétel előfeltétele:** egy üzenet N darabja **egyben** marad, közéjük
+más üzenet ⛔ nem ékelődhet.
+⭐ **A `hold()`/`release()` a 4. tétel alapja** — a jelforrás *(mikor beszél az owner)* még hátra van.
+
+🔴 **SAJÁT HIBA, amit a tervezés közben kaptam el:** a `shift()` először **feltétel nélkül**
+futott ⇒ egy **tartás** közben félbehagyott üzenet maradék darabjai **elveszhettek** volna —
+pont az a veszteség, amit a sor megszüntet. Most csak a **befejezett** tétel kerül ki, és
+teszt állítja.
+
+## ✅ 2b. TÉTEL — A NAPLÓ-ÁRADÁS *(⚠️ ezt az ÉLŐ ellenőrzés hozta elő, nem a terv)*
+
+```
+a mai akció-napló ....................... 67 408 sor · 14 967 KB
+ebből „ezt már felolvastuk" kihagyás .... 64 088 sor  (95%)
+az előző nap ............................  5 298 KB
+```
+
+**A gyökér:** az `fs.watch` minden eseményére a figyelő újraolvassa a **teljes** naplót, és
+minden korábbi bejegyzésre kiírt egy kihagyás-jegyzetet ⇒ `bejegyzések × események`. A `spoken`
+halmaz a **felolvasást** helyesen megakadályozta — a **naplózást** nem.
+
+⚠️ **Miért súlyos:** az akció-napló **végtelen retentionnal commitolva** van *(owner-szabály)*
+⇒ a zaj **véglegesen** a repóban marad; és a 95%-os zaj **eltemeti a valódi jelzéseket**.
+
+**A javítás:** a tiszta döntés megjelöli a **rutin** kimenetelt *(`routine: true`)*, a figyelő
+csak a **nem-rutin** kihagyást naplózza. ⛔ Ez **nem elhallgatás**: a *magyarázó* okok
+*(nincs bent · nyugta · nincs kimondható tartalom)* változatlanul naplózódnak.
+⛔ A **már meglévő 15 MB-hoz nem nyúltam** — az akció-napló append-only; a tisztítás owner-döntés.
+
+### ⭐ ÉLŐ IGAZOLÁS ugyanebből az ellenőrzésből
+
+Az **1. tétel MŰKÖDIK élesben:** **36 ×** `MA-VOICE-UTTERANCE-KEPT` ma, a legutóbbi
+**03:20:15**-kor. ⇒ A megőrzés nem csak tesztben — a lemezen is.
+
+🔀 **ÜTKÖZÉS — HARMADSZOR:** a napló-javítás az asszisztens session `148b927`
+*(„feat(handoff): a Discord-valaszkenyszer felteteles legyen…")* commitjába került.
+✅ Tartalom helyes, HEAD-ben, pusholva, 939/939 zöld. *(Előzmények: `be95eb6`, `9d3ff7d`.)*
+⇒ **A minta már nem véletlen** — jelentem az AGENT_BUS-ban a hurok lezárásakor.
+
+---
+
+## ✅ 3. TÉTEL — DARABOLÁS (2026-09-11 03:40)
+
+### ⚠️ A MÉRÉSEM KORRIGÁLJA A FELADAT-LEÍRÁST
+
+A handoff a **nyers** üzenet-hosszokat idézte *(„1441 karakter, több mint a fele elveszett")*.
+A csonkolás viszont a **már kimondhatóvá alakított** szövegen történt, amiből a
+`prepareSpeechText` előbb kiveszi a táblázatokat, kód-blokkokat, emojikat, URL-eket.
+
+**A valódi adat a 444 kimenő üzenetből *(mérve 03:26)*:**
+
+| mérés | érték |
+|---|---|
+| kimondható üzenet | 221 |
+| a 700 karakteres határ **fölött** | **14** *(6%)* |
+| a leghosszabb **kimondható** szöveg | **717** karakter |
+| összes elvesző karakter | **112** |
+| a legnagyobb veszteség EGY üzeneten | **17** karakter *(2%)* |
+
+⇒ A veszteség **valódi, de jóval kisebb**, mint a feladat feltételezte.
+⭐ A kérés ettől **változatlanul érvényes**: **(a)** 112 karakter is veszteség; **(b)** a
+**mechanizmus** rossz — a néma csonkolás holnap, egy hosszabb üzenetnél, sokkal többet vinne el,
+és **ugyanúgy némán**. *(Ezt jelentem az AGENT_BUS-ban, hogy a szám ne maradjon félreértve.)*
+
+### Mi készült
+
+| fájl | mi |
+|---|---|
+| `voice-speech-split.ts` *(új)* | `split` · `describeParts` · `toSpokenParts` — mondathatár → szóhatár → ⛔ szó közepén soha |
+| `voice-speech-text.ts` | ⛔ **a csonkolás KIVÉVE** — a függvény mostantól **csak fordít** |
+| `voice-speech-text.spec.ts` | a csonkolás-tesztek **átírva** a nem-csonkolásra *(⛔ nem törölve — a feladat kikötése)* |
+| `discord.listener.ts` | a darabok **egyetlen** sor-tételként mennek be ⇒ más üzenet ⛔ nem ékelődhet közéjük |
+
+⭐ **A `SPEECH_MAX_CHARS` jelentése megváltozott:** mostantól a **darab** mérete, ⛔ nem a teljes
+szövegé — pontosan ahogy a feladat kéri.
+
+⭐ **Pozitív kontroll:** visszatettem a csonkolást ⇒ **8 teszt** bukott a 17-ből *(köztük a
+karakterre pontos „nulla veszteség")*; visszaállítva újra zöld.
+
+---
+
 ## ➡️ A KÖVETKEZŐ KONKRÉT LÉPÉS
 
-**2. tétel *(FIFO sor)*, 1. lépés:** a mért gyökér már megvan —
+**4. tétel *(szüneteltetés)*:** a sor-oldal **készen áll** *(`hold()` / `release()`, tesztelve)*.
+Ami hátra van: a **jelforrás** — a megszólalás-észlelés már létezik
+*(`onSpeechAttempt` → `MA-VOICE-SPEECH-DETECTED`)*, erre kell rákötni a `hold()`-ot, plusz egy
+**türelmi idő** *(paraméter, 2-3 s, ⛔ nem beégetve)* a `release()`-hez.
+🔴 **Amit MÉRNI kell előbb:** hogy a detektor **ne süljön el a saját felolvasásomra** — különben
+végtelen szünetbe kerülünk. A handoff kikötése: *„ezt méréssel zárd ki, ne feltételezéssel"*.
+
+### 🗄️ A 3. tétel korábbi „következő lépés" jegyzete — archív
+
+**3. tétel *(darabolás)*:** a `voice-speech-text.ts` `prepareSpeechText` a 700 karakter fölötti
+részt **eldobja** *(`„… A többi írásban."`)*. Mérve az owner üzenetein: 328 · 611 · 632 · 694 ·
+1006 · **1441** karakter ⇒ kettő csonkult, a leghosszabbnak **több mint a fele** veszett el.
+⇒ Csonkolás helyett **darabolás mondathatáron**, és a darabok a **sor** egyetlen tételeként
+mennek be *(a csoport-garancia már megvan)*.
+
+---
+
+## 🗄️ A 2. TÉTEL RÉSZLETEI — archív
+
+**1. lépés:** a mért gyökér már megvan —
 `voice-speaker.ts:85` szerint ha a lejátszó **nem `Idle`**, a felolvasás
 `spoken: false`-szal **elesik** *(„Épp szól valami")*. A `voice-read-aloud-watcher.ts`
 `await`-el a `speak`-re, de a `speakInVoiceChannel` a `player.play()` **után azonnal** visszatér

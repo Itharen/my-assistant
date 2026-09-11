@@ -20,6 +20,7 @@ import { VoiceReadAloudWatcher } from '../voice/voice-read-aloud-watcher.js';
 import { VoiceUtteranceArchive_Util } from '../voice/voice-utterance-archive.js';
 import { VoicePlaybackIdle_Util } from '../voice/voice-playback-idle.js';
 import { VoiceSpeechQueue } from '../voice/voice-speech-queue.js';
+import { VoiceSpeechSplit_Util } from '../voice/voice-speech-split.js';
 import { VoiceServiceWatch } from '../voice/voice-service-watch.js';
 import { speakInVoiceChannel } from '../voice/voice-speaker.js';
 import { resolveOutboundLogPath } from './discord.reply-tracker.js';
@@ -705,7 +706,10 @@ export class DiscordListener {
       // ⚠️ A felolvasás innentől CSAK SORBA TESZ — ⛔ nem játszik le közvetlenül. A
       // sorosítás (és a lejátszás végének kivárása) a `VoiceSpeechQueue` dolga.
       speak: async (text: string, id: string): Promise<void> => {
-        this.speechQueue?.enqueue({ id: id, parts: [text] });
+        // ✂️ DARABOLÁS, ⛔ NEM CSONKOLÁS (owner, 2026-09-11 01:28: „lehetőleg ne vágjunk le
+        // semmit"). ⭐ A darabok EGYETLEN sor-tételként mennek be, tehát más üzenet ⛔ nem
+        // ékelődhet közéjük — és a darabszám egyszer, az első darab elején elhangzik.
+        this.speechQueue?.enqueue({ id: id, parts: VoiceSpeechSplit_Util.toSpokenParts(text) });
       },
       onNote: (detail: string): void => {
         void this.safeLog({
