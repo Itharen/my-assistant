@@ -6,7 +6,7 @@
 > és a **sorrend** van.
 > **Ez a fájl az enyém (DEV).** A `DEV-HANDOFF.md` az asszisztensé — ⛔ oda nem írok státuszt.
 
-**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 18:30
+**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-12 00:30
 
 ---
 
@@ -41,6 +41,7 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **13** | 🗓️ **MUNKANAPTÁR** — `ma calendar today` *(EGY funkció)* | 1️⃣1️⃣ 12:25 | ✅ **KÉSZ** — CLI 1075/1075, élő proba; 🙋 1 lépés owner-kapun *(újra-engedélyezés)* | 2026-09-11 12:55 |
 | **14** | 🎙️ **A HOSSZÚ HANGÜZENET vége levágódott** *(bemeneti szűk keresztmetszet)* | 1️⃣2️⃣ 15:54 | ✅ **KÉSZ** — mérve: a felismerő **30 mp**-es ablaka; 295→641 kar, CLI 1120/1120 | 2026-09-11 16:38 |
 | **15** | ✍️ **POSZT-PISZKOZAT PANEL** *(lista + másolható szövegdoboz)* | 1️⃣3️⃣ 18:05 | ✅ **KÉSZ** — nav-linkkel; CLI 1176 · szerver 115 · kliens 159; `dc rev` 2397→2397 | 2026-09-11 18:30 |
+| **16** | 😴 **ÉBRENLÉT-DÖNTÉS mérésből** *(MP-5, a fix órarend cserélve)* | 1️⃣4️⃣ 00:10 | ✅ **KÉSZ** — 5 698 mintán mérve: a tipp **35-44%-ban** tévedett; CLI 1192 · szerver 119 | 2026-09-12 00:30 |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -581,12 +582,76 @@ szerver-újraindításkor** lép életbe; ⛔ nem indítom újra magamtól *(a s
 
 | Tétel | Mire vár | Mi oldaná fel |
 |---|---|---|
-| **15** *(poszt-panel)* | **poszt-piszkozatra** *(az asszisztens írja)* + a **szerver indulására** | egy `.body.txt` a `current/linkedin/post-drafts/`-ba · a következő LDP-ciklus |
-| **14** *(hosszú hang)* | a **listener újraindulására** | a következő szerver-indulás — ⛔ nem indítom újra *(a szerver a gazda)* |
-| **13** *(naptár)* | a **naptár-engedély** kiadására | `ma email auth --account default` — böngésző + az owner **kattintó** jóváhagyása |
+| **16** *(ébrenlét)* | a **szerver indulására** | a következő LDP-ciklus — ⛔ nem indítom el magamtól |
+| **15** *(poszt-panel)* | **poszt-piszkozatra** *(az asszisztens írja)* + szerver-indulás | egy `.body.txt` a `current/linkedin/post-drafts/`-ba |
+| **14** *(hosszú hang)* | a **listener újraindulására** | ugyanaz a szerver-indulás |
+| **13** *(naptár)* | a **naptár-engedély** kiadására | `ma email auth --account default` — owner **kattintó** jóváhagyása |
 | **12** *(„mindenféle hiba")* | a **konkrét hibaszövegre** | ⛔ nem javítok olyat, amit nem reprodukáltam |
 
 ⇒ A hurok lezárása: jelentés az `AGENT_BUS.md`-ben, ⛔ új ébredés NEM.
+
+### 😴 A 16. TÉTEL — AZ ÉBRENLÉT-DÖNTÉS MÉRÉSRE CSERÉLVE (2026-09-12 00:30)
+
+⭐ **EGY funkció:** `ébren? = friss aktivitás-minta VAGY friss Discord-válasz (+1 óra)`.
+
+#### 🔬 5 698 MINTÁN MÉRVE — ⛔ nem két anekdotán
+
+A teljes jelenlét-adaton *(8 nap)* összevetettem a fix órarendet *(`02:00-10:00`)* a mérhető
+ébrenléttel:
+
+| Osztályozás | ELTÉR |
+|---|---|
+| az `idleState` mező szerint | **43,9%** *(5 437 minta)* |
+| `idleSeconds ≥ 10 perc` | **38,5%** *(5 698)* |
+| `idleSeconds ≥ 1 óra` | **35,3%** *(5 698)* |
+
+🔴 Mindhárom olvasatban **35-44%** ⇒ a fix órarend gyakorlatilag **érme-feldobás**. Strukturális
+ok: a **csúszó, ~26 órás** ciklus egy fix órarenddel összeférhetetlen.
+
+#### ⚠️ A HANDOFF KÉT PÉLDÁJÁT MEGMÉRTEM — NEM cáfolják a tippet
+
+| Időpont | A fix órarend | A valóság | |
+|---|---|---|---|
+| 09-11 **09:00** | 09 **az ablakban** ⇒ „alszik" | aludt *(idle 6,1-7,7 óra)* | ⭐ EGYEZIK |
+| 09-12 **00:06** | 00 **az ablakon kívül** ⇒ „ébren" | ébren volt *(idle 0 mp)* | ⭐ EGYEZIK |
+
+⇒ A két idézett pillanatban a tipp **véletlenül eltalálta**. ⛔ Ez nem érv a tipp mellett — de a
+**cáfolat máshonnan jön**, mint a handoff írta, és ezt **kimondom** *(a 09-11-i owner-elvárás:
+ha a handoff méréssel cáfolható tényt állít, cáfold)*.
+*(Ha a „reggel = ébren" tipp nem a `/api/sleep-state`-ből jött, az **másik, nem mért forrás** —
+külön tétel.)*
+
+#### ⛔ NEM ÉPÍTETTEM ÚJ OLVASÓT — a jel már megvolt
+
+A `presence.reader.ts` **már** kezelte a **BOM**-ot, a `timestamp` mezőt, az `idleSeconds`-öt, a
+három állapotot és a RustDesk-szűrőt; a *„Discord-válasz ⇒ +1 óra"* owner-szabály pedig a
+**hangszóró-kapuba** volt beépítve. ⇒ A döntést **kiemeltem egy helyre**
+*(`presence.awake.ts`)*, és **mindkét** fogyasztó azt használja — a kapu **és** a szerver.
+⛔ Két implementáció azt jelentette, hogy a rendszer **két igazságot** mondott ugyanarról.
+
+#### 🔴 A HÁROM ÁG — a harmadik a lényeg
+
+`ébren` *(aktív mérés / Discord ≤1 óra)* · `alszik` *(friss, de tétlen)* · **`nincs adat`**.
+⚠️ **Bizonytalanságnál az „alszik" nyer**, és ez **be van építve** az `isAwake` mezőbe, hogy a
+hívó ⛔ ne tudja „valószínűleg ébren"-ként olvasni. A döntés **indoklással** jön *(melyik jel,
+milyen friss)*, ⛔ nem puszta logikai érték.
+
+#### ✅ Igazolás
+
+CLI **1192/1192** *(+16)* · szerver **119/119** *(a 9 óra-alapú spec **mérés-alapúra** átírva)* ·
+`tsc` tiszta · **pozitív kontroll ×2** *(az `unknown`-t „ébren"-re állítva → 1 bukás; a doktor
+„nincs mérés" ága elnémítva → 1 bukás)* · **élő mérés 00:21-kor**: `awake` · `presence-active` ·
+0 perc.
+
+⛔ **A hétvégi kikötés betartva: NULLA élő hangszóró-kísérlet.** A tesztek fixtúrából mennek, az
+élő mérés **csak olvasott** — a `ma cast notify` **nem futott**.
+
+⚠️ **Vállalt találatok, kimondva** *(`dc rev` 2397 → 2404)*: `controller-handler-error-wrapping`
+×2 *(szándékos: a mérés bukásakor a biztonságos NÉMA választ adjuk, ⛔ nem 500-at — a hiba a
+`reason`-ben és a hiba-tárban is ott van)* · `no-dynamic-imports` ×3 *(a mért alias-csapda)* ·
+`no-plain-function-export` ×2 *(a szomszédok formája)*.
+
+📌 Doksi: `__documentations/dev/AWAKE_DECISION.md` · `SKILLS.md`.
 
 ### ✍️ A 15. TÉTEL — POSZT-PISZKOZAT PANEL (2026-09-11 18:30)
 

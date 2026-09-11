@@ -16,10 +16,18 @@
 // ⚠️ A kapu az AUTOMATA használatot szabályozza. Az owner által KÉZZEL kért bemondás
 // átengedhető (`allowManualOverride`), de az mindig NAPLÓZOTT és explicit.
 
+import { PresenceAwake_Util } from '../presence/presence.awake.js';
 import type { PresenceSnapshot } from '../presence/presence.reader.js';
 
-/** Discord-válasz után ennyi ideig számít ébrenlétnek (owner: „legalább egy órát még"). */
-export const DISCORD_AWAKE_WINDOW_MS: number = 60 * 60_000;
+/**
+ * Discord-válasz után ennyi ideig számít ébrenlétnek *(owner: „legalább egy órát még")*.
+ *
+ * ⭐ **ÁTKÖTVE a közös ébrenlét-döntésre** *(2026-09-12)*: az érték **ott** lakik, itt csak
+ * továbbadjuk a meglévő hívóknak. ⛔ Két példányban a türelmi ablak **elcsúszhatna** a
+ * hangszóró-kapu és a szerver `/api/sleep-state` között — és a rendszer **két különböző
+ * igazságot** mondana ugyanarról az emberről.
+ */
+export const DISCORD_AWAKE_WINDOW_MS: number = PresenceAwake_Util.DISCORD_AWAKE_WINDOW_MS;
 
 export interface PresenceGateInput {
   presence: PresenceSnapshot;
@@ -51,12 +59,15 @@ export interface PresenceGateDecision {
  *   3. Minden más → TILT
  */
 export function evaluatePresenceGate(input: PresenceGateInput): PresenceGateDecision {
-  const discordAgeMs: number | null = input.lastDiscordReplyAt
-    ? input.now.getTime() - input.lastDiscordReplyAt.getTime()
-    : null;
-  const isDiscordAwake: boolean = discordAgeMs !== null
-    && discordAgeMs >= 0
-    && discordAgeMs <= DISCORD_AWAKE_WINDOW_MS;
+  // ⭐ AZ ÉBRENLÉT-DÖNTÉS A KÖZÖS MODULBAN VAN — ⛔ itt nem számoljuk újra.
+  // ⚠️ A kapu ennél SZIGORÚBB: az owner MINDKETTŐT kérte *(ébren ÉS a gépénél)*, ezért az
+  // „ébren, de nem a gépnél" ág itt TILT — l. a 2. ágat alább.
+  const awake = PresenceAwake_Util.decide({
+    presence: input.presence,
+    ...(input.lastDiscordReplyAt ? { lastDiscordReplyAt: input.lastDiscordReplyAt } : {}),
+    now: input.now,
+  });
+  const isDiscordAwake: boolean = awake.signal === 'discord-reply';
 
   if (input.presence.isHome === 'yes') {
     return {
@@ -67,7 +78,7 @@ export function evaluatePresenceGate(input: PresenceGateInput): PresenceGateDeci
   }
 
   if (isDiscordAwake) {
-    const minutes: number = Math.round((discordAgeMs ?? 0) / 60_000);
+    const minutes: number = awake.ageMinutes ?? 0;
 
     return {
       allowed: false,

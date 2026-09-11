@@ -6,6 +6,8 @@
 // egy tévedő diagnózis rosszabb, mint a diagnózis hiánya, mert megnyugtat.
 
 import {
+  AWAKE_SOURCE_CHECK_ID,
+  decideAwakeSourceCheck,
   decideVoicePresenceCheck,
   VOICE_PRESENCE_CHECK_ID,
   VOICE_PRESENCE_LABEL,
@@ -227,5 +229,49 @@ describe('decideVoicePresenceCheck — 🔴 a `voice` MEZŐ HIÁNYA nem a konfig
 
     expect(check.status).not.toBe('missing');
     expect(check.remedy ?? '').toContain('MA-VOICE-JOIN-FAILED');
+  });
+});
+
+describe('decideAwakeSourceCheck — 🔴 az ébrenlét-döntés FORRÁSA', () => {
+
+  // ⚠️ MÉRT CÁFOLAT (2026-09-11/12): a fix órarend KÉTSZER mondott hamisat — 09:00-kor
+  // „ébren" (idle 6,1 óra ⇒ aludt), 00:06-kor „alszik" (idle 0 mp ⇒ ébren volt). ⇒ A
+  // forrásnak MÉRÉSNEK kell lennie, és ez az ellenőrzés ezt őrzi.
+
+  it('⭐ MÉRÉS-alapú forrás ⇒ ZÖLD, és az INDOKLÁS is látszik', () => {
+    const check = decideAwakeSourceCheck('presence-measurement', 'ÉBREN — a gépét használja.');
+
+    expect(check.status).toBe('ok');
+    expect(check.detail).toContain('a gépét használja');
+    // ⛔ A zöld ágon nincs teendő — az csak zajt adna.
+    expect(check.remedy).toBeUndefined();
+  });
+
+  it('🔴 NINCS MÉRÉS ⇒ SÁRGA, ⛔ nem zöld — különben a néma hangszóró OKA láthatatlan', () => {
+    const check = decideAwakeSourceCheck('measurement-unavailable', 'a figyelő nem fut');
+
+    expect(check.status).toBe('degraded');
+    expect(check.detail).toContain('biztonságos');
+    expect(check.remedy ?? '').toContain('PresenceMonitor_Service');
+  });
+
+  it('🔴 a RÉGI, óra-alapú forrás ⇒ SÁRGA, és a teendő megnevezi a mérést', () => {
+    const check = decideAwakeSourceCheck('time-of-day-heuristic', '(nincs indoklás)');
+
+    expect(check.status).toBe('degraded');
+    expect(check.remedy ?? '').toContain('jelenlét-mérésből');
+    expect(check.remedy ?? '').toContain('CÁFOLT');
+  });
+
+  it('mindhárom ág UGYANAZT az azonosítót és címkét viseli', () => {
+    const sources: string[] = ['presence-measurement', 'measurement-unavailable', 'ismeretlen'];
+
+    for (const source of sources) {
+      const check = decideAwakeSourceCheck(source, 'x');
+
+      expect(check.id).toBe(AWAKE_SOURCE_CHECK_ID);
+      expect(check.label).toBe('Ébrenlét-döntés forrása');
+      expect(check.area).toBe('presence');
+    }
   });
 });

@@ -654,6 +654,35 @@ jutna el az asszisztenshez.
 
 📌 Tárolás: `~/.config/my-assistant/stt-ledger/` — ⛔ nem a repóban *(nyers felhasználói tartalom)*.
 
+### 😴 Az ÉBRENLÉT-DÖNTÉS — mérésből, ⛔ nem órarendből (2026-09-12)
+
+🔴 **MÉRT PROBLÉMA:** a `/api/sleep-state` **fix órarendből** tippelt *(`02:00-10:00 = alvás`)*.
+A teljes jelenlét-adaton *(5 698 perc-minta, 8 nap)* megmérve a tipp **35-44%-ban ELTÉR** a
+mérhető valóságtól — gyakorlatilag **érme-feldobás**. Ok: a **csúszó, ~26 órás** alvás-ciklus.
+
+⭐ **MOST:** `ébren? = friss aktivitás-minta VAGY friss Discord-válasz (+1 óra)`.
+⛔ **Nem új implementáció:** a jelenlét-olvasó és az owner-szabály **már megvolt** — a döntés
+**egy helyre** került, és a **hangszóró-kapu** meg a **szerver** is **azt** használja.
+
+| Ág | `isAwake` | Következmény |
+|---|---|---|
+| ⭐ ébren *(aktív mérés vagy Discord ≤1 óra)* | `true` | megszólalhat *(ha itthon is van)* |
+| 😴 alszik *(friss mérés, régóta tétlen)* | `false` | néma |
+| 🔴 **nincs adat** | `false` | **néma** |
+
+> ⚠️ **BIZONYTALANSÁGNÁL AZ „ALSZIK" ÁG NYER** — a téves csend olcsó, a téves hangos nem.
+> Az `unknown` ⛔ nem „valószínűleg ébren", és ez **be van építve** az `isAwake` mezőbe.
+
+⭐ **A döntés INDOKLÁSSAL jön** *(melyik jel, milyen friss)*, ⛔ nem puszta logikai érték —
+a `comm doctor` ebből írja a sorát:
+
+```
+ma comm doctor      →  ⭐ „Ébrenlét-döntés forrása: Mérésből: ÉBREN — a gépét használja…"
+                       🟡 ha a figyelő nem fut: „a mérés NEM olvasható ⇒ a biztonságos ág"
+```
+
+📌 A teljes mérés + a handoff két példájának korrekciója: `__documentations/dev/AWAKE_DECISION.md`.
+
 ### ✍️ LinkedIn POSZT-piszkozat panel — `/linkedin/posts` (2026-09-11)
 
 **Egy lista a megírt poszt-piszkozatokról + posztonként egy másolható szövegdoboz.**

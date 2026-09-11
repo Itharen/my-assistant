@@ -29,7 +29,7 @@ export class SleepState_Controller extends DyNTS_Controller {
         // NO preProcesses → unauth (public state-info, status-page friendly).
         tasks: [
           async (req: Request, res: Response): Promise<void> => {
-            const snapshot = SleepState_Service.getInstance().getSnapshot();
+            const snapshot = await SleepState_Service.getInstance().getSnapshot();
 
             res.send(snapshot);
           },

@@ -566,22 +566,15 @@ async function checkAwakeSource(checks: CommCheck[]): Promise<void> {
 
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-    const snapshot = (await response.json()) as { source?: unknown; isInSleepWindow?: unknown };
+    const snapshot = (await response.json()) as {
+      source?: unknown;
+      isInSleepWindow?: unknown;
+      awake?: unknown;
+    };
     const source: string = typeof snapshot.source === 'string' ? snapshot.source : 'ismeretlen';
-    const isClockOnly: boolean = source === 'time-of-day-heuristic';
+    const awakeReason: string = readAwakeReason(snapshot.awake);
 
-    checks.push({
-      id: 'awake-source',
-      area: 'presence',
-      label: 'Ébrenlét-döntés forrása',
-      status: isClockOnly ? 'degraded' : 'ok',
-      detail: isClockOnly
-        ? 'Fix órarend-tippelés — NEM mérés. Ez ellentmond a csúszó, 26 órás alvás-ciklusnak.'
-        : `Forrás: ${source}`,
-      remedy: isClockOnly
-        ? 'Kösd át a jelenlét-mérésre: ITTHON-jel VAGY Discord-válasz (+1 óra). Hyperplan MP-5.'
-        : undefined,
-    });
+    checks.push(decideAwakeSourceCheck(source, awakeReason));
   } catch (err: unknown) {
     checks.push({
       id: 'awake-source',
@@ -597,6 +590,22 @@ async function checkAwakeSource(checks: CommCheck[]): Promise<void> {
 }
 
 // --- segédek ---------------------------------------------------------------
+
+/**
+ * Az ébrenlét-döntés indoklása a válaszból — ⛔ `as` átcímkézés nélkül.
+ *
+ * ⚠️ A HTTP-válasz **idegen adat**: bármilyen alakú lehet. ⭐ A hiánya nem hiba — akkor a
+ * `source` önmagában is mond valamit, csak kevesebbet.
+ */
+function readAwakeReason(awake: unknown): string {
+  if (!awake || typeof awake !== 'object') return '(a döntés indoklása nem jött vissza)';
+
+  for (const [key, value] of Object.entries(awake)) {
+    if (key === 'reason' && typeof value === 'string' && value.length > 0) return value;
+  }
+
+  return '(a döntés indoklása nem jött vissza)';
+}
 
 async function findLatestPresenceTimestamp(dataDirectory: string): Promise<Date | null> {
   const entries: string[] = (await readdir(dataDirectory)).filter((name) => name.endsWith('.jsonl'));
@@ -628,6 +637,50 @@ async function findLatestPresenceTimestamp(dataDirectory: string): Promise<Date 
 }
 
 /** Kor emberi formában — a nyers perc-szám nagy értékeknél olvashatatlan. */
+/** Az ébrenlét-forrás ellenőrzés azonosítója — a jelentés és a teszt EGY helyről veszi. */
+export const AWAKE_SOURCE_CHECK_ID: string = 'awake-source';
+
+/**
+ * 🔴 AZ ÉBRENLÉT-FORRÁS HÁROM ÁLLAPOTA — tiszta döntés, futó szerver nélkül tesztelhető.
+ *
+ * ⚠️ MÉRT INDOK (2026-09-12): a végpont korábban `time-of-day-heuristic`-ot adott, azaz
+ * **FIX ÓRARENDBŐL tippelt**. Ez 09-11 09:00-kor *„ébren"*-t mondott *(idle 6,1 óra ⇒ aludt)*,
+ * és 09-12 00:06-kor *„alszik"*-ot *(idle 0 mp ⇒ ébren volt)*. ⇒ A tipp **mérésre** cserélve.
+ *
+ * ⭐ De a „mérés" sem mindig elérhető: ha a jelenlét-figyelő nem fut, a végpont
+ * `measurement-unavailable`-t ad, és a döntés a **biztonságos (néma)** ágra esik.
+ * 🔴 Az ⛔ **nem „rendben"**, hanem **sárga** — különben a néma hangszóró **oka** láthatatlan
+ * lenne, és úgy tűnne, minden működik.
+ */
+export function decideAwakeSourceCheck(source: string, awakeReason: string): CommCheck {
+  if (source === 'presence-measurement') {
+    return {
+      id: AWAKE_SOURCE_CHECK_ID,
+      area: 'presence',
+      label: 'Ébrenlét-döntés forrása',
+      status: 'ok',
+      detail: `Mérésből: ${awakeReason}`,
+    };
+  }
+
+  const isUnavailable: boolean = source === 'measurement-unavailable';
+
+  return {
+    id: AWAKE_SOURCE_CHECK_ID,
+    area: 'presence',
+    label: 'Ébrenlét-döntés forrása',
+    status: 'degraded',
+    detail: isUnavailable
+      ? `A mérés NEM olvasható, ezért a döntés a biztonságos (néma) ágra esik. ${awakeReason}`
+      : `Nem mérés-alapú forrás: ${source}. ${awakeReason}`,
+    remedy: isUnavailable
+      ? 'Ellenőrizd a jelenlét-figyelőt (a szerver indítja: `PresenceMonitor_Service`). '
+        + 'Amíg nincs mérés, a hangszóró csendben marad — ez szándékos.'
+      : 'A döntésnek a jelenlét-mérésből kell jönnie (ITTHON-jel VAGY Discord-válasz +1 óra). '
+        + 'Ha itt fix órarend áll, az a régi, MÉRÉSSEL CÁFOLT tippelés.',
+  };
+}
+
 export function formatAge(minutes: number): string {
   const days: number = Math.floor(minutes / (60 * 24));
 
