@@ -60,3 +60,27 @@ Ez a fájl bővíthető bolt-/szolgáltatás-szinten:
 - 👕 Ruhaboltok (mikor megyünk, melyik bolt típus)
 
 Új location hozzáadáskor: `## {Location név}` szekció + tábla a fenti minta szerint.
+
+
+---
+
+## 🏪 „A kínai" — a közeli éjjel-nappali (MÉRT, 2026-09-11)
+
+> **Owner, 2026-09-11 00:55:** *„**hétig van nyitva a kínai**. Ahova készülök."*
+> **Owner, 2026-09-11 15:05:** *„A boltot amúgy **megjárom 20 perc fél óra alatt**."*
+
+| Mező | Érték | Forrás |
+|---|---|---|
+| **Zárás** | **19:00** | owner 2026-09-11 00:55 |
+| **Oda-vissza, vásárlással** | ⭐ **20-30 perc** | owner 2026-09-11 15:05 *(mérés, nem becslés)* |
+| Mire használja | pia / gyors kiegészítés vendégek elé | owner |
+
+🔴 **JAVÍTÁS A SAJÁT BECSLÉSEMEN:** a 15:00-s üzenetemben **~1 órával** számoltam a bolttal, és
+ebből „szűk a nap" képet festettem. ⛔ **Túlbecsültem** — a valóság **fele-harmada** ennek.
+
+⭐ **A tanulság általánosabb:** ha egy időtartamot **nem mértem**, azt **ne tényként** tálaljam
+egy tervben. A becslés **felfelé torzít**, és fölösleges sürgetés lesz belőle — ami pont az
+ellentéte a fókusz-támogatásnak *(`focus-support`)*. **Kérdezni olcsóbb, mint tippelni.**
+
+📌 **A tervezéshez ebből:** a bolt **utolsó biztonságos indulása ~18:20** *(30 perc út + zárás
+19:00)* — ⛔ nem 18:00, ahogy korábban írtam.
