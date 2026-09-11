@@ -289,3 +289,51 @@ elviszi, de a **queue-elem megmarad**. ⇒ ⛔ Korábban azt írtam, hogy restar
 
 ⚠️ **A lánc ára:** 09:00–10:50 között a sorom **fel van tartva** — amit ekkor ír, az a következő
 wake-nél érkezik meg hozzám, nem azonnal. **Ezt ő tudja és vállalta** *(„kapsz egy lockot")*.
+
+
+---
+
+## 🔄 A MAI LÁNC — és egy KORREKCIÓ a saját tervemen (2026-09-11 09:00)
+
+### A mérés, amivel a lánc indult
+
+| | |
+|---|---|
+| utolsó **aktív** minta | **02:51:54** |
+| tétlenség 09:00-kor | **21 982 s ≈ 6,1 óra** ⇒ **alszik** |
+| a fő tick raszteren a következő | **12:00** — a míting **UTÁN** ⇒ a lánc **kötelező** |
+
+### ⛔ NEM pingeltem 09:00-kor — és ez SZÁNDÉKOS
+
+A korábbi tervem 09:00-ra tette a Discord-pinget. **Rossz volt.** Az owner a saját szavával
+azt mondta: *„azért jó lenne egy **fél órával előtte** felkelni"* ⇒ a ping helye **10:30**,
+nem 09:00. Egy 09:00-s ping **másfél órányi alvást venne el** abból a 6,5-ből, ami neki
+összejön — miközben **semmit nem ad hozzá** a míting biztonságához.
+
+⭐ **Az elv, ami ebből lett:** a létra lépcsői **NEM a legkorábbi lehetséges** időpontra
+kerülnek, hanem **arra, amit az owner kért**. A „biztos, ami biztos" korai riasztás
+**költséggel jár** — alvással fizet érte.
+
+### ⭐ KORREKCIÓ: a 10:50-es jobot MEGTARTOM *(a korábbi terv törölni akarta)*
+
+A 03:28-as elemzésem alapján azt írtam, hogy a wakeup-lánc és az ütemezett job „kioltja
+egymást", ezért a jobot 09:00-kor törölni kell. ⚠️ **Az interferencia valós, de EGYIRÁNYÚ és
+ártalmatlan** — végiggondolva:
+
+| Eset | Mi történik |
+|---|---|
+| a lánc **él** 10:50-kor | a függő wakeup-elem miatt a job **elnyomódik** — ⛔ nem baj, mert a **wakeup maga** ébreszt |
+| a lánc **elhalt**, a sor üres | a job **tüzel** ⇒ ⭐ **valódi tartalék** |
+
+⇒ **A megtartás szigorúan jobb, mint a törlés.** ⛔ Csak akkor lenne káros, ha a job
+*elnyomná* a láncot — de a hatás fordítva megy.
+
+### A lánc, ahogy tényleg fut
+
+```
+09:00  mérés: alszik → ⛔ nincs ping (túl korai) → ScheduleWakeup 3600 s
+10:00  mérés → aktív? ⇒ VÉGE. Nem? → ScheduleWakeup 1800 s
+10:30  mérés → aktív? ⇒ VÉGE. Nem? → 💬 DISCORD-PING (halk) → ScheduleWakeup 1200 s
+10:50  mérés → aktív/válaszolt? ⇒ VÉGE. Nem? → 🔊 GOOGLE HOME (semleges mondat)
+       ⭐ tartalék ugyanerre a percre: sch-job 6aa354d184f43155b757e2e8
+```
