@@ -4,7 +4,56 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-10 21:29
+**Utoljára frissítve:** 2026-09-11 03:02
+
+---
+
+## 🎯 AKTUÁLIS FÓKUSZ (2026-09-11 03:02) — LinkedIn-vonal, a CV LEZÁRVA
+
+> ⚠️ Az alatta lévő „2026-09-10 — CV-frissítés" szakasz **TÖRTÉNETI**: a CV **véglegesítve**.
+
+### ✅ LEZÁRT ebben az éjszakában
+
+| Mi | Hol |
+|---|---|
+| 📄 **CV 2026-09 VÉGLEGES** | `current/cv/releases/2026-09/` · belépési pont: `current/cv/README.md` |
+| 🔗 **48 poszt + profil archiválva** | `current/linkedin/` · `python scripts/linkedin-archive.py` |
+| 🖊️ **Poszt-szabályok** *(owner szó szerint)* + kép-döntés: **az ERŐSEK kapnak képet** | `current/principles/linkedin-post-writing.md` |
+| 🧑 **Profil-szöveg megírva** *(headline 127 / about 1684 kar.)* | `current/linkedin/profile-update-2026-09.md` |
+| ✍️ **2 válasz-piszkozat** a kanonikus sablon szerint | `current/linkedin/drafts/` + a rendszerben *(`ba6043ec`, `f146c42b`)* |
+
+### 🙋 AMI AZ OWNERRE VÁR
+
+1. **a profil-szöveg jóváhagyása** — ⭐ **ez a kapu**: a sorrend **profil → posztok → üzenetek**
+   *(owner 02:10: aki a válaszból átkattint, frissített profilra érkezzen)*
+2. a *„bring in additional developers"* mondat: **visszategyem-e**?
+3. 🔒 az **ElevenLabs-kulcs** rotációja *(a `server.log`-ba került)*
+
+### ⏰ MA (2026-09-11)
+
+| Idő | Mi | Ref |
+|---|---|---|
+| **10:22** | ébresztés-eszkaláció indul *(`CronCreate` `d82bebb3` — ⚠️ **session-only**, elveszhet)* | `wake-escalation.md` |
+| **10:30** | ébresztő | `org:task:6aa34f65766c802935c3c6be` |
+| **11:00** | 📅 **míting, ONLINE** | `org:task:6aa34e92766c802935c3c6b7` |
+| **15:00** | 🥤 pia venni *(a kínai 19:00-ig)* | `org:task:6aa335f1766c802935c3c2a4` |
+
+### 🔨 A DEV — saját terv-fájllal
+
+`__agent/plans/voice-reliability/PROCESS-CONTROL.md` · a feladatok: `__agent/DEV-HANDOFF.md`
+**1/6 kész** *(megőrzés)*, a 2. *(FIFO sor)* soron. ⚠️ Ha `waiting-input` **és üres a sor**:
+küldeni **KELL** *(`dev-session-supervision.md`)*.
+
+### 🔴 A HÁROM MÉRÉS, AMI MA ÉJJEL A LEGTÖBBET ÉRTE
+
+| Mit hittem | Mi volt a valóság |
+|---|---|
+| a DEV „nem fut" *(`ListAgents`)* | **élt**, `waiting-input` — rossz műszer volt |
+| a fő ütemezés **20 perc** *(`SCHEDULE.md`)* | **3 óra** — ⭐ **a CCAP az SSOT, nem a doksi** |
+| a hang „csak nem jött át" | **62,5 %** átvitel, és a veszteség egy része **szándékos eldobás** volt |
+
+📌 **A közös minta:** *a lépés „lefutott" ≠ a lépés MEGTÖRTÉNT.* Mérőeszközt is ellenőrizni kell,
+nem csak a mért értéket.
 
 ---
 
@@ -3983,3 +4032,22 @@ szerver logjában megmutatják, mit látott a rendszer)*.
 - **Az utolsó commit:** `4a93d90`
 - `✅ Discord-figyelő ÉL` · `joined: true` — a bot bent ül a „honnie-place" csatornában
 - **A make-before-break tartja** — a szerver a buildek alatt végig kiszolgál
+
+---
+
+# 2026-09-09 — T-76 OVERSEER-FIRST SZOLGÁLTATÁSFIGYELÉS
+
+Az owner kérésére a My Assistant szerver félórás availability-tükröt kapott. Nem építünk
+párhuzamos flotta-monitort: a `ServiceAvailabilityMonitor_Service` hét külön célra normalizál:
+Test/Production Server, Test/Production Webhook, Gateway, Overseer, Organizer. **Owner-korrekció:**
+a két szerver elérhetősége közvetlen TCP-próba, tehát Overseer-kiesés közben is mérhető; a
+négy szolgáltatás részletes státusza marad Overseer-alapú.
+
+**Élő bizonyíték (16:19, owner-korrekció után):** `/api/healthz` schema 4, hét cél visszaolvasva; a két
+szerver `source: direct-reachability`, mindkettő zöld közvetlen TCP-próbából; user-local snapshot
+létrejött; konzol: `T-SRV✅ P-SRV✅ T-WH✅ P-WH⚠️ GW⚠️ OVS✅ ORG✅`. A két warning az
+Overseer szerint lejárt TLS: Production Webhook és Gateway. Server: **105/105** teszt zöld.
+
+**Döntés:** a capability C-49 marad `⏳`, amíg az owner a használatát/aktív értesítést jóvá
+nem hagyja. A technikai T-76 kész. Részletes SoT:
+`__documentations/developments/2026-09-09-overseer-first-service-availability.md`.
