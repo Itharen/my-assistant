@@ -51,3 +51,34 @@ nap** ⇒ az emlékeztető **2026-09-11 15:00**-ra ment
   19:00-ig van nyitva, függetlenül attól, hogy ő hol tart az ébrenlétében.
 
 Kapcsolódó: [[sleep-system]] · [[time-must-be-measured]] · [[recording-discipline]]
+
+---
+
+## ⏰ ESEMÉNY-ELŐKÉSZÍTÉS: az ONLINE míting is igényel ELŐTTE-időt
+
+> **Owner, 2026-09-11 02:45:** *„online meeting, úgyhogy **felébredek és bezuhanok a meetingre**,
+> az is működik. Persze azért **jó lenne egy fél órával előtte felkelni**."*
+
+⭐ **A tanulság:** az „online" a **odajutást** nulláza, ⛔ **nem az előkészületet**.
+
+| Esemény-típus | Amit be kell terveznem |
+|---|---|
+| **helyszíni** | ébredés + készülődés + **odajutás** *(és a késés kockázata)* |
+| **online** | ébredés + **fél óra készülődés** — ⛔ az odajutás elmarad, a fél óra **nem** |
+
+📌 **A gyakorlat, ami ebből következik:** minden eseményhez **két** bejegyzés kell —
+maga az esemény, és **egy ébresztő/készülődés-tétel** a megfelelő idővel előtte.
+⛔ Az esemény önmagában nem elég: az **11:00-kor** szól, amikor már ott kellene lennie.
+
+**Mért alkalmazás — 2026-09-11:**
+
+| Tétel | Ref |
+|---|---|
+| 📅 míting 11:00, **online** | `org:task:6aa34e92766c802935c3c6b7` |
+| ⏰ **ébresztő 10:30** | `org:task:6aa34f65766c802935c3c6be` *(prio 210 — magasabb, mint magáé az eseményé)* |
+
+⚠️ **Az ébresztő prioritása SZÁNDÉKOSAN magasabb**, mint az eseményé: az esemény már csak
+**tény**, az ébresztő az, ami **még befolyásolható**.
+
+Kapcsolódó: [[sleep-system]] · `__agent/flows/recurring/schedule-guardian/`
+
