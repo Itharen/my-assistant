@@ -1256,3 +1256,29 @@ magyarul folyik**, akkor az **nem sikeres felismerés**.
 nem baj, ha visszakérdezünk. ⛔ Fordítva viszont az: egy elveszett bekezdés **nem pótolható** —
 az owner szavaival: *„nem mindig tudom ugyanúgy."*
 
+---
+
+## 2026-09-11 02:10 — 🔁 A TÜKÖR MÁSIK IRÁNYA: a DM-be írt üzenetem menjen a hang-csatorna szövegébe is
+
+> **Owner, 2026-09-11 02:09:** *„amit most a DM-be írsz, a privát beszélgetésünkbe, hogy
+> elküldtél két üzenetet, azt is kéne küldjed a **Voice Channel textjébe is**."*
+
+⚠️ **Ez a 01:10-es (B) pont PÁRJA, nem ugyanaz:**
+
+| Irány | Állapot |
+|---|---|
+| a hang-csatornán elhangzott → **DM** | ✅ **megvan** |
+| amit a **DM-be írok** → a hang-csatorna szöveges része | ⏳ **EZ a kérés** |
+
+**Miért kéri:** amikor a hang-csatornában ül, **ott** van a szeme. Ha a válaszom csak a DM-ben
+jelenik meg, neki **csatornát kell váltania**, hogy elolvassa — pont akkor, amikor beszélgetünk.
+
+| Kikötés | Miért |
+|---|---|
+| ⛔ **ne duplikálja** azt, ami a hang-csatornából jött | különben a saját tükrözésünk visszhangzik |
+| a **felolvasással** együtt menjen | ami elhangzik, annak a szövege is ott legyen — így akkor is követhető, ha nem hallja jól |
+| a **darabolás** *(01:30)* a hangra vonatkozik, a szövegre ⛔ **nem** | a szöveget egyben kell látni |
+
+📌 Ezzel a hang-csatorna lesz a **teljes** felület: ott beszél, ott hallja a választ, és **ott
+olvassa** is.
+
