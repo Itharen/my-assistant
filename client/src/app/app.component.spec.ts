@@ -72,16 +72,26 @@ describe('AppComponent', () => {
       expect(navHrefs()).toContain('/linkedin/profile');
     });
 
+    // ✍️ 2026-09-11 18:05 — a POSZT-panel megepult, es a handoff kikotese szo szerint:
+    // „a profilnal ez kimaradt, ne ismeteljuk". Egy funkcio elerhetetlenul annyi, mint
+    // nem letezo — ezert a link EGYUTT szuletett a panellel, nem utana.
+    it('✍️ a POSZT-panelra is van nav-link — ⛔ nem URL-begepelessel erheto el', () => {
+      expect(navHrefs()).toContain('/linkedin/posts');
+    });
+
     it('az UZENET-munkamodra is megvan a link', () => {
       expect(navHrefs()).toContain('/linkedin');
     });
 
-    it('a ket LinkedIn-belepo KULON link — nem ugyanaz az utvonal', () => {
+    it('a HAROM LinkedIn-belepo KULON link — nem ugyanaz az utvonal', () => {
       const linkedin: string[] = navHrefs()
         .filter((href: string): boolean => href.startsWith('/linkedin'));
 
-      expect(linkedin.length).toBe(2);
-      expect(new Set(linkedin).size).toBe(2);
+      // ⚠️ A szam 2-rol 3-ra nott a poszt-panellel. A darabszam-allitas SZANDEKOS: ha egy
+      // negyedik belepo bekerul, itt kell kimondani, hogy az is atgondolt — az owner keresa
+      // „EGY funkcio, ne epits menu-rendszert" volt.
+      expect(linkedin.length).toBe(3);
+      expect(new Set(linkedin).size).toBe(3);
     });
 
     it('a link SZOVEGE megmondja, melyik mit nyit — a "LinkedIn" onmagaban felrevezeto volt', () => {
@@ -93,8 +103,10 @@ describe('AppComponent', () => {
         .map((anchor: Element): string => (anchor.textContent ?? '').trim());
 
       expect(labels).toContain('LinkedIn profil');
-      expect(labels.some((label: string): boolean => label.includes('LinkedIn') && label !== 'LinkedIn profil'))
-        .toBeTrue();
+      expect(labels).toContain('LinkedIn posztok');
+      expect(labels.some((label: string): boolean => label.includes('LinkedIn')
+        && label !== 'LinkedIn profil'
+        && label !== 'LinkedIn posztok')).toBeTrue();
     });
   });
 

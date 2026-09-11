@@ -6,7 +6,7 @@
 > és a **sorrend** van.
 > **Ez a fájl az enyém (DEV).** A `DEV-HANDOFF.md` az asszisztensé — ⛔ oda nem írok státuszt.
 
-**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 16:38
+**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 18:30
 
 ---
 
@@ -36,10 +36,11 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **8** | 💬 Discord-lábléc *(válaszkényszer ↔ fókusz)* | 03:20 | 🙋 **AZ ASSZISZTENS CSINÁLTA MEG** — ⛔ nem az enyém | 2026-09-11 03:40 |
 | **9** | 🔒 **BESZÉD-ÉSZLELÉS körbeírása + tesztekkel leszögezése** | 04:11 | ✅ **KÉSZ** — CLI 1049/1049, 28 leszögező teszt | 2026-09-11 07:10 |
 | **10** | 🔗 **A PROFIL-PANEL ELÉRHETŐ a felületről** *(nav-link)* | 🔟 11:00 (A) | ✅ **KÉSZ** — kliens 148/148 | 2026-09-11 11:30 |
-| **11** | 📝 **POSZT-FELÜLET** — ⛔ MÉG NINCS megépítve | 🔟 11:00 (B) | ⬜ **HÁTRA** *(owner-sorrend: profil → **posztok** → üzenetek)* | — |
+| **11** | 📝 **POSZT-FELÜLET** | 🔟 11:00 (B) | ✅ **ELKÉSZÜLT** — l. a **15.** tételt *(a tiltás 18:05-kor feloldva)* | 2026-09-11 18:30 |
 | **12** | 🔍 **A „mindenféle hiba"** — FELTÁRANDÓ | 🔟 11:00 (C) | 🟡 **EGY HIBA REPRODUKÁLVA ÉS JAVÍTVA**; a többi 🙋 owner-kapun | 2026-09-11 11:30 |
 | **13** | 🗓️ **MUNKANAPTÁR** — `ma calendar today` *(EGY funkció)* | 1️⃣1️⃣ 12:25 | ✅ **KÉSZ** — CLI 1075/1075, élő proba; 🙋 1 lépés owner-kapun *(újra-engedélyezés)* | 2026-09-11 12:55 |
 | **14** | 🎙️ **A HOSSZÚ HANGÜZENET vége levágódott** *(bemeneti szűk keresztmetszet)* | 1️⃣2️⃣ 15:54 | ✅ **KÉSZ** — mérve: a felismerő **30 mp**-es ablaka; 295→641 kar, CLI 1120/1120 | 2026-09-11 16:38 |
+| **15** | ✍️ **POSZT-PISZKOZAT PANEL** *(lista + másolható szövegdoboz)* | 1️⃣3️⃣ 18:05 | ✅ **KÉSZ** — nav-linkkel; CLI 1176 · szerver 115 · kliens 159; `dc rev` 2397→2397 | 2026-09-11 18:30 |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -576,16 +577,83 @@ szerver-újraindításkor** lép életbe; ⛔ nem indítom újra magamtól *(a s
 
 ## ➡️ A KÖVETKEZŐ KONKRÉT LÉPÉS
 
-⭐ **Minden nyitott tétel owner-kapun áll:**
+⭐ **Minden nyitott tétel rajtam kívüli kapun áll:**
 
 | Tétel | Mire vár | Mi oldaná fel |
 |---|---|---|
-| **14** *(hosszú hang)* | a **listener újraindulására** *(a futó példány még a régi kódot viszi)* | a következő LDP-ciklus / szerver-indulás — ⛔ nem indítom újra magamtól |
+| **15** *(poszt-panel)* | **poszt-piszkozatra** *(az asszisztens írja)* + a **szerver indulására** | egy `.body.txt` a `current/linkedin/post-drafts/`-ba · a következő LDP-ciklus |
+| **14** *(hosszú hang)* | a **listener újraindulására** | a következő szerver-indulás — ⛔ nem indítom újra *(a szerver a gazda)* |
 | **13** *(naptár)* | a **naptár-engedély** kiadására | `ma email auth --account default` — böngésző + az owner **kattintó** jóváhagyása |
-| **11** *(poszt-felület)* | az owner **sorrendjére** *(profil → posztok → üzenetek)* | owner-jelzés, hogy jöhet |
 | **12** *(„mindenféle hiba")* | a **konkrét hibaszövegre** | ⛔ nem javítok olyat, amit nem reprodukáltam |
 
 ⇒ A hurok lezárása: jelentés az `AGENT_BUS.md`-ben, ⛔ új ébredés NEM.
+
+### ✍️ A 15. TÉTEL — POSZT-PISZKOZAT PANEL (2026-09-11 18:30)
+
+⭐ **EGY funkció, ahogy kérte:** egy lista a poszt-piszkozatokról + posztonként egy **másolható
+szövegdoboz**. ⛔ **Nincs** ütemezés, automata kiküldés, statisztika, kép-generálás, szerkesztő.
+
+🔗 **A panel a NAVIGÁCIÓBÓL elérhető** — `/linkedin/posts`, `„LinkedIn posztok"`.
+⚠️ A handoff kikötése: *„a profilnál ez kimaradt, ne ismételjük"* ⇒ a link **a panellel együtt**
+született, és **teszt őrzi** *(pozitív kontroll: a link kivételével 3 teszt bukott)*.
+
+#### 🔬 MÉRT KORREKCIÓ A FELADAT-LEÍRÁSHOZ — a piszkozatok helye
+
+A handoff szerint *„A piszkozatok helye: `current/linkedin/drafts/` … Ezt olvasd."*
+⚠️ **Megnéztem: az a mappa ÜZENET-válaszokat tartalmaz** *(`README.md` → „LinkedIn
+VÁLASZ-piszkozatok"; a `.md`-kben `thread:` azonosító)*.
+
+🔴 **Két okból nem olvashattam azt „posztok" néven:**
+
+1. **Átugrottam volna az owner sorrendjét** — az üzenetek a **harmadik** tétel.
+2. **Adat a rossz felületen:** azokban a piszkozatokban **óradíj és telefonszám** van.
+   ⛔ Ez nem elírás-szintű különbség. *(Külön teszt őrzi: a poszt-válasz nem tartalmazhat
+   `EUR/óra`-t vagy `thread:`-et.)*
+
+⭐ **Amit a handoff valóban kér, és átvettem:** a **két-fájlos alak** *(`.body.txt` = a pontos
+kimenő szöveg · `.md` = az indoklás)* — csak a posztok **saját mappájából**:
+`current/linkedin/post-drafts/`. 📌 A handoff maga jelezte, hogy *„a piszkozatok helyéről szólok
+külön"* ⇒ a hely nyitott volt; most kimondott, és a mappa a szerződés-leíró `README.md`-vel
+**létre is jött**.
+
+#### 🔴 A SZÖVEG NEM A MI DOLGUNK
+
+A tartalmi szabályok az ownernél/asszisztensnél vannak
+*(`current/principles/linkedin-post-writing.md`)*. A panel **megjelenít és másol** — ⛔ egyetlen
+karaktert sem generál és nem módosít. **Teszt őrzi**, hogy a vágólapra a **pontos** szöveg megy.
+
+#### ⭐ A REVIEW HÁROM VALÓDI TALÁLATA — mindhárom JAVÍTVA
+
+Az első változat **11** találatot hozott; ebből **3 valódi duplikáció** volt *(az én hibám: a
+profil-panel mechanikáját lemásoltam)*:
+
+| Találat | Javítás |
+|---|---|
+| data-service *(70 sor, 91% azonos)* | ⭐ `linkedin-panel-files.util.ts` — **mindkét** panel ezt használja |
+| scss *(26 sor bájtra azonos)* | ⭐ `_linkedin-panel.scss` mixin |
+| vezérlő *(41 sor)* + `thin-controller` | ⭐ `linkedin-panel-endpoint.util.ts` — a **kapu** a segédben, a vezérlő puszta deklaráció |
+
+⭐ **RÁADÁS:** az endpoint-segéd a **profil**-vezérlőből is elvitte a `thin-controller` és
+`endpoint-auth-preprocess` találatot *(2+2)*.
+⇒ `dc rev` **2397 → 2397**: egy **teljes új panel** készült el, és a repo találat-száma
+**nem nőtt**.
+
+⚠️ **3 találat tudatosan marad:** `no-dynamic-imports` a CLI-modul futásidejű betöltésén.
+🔴 Mért kényszer: a `@cli/*` alias **csak fordítási időben** létezik ⇒ a Google- és a
+Spotify-panel élesben elromlott emiatt, **zöld `tsc` mellett**. A szomszéd profil-panel
+ugyanezt viszi.
+
+#### ✅ Igazolás
+
+CLI **1176/1176** *(+29)* · szerver **115/115** *(+5, az **élő** utat hívják a buildből)* ·
+kliens **159/159** *(+11)* · `tsc` tiszta mind a háromban · **pozitív kontroll ×2**
+*(nav-link kivéve → 3 bukás; az üres állapot elnémítva → 1 bukás)*.
+
+⛔ **Amit nem tudok kimondani:** a **HTTP-felület élő próbáját**. Mérve *(18:20)*: a
+**39335-ös porton semmi nem figyel** — a szerver épp nem fut. ⛔ Nem indítom el magamtól.
+
+📌 Doksi: `__documentations/dev/LINKEDIN_POST_DRAFTS.md` · `SKILLS.md` ·
+`current/linkedin/post-drafts/README.md`.
 
 ### 🎙️ A 14. TÉTEL — A HOSSZÚ HANGÜZENET VÉGE (2026-09-11 16:30)
 

@@ -41,6 +41,9 @@ export type {
   LinkedInProfileField,
   LinkedInProfileUpdatePlan,
   LinkedInProfilePastedRequest,
+  LinkedInPostDraft,
+  LinkedInPostDraftsPlan,
+  LinkedInPostPostedRequest,
 } from '@server/_models/interfaces/integrations/linkedin.interface';
 
 export type {

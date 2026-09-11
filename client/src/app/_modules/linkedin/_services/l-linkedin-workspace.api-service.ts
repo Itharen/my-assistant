@@ -12,6 +12,8 @@ import type {
   LinkedInWorkspaceFilter,
   LinkedInWorkspaceInboxResponse,
   LinkedInWorkspaceThreadResponse,
+  LinkedInPostDraftsPlan,
+  LinkedInPostPostedRequest,
   LinkedInProfileUpdatePlan,
   LinkedInProfilePastedRequest,
 } from '@server-models';
@@ -106,6 +108,40 @@ export class L_LinkedInWorkspace_ApiService {
         type: DyFM_HttpCallType.put,
         baseUrl: this.resolveBaseUrl(),
         endpoint: '/linkedin/profile-update/pasted',
+      }),
+      { body: request },
+    );
+  }
+
+  /**
+   * ✍️ A poszt-piszkozatok listája.
+   *
+   * ⭐ A limit és a „kész"-fogalom a **szervertől** jön *(SSOT a CLI-ben)* — ⛔ a kliens
+   * semmit nem éget be, mert különben a felület és a tényleges ellenőrzés elcsúszhatna.
+   */
+  async getPostDrafts(): Promise<LinkedInPostDraftsPlan> {
+    return this.api_AS.call<LinkedInPostDraftsPlan>(
+      new DyNX_ApiCall_Settings({
+        name: 'getLinkedInPostDrafts',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/linkedin/post-drafts',
+      }),
+    );
+  }
+
+  /**
+   * ✅ „Kiposztoltam" jelölés egy piszkozatra.
+   *
+   * @returns a FRISS lista, hogy a felület ⛔ ne a saját feltevéséből rajzoljon újra.
+   */
+  async markPostDraftPosted(request: LinkedInPostPostedRequest): Promise<LinkedInPostDraftsPlan> {
+    return this.api_AS.call<LinkedInPostDraftsPlan, LinkedInPostPostedRequest>(
+      new DyNX_ApiCall_Settings({
+        name: 'putLinkedInPostPosted',
+        type: DyFM_HttpCallType.put,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/linkedin/post-drafts/posted',
       }),
       { body: request },
     );

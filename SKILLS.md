@@ -654,6 +654,36 @@ jutna el az asszisztenshez.
 
 📌 Tárolás: `~/.config/my-assistant/stt-ledger/` — ⛔ nem a repóban *(nyers felhasználói tartalom)*.
 
+### ✍️ LinkedIn POSZT-piszkozat panel — `/linkedin/posts` (2026-09-11)
+
+**Egy lista a megírt poszt-piszkozatokról + posztonként egy másolható szövegdoboz.**
+⭐ A profil-panel receptje: a LinkedIn API **csak olvas** ⇒ a cél a **súrlódás-mentes átvitel**,
+⛔ nem az automatizálás.
+
+| Amit ad | |
+|---|---|
+| posztonként **másolható** szöveg | ⭐ egy gomb = egy poszt, ⛔ nem egy nagy blob |
+| karakterszám **/ 3 000** + túllógás-jelzés | ⭐ a **beillesztés ELŐTT** derül ki |
+| **„kiposztoltam" pipa** | ha félbeszakad, tudja, hol tartott |
+| az **indoklás** *(„miért így szól")* | a döntéshez a **miért** kell, nem csak a szöveg |
+
+📂 **A piszkozatok helye — két fájl piszkozatonként:**
+
+```
+current/linkedin/post-drafts/<ÉÉÉÉ-HH-NN-cím>.body.txt   ← EZ megy ki (a poszt szövege)
+current/linkedin/post-drafts/<ÉÉÉÉ-HH-NN-cím>.md         ← az indoklás (nem kötelező)
+```
+
+⚠️ **⛔ NEM a `current/linkedin/drafts/`** — az **üzenet-válaszokat** tartalmaz *(thread-hez
+kötve, óradíjjal és telefonszámmal)*, és azok az owner sorrendjében a **harmadik** tétel.
+
+🔴 **A poszt szövegét a rendszer ⛔ nem generálja és nem módosítja** — a tartalmi szabályok:
+`current/principles/linkedin-post-writing.md`.
+
+⭐ **Üres állapotban is beszél:** *„Még nincs poszt-piszkozat"* + **hova** kell írni a fájlt.
+
+📌 Részletek + a mért korrekció a piszkozat-helyről: `__documentations/dev/LINKEDIN_POST_DRAFTS.md`.
+
 ### 🎙️ A HOSSZÚ hangüzenet — darabolva ismerjük fel (2026-09-11)
 
 🔴 **MÉRT KORLÁT:** az FDP AI felismerő **30,0 másodpercnél** befagy — a 56,9 mp-es felvételből

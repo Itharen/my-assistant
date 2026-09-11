@@ -14,13 +14,13 @@
 // le. ⛔ Egy második implementáció azt jelentené, hogy a felület és a CLI **eltérő** limitet
 // vagy eltérő „kész"-fogalmat mutathat ugyanarról.
 
-import { Request, Response } from 'express';
+import { Request } from 'express';
 
 import { DyFM_HttpCallType } from '@futdevpro/fsm-dynamo';
-import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
+import { DyNTS_Controller } from '@futdevpro/nts-dynamo';
 
 import { LinkedinProfile_DataService } from './linkedin-profile.data-service.js';
-import { LinkedInWorkspace_LoopbackGuard } from './linkedin-workspace-loopback.guard.js';
+import { LinkedInPanelEndpoint_Util } from './linkedin-panel-endpoint.util.js';
 
 /**
  * A LinkedIn profil-frissítés felülete.
@@ -55,32 +55,21 @@ export class LinkedinProfile_Controller extends DyNTS_Controller {
 
   /** `GET /profile-update` = a terv · `PUT /profile-update/pasted` = a pipa. */
   setupEndpoints(): void {
+    // ⭐ PUSZTA DEKLARÁCIÓ: a loopback-kapu a közös `LinkedInPanelEndpoint_Util`-ban van
+    // (⛔ nem itt egy `if`-ben) — így a vezérlő tényleg vékony, és a kapu EGY helyen él.
     this.endpoints = [
-      new DyNTS_Endpoint_Params({
+      LinkedInPanelEndpoint_Util.guarded({
         name: 'getLinkedInProfileUpdate',
         type: DyFM_HttpCallType.get,
-        // ⚠️ MÉRVE a hangerőnél: a `route` + `endpoint: '/'` a szülő-útvonalra képződik, NEM
-        // az alútvonalra. Ezért az útvonal **itt** dől el, teljes néven.
         endpoint: '/profile-update',
-        preProcesses: [],
-        tasks: [ async (req: Request, res: Response): Promise<void> => {
-          // 🔒 A KAPU: csak loopbackról — a szomszéd LinkedIn-végpontok bevált guardja.
-          if (!LinkedInWorkspace_LoopbackGuard.allow(req, res)) return;
-
-          res.send(await this.dataService.readPlan());
-        } ],
+        serve: (): Promise<unknown> => this.dataService.readPlan(),
       }),
 
-      new DyNTS_Endpoint_Params({
+      LinkedInPanelEndpoint_Util.guarded({
         name: 'putLinkedInProfilePasted',
         type: DyFM_HttpCallType.put,
         endpoint: '/profile-update/pasted',
-        preProcesses: [],
-        tasks: [ async (req: Request, res: Response): Promise<void> => {
-          if (!LinkedInWorkspace_LoopbackGuard.allow(req, res)) return;
-
-          res.send(await this.dataService.markPasted(req.body));
-        } ],
+        serve: (req: Request): Promise<unknown> => this.dataService.markPasted(req.body),
       }),
     ];
   }

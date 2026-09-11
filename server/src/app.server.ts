@@ -44,6 +44,7 @@ import { SleepState_Controller } from './_routes/sleep-state/sleep-state.control
 import { Reports_Controller } from './_routes/reports/reports.controller';
 import { LinkedInWorkspace_Controller } from './_routes/linkedin/linkedin-workspace.controller';
 import { LinkedinProfile_Controller } from './_routes/linkedin/linkedin-profile.controller';
+import { LinkedinPosts_Controller } from './_routes/linkedin/linkedin-posts.controller.js';
 import { LinkedInWorkspace_FrameMiddleware } from './_routes/linkedin/linkedin-workspace-frame.middleware';
 import { InterfoodRecommendation_Controller } from './_routes/interfood/interfood-recommendation.controller';
 import { Health_Controller } from './_routes/health/health.controller';
@@ -193,6 +194,8 @@ export class App extends DyNTS_AppExtended {
           LinkedInWorkspace_Controller.getInstance(),
           // 🔗 A profil-frissítés felülete (owner, 2026-09-11 01:52).
           LinkedinProfile_Controller.getInstance(),
+          // ✍️ A poszt-piszkozatok felülete (owner sorrendje: profil → posztok → üzenetek).
+          LinkedinPosts_Controller.getInstance(),
         ],
       }),
       new DyNTS_RoutingModule({

@@ -7,6 +7,8 @@ import type {
   LinkedInWorkspaceFilter,
   LinkedInWorkspaceInboxResponse,
   LinkedInWorkspaceThreadResponse,
+  LinkedInPostDraftsPlan,
+  LinkedInPostPostedRequest,
   LinkedInProfileUpdatePlan,
   LinkedInProfilePastedRequest,
 } from '@server-models';
@@ -47,5 +49,15 @@ export class L_LinkedInWorkspace_DataService {
   /** ✅ „Beillesztettem" jelölés — ⭐ a FRISS tervet adja vissza. */
   markProfileFieldPasted(request: LinkedInProfilePastedRequest): Promise<LinkedInProfileUpdatePlan> {
     return this.api_AS.markProfileFieldPasted(request);
+  }
+
+  /** ✍️ A poszt-piszkozatok — posztonként a másolható szöveg. */
+  getPostDrafts(): Promise<LinkedInPostDraftsPlan> {
+    return this.api_AS.getPostDrafts();
+  }
+
+  /** ✅ „Kiposztoltam" jelölés — ⭐ a FRISS listát adja vissza. */
+  markPostDraftPosted(request: LinkedInPostPostedRequest): Promise<LinkedInPostDraftsPlan> {
+    return this.api_AS.markPostDraftPosted(request);
   }
 }

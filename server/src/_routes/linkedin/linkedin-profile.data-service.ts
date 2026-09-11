@@ -15,14 +15,13 @@
 // panel *(„nincs mit frissíteni")* és egy olvasási hiba kívülről **ugyanúgy néz ki**.
 
 import { existsSync } from 'node:fs';
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 
 import { DyFM_Error } from '@futdevpro/fsm-dynamo';
 
-import { SwallowedFailure_Util } from '../../_collections/swallowed-failure.util.js';
+import { LinkedInPanelFiles_Util } from './linkedin-panel-files.util.js';
 
 /**
  * A CLI mező-modul betöltése.
@@ -43,54 +42,11 @@ function loadFieldsModule(): Promise<typeof import('@cli/linkedin/linkedin-profi
   return cliModulePromise;
 }
 
-/**
- * A projekt gyökere — **jelölő-keresessel**, ⛔ nem szint-szamolassal.
- *
- * ## 🔴 KET MERT HIBA VEZETETT IDE (2026-09-11 11:02 es 11:08)
- *
- * **(1) `__dirname` ESM-ben.** A szerver `"type": "module"`, ahol a `__dirname` ⛔ **nem
- * letezik** ⇒ futasidoben `ReferenceError`. ⚠️ A `tsc` **zold** volt, mert a `@types/node`
- * globalisan deklaralja ⇒ a hiba **csak elo hivasra** derult ki:
- * `GET /api/linkedin/profile-update` → `MA-LINKEDIN-PROFILE-READ-FAILED`.
- * ⇒ Ez resze volt annak, amit az owner *„mindenfele hiba"*-kent latott.
- *
- * **(2) A SZINT-SZAMOLAS nem lehet helyes MINDKET futasban.** Merve:
- *
- * ```
- * src:    server/src/_routes/linkedin         → 4 szint = a repo gyokere
- * build:  server/build/server/src/_routes/... → 5 szint = a repo gyokere
- * ```
- *
- * ⇒ Egy fix szam **vagy a `tsx`-es fejlesztoi futasban, vagy a buildben** teved. A masodik
- * hiba pont ezert bukott ki: a spec a **buildbol** fut, es a mostani profil-szoveg **ures**
- * lett — ⚠️ ⛔ **nem kivetellel**, hanem **csendes uressegkent**, ami a panelen
- * „nincs mit frissiteni"-nek latszik. Az a legrosszabb kimenetel.
- *
- * ⭐ EZERT JELOLOT KERESUNK, a CLI `resolveProjectRoot` mintaja szerint *(`__agent` + `cli`)* —
- * az **fuggetlen** attol, honnan futunk.
- */
-function resolveRepoRoot(): string {
-  let directory: string = dirname(fileURLToPath(import.meta.url));
-
-  for (let depth: number = 0; depth < 10; depth += 1) {
-    if (existsSync(join(directory, '__agent')) && existsSync(join(directory, 'cli'))) {
-      return directory;
-    }
-
-    const parent: string = join(directory, '..');
-
-    if (parent === directory) break;
-    directory = parent;
-  }
-
-  // ⛔ NEM NEMA: ha a jelolot nem talaljuk, a hivo `DyFM_Error`-t kap — a **csendes ureseg**
-  // helyett **kimondott** hiba. (A panel igy „nem olvashato"-t mutat, nem azt, hogy nincs
-  // mit frissiteni.)
-  throw new Error(
-    'A projekt gyokere nem talalhato (`__agent` + `cli` jelolo) — '
-    + `a kereses innen indult: ${dirname(fileURLToPath(import.meta.url))}`,
-  );
-}
+// 🔴 A GYÖKÉR-FELOLDÁS a közös `LinkedInPanelFiles_Util`-ban lakik — ⭐ EGY tulajdonos.
+// ⚠️ MIÉRT KÖLTÖZÖTT (2026-09-11 18:22): a poszt-panel ugyanezt igényelte, és a
+// `code-duplication` review 70 sor azonos blokkot talált. A gyökér-feloldás egy **mért,
+// éles hiba** helye volt (`__dirname` ESM-ben + szint-számolás) — két példányban a
+// következő javítás az egyikben maradna, és a másik panel CSENDBEN romlana tovább.
 
 /** A futásidejű állapot fájlja. */
 function resolvePasteStatePath(): string {
@@ -123,7 +79,7 @@ export class LinkedinProfile_DataService {
   async readPlan(): Promise<unknown> {
     try {
       const cli = await loadFieldsModule();
-      const root: string = resolveRepoRoot();
+      const root: string = LinkedInPanelFiles_Util.resolveRepoRoot();
 
       return cli.LinkedinProfileFields_Util.buildPlan({
         current: await readJson(join(root, 'current', 'linkedin', 'profile-current.json')),
@@ -150,8 +106,8 @@ export class LinkedinProfile_DataService {
   async markPasted(body: unknown): Promise<unknown> {
     try {
       const cli = await loadFieldsModule();
-      const key: string = readStringField(body, 'key');
-      const isPasted: boolean = readBooleanField(body, 'isPasted');
+      const key: string = LinkedInPanelFiles_Util.readStringField(body, 'key');
+      const isPasted: boolean = LinkedInPanelFiles_Util.readBooleanField(body, 'isPasted');
       const next: string[] = cli.LinkedinProfileFields_Util.togglePasted(
         await this.readPasted(),
         key,
@@ -170,74 +126,13 @@ export class LinkedinProfile_DataService {
     }
   }
 
-  /** Amit már beillesztett. ⚠️ Hiányzó/sérült állapotnál **üres** — az állapot nem kritikus. */
+  /** Amit már beillesztett. ⚠️ A közös mechanika olvassa — ⭐ egy tulajdonos. */
   private async readPasted(): Promise<string[]> {
-    const path: string = resolvePasteStatePath();
-
-    if (!existsSync(path)) return [];
-
-    try {
-      const parsed: unknown = JSON.parse(await readFile(path, 'utf-8'));
-
-      if (!parsed || typeof parsed !== 'object') return [];
-
-      for (const [name, value] of Object.entries(parsed)) {
-        if (name !== 'pasted' || !Array.isArray(value)) continue;
-
-        return value.filter((item: unknown): item is string => typeof item === 'string');
-      }
-
-      return [];
-    } catch (error: unknown) {
-      // ⚠️ A SÉRÜLT ÁLLAPOT NEM AKADÁLY: a legrosszabb, ami történik, hogy az owner újra
-      // kipipálja a mezőket. ⛔ Egy kivétel viszont a TELJES panelt megbuktatná.
-      //
-      // ⛔ DE NEM NÉMÁN: a haladás elvesztése **jel** — ha ez ismétlődik, valami tartósan
-      // elromlott az állapot-fájllal, és azt tudni kell.
-      SwallowedFailure_Util.report('linkedin.profile.readPasted', error);
-
-      return [];
-    }
+    return LinkedInPanelFiles_Util.readStateList(resolvePasteStatePath(), 'pasted');
   }
 
-  /**
-   * Az állapot mentése.
-   *
-   * ⚠️ Átmeneti fájl + átnevezés: egy megszakadt írás ⛔ nem hagyhat félkész állapotot, mert
-   * onnantól a panel **hibás** haladást mutatna.
-   */
+  /** Az állapot mentése — átmeneti fájl + átnevezés a közös mechanikában. */
   private async writePasted(pasted: string[]): Promise<void> {
-    const path: string = resolvePasteStatePath();
-    const temporary: string = `${path}.tmp`;
-
-    await mkdir(join(path, '..'), { recursive: true });
-    await writeFile(
-      temporary,
-      `${JSON.stringify({ pasted: pasted, updatedAt: new Date().toISOString() }, null, 2)}\n`,
-      'utf-8',
-    );
-    await rename(temporary, path);
+    return LinkedInPanelFiles_Util.writeStateList(resolvePasteStatePath(), 'pasted', pasted);
   }
-}
-
-/** Egy szöveges mező kiolvasása ismeretlen törzsből. ⛔ Átcímkézés nélkül. */
-function readStringField(body: unknown, field: string): string {
-  if (!body || typeof body !== 'object') return '';
-
-  for (const [name, value] of Object.entries(body)) {
-    if (name === field) return typeof value === 'string' ? value : '';
-  }
-
-  return '';
-}
-
-/** Egy logikai mező kiolvasása ismeretlen törzsből. */
-function readBooleanField(body: unknown, field: string): boolean {
-  if (!body || typeof body !== 'object') return false;
-
-  for (const [name, value] of Object.entries(body)) {
-    if (name === field) return value === true;
-  }
-
-  return false;
 }

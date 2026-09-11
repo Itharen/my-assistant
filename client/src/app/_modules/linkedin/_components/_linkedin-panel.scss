@@ -1,0 +1,39 @@
+// 🧰 A LinkedIn-PANELEK KÖZÖS KERETE — ⭐ EGY tulajdonos, ⛔ nem két másolat.
+//
+// ⚠️ MIÉRT LÉTEZIK: a poszt-panel megépítése után a `code-duplication` review **26 sor
+// BÁJTRA azonos** blokkot talált a profil- és a poszt-panel stíluslapja között. ⇒ A találat
+// **valódi**: a panel-keret *(szegély, fejléc, halvány szöveg, hibaszín)* ugyanaz.
+//
+// ⭐ Mixinként, ⛔ nem globális osztályként: az Angular komponens-stílus **hatókörös**, tehát
+// egy globális `.l-head` a többi panelbe is beszivárogna.
+
+@mixin panel-chrome {
+  padding: 1rem;
+  border: 1px solid #444;
+  border-radius: 0.5rem;
+
+  .l-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+
+    h2 { margin: 0; }
+  }
+
+  .l-progress {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    color: var(--ma-fg-muted, #888);
+  }
+
+  .l-muted {
+    color: var(--ma-fg-muted, #888);
+    font-size: 0.82em;
+  }
+
+  // ⛔ A HIBA SOSEM NÉMA a felületen — ezért van rá saját, jól látható szín.
+  .l-error {
+    color: #ff6b6b;
+    margin: 0.6rem 0;
+  }
+}

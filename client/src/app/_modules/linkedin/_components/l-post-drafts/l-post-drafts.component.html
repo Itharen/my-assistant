@@ -1,0 +1,98 @@
+<!--
+  ✍️ A poszt-piszkozatok felülete — „egy lista + posztonként egy másolható szövegdoboz".
+  ⭐ POSZTONKÉNT: a LinkedIn-re is egyenként kell beilleszteni. ⛔ Nem egy nagy blob.
+  ⚠️ Modern vezérlés-folyam: @if / @for — a régi struktúr-direktívák elavultak.
+  (A nevük ITT SEM szerepel: a review a KOMMENTBEN is megtalálta — mérve.)
+-->
+<section class="l-posts-panel">
+  <header class="l-head">
+    <h2>✍️ LinkedIn poszt-piszkozatok</h2>
+    <span class="l-progress">{{ progressLabel_$() }}</span>
+  </header>
+
+  <!-- ⛔ A HIBA SOSEM NÉMA a felületen. -->
+  @if (error_$()) {
+    <p class="l-error" role="alert">⚠️ {{ error_$() }}</p>
+  }
+
+  @if (loading_$()) {
+    <p class="l-muted">Betöltés…</p>
+  }
+
+  <!--
+    ⚠️ A PISZKOZAT HIÁNYA NEM HIBA: a szöveget az asszisztens írja. Ezt KI KELL MONDANI —
+    és azt is, HOVA kerül a fájl, különben az üres panel elromlottnak látszik.
+  -->
+  @if (!loading_$() && plan_$() && !plan_$()!.hasDrafts) {
+    <p class="l-muted">
+      ⏳ Még nincs poszt-piszkozat. A szöveget az asszisztens írja ide:
+      <code>{{ plan_$()!.draftsPath }}/&lt;dátum-cím&gt;.body.txt</code> — amint elkészül, itt
+      megjelenik másolható szövegdobozban.
+    </p>
+  }
+
+  <!-- 🔴 A TÚLLÓGÁS ITT derül ki, ⛔ nem a beillesztésnél. -->
+  @if (plan_$() && plan_$()!.overLimitCount > 0) {
+    <p class="l-error">
+      🔴 {{ plan_$()!.overLimitCount }} poszt TÚLLÓG a LinkedIn korlátján — azt rövidíteni kell,
+      különben a beillesztésnél némán levágódik.
+    </p>
+  }
+
+  <ul class="l-drafts">
+    @for (draft of drafts_$(); track draft.id) {
+      <li class="l-draft" [class.l-posted]="draft.isPosted">
+        <div class="l-draft-head">
+          <strong>{{ draft.title }}</strong>
+          <span class="l-count" [class.l-over]="draft.isOverLimit">
+            {{ draft.length }} / {{ draft.limit }}
+          </span>
+        </div>
+
+        @if (draft.status) {
+          <span class="l-status">{{ draft.status }}</span>
+        }
+
+        <!--
+          ⭐ A MÁSOLHATÓ SZÖVEGDOBOZ. `readonly`: a szöveg forrása a FÁJL, ⛔ itt nem
+          szerkesztjük — a tartalmi szabályok az asszisztensé.
+        -->
+        <textarea
+          class="l-body"
+          readonly
+          rows="10"
+          [value]="draft.body"
+          [attr.aria-label]="draft.title"></textarea>
+
+        <div class="l-actions">
+          <!-- ⭐ EGY GOMB = EGY POSZT vágólapra. Ez a feladat lényege. -->
+          <button type="button" class="l-copy" (click)="copyDraft(draft)">
+            {{ copiedId_$() === draft.id ? '✅ vágólapon' : '📋 másolás' }}
+          </button>
+
+          <!-- ✅ A pipa posztonként — hogy félbeszakítás után tudja, hol tartott. -->
+          <label class="l-check">
+            <input type="checkbox" [checked]="draft.isPosted" (change)="togglePosted(draft)" />
+            kiposztoltam
+          </label>
+        </div>
+
+        <!-- ⭐ AZ INDOKLÁS: a döntéshez a MIÉRT kell, nem csak a szöveg. -->
+        @if (draft.why) {
+          <details class="l-why">
+            <summary>miért így szól</summary>
+            <pre class="l-why-text">{{ draft.why }}</pre>
+          </details>
+        }
+      </li>
+    }
+  </ul>
+
+  <div class="l-foot">
+    <button type="button" (click)="refresh()" [disabled]="loading_$()">🔄 újraolvasás</button>
+    <span class="l-muted">
+      ⚠️ A LinkedIn API csak olvas — a kiküldés kézzel történik, ezért van itt minden poszt
+      külön gombbal. A szöveget ⛔ nem szerkeszti a felület.
+    </span>
+  </div>
+</section>

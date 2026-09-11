@@ -130,3 +130,53 @@ export interface LinkedInProfilePastedRequest {
   key: string;
   isPasted: boolean;
 }
+
+/**
+ * ✍️ Egy POSZT-PISZKOZAT a felületen.
+ *
+ * > **Owner sorrendje:** profil → **posztok** → üzenetek.
+ *
+ * ⭐ Ugyanaz a korlát, mint a profilnál: a LinkedIn API **csak olvas** ⇒ a posztot nem tudjuk
+ * kiküldeni. A felület a **súrlódás-mentes átvitelt** adja: posztonként egy másolható szöveg,
+ * karakterszám a limithez mérve, és posztonként pipa.
+ *
+ * 🔴 A poszt **szövegét** az asszisztens írja fájlba *(`current/principles/linkedin-post-writing.md`)*
+ * — ⛔ a rendszer nem generálja és nem módosítja.
+ */
+export interface LinkedInPostDraft {
+  /** A piszkozat-fájl neve `.body.txt` nélkül. */
+  id: string;
+  /** A dátum + a szöveg eleje — ⚠️ ⛔ nem a kötőjeles fájlnév. */
+  title: string;
+  /** 🔴 A MÁSOLHATÓ szöveg — pontosan az, ami kimegy. */
+  body: string;
+  length: number;
+  /** A LinkedIn poszt-korlátja. */
+  limit: number;
+  /** 🔴 Túllóg-e — ⭐ ITT derül ki, ⛔ nem a beillesztésnél. */
+  isOverLimit: boolean;
+  /** Az indoklás emberi része. ⚠️ Üres, ha nincs `.md` a piszkozat mellett. */
+  why: string;
+  /** Az indoklás `statusz:` mezője, ha van. */
+  status: string;
+  /** ✅ Az owner már kiposztolta. */
+  isPosted: boolean;
+}
+
+/** ✍️ A poszt-piszkozatok összesítése. */
+export interface LinkedInPostDraftsPlan {
+  drafts: LinkedInPostDraft[];
+  draftCount: number;
+  postedCount: number;
+  overLimitCount: number;
+  /** ⚠️ Van-e egyáltalán piszkozat — ⛔ a hiánya NEM hiba. */
+  hasDrafts: boolean;
+  /** Hol keresi a rendszer a piszkozatokat — ⭐ az üres állapot ezt KIMONDJA. */
+  draftsPath: string;
+}
+
+/** ✍️ A „kiposztoltam" jelölés kérése. */
+export interface LinkedInPostPostedRequest {
+  id: string;
+  isPosted: boolean;
+}
