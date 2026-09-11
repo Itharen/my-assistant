@@ -138,3 +138,36 @@ a szabály megírása előtt kötelező végigolvasni, mi van már rögzítve ug
 ✅ **Elindítva 00:37:** a prompt kiment *(`{"success":true}`)*, az `eventSequence` 16182 → 16189,
 `status: running`, `isBusyProcessing: true`. A DEV dolgozik.
 
+---
+
+## 🔁 MIÉRT ÁLL LE A DEV — és mi a három dolog, amit MINDIG mondani kell neki
+
+> **Owner, 2026-09-11 02:01:** *„a dev megint leállt, és azért is állt le, mert **hosszabb idő
+> kihagyás után emlékeztetni kell**, hogy frissítse a szabályokat a FAM-ból, meg hogy **készítsen
+> tervfájlt**, ami mentén halad, és **tartsa magát mozgásban Schedule Wake-up-pal**."*
+
+⭐ **A leállás nem véletlen, hanem HIÁNY.** A DEV akkor áll le, ha nincs, ami továbbvigye —
+és a wakeup-hurok magától nem indul újra.
+
+### A HÁROM, ami MINDEN indító promptba kell
+
+```
+1. FRISSÍTSD A SZABÁLYOKAT FAM-BÓL      (hideg kontextusból indul, a szabályok változhattak)
+2. HA NINCS TERV-FÁJLOD, HOZZ LÉTRE     ⭐ ez hiányzott eddig az IDENTITY.md-ből
+   ÉS VEZESD                            (státusz + következő lépés + ciklus-protokoll)
+3. TARTSD MAGAD MOZGÁSBAN ScheduleWakeup-pal, amíg van munka
+```
+
+⚠️ **A 2. pont a kulcs.** Terv-fájl nélkül minden ébredés **nulláról** kezdi az orientációt, és
+az első bizonytalanságnál megáll. A fájl az, ami **átviszi az állapotot** a körök között —
+⛔ nem a prompt, mert az befagy a kiadás pillanatában *(`core-wakeup-state-file`)*.
+
+### Mikor kell ezt észrevennem
+
+A `waiting-input` + üres sor **nem** azt jelenti, hogy „kész" — azt jelenti, hogy **rám vár**.
+📌 **Mérve 2026-09-11 02:02:** `waiting-input`, `busy: false`, `queue: 0`, `eventSequence: 16978`
+⇒ küldtem, és **felvette** *(`running`, `busy: true`, 16987)*.
+
+⛔ Ha az owner szól, hogy „a DEV megint leállt", az azt jelenti, hogy **én nem néztem oda**.
+A négy mérés *(fent)* pont ezért van.
+

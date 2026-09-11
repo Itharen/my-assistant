@@ -138,6 +138,10 @@ odajutás, készülődés-kezdés, mit vigyen magával.
 
 1. **`ScheduleWakeup`-pal tartsa magat mozgasban**, amig van mit csinalni
 2. **Rendszeresen frissitse a szabalyokat a FAM-bol**
+3. ⭐ **HA NINCS TERV-FAJLJA, HOZZON LETRE EGYET ES VEZESSE** — statusz tetelenkent datummal,
+   a kovetkezo konkret lepes, ciklus-protokoll. *(owner, 2026-09-11 02:01 — ez a HARMADIK elem,
+   ami eddig kimaradt, es ami nelkul a DEV hosszabb kihagyas utan LEALL.)*
+   ⛔ Ami koronkent valtozik, az a FAJLBA kerul, nem a promptba (`core-wakeup-state-file`).
 
 ### ⚠️ A KULDES SZABALYAI VALTOZATLANOK
 
