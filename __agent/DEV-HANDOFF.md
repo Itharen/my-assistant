@@ -1580,3 +1580,57 @@ dolgoztál *(nem ezen)*, **én vittem be**. ⛔ **A 8. tétel LEZÁRVA — ne do
 **Az új lábléc mondanivalója:** Discordra **csak a FÓKUSZ** kerül *(owner teendője/döntése)*;
 fejlesztési témáról ⛔ nem írunk, ott **a hallgatás a helyes válasz**; és ha az owner **alszik
 vagy lefekvéshez készül**, ⛔ **semmit** nem küldünk, csak valódi vészhelyzetben.
+
+---
+
+## 9️⃣ 2026-09-11 04:11 — 🔒 A BESZÉD-ÉSZLELÉST **KÖRBE KELL ÍRNI ÉS TESZTTEL LESZÖGEZNI**
+
+> **Owner, 2026-09-11 04:11 (szó szerint):** *„a voice inputunknál, amit **importáltunk a
+> CCAP-ból**, hogy **mikor beszélek, mikor nem**, az **kurva jól működik** — azt amúgy **nagyon
+> alaposan rögzítenünk is kéne, körbeírni, nagyon alaposan tesztekkel fixálni a funkcionalitást**."*
+
+### 🔴 A MÉRT ÁLLAPOT — ezért sürgős
+
+| Mérés *(2026-09-11 04:13)* | Érték |
+|---|---|
+| `cli/src/_modules/voice/` — fájlok | **37 db, 6 681 sor** |
+| ebből `cv-recording.control-service.ts` | **1 322 sor** — ez végzi a szegmentálást + a hangerő/ZCR beszéd-észlelést |
+| 🔴 **spec-fájlok ebben a fában** | **0** ← *nulla* |
+
+⇒ **A rendszer legjobban működő darabja a legvédtelenebb.** Bármely jövőbeli mozdulat **némán**
+elronthatja, és **semmi nem szólna**.
+
+### ⛔ A HATÁR — amit ⛔ NEM szabad
+
+🔴 **Ez ÁTEMELT, törékeny, MŰKÖDŐ kód** *(`transplant-not-rewrite`)*. A feladat **leszögezés**,
+⛔ **nem** takarítás:
+
+- ⛔ **Ne refaktorálj**, ne nevezz át, ne „tisztítsd meg közben" — a `cv-*` fájlok **változatlanok** maradnak.
+- ⛔ **Ne hangold a küszöböket.** A `settings.voice.thresholds.*` értékek **most jók** — a teszt
+  azt rögzíti, ami **VAN**, nem amit szebbnek gondolsz.
+- ✅ A teszt **kívülről** fogja meg: bemenő audio-keret-sorozat → várt `isSpeech` / szegmens-határ.
+
+### A FELADAT — két rész, ebben a sorrendben
+
+**1️⃣ KÖRBEÍRÁS** *(`__documentations/dev/`-be, saját fájl)*: **hogyan dönti el, hogy beszélek-e** —
+a hangerő-küszöb, a **ZCR** (zero-crossing rate) szűrés és validáció, a `zcrValidationThreshold`
+szerepe, az `AfterSilence` **1000 ms**-os szegmens-zárás *(`cv-recording…ts:113`)*, a buffer-logika,
+és a duplikáció-védelem. ⭐ **A jelenlegi értékeket MÉRD KI és írd le** — ⛔ ne a kódból parafrazeálj.
+
+**2️⃣ TESZTEK** — a viselkedést szögezik le:
+- csend → ⛔ nincs szegmens
+- folyamatos beszéd → **egy** szegmens
+- beszéd → 1 s csend → beszéd → **két** szegmens *(a határ a küszöbön)*
+- zaj/ZCR-en elbukó keretek → **kiszűrve**
+- rövid „hm" → a mérhető jelenlegi viselkedés *(amit találsz, azt rögzítsd)*
+- ⭐ **Regressziós horgony:** egy **valódi, rövid WAV** fixtúra, aminek a szegmentálása le van írva
+
+### KÉSZ, HA
+
+- [ ] a doksi megvan, és **mért értékeket** tartalmaz, nem becslést
+- [ ] a `cli/src/_modules/voice/` spec-száma **> 0**, és a beszéd-észlelés fő ágai fedettek
+- [ ] `npm test` zöld · `dc rev` **0 új találat** · ⛔ semmilyen teszt nincs kikapcsolva
+- [ ] ⛔ **`git diff` a `cv-*.ts` fájlokon: ÜRES** *(a leszögezés nem változtat a leszögezetten)*
+
+📌 Vedd fel a `PROCESS-CONTROL.md` tábládba **9. tételként**. Prioritás: a hang-vonal **5-6.
+tétele után**, de a **LinkedIn-felület előtt** — mert minden további hang-munka **ezen áll**.
