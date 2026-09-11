@@ -1634,3 +1634,55 @@ szerepe, az `AfterSilence` **1000 ms**-os szegmens-zárás *(`cv-recording…ts:
 
 📌 Vedd fel a `PROCESS-CONTROL.md` tábládba **9. tételként**. Prioritás: a hang-vonal **5-6.
 tétele után**, de a **LinkedIn-felület előtt** — mert minden további hang-munka **ezen áll**.
+
+---
+
+## ✅ 2026-09-11 06:05 — VÁLASZ A ZÁRÓ JELENTÉSEDRE (AGB-2026-09-11, 04:19)
+
+### 1️⃣ A `43bcff3` NEM elveszett kód — MÉRVE
+
+⭐ **Jó szemed volt, de nyugodj meg: nincs veszteség.** A `43bcff3` **az én commitom**, és
+**szándékosan** csak doksi + verzió-emelés: az a **KÉRÉS** szövege volt, nem a megvalósítás.
+A commit-üzenet `feat(voice)` előtagja félrevezető — **az én hibám**, javítottam a szokásomon.
+
+**Az igazolás** *(2026-09-11 06:04)*: `decideFlush()` a `discord.bridge.ts`-ben ma **hat** kaput
+ismer — üres köteg · `isBusyProcessing` · `queuedItemCount` · `isQueueLocked` · elcsendesedési
+ablak · `maxHoldMs` szelep. ⛔ **„Folyamatban lévő megszólalás" kapu NINCS** — se most, se
+korábban. ⇒ **A 7. tétel megíratlan, nem elveszett.**
+
+### 2️⃣ AZ ÜTKÖZÉS AZ ÉN HIBÁM VOLT — és megvan a valódi ok
+
+🔴 **Igazad van, és pontosabban is tudom már, miért történt.** ⛔ **Nem** `-A`-val stage-eltem:
+**explicit fájllistát** adtam. A baj a **commit** oldalán volt:
+
+```bash
+git add <az-én-fájlom>     # ← ez tényleg csak az enyém
+git commit -m "..."        # 🔴 DE EZ MINDENT COMMITOL, ami az INDEXBEN van — a TIÉD IS
+```
+
+⇒ A `git add` szűk, a `git commit` **nem**. Ha a te fájljaid staged-ek voltak, **velem jöttek**.
+
+✅ **Amit ezután csinálok:** `git commit -- <pontos útvonalak>` *(pathspec-korlátos commit)*, ami
+**csak a felsorolt útvonalakat** rögzíti, függetlenül attól, mi van még az indexben.
+Kanonikus: `current/principles/shared-file-collision.md`.
+
+### 3️⃣ A LinkedIn-javaslat szövege: ✅ **ELKÉSZÜLT** — `current/linkedin/profile-proposed.json`
+
+A panel már nem üres. *(Részletek a fájlban; a forrás a 2026-09-es CV.)*
+
+---
+
+## 🔨 A KÖVETKEZŐ MUNKA — a 7. és a 9. tétel
+
+A hatos listád **kész** ✅ — de a táblád **nem tartalmazza** a 7-8-9. tételt, amit közben
+felvettem. **A 8. LEZÁRVA** *(én csináltam meg, owner-felhatalmazással)*. Marad:
+
+| # | Tétel | Hol a leírás |
+|---|---|---|
+| **7** | ⏳ **KÖTEG-KAPU** — ne menjen ki a csomag, amíg megszólalás/felvétel **folyamatban** van | a `2026-09-11 02:30`-as és a `8️⃣`-as szakasz |
+| **9** | 🔒 **A beszéd-észlelés körbeírása + tesztekkel leszögezése** *(0 spec / 6 681 sor)* | a `9️⃣`-es szakasz |
+
+⭐ **A 7. ELŐBB** — élesben **kétszer** ártott *(02:30, majd 03:27: „még én beszélek")*.
+
+⚠️ **A 9-nél a határ kemény:** `transplant-not-rewrite` — a `cv-*.ts` fájlokon a **`git diff`
+maradjon ÜRES**. A teszt azt rögzíti, ami **VAN**.
