@@ -50,6 +50,27 @@ export interface ReadAloudDecision {
   text: string;
   /** MIÉRT — ez kerül a naplóba. ⛔ Soha nem üres. */
   reason: string;
+  /**
+   * 🔴 RUTIN kihagyás-e — vagyis **NEM hír**.
+   *
+   * ## A MÉRT INDOK (2026-09-11 03:20)
+   *
+   * A napi akció-napló **67 408 sorából 64 088 (95%)** egyetlen sor volt:
+   * `MA-VOICE-READ-ALOUD-SKIP: kihagyva (…): ezt már felolvastuk` — **15 MB egy nap alatt**.
+   *
+   * Az ok: az `fs.watch` minden eseményére a figyelő **újraolvassa a TELJES naplót**, és
+   * minden korábbi bejegyzésre kiírt egy kihagyás-jegyzetet ⇒ `bejegyzések × események`.
+   *
+   * ⚠️ MIÉRT SÚLYOS, és miért nem kozmetika: **(a)** az akció-napló **végtelen retentionnal
+   * commitolva** van *(owner-szabály)*, tehát ez a szemét **véglegesen** a repóban marad;
+   * **(b)** a 95%-os zaj **láthatatlanná teszi a VALÓDI jelzéseket** — pontosan azt a
+   * megfigyelhetőséget rontja el, amiért a naplózás készült.
+   *
+   * ⇒ A *„már felolvastuk"* a **normál** működés, ⛔ nem esemény. A többi kihagyás-ok
+   * *(nincs bent, nyugta, nincs kimondható tartalom)* **továbbra is naplózódik**: azok
+   * tényleg megmagyaráznak valamit, és bejegyzésenként **egyszer** fordulnak elő.
+   */
+  routine?: boolean;
 }
 
 /**
@@ -69,7 +90,10 @@ export function decideReadAloud(
   if (context.alreadySpoken.has(entry.sentAt)) {
     // ⚠️ A fájl-figyelő ugyanarra az írásra több eseményt is adhat. Enélkül az owner
     // ugyanazt hallgatná végig kétszer — ami hangban sokkal zavaróbb, mint szövegben.
-    return { speak: false, text: '', reason: 'ezt már felolvastuk' };
+    //
+    // 🔴 `routine: true` — ez a leggyakoribb kimenetel, és ⛔ NEM hír. Mérve: naplózva a napi
+    // akció-napló 95%-át tette ki (64 088 sor / 15 MB egy nap alatt).
+    return { speak: false, text: '', reason: 'ezt már felolvastuk', routine: true };
   }
 
   if (!context.ownerPresent) {

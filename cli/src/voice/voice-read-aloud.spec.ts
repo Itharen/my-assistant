@@ -25,6 +25,58 @@ const entry: OutboundLogEntry = {
   text: 'Kész a **javítás**, 839 teszt zöld.',
 };
 
+describe('decideReadAloud — 🔴 a RUTIN kihagyás NEM hír (mérve: a napló 95%-a)', () => {
+
+  it('a „már felolvastuk" RUTIN — ⛔ nem naplózandó esemény', () => {
+    // 🔴 MÉRVE 2026-09-11 03:20: a napi akció-napló 67 408 sorából 64 088 (95%, 15 MB)
+    // egyetlen sor volt: „kihagyva (…): ezt már felolvastuk". Az `fs.watch` minden
+    // eseményére a TELJES naplót újraértékeljük ⇒ bejegyzések × események.
+    //
+    // ⚠️ És a napló VÉGTELEN retentionnal COMMITOLVA van — a zaj véglegesen a repóban marad,
+    // és eltemeti a valódi jelzéseket.
+    const decision = decideReadAloud(
+      { sentAt: '2026-09-11T03:00:00+02:00', text: 'Szia.' },
+      { ownerPresent: true, alreadySpoken: new Set(['2026-09-11T03:00:00+02:00']) },
+    );
+
+    expect(decision.speak).toBeFalse();
+    expect(decision.routine).toBeTrue();
+  });
+
+  it('⭐ a MAGYARÁZÓ okok NEM rutinok — azok továbbra is naplózandók', () => {
+    // ⛔ Ez nem elhallgatás: ezek bejegyzésenként EGYSZER fordulnak elő, és tényleg
+    // megmagyaráznak valamit, amit különben nem értenénk.
+    const notPresent = decideReadAloud(
+      { sentAt: '2026-09-11T03:01:00+02:00', text: 'Szia.' },
+      { ownerPresent: false, alreadySpoken: new Set<string>() },
+    );
+    const ack = decideReadAloud(
+      { sentAt: '2026-09-11T03:02:00+02:00', text: 'ok', kind: 'ack' },
+      { ownerPresent: true, alreadySpoken: new Set<string>() },
+    );
+    const noSpeakable = decideReadAloud(
+      { sentAt: '2026-09-11T03:03:00+02:00', text: '| a | b |' },
+      { ownerPresent: true, alreadySpoken: new Set<string>() },
+    );
+
+    for (const d of [notPresent, ack, noSpeakable]) {
+      expect(d.speak).toBeFalse();
+      expect(d.routine).toBeFalsy();
+      expect(d.reason.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('a SIKERES felolvasás sem rutin — az elhangzás tény, amit tudni akarunk', () => {
+    const decision = decideReadAloud(
+      { sentAt: '2026-09-11T03:04:00+02:00', text: 'Kész a javítás.' },
+      { ownerPresent: true, alreadySpoken: new Set<string>() },
+    );
+
+    expect(decision.speak).toBeTrue();
+    expect(decision.routine).toBeFalsy();
+  });
+});
+
 describe('decideReadAloud — mikor olvassuk fel', () => {
 
   it('⭐ bent lévő owner + valódi válasz ⇒ FELOLVASSUK, kimondható szöveggel', () => {

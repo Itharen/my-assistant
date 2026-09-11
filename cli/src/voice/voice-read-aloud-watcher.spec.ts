@@ -149,6 +149,24 @@ describe('VoiceReadAloudWatcher', () => {
     expect(spokenIds).toEqual(['2026-09-11T03:20:00+02:00']);
   });
 
+  it('🔴 a MÁR FELOLVASOTT bejegyzésre NEM ír jegyzetet — ez temette be a naplót', async (): Promise<void> => {
+    // MÉRVE 2026-09-11 03:20: 64 088 ilyen sor / 15 MB EGY nap alatt (a napló 95%-a), mert
+    // az `fs.watch` minden eseményére a TELJES naplót újraértékeljük.
+    await writeFile(logPath, '', 'utf-8');
+    watcher = makeWatcher();
+    await watcher.start();
+
+    await appendFile(logPath, line('2026-09-11T03:30:00+02:00', 'Egyszer.'), 'utf-8');
+    await settle();
+    // Második fájl-esemény UGYANARRA a bejegyzésre — a valós életben ez százszor fut le.
+    await appendFile(logPath, line('2026-09-11T03:31:00+02:00', 'Masodszor.'), 'utf-8');
+    await settle();
+
+    expect(spokenTexts).toEqual(['Egyszer.', 'Masodszor.']);
+    // ⭐ A LÉNYEG: egyetlen „ezt már felolvastuk" jegyzet sincs.
+    expect(notes.filter((n: string): boolean => n.includes('már felolvastuk'))).toEqual([]);
+  });
+
   it('a CSONKA utolsó sor nem buktatja meg a feldolgozást', async (): Promise<void> => {
     await writeFile(logPath, '', 'utf-8');
     watcher = makeWatcher();

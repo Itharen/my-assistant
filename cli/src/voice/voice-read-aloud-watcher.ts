@@ -128,7 +128,18 @@ export class VoiceReadAloudWatcher {
         this.spoken.add(entry.sentAt);
 
         if (!decision.speak) {
-          this.options.onNote?.(`kihagyva (${entry.sentAt}): ${decision.reason}`);
+          // 🔴 A RUTIN kihagyás NEM kerül naplóba. Mérve 2026-09-11: a napi akció-napló
+          // **95%-a** (64 088 sor / 15 MB) ez az egyetlen sor volt, mert az `fs.watch`
+          // minden eseményére a TELJES naplót újraértékeljük.
+          //
+          // ⚠️ Ez ⛔ nem elhallgatás: a *magyarázó* okok (nincs bent, nyugta, nincs kimondható
+          // tartalom) **változatlanul** naplózódnak — azok bejegyzésenként EGYSZER fordulnak
+          // elő, és tényleg megmagyaráznak valamit. A 95%-os zaj viszont épp a valódi
+          // jelzéseket temette be.
+          if (!decision.routine) {
+            this.options.onNote?.(`kihagyva (${entry.sentAt}): ${decision.reason}`);
+          }
+
           continue;
         }
 

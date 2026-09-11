@@ -1472,3 +1472,50 @@ lokál tár, ⛔ a repóba **semmi**.
 📌 **Sorrend:** ez a lista **végére** megy — a hang-vonal *(1-5)* és a profil-felület *(6)* előbbre
 való. ⛔ De ne vesszen el: amíg nincs bekötve, **minden munkahelyi esemény vakfolt**.
 
+
+---
+
+## 7️⃣ 2026-09-11 03:20 — ⛔ A DISCORD-VÁLASZKÉNYSZER FELTÉTEL NÉLKÜLI, ÉS EZ ÜTKÖZIK A FÓKUSZ-SZABÁLLYAL
+
+> **Owner, 2026-09-11 03:22:** *„amikor bejön egy üzenet a Discordról, akkor ott **javítani kell**,
+> hogy **csak a fókusz dolgokat** a Discordon."*
+
+### A MÉRT OK — egy hard-code-olt lábléc
+
+`cli/src/discord/discord.batch-composer.ts:38-42` **minden** bejövő kötegre ráteszi:
+
+```
+🔴 Válasz-kötelezettség: erre NEM elég a sessionben válaszolni — Discordon IS
+válaszolnod kell, rövid és tömör formában (owner-szabály, 2026-09-06).
+```
+
+⚠️ **Ez feltétel nélküli.** Akkor is odakerül, ha a köteg tartalma **fejlesztési téma**, amiről az
+owner **ötször** mondta, hogy ⛔ **nem akarja Discordon** *(„A fejlesztési kéréseknél még mindig nem
+kéne discordon válaszolj, ha nem az a fókusz.")*. ⇒ **A rendszer kényszeríti ki azt a viselkedést,
+amit az owner tilt.** Ez nem az asszisztens fegyelmezetlensége, hanem **hiba a komponálóban**.
+
+### A FELADAT
+
+**Tedd FELTÉTELESSÉ a láblécet** — a szöveg mondja ki a kivételt is, ne csak a kötelezettséget:
+
+```
+🔴 Válaszolj Discordon IS, HA a téma a FÓKUSZ része (az owner teendője/döntése).
+⛔ HA a köteg fejlesztési/belső üzemeltetési téma, arról NE írj Discordra —
+   az a repóba megy. A hallgatás ilyenkor a HELYES válasz.
+```
+
+⭐ **Miért a szöveg, és ⛔ miért NEM automatikus osztályozás:** a „fókusz-e" eldöntése
+**szemantikai** kérdés, amit az asszisztens tud, a komponáló nem. Egy kulcsszó-alapú szűrő
+**némán elnyomna** valódi kérést — az sokkal rosszabb, mint a mostani túl-beszélés
+*(`one-function-is-enough`: ⛔ ne építs osztályozót)*.
+
+### KÉSZ, HA
+
+- [ ] a lábléc szövege feltételes, és **kimondja, hogy a hallgatás is helyes válasz lehet**
+- [ ] `discord.batch-composer.spec.ts` **frissítve** *(a jelenlegi teszt a régi szöveget rögzíti —
+      ⛔ nem törölni, hanem az új szövegre igazítani)*
+- [ ] `dc rev` **0 új találat** a nyúlt fájlokon
+- [ ] ⛔ **Semmilyen tesztet nem kapcsolsz ki**
+
+📌 **Prioritás:** a hang-megbízhatósági sor **2-5. tétele ELŐBBRE való** — ez utána jön, mert
+kicsi és nem blokkol semmit. Vedd fel a `PROCESS-CONTROL.md`-be **7. tételként**.
