@@ -1558,3 +1558,25 @@ de a `PROCESS-CONTROL.md` **tételes státusz-táblájában NINCS**. ⇒ A hatos
 
 **Minden handoff-szakaszt fel kell venni a `PROCESS-CONTROL.md` tételes táblájába** — akkor is, ha
 kicsi, akkor is, ha „majd jön". Ha egy szakasznak **nincs tétel-sora**, az **hiba**, nem stílus.
+
+---
+
+## ✅ 2026-09-11 03:40 — A 8. TÉTELT (Discord-lábléc) **ÉN CSINÁLTAM MEG** — ⛔ NE kezdj bele
+
+> **Owner, 2026-09-11 03:35:** *„Nagyon prióba előre kell venni azt, hogy ne legyen benne a
+> hangüzenet[-prompt] utasításba, hogy válaszolnod kell. **Ez most már nagyon-nagyon rossz.**"* ·
+> *„Annyira rossz, hogy… **ha nem dolgozik rajta éppen a dev, akkor csináld meg te gyorsan.**"*
+
+⭐ **Explicit owner-felhatalmazás alapján**, és mert a CCAP `inspect` szerint a hang-vonalon
+dolgoztál *(nem ezen)*, **én vittem be**. ⛔ **A 8. tétel LEZÁRVA — ne dolgozz rajta.**
+
+| | |
+|---|---|
+| fájl | `cli/src/discord/discord.batch-composer.ts` — a lábléc **feltételes** |
+| teszt | `cli/src/discord/discord.bridge.spec.ts` — a régi „always restates" **átírva**, ⛔ nem törölve; **+1 új** teszt az alvás-ágra |
+| eredmény | `npm test` → **957 spec, 0 failure** |
+| ⚠️ hatályba lépés | a **futó** listener a `dist`-ből dolgozik ⇒ a **következő újraindításkor** él. ⛔ Éjszaka **nem indítottam újra** *(`ldp-make-before-break`)* |
+
+**Az új lábléc mondanivalója:** Discordra **csak a FÓKUSZ** kerül *(owner teendője/döntése)*;
+fejlesztési témáról ⛔ nem írunk, ott **a hallgatás a helyes válasz**; és ha az owner **alszik
+vagy lefekvéshez készül**, ⛔ **semmit** nem küldünk, csak valódi vészhelyzetben.

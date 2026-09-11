@@ -6,7 +6,12 @@
 // A prompt szerkezete szándékosan gépiesen felismerhető:
 //   - az első sor az előtaggal kezdődik (`INCOMING_USER_MSG_ON_DISCORD:`)
 //   - a tételek sorrendtartók, időbélyeggel
-//   - a végén a válasz-kötelezettség emlékeztetője (owner-szabály: Discordon IS válaszolni kell)
+//   - a végén a FELTÉTELES válasz-szabály: Discordra csak a FÓKUSZ kerül, alvás alatt semmi
+//
+// ⚠️ Owner, 2026-09-11 03:34-03:35: a korábbi feltétel NÉLKÜLI „Discordon IS válaszolnod kell"
+// lábléc a fejlesztési témákat is Discordra kényszerítette, és ezzel ébren tartotta őt:
+// „azzal, hogy küldesz egy bármilyen üzenetet, azzal megint ébren tartasz… Ez most már
+// nagyon-nagyon rossz." ⇒ a lábléc feltételes lett, és kimondja, hogy a HALLGATÁS is válasz.
 
 import { DISCORD_INBOUND_PREFIX, type DiscordInboundMessage } from './discord.models.js';
 
@@ -37,8 +42,11 @@ export function composeBatchPrompt(
 
   const footer: string = [
     '---',
-    '🔴 Válasz-kötelezettség: erre NEM elég a sessionben válaszolni — Discordon IS',
-    'válaszolnod kell, rövid és tömör formában (owner-szabály, 2026-09-06).',
+    '📌 Válasz-szabály: Discordra CSAK akkor írj, ha a téma a FÓKUSZ része — az owner',
+    'teendője vagy döntése. Fejlesztési / belső üzemeltetési témáról ⛔ NE írj Discordra:',
+    'az a repóba megy, és a HALLGATÁS a helyes válasz.',
+    '🛏️ Ha az owner alszik vagy lefekvéshez készül, MINDEN üzenet ébren tartja —',
+    'ilyenkor ⛔ semmit ne küldj, csak valódi vészhelyzetben.',
   ].join('\n');
 
   return truncateIfNeeded([header, deliveredAt, '', body, '', footer].join('\n'));

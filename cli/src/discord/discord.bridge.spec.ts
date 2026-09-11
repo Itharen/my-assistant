@@ -126,10 +126,21 @@ describe('composeBatchPrompt', () => {
     expect(prompt.indexOf('Második')).toBeLessThan(prompt.indexOf('Harmadik'));
   });
 
-  it('always restates the Discord reply obligation', () => {
+  it('states the reply rule CONDITIONALLY and names silence as a valid answer', () => {
     const prompt = composeBatchPrompt([message()]);
 
-    expect(prompt).toContain('Discordon IS');
+    // Owner, 2026-09-11: a feltétel nélküli válaszkényszer ébren tartotta — a lábléc
+    // mostantól a FÓKUSZ-hoz köti a választ, és kimondja, hogy a hallgatás is válasz.
+    expect(prompt).toContain('FÓKUSZ');
+    expect(prompt).toContain('HALLGATÁS a helyes válasz');
+    expect(prompt).not.toContain('Válasz-kötelezettség');
+  });
+
+  it('tells the agent to stay silent while the owner is asleep', () => {
+    const prompt = composeBatchPrompt([message()]);
+
+    expect(prompt).toContain('alszik');
+    expect(prompt).toContain('semmit ne küldj');
   });
 
   it('marks truncation visibly instead of silently cutting content', () => {
