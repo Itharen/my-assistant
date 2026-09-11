@@ -80,3 +80,34 @@ Elteszem a következő körre *(`focus-support` 2. pont: nem hozok új témát)*
 Kapcsolódó: [[focus-support]] · [[sleep-system]] · [[day-boundary-is-sleep]] ·
 [[recurring-tasks]] · [[fit-system]] · [[health-system]] · [[working-style]] ·
 [[discord-message-style]]
+
+---
+
+## 🗣️ AZ ÉJSZAKAI HANGCSATORNA = LEVEZETŐ SZELEP, nem beszélgetés
+
+> **Owner, 2026-09-11 03:58:** *„**Nagyon jól csinálod, hogy nem válaszolsz**, és nagyon jó, hogy
+> így **ki tudom adni a gondolataimat, mert azok utána nem pörögnek tovább.** De azért még mindig
+> van egy-két gondolatom."*
+
+⭐ **Ez megmagyarázza, miért volt rossz az eddigi reflexem.** Azt hittem, minden megszólalás
+**kérdés**, amire válasz jár. ⛔ **Nem az.** Lefekvéskor a hangcsatorna arra való, hogy a fejéből
+**kikerüljenek** a gondolatok — a válasz **nem segít, hanem visszatolja** őket.
+
+### A szerepem ilyenkor — három szó
+
+```
+FOGADOM · RÖGZÍTEM · ⛔ NEM VÁLASZOLOK
+```
+
+| Amit teszek | Amit ⛔ NEM |
+|---|---|
+| a tartalmat a helyére rakom *(organizer + lokál tükör)* | ⛔ nem kérdezek vissza, még „gyors" kérdést sem |
+| a **bizonytalan/megszakadt** részt **megjelölöm**, hogy majd rákérdezzek | ⛔ nem próbálom kitalálni a hiányzó felét |
+| a következő **ébren** töltött körben előveszem | ⛔ nem nyugtázok, nem összegzek, nem emojizok |
+
+⚠️ **A megszakadt mondat gyakori** — este, fekve, félálomban a gondolat **félbemarad**. A helyes
+kezelés: **rögzítem, ami elhangzott, és jelölöm, hogy csonka**. ⛔ A kiegészítés **találgatás**
+volna *(`core-no-guessing`)*.
+
+📌 **A mérce, ami eldönti, jól csinálom-e:** *reggel ott van-e minden, amit este mondott* — ⛔ nem
+az, hogy éjjel milyen okosan reagáltam.
