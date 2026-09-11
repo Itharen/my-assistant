@@ -217,3 +217,41 @@ ha nem, akkor **én tévedtem az útvonalban**.
 
 ⚠️ **Mennyibe került volna:** majdnem azt jelentettem az ownernek, hogy a szerver elavult kódot
 futtat — miközben a panel, amit keresett, **működött**.
+
+
+---
+
+## 🔴 A SZÁMLÁLÓ NEM JELENTÉS — a „23 elveszett megszólalás" félreolvasása (2026-09-11 16:39)
+
+**Mit írtam a handoffba** *(15:54)*: *„a veszteség zöme NEM a felvevőnél van, hanem a felismerés
+UTÁN (23 vs. 4). **Ez az a 23, amit meg kell menteni**."*
+
+🔴 **A DEV megmérte, és az olvasatom téves volt.** A megőrzött hang megmondta, mi volt bennük:
+mind **0,3-2,3 MÁSODPERCES** töredék *(légzés, mondat-farok)*, amikbe a felismerő *„Thank you."*-t
+hallucinált. **Egyetlen elveszett owner-mondat sincs köztük** — és **15:53/15:54-kor**, amikor az
+owner panaszkodott, **egy sem történt** közülük.
+
+⇒ A valódi ok **máshol** volt: egy **30 másodperces ablak** vágta el a hosszú hangüzenetet.
+
+### A HIBA SZERKEZETE — ugyanaz a család, mint a 404-nél
+
+```
+funnel-számláló  →  „23 elveszett"  →  „23 elveszett MONDAT"  →  „ezt kell megmenteni"
+      ✅                  ✅                    ⛔                        ⛔
+```
+
+⚠️ **A szám igaz volt. A JELENTÉSE nem.** Egy számláló azt mondja meg, **hány** — ⛔ soha nem azt,
+**mi**. Én a kettőt egy lépésben összevontam, és **irányt adtam** vele a fejlesztésnek: majdnem
+a **rossz ágon** kezdtünk volna keresni.
+
+### ✅ A RECEPT
+
+📌 **Mielőtt egy metrikára tervet építek, nézzem meg a MINTÁT mögötte.** A megőrzött nyers anyag
+*(a hang-vonal 1. tétele!)* pontosan ezért készült — ⭐ **ez a befektetés ma fizetett vissza**:
+nélküle a „23 elveszett mondat" **cáfolhatatlan** lett volna.
+
+⛔ **És a metrikát ilyenkor sem szépítjük:** a DEV a töredéket **megnevezte**, de ⛔ **nem vonta ki**
+az arányból *(`❌ felismerés után elveszett … 23 ⏱️ ebből 23 a másodperc alatti töredék`)*.
+⭐ **A helyes javítás a LÁTHATÓVÁ TÉTEL, nem a szám javítása.**
+
+🔗 `2f0503a` *(a megnevezés)* · `95ef2a4` *(a valódi ok: a 30 mp-es ablak)*
