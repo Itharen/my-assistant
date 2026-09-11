@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-11 15:05
+**Utoljára frissítve:** 2026-09-11 18:10
 
 ---
 
@@ -103,6 +103,28 @@ A 404 **kétértelmű**, ⛔ nem bizonyíték. Kanonikus: `current/principles/po
 
 ⚠️ **MÉRT OLVASÁSI CSAPDA:** a `fo tasks.list` a `dueDate`-et **UTC-ben** írja ki *(a 18:30+02:00
 ott `16:30`-ként látszik)*. ⛔ Ne olvasd helyi időnek — **+2 óra** a nyári időszámításban.
+
+### 🔇 18:30-TÓL VENDÉG-ABLAK — ez a KÖVETKEZŐ KÖRÖK VISELKEDÉSÉT SZABJA MEG
+
+🔴 **A vendégek ~18:30-tól itt vannak, és 3 napig marad az ünneplés** *(09-11 este → 09-13)*.
+
+| Szabály | Mit jelent a gyakorlatban |
+|---|---|
+| 🔇 **Magántéma ⛔ SEMMI** | se hangosan, se szövegben — ha bent van a voice-on, a szöveg **elhangzik** |
+| 🔊 **Google Home ⛔** | az egész szoba hallja *(`private-topics-and-audience`)* |
+| 🎉 **Zóna: kikapcsolódás** | ⛔ **nem** tolok munka-fókuszt elé *(`focus-includes-life`)* |
+| 🙂 **Üzenet-forma** | ha nincs valódi teendője: **egy emoji**, ⛔ nem szöveg |
+| 🍵 **Füzike-tea** | a kúra 1. napja **ma** — a napindításba építve, ⛔ nem külön riasztás |
+
+### ✅ A 18:00-S KÖR
+
+| Mi | Állapot |
+|---|---|
+| 🎙️ **Hangüzenet-csonkolás** | ✅ **MEGOLDVA** — a valódi ok egy **30 mp-es ablak** *(`95ef2a4`)* |
+| 🔴 **A „23 elveszett" olvasatom** | ❌ **HIBÁS VOLT** — mind 0,3-2,3 mp töredék, egyetlen owner-mondat sem. A DEV **megmérte és cáfolta** *(`2f0503a`)* ⇒ felírva: *a számláló nem jelentés* |
+| 🔗 **Poszt-felület** | ✅ **kiadva** a DEV-nek — a tiltás feloldva, mert a profil-vonal kész |
+| ⛔ **EMOS** | felvéve a `current/shopping/never-buy.md`-be *(SEMMILYEN termék)*; 2 izzó cserére |
+| ❓ **Wi-Fi jelszó** | `Q-2026-09-11-03` — a válaszom: nem a tárolás a kockázat, hanem a **visszamondás** |
 
 ### ⏰ MA (2026-09-11)
 
