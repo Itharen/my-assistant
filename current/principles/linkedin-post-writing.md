@@ -136,3 +136,24 @@ tényleg hozzáad. Ha generikus AI-stock kép lenne, inkább nincs kép."* A ket
 a döntés azt mondja meg, **melyik** posztoknál keressük a képet, az irányelv pedig azt, hogy
 **milyen** kép fogadható el. Mindkettőnek teljesülnie kell.
 
+---
+
+## 🔢 A SORREND: PROFIL → POSZTOK → ÜZENETEK (owner, 2026-09-11 02:10)
+
+> *„Azután akartam csak válaszolni a LinkedIn üzenetekre, hogyha már a posztokat meg a profilt
+> update-eltük."*
+
+⚠️ **Ez felülírta a javaslatomat.** Én az üzenetekkel kezdtem volna *(`mvp-focus`: a pénzkeresés
+az első, és a lehetőségek öregszenek)* — de az ő indoka erősebb:
+
+```
+aki a válaszodból ÁTKATTINT, FRISSÍTETT profilra érkezzen
+```
+
+📌 Egy jó válasz **odaviszi** a megkeresőt a profilhoz. Ha az elavult, a válasz **ellene dolgozik** —
+a lead nem azért vész el, mert késtünk, hanem mert rossz képet kapott.
+
+**A sorrend tehát:** 1️⃣ profil · 2️⃣ posztok · 3️⃣ üzenet-válaszok.
+⛔ A kész üzenet-piszkozatok *(`current/linkedin/drafts/`)* **VÁRNAK** — nem dobjuk el őket,
+csak nem mennek ki, amíg a profil nincs kész.
+
