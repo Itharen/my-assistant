@@ -391,3 +391,38 @@ kihasználatlanság jele.
 - **Siker esetén takaríts:** a tartalék-jobot törölni kell, különben napokig ott marad.
 - ⚠️ **Az alvás ára mérve:** 02:51 *(utolsó gép-aktivitás)* → 10:40 = **~7,8 óra** a gép szerint.
   A telefonos beszélgetés miatt a **valódi** elalvás ~04:20 volt ⇒ **~6,3 óra tényleges alvás**.
+
+
+---
+
+## 🔴 KORREKCIÓ A FENTI SIKER-JELENTÉSHEZ — a ping NEM volt néma (2026-09-11 10:46)
+
+> **Owner, 2026-09-11 10:46:** *„Éppen **nem léptem ki a Discord voice-ról**, úgyhogy **szóban
+> ébresztettél** kb. **Nem csak egy ping volt, hanem megszólalás is**."*
+
+⚠️ **Amit fentebb írtam — *„a halk Discord-ping elég volt"* — PONTATLAN.** Az üzenet a
+hang-csatornára **is** kiment *(a `ma comm say` DM + voice-channel felé megy)*, és mivel ő
+**bent maradt a voice-ban**, a szöveg **fel is olvasódott**. ⇒ Nem a 2. lépcső ébresztette
+fel „halkan", hanem egy **hangos** ébresztés, csak ⛔ **nem azon a csatornán**, amit én
+annak szántam.
+
+### ⭐ AMIT EBBŐL MEG KELL TANULNI — a lépcsők HANGOSSÁGA nem a csatorna NEVÉN múlik
+
+| Amit hittem | Amit MÉRTEM |
+|---|---|
+| a 2. lépcső *(Discord)* = **néma, szöveg** | 🔴 **hangos**, ha bent van a voice-csatornán |
+| a 4. lépcső *(Google Home)* = az **első** hangos lépcső | ⛔ nem: a 2. már az volt |
+
+⇒ **A létra „halkról hangosra" logikája csak akkor igaz, ha tudom, hogy NINCS bent a
+voice-csatornán.** Ez **mérhető** *(`ma comm doctor` jelenlét-sora / a voice-csatorna
+tagsága)*, és a ping ELŐTT **meg kell nézni**.
+
+### 🔇 ÉS EZ A MAGÁNTÉMA-SZABÁLYT IS ÉRINTI
+
+🔴 **Ha bent van a voice-ban, MINDEN Discord-üzenetem HANGOSAN is elhangzik** — vagyis a
+szobában lévők **hallják**. ⇒ A *„szövegben szabad, hangosan nem"* megkülönböztetés
+*(`private-topics-and-audience`)* **összeomlik**, amikor bent van a voice-on.
+⇒ **Bizonytalanságnál minden Discord-üzenetet úgy kell írnom, mintha felolvasnák.**
+
+📌 **A siker attól még siker:** felébredt, időben, a míting előtt ~20 perccel. De az **ok**
+más volt, mint hittem — és a különbség a **következő** ébresztésnél számítana.
