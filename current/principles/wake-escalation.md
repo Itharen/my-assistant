@@ -25,21 +25,22 @@ hangos ébresztés **fölösleges zaj**.
 |---|---|---|
 | **1. mérés** | `server/activity-monitor` *(ablak + idle)* | ha **van** aktivitás → ⛔ nem ébresztek, csak írok |
 | **2. Discord** | `ma comm say` | ha **nem válaszol** a következő körig |
-| **3. várakozás** | a **20 perces** fő ütemezés vagy `ScheduleWakeup` | — |
+| **3. várakozás** | a **3 órás** fő ütemezés vagy egy **CCAP scheduler-job** ⛔ *(nem `ScheduleWakeup` — lásd lent)* | — |
 | **4. hang** | `ma cast notify` *(Google Home)* | **T−5…10 perc** — ez az **utolsó** lépcső |
 
 ---
 
 ## ⚠️ A MÉRT IDŐZÍTÉSI KOCKÁZAT — ezt tudni kell
 
-🔴 **MÉRVE 2026-09-11 02:51 (owner):** a fő ütemezés **NEM 20 perc, hanem 3 ÓRA** — *„a CCAP-ban
-él a valóság"*. A `SCHEDULE.md` 20 perces értéke **elavult**.
+🔴 **MÉRVE 2026-09-11 02:51 (owner) + 03:10 (én, a CCAP-ban):** a fő ütemezés **NEM 20 perc, hanem
+3 ÓRA** — *„a CCAP-ban él a valóság"*. A `SCHEDULE.md` 20 perces értéke **elavult**.
 
 ⇒ **3 órás raszterrel az 5-10 perces ablak nem hogy kimaradhat — jó eséllyel KI IS MARAD.**
 Előfordulhat, hogy **09:00 és 12:00 között egyáltalán nem futok le**.
 
 ⇒ **Ezért az időzített ébresztésnél ⛔ NEM hagyatkozom a fő ütemezésre**: a kritikus lépcsőre
-**külön `ScheduleWakeup`-ot** kell kérni, az ablak elejére.
+**külön CCAP scheduler-jobot** hozok létre az ablak elejére. ⛔ **`ScheduleWakeup`-ot NEM** — az
+bedugja a session sorát *(lásd a mérést lent)*.
 
 📌 **És kimondom neki**: az ébresztés a rendszeren keresztül **nem garantált**. Ha az esemény
 tényleg számít, a telefon-ébresztő **párhuzamosan** is legyen beállítva. ⛔ Nem ígérek olyat,
@@ -91,30 +92,74 @@ próbálkozást** igen. És minden lefutás **adat** arról, hogy működik-e.
 minden körben, ha van időzített teendőm:
     a következő ÜTEMEZETT trigger  <  a határidő ?
         IGEN → ⛔ nem kell semmi, a rendes kör elkapja
-        NEM  → ⚡ ScheduleWakeup, hogy én magam fedezzem le a rést
+        NEM  → ⚡ CCAP scheduler-job (one-shot), hogy én magam fedezzem le a rést
 ```
 
-### ⚠️ A HÁROM MÉRT KORLÁT — ⛔ ezek nélkül a szabály hamis biztonságot ad
+### 🔴 A HÁROM ESZKÖZ — MÉRVE A CCAP KÓDJÁBAN, 2026-09-11 03:10
 
-| Eszköz | Korlát | Következmény |
+> **Owner, 2026-09-11 03:02:** *„a CC session, schedule a wake-up-nak vannak korlátai, de az
+> **nálunk nem működik egyáltalán**, mivel nem úgy működünk, és **minden futásod végén vége szakad
+> minden CC dolognak**. Ezért a **CCAP-nak van egy saját megoldása**… viszont a CCAP-ban meg a
+> Schedule Wake Up **megfogja a sort**, és utána **semmilyen üzenet nem érkezik** abba a sessionbe,
+> amíg az fel nem oldja."*
+
+⭐ **Utánanéztem a CCAP forrásában, és igaza van — sőt, pontosabban is meg tudom mondani, miért.**
+
+| Eszköz | Mit csinál VALÓJÁBAN | Verdikt |
 |---|---|---|
-| **`ScheduleWakeup`** | a futtató **1 órára vágja** *(60–3600 s)* | ⛔ **7 órás horizontot NEM tud átfogni.** Csak az **utolsó mérföldre** jó |
-| **`CronCreate`** | **session-only** — *„nothing is written to disk, gone when Claude exits"* | ⚠️ a session **újraindulhat** *(ma éjjel többször is)*, és akkor a job **elvész** |
-| **a fő CCAP-ütemezés** | **3 óra**, és a **fázisát nem látom** | ⛔ nem tudom kiszámolni, mikor jön a következő |
+| **`CronCreate`** | a CC-folyamat **memóriájában** él, semmi nem íródik lemezre | ⛔ **Használhatatlan.** A futás/session végén elvész |
+| **`ScheduleWakeup`** | ⭐ a CCAP **elkapja** és **maga hajtja végre** *(`CC_ScheduleWakeupEvent_Util`)* — tehát **túléli a futásomat**… | ⛔ **DE: head-blocking.** Lásd lent |
+| **CCAP scheduler-job** | MongoDB-ben *(`ccap_sch_job`)*, node-cron, bootstrapkor újratöltve | ✅ **EZ a helyes eszköz** |
 
-🔴 **Az őszinte összegzés:** egy **több órával későbbi** ébresztésre **egyik eszköz sem
-megbízható**. ⇒ **Ezt ki kell mondani neki**, ⛔ nem elhallgatni. A saját ébresztője az
-elsődleges; az enyém **tartalék**.
+### ⛔ MIÉRT NEM SZABAD `ScheduleWakeup`-ot használni hosszú várakozásra
 
-⭐ **De a szabály attól még ÉRVÉNYES**, és pont az utolsó mérföldön ér a legtöbbet: ha egy körben
-azt látom, hogy a határidő **1 órán belül** van, a `ScheduleWakeup` **biztosan** lefedi.
+🔴 **Mért bizonyíték** — `cc-schedule-wakeup-event.util.ts`, `REQ-MSG-DELAYED-QUEUE-NATIVE-001`:
+a wakeup-prompt **azonnal bekerül a SessionQueue-ba** egy `delayUntil` flaggel, és a queue
+**head-blocking FIFO**:
 
-### Mért alkalmazás — 2026-09-11 02:57
+> *„a head-blocking gate a lejáratig **feltartja a kézbesítést (a mögötte állókat is)**"*
+> — `ccap-session-queue-item.data-model.ts`: *„nem kézbesítődnek, amíg a delay le nem jár"*
+
+⇒ **Egy 1 órás `ScheduleWakeup` egy órára BEDUGJA a sessionömet.** Amit az owner ez alatt ír,
+az **nem ér el hozzám** — pontosan ezt mérte. ⛔ **Ezért a `ScheduleWakeup` nem „tartalék", hanem
+KÁROS**, ha percnél hosszabb.
+
+### ✅ A HELYES ESZKÖZ — CCAP scheduler-job REST-en
+
+```bash
+# lista + a SAJÁT ütemezésem fázisa
+curl -s http://localhost:39050/api/sch/jobs
+curl -s http://localhost:39050/api/sch/jobs/<jobId>      # → nextDueAt
+
+# EGYSZERI ébresztő (auto-disable egy futás után)
+curl -s -X POST http://localhost:39050/api/sch/jobs -H "Content-Type: application/json" -d '{
+  "name": "...", "enabled": true, "ownerCcapId": "<a CCAP instance id>",
+  "schedule": { "preset": "daily", "times": ["10:50"] },
+  "timezone": "Europe/Budapest",
+  "target": { "type": "cc-session", "payload": {
+      "sessionId": "<a sajat ccs-...>", "ccapId": "<ccapId>", "promptContent": "<rovid pointer>" } },
+  "maxExecutions": 1, "effectiveUntil": "<ma 23:59+02:00>"
+}'
+```
+
+⭐ **`maxExecutions: 1` + `effectiveUntil` = valódi one-shot** — egy futás után magától kikapcsol,
+nem marad utána napi szemét. ⛔ De **ellenőrizni kell**: a `POST` válasza `nextDueAt: null`-t ad,
+a **tényleges** érték csak a következő `GET`-en látszik *(a scheduler tölti ki reload után)*.
+
+### 🧭 A FÁZIST MOST MÁR LÁTOM — ⛔ nincs többé „nem tudom, mikor jön a következő"
+
+A fő ütemezésem **job `6a9e3ccb3fff98f808dc9e92`** *(„My Assistant Auto")* — `every-n-hours`, **3 óra**;
+a `nextDueAt` mezője **megmondja a következő triggert**. ⇒ A döntési szabály fenti kérdése
+*(„a következő trigger a határidő előtt vagy után?")* mostantól **mérhető**, nem becslés.
+
+### Mért alkalmazás — 2026-09-11 03:10
 
 | Lépés | |
 |---|---|
-| határidő | **10:22** *(a 11:00-s míting előtt, a létra indítására)* |
-| távolság | **~7,5 óra** ⇒ ⛔ a `ScheduleWakeup` 1 órás plafonja **nem éri el** |
-| amit tettem | **`CronCreate` one-shot**, `22 10 11 9 *`, job `d82bebb3` |
-| ⚠️ a kockázat | **session-only** — ha a session újraindul, **elvész**. Ezt **megmondtam neki** |
-
+| esemény | **11:00** online míting |
+| a fő ütemezés rasztere | `nextDueAt` = 04:00Z ⇒ **03:00 / 06:00 / 09:00 / 12:00** *(CEST)* |
+| a rés | a **09:00**-s kör után a következő csak **12:00** — az esemény UTÁN ⇒ kell külön trigger |
+| ⛔ amit NEM tettem | `ScheduleWakeup` *(bedugná a sort)* · `CronCreate` *(elvész)* |
+| ✅ amit tettem | **CCAP scheduler-job `6aa354d184f43155b757e2e8`**, `daily 10:50` Europe/Budapest, `maxExecutions: 1` |
+| igazolás | `GET .../jobs/6aa354d184f43155b757e2e8` → `nextDueAt: 2026-09-11T08:50:00.000Z` = **10:50 CEST** ✅ |
+| ⚠️ ami marad | ha a **CCAP szerver áll** 10:50-kor, kimarad. A saját ébresztője marad az **elsődleges** |

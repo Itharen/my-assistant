@@ -18,9 +18,20 @@
 > dokumentum **leírás**, nem beállítás — és most **bizonyítottan eltért** a valóságtól.
 > ⇒ Mielőtt bármit az ütemezés gyakoriságára alapoznék, **a CCAP-ban kell ránézni**.
 >
+> ⭐ **HOL, PONTOSAN — mérve 2026-09-11 03:10:** a saját tick-em a CCAP scheduler
+> **`6a9e3ccb3fff98f808dc9e92`** *(„My Assistant Auto")* job-ja, `every-n-hours / 3`.
+> `curl -s http://localhost:39050/api/sch/jobs/6a9e3ccb3fff98f808dc9e92` → a **`nextDueAt`**
+> megmondja a **következő triggert**. ⇒ ⛔ Nincs többé „a fázisát nem látom".
+>
 > ⚠️ **A KÖVETKEZMÉNY, ami nem nyilvánvaló:** 3 órás raszterrel **nincs garancia** arra, hogy egy
 > adott órában egyáltalán lefutok. Egy **időzített** teendő *(ébresztés, esemény-előkészítés)*
-> ⛔ **NEM építhető** a fő ütemezésre — arra **külön** `ScheduleWakeup` kell.
+> ⛔ **NEM építhető** a fő ütemezésre — arra **külön CCAP scheduler-job** kell
+> *(`POST /api/sch/jobs`, `maxExecutions: 1`)*.
+>
+> 🔴 **⛔ `ScheduleWakeup`-ot NE** *(korrekció, 2026-09-11 03:10)*: a CCAP a wakeup-promptot a
+> **SessionQueue-ba** teszi `delayUntil` flaggel, a queue pedig **head-blocking FIFO** — a lejáratig
+> **minden mögötte álló üzenet is várakozik**. Egy 1 órás wakeup **egy órára elnémítja a sessiont**.
+> A mérés és a forráshelyek: `current/principles/wake-escalation.md`.
 > Kapcsolódó: `current/principles/wake-escalation.md`.
 
 ### 1️⃣ Fő ütemezés — ⛔ ELAVULT ÉRTÉK: **20 percenként** *(owner állította, 2026-09-07; 2026-09-11-re már 3 óra)*
