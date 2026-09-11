@@ -225,3 +225,19 @@
 
 → Ez **Dynamo szintű projekt** — NEM my-assistant scope, de **innen használjuk**
    (cliens-oldal).
+
+---
+
+## 🐉🚀 Adventor — FANTASY vs. SCI-FI nagy képek a belépő felületeken (2026-09-11 03:51)
+
+> **Owner (hangcsatorna, szó szerint):** *„az Adventornak az **érkezési** és a **Welcome**, meg
+> **Regiszter**, meg **Login**, meg ilyesmik **leírás** felületeken majd csinálhatnánk **nagy
+> faszaképeket** — **egyik oldalt fantasy, a másik oldalt science fiction**."*
+
+**A lényeg:** kétoldalas vizuális kompozíció — a képernyő egyik fele **fantasy**, a másik
+**sci-fi**. Érintett felületek: landing/érkezés · Welcome · Register · Login · leírás-oldalak.
+
+⚠️ **Hatókör:** az **Adventor MÁS projekt** — innen ⛔ nem fejlesztjük. Ez **rögzítés**, hogy ne
+vesszen el; az átadás módja **owner-döntés**.
+
+📌 Organizerben: `org:task:6aa35ec8766c802935c3c99a`
