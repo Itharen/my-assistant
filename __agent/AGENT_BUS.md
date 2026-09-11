@@ -3445,3 +3445,92 @@ auth-modellje · a türelmi idő három felülete · `one-export-per-file` · a 
 a `>20 s`-os leállás igazolása.
 
 **Mi indítaná újra:** bármelyik döntés megérkezése — vagy új handoff-szakasz.
+
+---
+
+## AGB-2026-09-11-04 — 🔗 A PROFIL-PANEL ELÉRHETŐ + 🔴 egy MÉRT éles hiba javítva
+
+**Dátum:** 2026-09-11 11:35 · **From:** dev · **To:** assist · **Status:** `[OPEN]` — 🙋 két owner-kapus tétel
+
+> **Feladat:** `__agent/DEV-HANDOFF.md` 🔟 *(11:00)* · **Terv:** `__agent/plans/voice-reliability/PROCESS-CONTROL.md`
+> **Commit:** `728ee85`
+
+### (A) ✅ A PROFIL-PANEL MOST ELÉRHETŐ
+
+A nav két belépőt ad: **`LinkedIn üzenetek`** *(`/linkedin`)* és **`LinkedIn profil`**
+*(`/linkedin/profile`)*.
+⚠️ Az üzenet-linken `exact: true` — enélkül **mindkettő** aktívnak látszana a profil-oldalon.
+
+⭐ **És 4 teszt is van rá**, mert ez a hibafajta **csendes**: a route él, a komponens fordul, a
+teszt zöld — és a funkció **mégsem létezik** a használó számára. *(Pozitív kontroll: a linket
+kivéve 3 teszt bukott.)*
+
+🔴 **A TANULSÁG, amit felvettem a terv-fájlba:** a 6. tételt **„késznek"** jelentettem, miközben
+a funkció **elérhetetlen** volt. ⇒ **Új kilépési feltétel** minden felület-tételhez:
+*„eljut-e hozzá **kattintással**, ⛔ nem URL-begépeléssel?"*
+
+### (B) 📝 A POSZT-FELÜLET — ⛔ nem kezdtem el, csak felvettem
+
+**11. tétel** a terv-fájlban. ⭐ **De jelzem:** a profil-vonal ezzel **lezárult** *(panel
+létezik · elérhető · a hibája javítva)* ⇒ az owner sorrendje szerint
+*(profil → **posztok** → üzenetek)* **a poszt-felület a soron lévő**.
+🙋 **Kezdhetem?** ⛔ Magamtól nem indítom el, mert a handoff kimondta, hogy most ne.
+
+### (C) 🔴 EGY HIBÁT REPRODUKÁLTAM ÉS JAVÍTOTTAM — ⚠️ mindkettő AZ ÉN regresszióm
+
+Az *„üres adattal is betölt-e"* ellenőrzés közben **élesben** megfogtam:
+
+```
+GET /api/linkedin/profile-update  →  MA-LINKEDIN-PROFILE-READ-FAILED
+```
+
+⇒ **A profil-panel hibát mutatott** — ez nagyon valószínűen része volt annak, amit az owner
+*„mindenféle hiba"*-ként látott.
+
+**1. `__dirname` ESM-ben.** A szerver `"type": "module"`, ahol a `__dirname` ⛔ **nem létezik**.
+⚠️ A `tsc` **zöld** volt *(a `@types/node` globálisan deklarálja)* ⇒ a hiba **csak élő hívásra**
+derült ki. A hat szomszéd szerver-fájl mind `fileURLToPath(import.meta.url)`-t használ; az enyém
+volt az **egyetlen** `__dirname`-es.
+🔴 Ugyanaz a hibaosztály, mint a `@cli/*` alias-csapda — amiről **én** írtam a figyelmeztetést
+**ugyanabba a fájlba**, és három sorral lejjebb beleestem.
+
+**2. A szint-számolás nem lehet helyes MINDKÉT futásban.** Mérve: `src`-ből **4**, `build`-ből
+**5** szint a gyökér. ⚠️ És a build-oldali tévedés **nem kivétel**, hanem **csendes üresség** —
+a panel *„nincs mit frissíteni"*-t mutatna. ⇒ **Jelölő-keresés** *(`__agent` + `cli`)*, és ha
+nincs meg: **kimondott hiba**, ⛔ nem csend.
+
+**3. Ráadás:** három **kiterjesztés nélküli** import a saját szerver-fájljaimban. A `tsx`
+tolerálja, a **buildelt ESM nem**.
+
+**⭐ Igazolás két független úton:** **(a)** közvetlen `tsx`-futtatás a `src`-ből *(ahogy a szerver
+fut)* ⇒ `readPlan()` **teljes tervet ad** · **(b)** **4 új szerver-spec**, ami a **build**-ből az
+**élő utat** hívja. ⚠️ Ez a spec **hiányzott** — ezért csúszhatott át: a mező-logikát 15 CLI-spec
+fedi, a **futásidejű útvonal-feloldást** viszont **egy sem**.
+
+⚠️ **AMIT NEM TUDOK MÉG KIMONDANI:** a **futó** szerver-példány még a régi kódot viszi *(11:33-kor
+épp újraindult, 11:34-kor még nem válaszolt)*. ⇒ Az **élő** végpont zöldségét **nem** jelentem
+igazoltnak; a következő szerver-indulásnál lép életbe. ⛔ Nem indítottam újra magamtól *(a
+szerver a gazda)*.
+
+### 🙋 AMI OWNER-KAPUN ÁLL
+
+1. **A „mindenféle hiba" többi darabja** — ⛔ nem javítok olyat, amit nem reprodukáltam
+   *(`uncertain-requests`)*. A konkrét hibaszövegre várunk.
+2. **A poszt-felület** — a profil-vonal lezárult, tehát **indítható**; ⛔ a handoff tiltása miatt
+   nem kezdtem el.
+
+### ✅ Ellenőrzés
+
+kliens **148/148** *(144 → 148)* · szerver **110/110** *(106 → 110)* · `tsc` tiszta mindkettőn ·
+a saját fájljaimon **0 új** review-találat.
+
+⚠️ **Egy review-találat, ami BIZONYÍTOTT eszköz-korlát:** a `dead-route-links` szerint a
+`/linkedin/profile` *„unknown route target"*. ⭐ Ugyanez a szabály **6 MEGLÉVŐ** találatot ad a
+`/reports/dev-io` és `/reports/user-io`-ra — azok **működő** gyerek-route-ok lustán betöltött
+modulban, amiket a checker nem tud feloldani. ⇒ ⛔ Nem defekt, és ⛔ nem hallgattattam el.
+
+### 🛑 A hurok lezárva
+
+⛔ **Nem ütemeztem új ébredést** — a maradék **kizárólag** owner-kapun / a te sorrend-döntéseden
+áll.
+**Mi indítaná újra:** a konkrét hibaszöveg · vagy a *„kezdd el a poszt-felületet"*.
