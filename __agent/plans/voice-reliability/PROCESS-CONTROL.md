@@ -6,7 +6,7 @@
 > és a **sorrend** van.
 > **Ez a fájl az enyém (DEV).** A `DEV-HANDOFF.md` az asszisztensé — ⛔ oda nem írok státuszt.
 
-**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 04:18
+**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 06:18
 
 ---
 
@@ -32,6 +32,9 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **4** | 🔇 **SZÜNETELTETÉS**, amíg az owner beszél | 01:20 | ✅ **KÉSZ** — CLI 980/980 | 2026-09-11 04:00 |
 | **5** | 🌐 **NYELV-ELTÉRÉS** *(a paraméter NEM létezik — mérve)* | 01:24 + 01:30 | ✅ **KÉSZ** — CLI 988/988 | 2026-09-11 04:15 |
 | **6** | 🔗 **LinkedIn PROFIL-FRISSÍTŐ felület** | 01:55 | ✅ **KÉSZ** — CLI 1003 · szerver 106 · kliens 144 | 2026-09-11 04:18 |
+| **7** | ⏳ **KÖTEG-KAPU** — ne menjen ki a csomag, amíg megszólalás van folyamatban | 02:30 + 8️⃣ | ✅ **KÉSZ** — CLI 1020/1020 | 2026-09-11 06:18 |
+| **8** | 💬 Discord-lábléc *(válaszkényszer ↔ fókusz)* | 03:20 | 🙋 **AZ ASSZISZTENS CSINÁLTA MEG** — ⛔ nem az enyém | 2026-09-11 03:40 |
+| **9** | 🔒 **BESZÉD-ÉSZLELÉS körbeírása + tesztekkel leszögezése** | 04:11 | ⏳ **SORON** | — |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -43,6 +46,18 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
   következő **`spoken: false`-szal elesik**. ⇒ Sor nélkül a darabolás a 2..N. darabot **azonnal
   eldobná** — pont az ellenkezője annak, amit a 01:30 kér.
 - **A 6. a végén**, mert **más domain** *(`one-function-is-enough`)* és semmi nem blokkol rá.
+- 🔴 **A 7. ELŐRE KERÜLT** *(az owner utasítására)*: élesben **kétszer** ártott *(02:28, majd
+  03:27 — „még én beszélek, a csomag nem megy át")*. Az owner **mondat közben** kap választ, és
+  **elveszti a fonalat**. ⇒ Súlyosabb, mint a kényelmi tételek.
+- **A 9. a hang-vonal után, de minden további hang-munka ELŐTT** — mert az egész hang-lánc
+  **ezen áll**, és ma **0 spec** védi.
+
+### ⭐ A SZABÁLY, AMI EBBŐL LETT — a 8️⃣-as szakasz tanulsága
+
+**Minden handoff-szakaszt fel kell venni EBBE a táblába** — akkor is, ha kicsi, akkor is, ha
+„majd jön". 🔴 A 7. tétel *(02:30)* ott volt a handoffban, de **itt nem** ⇒ a hatos listám
+**nem fedte le**, tehát **némán kimaradt volna**. ⚠️ Ez a veszélyesebb hibafajta: nem elromlott,
+hanem **nem is volt nyilvántartva**. ⇒ *Amit nem veszek fel ide, az nem létezik.*
 
 ---
 
@@ -358,10 +373,71 @@ ezt a Google- és Spotify-panel élesben már megfizette. *(Ugyanaz, mint a hang
 
 ---
 
+## ✅ 7. TÉTEL — A KÖTEG-KAPU (2026-09-11 06:18)
+
+> **Owner, 2026-09-11 03:27 — élesben, MÁSODSZOR:** *„Na, baszd meg, **még én beszélek**, a
+> csomó[g] nem megy át."*
+
+### 🔴 A MÉRT RÉS
+
+A `decideFlush()` **hat** kaput ismert: üres köteg · `isBusyProcessing` · `queuedItemCount` ·
+`isQueueLocked` · elcsendesedési ablak · `maxHoldMs` szelep.
+⛔ *„Folyamatban lévő megszólalás"* kapu **soha nem volt** *(az asszisztens mérése 06:04-kor
+igazolta: nem elveszett kód, hanem **megíratlan**)*.
+
+⇒ A csend-ablak **akkor is letelhetett**, amikor az owner **épp beszélt**.
+
+### ⭐ A MÉRÉS, AMIBŐL AZ ABLAK-MÉRET JÖTT — ⛔ nem tipp
+
+A handoff kikötése: *„⛔ Ne tippelj: a `voice-funnel` adataiból **mérd meg**."*
+**260** értékelhető szünet két megszólalás-kezdet között:
+
+| mérés | érték |
+|---|---|
+| median | **8 s** |
+| p75 | **23 s** |
+| p90 | 97 s |
+| 20 s alatti szünet | 184/260 — **71%** |
+| 30 s alatti szünet | 204/260 — **78%** |
+| 45 s alatti szünet | 216/260 — 83% |
+
+⇒ A **20 s pont a p75 ALATT** volt ⇒ az esetek **~29%-ában** idő előtt ment ki a köteg.
+⭐ **Az ablak 20 s → 30 s** *(78% vs 71%, +10 s késleltetés árán)*. ⛔ 45 s-ra nem mentünk: onnan
+a haszon +5 százalékpont, a késleltetés +15 s.
+
+⚠️ **De az ablak csak valószínűségi.** A tényleges védelem a **hetedik kapu**, ami **tényt** néz.
+
+### Mi készült
+
+| fájl | mi |
+|---|---|
+| `voice-speech-inflight.ts` *(új)* | a folyamatban lévő megszólalások nyilvántartása **korral** — egy beragadt jel **elévül** *(3 perc)*, ⛔ nem fogja meg örökre a kaput |
+| `discord.bridge.ts` | a **hetedik kapu** + `attachSpeechInProgressSource()` — ⭐ setter, mert a hang-lánc **később** áll fel, mint a híd |
+| `discord.models.ts` | `collectWindowMs` 20 s → **30 s**, a méréssel dokumentálva |
+| `discord.listener.ts` | bekötés: megszólalás-kezdet ⇒ `noteStarted`, **három** lezárási ág ⇒ `noteSettled` |
+
+⭐ **HÁROM lezárási ág, nem egy** — ez a lényeg, hogy a kapu ne ragadjon be:
+**(1)** `onHandled` *(a feldolgozás lezárult)* · **(2)** `onSpeechDropped` *(a felvevő némán
+eldobta — ezen az ágon ⛔ NINCS `onHandled`)* · **(3)** az **elévülés** mint végső hálóz.
+
+⚠️ A **hangüzenet-út is benne van** *(`sttInFlight`)*: egy éppen felismerés alatt lévő hangüzenet
+ugyanúgy „folyamatban lévő megszólalás". ⛔ Ha csak az egyiket néznénk, a köteg a másik alatt
+mégis kimehetne.
+
+⭐ **Pozitív kontroll:** kiiktattam a kaput **és** az elévülést ⇒ **4 teszt** bukott
+*(2 a kapura, 2 az elévülésre)*; visszaállítva újra zöld.
+**Review:** az új fájlon **0** találat; repo-szintű összes **változatlan** *(2394)*.
+
+---
+
 ## ➡️ A KÖVETKEZŐ KONKRÉT LÉPÉS
 
-⭐ **A terv mind a 6 tétele KÉSZ.** ⇒ A hurok lezárása: SoT-doksi + jelentés az
-`AGENT_BUS.md`-ben, ⛔ új ébredés NEM.
+**9. tétel *(a beszéd-észlelés leszögezése)*:** ⛔ **`transplant-not-rewrite`** — a `cv-*.ts`
+fájlokon a `git diff` maradjon **ÜRES**. Két rész: **(1)** körbeírás
+*(`__documentations/dev/`-be, **mért** értékekkel, ⛔ nem a kódból parafrazeálva)*, **(2)** a
+viselkedést **kívülről** megfogó tesztek *(csend → nincs szegmens · folyamatos beszéd → egy
+szegmens · beszéd-csend-beszéd → kettő · ZCR-en elbukó keretek kiszűrve)*.
+**Mért kiindulás:** 37 fájl, 6 681 sor, **0 spec**.
 
 ### 🗄️ A 6. tétel korábbi jegyzete — archív
 

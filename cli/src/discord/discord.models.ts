@@ -66,7 +66,31 @@ export interface DiscordFlushResult {
 export interface DiscordBatchConfig {
   /**
    * Összegyűjtési ablak: ennyi ideig VÁRUNK egy üzenet érkezése után, hátha jön még.
-   * Owner-cél: minél több info EGY promptba. Mérés alapján finomítandó.
+   * Owner-cél: minél több info EGY promptba.
+   *
+   * ## ⭐ MÉRVE 2026-09-11 06:10 — a 20 s-ot ez váltotta 30 s-ra
+   *
+   * > **Owner, 2026-09-11 02:28:** *„várjon legalább egy **másfél-két beszélgetés időnyit**"*
+   *
+   * Az élő naplóból **260** értékelhető szünet két megszólalás-kezdet között:
+   *
+   * | mérés | érték |
+   * |---|---|
+   * | median | **8 s** |
+   * | p75 | **23 s** |
+   * | p90 | 97 s |
+   * | 20 s alatti szünet | 184/260 — **71%** |
+   * | 30 s alatti szünet | 204/260 — **78%** |
+   * | 45 s alatti szünet | 216/260 — 83% |
+   *
+   * ⇒ A **20 s pont a p75 ALATT** volt: az esetek **~29%-ában** a következő megszólalás az
+   * ablak letelte UTÁN érkezett, tehát a köteg **idő előtt** ment ki.
+   *
+   * ⭐ **30 s**: átfogja a p75-öt *(78% vs 71%)*, +10 s késleltetés árán. ⛔ 45 s-ra nem mentünk:
+   * onnan a haszon már csak +5 százalékpont, a késleltetés viszont további 15 s.
+   *
+   * ⚠️ **Ez az ablak NEM a „még beszél" eset megoldása** — az **valószínűségi**. A tényleges
+   * védelem a `decideFlush` **megszólalás-kapuja** *(hetedik kapu)*, ami **tényt** néz.
    */
   collectWindowMs: number;
   /**
@@ -76,8 +100,9 @@ export interface DiscordBatchConfig {
   maxHoldMs: number;
 }
 
-/** Alapértékek — a `collectWindowMs` szándékosan rövid, a `maxHoldMs` nagyvonalú. */
+/** Alapértékek — a `collectWindowMs` MÉRT érték, a `maxHoldMs` nagyvonalú. */
 export const DEFAULT_BATCH_CONFIG: DiscordBatchConfig = {
-  collectWindowMs: 20_000,
+  // ⭐ 2026-09-11: 20 000 → 30 000, mérésből (260 szünet, p75 = 23 s). L. a típus doksiját.
+  collectWindowMs: 30_000,
   maxHoldMs: 15 * 60_000,
 };

@@ -31,6 +31,10 @@ import {
  *
  * Ha a session FOGLALT és a szelep még nem nyílt: gyűjtünk tovább — pontosan ez az owner
  * kérése („minél több infó kerüljön be egy-egy promptba").
+ *
+ * ⏳ **A HETEDIK KAPU (2026-09-11):** ha **folyamatban van egy megszólalás**, nem küldünk — az
+ * owner mondat közben kapott választ, és **elvesztette a fonalat**. Ezt élesben **kétszer**
+ * jelezte *(02:28, majd 03:27)*. A `maxHoldMs` szelep ezt a kaput is felülírja.
  */
 export function decideFlush(params: {
   pending: DiscordInboundMessage[];
@@ -50,6 +54,21 @@ export function decideFlush(params: {
   queuedItemCount: number;
   /** Zárolt-e a CCAP sora. Zárolt sorba küldeni ugyanaz a hiba, mint tele sorba. */
   isQueueLocked?: boolean;
+  /**
+   * ⏳ FOLYAMATBAN VAN-E EGY MEGSZÓLALÁS / FELVÉTEL.
+   *
+   * > **Owner, 2026-09-11 02:28:** *„az üzenetcsomagot csak akkor szabad elküldeni, ha nem
+   * > kezdtünk el következő üzenetet se. Tehát ha most közben elkezdtünk egy voice detection-t,
+   * > akkor meg kell várni, hogy abból mi lesz."*
+   *
+   * > **Owner, 2026-09-11 03:27 — élesben, MÁSODSZOR:** *„Na, baszd meg, még én beszélek, a
+   * > csomó[g] nem megy át."*
+   *
+   * 🔴 MÉRT RÉS (2026-09-11 06:04): a döntés **hat** kaput ismert, de ilyet **soha nem** — az
+   * elcsendesedési ablak akkor is letelhetett, amikor az owner **épp beszélt**. A felvétel még
+   * tartott, a szöveg még nem volt kész, és a köteg **nélküle** ment ki.
+   */
+  isSpeechInProgress?: boolean;
   now: Date;
   config?: DiscordBatchConfig;
 }): DiscordFlushDecision {
@@ -109,6 +128,23 @@ export function decideFlush(params: {
     };
   }
 
+  // ⏳ A MEGSZÓLALÁS-KAPU — owner, 2026-09-11 02:28 és (élesben) 03:27.
+  //
+  // ⭐ MIÉRT ITT, A CSEND-ABLAK ELŐTT: az ablak **valószínűségi** *(„valószínűleg befejezte")*, ez
+  // viszont **tény** *(„épp most beszél")*. A tény előbb dönt.
+  //
+  // ⚠️ A `holdExpired` szelep **FÖLÜLÍRJA** — ez az owner szó szerinti kivétele:
+  // *„HACSAK nem vár nagyon sok üzenet a sorban"*. Egy hosszú monológ alatt ⛔ nem állhatnak
+  // korlátlanul az üzenetek.
+  if (params.isSpeechInProgress && !holdExpired) {
+    return {
+      shouldFlush: false,
+      reason: 'ÉPP BESZÉL — folyamatban van egy megszólalás, megvárjuk, mi lesz belőle '
+        + `(${pendingCount} tétel vár). Mondat közben válaszolni elvinné a fonalat.`,
+      pendingCount,
+    };
+  }
+
   if (newestAgeMs < config.collectWindowMs && !holdExpired) {
     return {
       shouldFlush: false,
@@ -141,7 +177,32 @@ export class DiscordBridge {
      * a rendszer legcsendesebb hibapontja, ezért tesztelhetőnek KELL lennie.
      */
     private readonly repoRoot: string = resolveProjectRoot(),
+    /**
+     * ⏳ Folyamatban van-e egy megszólalás — a **hetedik** kapu bemenete.
+     *
+     * ⭐ MIÉRT INJEKTÁLT, ÉS MIÉRT NEM A HÍD TUDJA: a híd ⛔ nem ismeri a hang-csatornát, és ez
+     * szándékos — így hang-kapcsolat nélkül is tesztelhető. A **figyelő** tudja, mert ő kapja a
+     * megszólalás-kezdet és a kimenetel jeleit.
+     *
+     * ⚠️ Alapból `false`: egy hang-lánc nélküli futás *(CLI-parancs, teszt)* ⛔ ne várjon olyan
+     * megszólalásra, amiről nem is tudhat.
+     */
+    private isSpeechInProgress: () => boolean = (): boolean => false,
   ) {}
+
+  /**
+   * ⏳ A MEGSZÓLALÁS-KAPU jelforrásának bekötése.
+   *
+   * ⭐ MIÉRT SETTER, ÉS NEM CSAK KONSTRUKTOR-PARAMÉTER: a hang-lánc **később** áll fel, mint a
+   * híd — a felvevő betöltése **lusta** *(mérve: 19,5 s hidegindítás)*, és csak a **sikeres
+   * csatorna-belépés után** történik meg. ⇒ A híd létrehozásakor a jelforrás még **nem
+   * létezik**.
+   *
+   * ⚠️ A konstruktor-paraméter **megmarad** — a teszt így közvetlenül adhat jelforrást.
+   */
+  attachSpeechInProgressSource(source: () => boolean): void {
+    this.isSpeechInProgress = source;
+  }
 
   /** A köteg-tár — a visszamenőleges beolvasás ezen ellenőrzi a már kézbesítetteket. */
   getStore(): DiscordBatchStore {
@@ -164,6 +225,7 @@ export class DiscordBridge {
       isBusyProcessing: runtime.isBusyProcessing,
       queuedItemCount: runtime.queuedItemCount,
       isQueueLocked: runtime.isQueueLocked,
+      isSpeechInProgress: this.isSpeechInProgress(),
       now,
       config: this.config,
     });
@@ -218,6 +280,7 @@ export class DiscordBridge {
         isBusyProcessing: runtime.isBusyProcessing,
         queuedItemCount: runtime.queuedItemCount,
         isQueueLocked: runtime.isQueueLocked,
+        isSpeechInProgress: this.isSpeechInProgress(),
         now,
         config: this.config,
       });

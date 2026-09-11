@@ -4,7 +4,11 @@ import { join } from 'node:path';
 
 import { DiscordBridge, decideFlush } from './discord.bridge.js';
 import { composeBatchPrompt } from './discord.batch-composer.js';
-import { DISCORD_INBOUND_PREFIX, type DiscordInboundMessage } from './discord.models.js';
+import {
+  DEFAULT_BATCH_CONFIG,
+  DISCORD_INBOUND_PREFIX,
+  type DiscordInboundMessage,
+} from './discord.models.js';
 
 const CONFIG = { collectWindowMs: 20_000, maxHoldMs: 15 * 60_000 };
 const NOW = new Date('2026-09-06T14:00:00+02:00');
@@ -105,6 +109,127 @@ describe('decideFlush', () => {
 
     expect(decision.shouldFlush).toBe(true);
     expect(decision.reason).toContain('tartási korlát is lejárt');
+  });
+});
+
+describe('decideFlush — ⏳ A MEGSZÓLALÁS-KAPU (a HETEDIK; owner, 2026-09-11)', () => {
+
+  // > **Owner, 2026-09-11 02:28:** *„az üzenetcsomagot csak akkor szabad elküldeni, ha nem
+  // > kezdtünk el következő üzenetet se… meg kell várni, hogy abból mi lesz."*
+  //
+  // > **Owner, 2026-09-11 03:27 — élesben, MÁSODSZOR:** *„Na, baszd meg, még én beszélek, a
+  // > csomó[g] nem megy át."*
+  //
+  // 🔴 MÉRT RÉS (2026-09-11 06:04): a döntés HAT kaput ismert, de ilyet SOHA — az
+  // elcsendesedési ablak akkor is letelhetett, amikor az owner ÉPP BESZÉLT.
+
+  it('🔴 FOLYAMATBAN LÉVŐ megszólalásnál NEM küld — még akkor sem, ha elcsendesedett', () => {
+    // Ez a mért hiba: a 20 (most 30) mp-es ablak letelt, a session szabad, a sor üres —
+    // és a köteg kiment, MIKÖZBEN az owner beszélt.
+    const decision = decideFlush({
+      pending: [message({ receivedAt: ageSeconds(120) })],
+      isBusyProcessing: false,
+      queuedItemCount: 0,
+      isSpeechInProgress: true,
+      now: NOW,
+      config: CONFIG,
+    });
+
+    expect(decision.shouldFlush).toBeFalse();
+    expect(decision.reason).toContain('ÉPP BESZÉL');
+  });
+
+  it('⭐ a megszólalás LEZÁRULTA után kimegy', () => {
+    const decision = decideFlush({
+      pending: [message({ receivedAt: ageSeconds(120) })],
+      isBusyProcessing: false,
+      queuedItemCount: 0,
+      isSpeechInProgress: false,
+      now: NOW,
+      config: CONFIG,
+    });
+
+    expect(decision.shouldFlush).toBeTrue();
+  });
+
+  it('⚠️ a `maxHoldMs` szelep FÖLÜLÍRJA a kaput — owner: „HACSAK nem vár nagyon sok üzenet"', () => {
+    // ⛔ Egy hosszú monológ alatt nem állhatnak korlátlanul az üzenetek. A szelep MARAD.
+    const decision = decideFlush({
+      pending: [message({ receivedAt: ageSeconds(16 * 60) })],
+      isBusyProcessing: false,
+      queuedItemCount: 0,
+      isSpeechInProgress: true,
+      now: NOW,
+      config: CONFIG,
+    });
+
+    expect(decision.shouldFlush).toBeTrue();
+    expect(decision.reason).toContain('tartási korlát');
+  });
+
+  it('⭐ a FOGLALTSÁG-kapuk ERŐSEBBEK: foglalt sessionbe a szelep sem küld', () => {
+    // A sorrend számít: a „beállunk a sorba = eltűnés" hiba (2026-09-07, 5 elnyelt üzenet)
+    // védelme ELŐBB dönt, mint a megszólalás-kapu.
+    const decision = decideFlush({
+      pending: [message({ receivedAt: ageSeconds(16 * 60) })],
+      isBusyProcessing: true,
+      queuedItemCount: 0,
+      isSpeechInProgress: true,
+      now: NOW,
+      config: CONFIG,
+    });
+
+    expect(decision.shouldFlush).toBeFalse();
+    expect(decision.reason).toContain('A session dolgozik');
+  });
+
+  it('⛔ a kapu NEM ad hamis biztonságot: megadás nélkül a régi viselkedés marad', () => {
+    // ⚠️ Egy hang-lánc nélküli futás (CLI-parancs, teszt) NE várjon olyan megszólalásra,
+    // amiről nem is tudhat.
+    const decision = decideFlush({
+      pending: [message({ receivedAt: ageSeconds(120) })],
+      isBusyProcessing: false,
+      queuedItemCount: 0,
+      now: NOW,
+      config: CONFIG,
+    });
+
+    expect(decision.shouldFlush).toBeTrue();
+  });
+
+  it('🔴 KÖZBEN ÉRKEZŐ megszólalás: a kapu a KÖVETKEZŐ körben is fog', () => {
+    // A kiküldési kör 15 mp-enként fut. Ha az owner a kör KÖZÖTT szólal meg, a következő
+    // döntésnek MÁR tudnia kell róla — ez a „közben új megszólalás érkezik" eset.
+    const pending = [message({ receivedAt: ageSeconds(120) })];
+    const first = decideFlush({
+      pending, isBusyProcessing: false, queuedItemCount: 0,
+      isSpeechInProgress: false, now: NOW, config: CONFIG,
+    });
+
+    expect(first.shouldFlush).toBeTrue();
+
+    const second = decideFlush({
+      pending, isBusyProcessing: false, queuedItemCount: 0,
+      isSpeechInProgress: true, now: NOW, config: CONFIG,
+    });
+
+    expect(second.shouldFlush).toBeFalse();
+    expect(second.reason).toContain('ÉPP BESZÉL');
+  });
+});
+
+describe('DEFAULT_BATCH_CONFIG — ⭐ a MÉRT összegyűjtési ablak', () => {
+
+  it('30 másodperc, mérésből — ⛔ nem tippelve', () => {
+    // MÉRVE 2026-09-11 06:10, 260 értékelhető szünet két megszólalás-kezdet között:
+    //   median 8 s · p75 = 23 s · p90 = 97 s
+    //   20 s alatt: 71%  ·  30 s alatt: 78%  ·  45 s alatt: 83%
+    // A 20 s a p75 ALATT volt ⇒ az esetek ~29%-ában idő előtt ment ki a köteg.
+    expect(DEFAULT_BATCH_CONFIG.collectWindowMs).toBe(30_000);
+  });
+
+  it('a biztonsági szelep VÁLTOZATLAN — a kapuk nem ragadhatnak be', () => {
+    expect(DEFAULT_BATCH_CONFIG.maxHoldMs).toBe(15 * 60_000);
   });
 });
 

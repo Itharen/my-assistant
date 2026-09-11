@@ -23,6 +23,7 @@ import { VoiceSpeechQueue } from '../voice/voice-speech-queue.js';
 import { VoiceSpeechSplit_Util } from '../voice/voice-speech-split.js';
 import { VoiceSpeechGrace_Util } from '../voice/voice-speech-grace.js';
 import { VoiceSpeechHold } from '../voice/voice-speech-hold.js';
+import { VoiceSpeechInFlight } from '../voice/voice-speech-inflight.js';
 import { VoiceServiceWatch } from '../voice/voice-service-watch.js';
 import { speakInVoiceChannel } from '../voice/voice-speaker.js';
 import { resolveOutboundLogPath } from './discord.reply-tracker.js';
@@ -304,6 +305,22 @@ export class DiscordListener {
   private speechHold: VoiceSpeechHold | null = null;
 
   /**
+   * ⏳ A FOLYAMATBAN LÉVŐ megszólalások — a köteg-kapu (hetedik kapu) jelforrása.
+   *
+   * > **Owner, 2026-09-11 03:27 — élesben:** *„Na, baszd meg, még én beszélek, a csomó[g] nem
+   * > megy át."*
+   *
+   * ⭐ MIÉRT A FIGYELŐN, ÉS NEM A HÍDON: a híd ⛔ nem ismeri a hang-csatornát *(szándékosan —
+   * így hang-kapcsolat nélkül is tesztelhető)*. A figyelő viszont **megkapja** a
+   * megszólalás-kezdet és a kimenetel jeleit, tehát ő tudja.
+   *
+   * ⚠️ A figyelő **újraindulását túléli**: a mezőt ⛔ nem a csatorna-belépés hozza létre,
+   * hanem a példány — különben egy újracsatlakozás **elfelejtené** a folyamatban lévő
+   * megszólalást, és a köteg mégis kimehetne.
+   */
+  private readonly speechInFlight: VoiceSpeechInFlight = new VoiceSpeechInFlight();
+
+  /**
    * A FOLYAMATBAN LÉVŐ hang-esemény-írások.
    *
    * ⭐ MIÉRT KELL NYILVÁNTARTANI: a leállás során írt „kiléptem" sor az EGYETLEN nyoma
@@ -335,7 +352,20 @@ export class DiscordListener {
 
 
 
-  constructor(private readonly bridge: DiscordBridge = new DiscordBridge()) {}
+  constructor(private readonly bridge: DiscordBridge = new DiscordBridge()) {
+    // A KOTEG-KAPU BEKOTESE — a hetedik kapu jelforrasa (owner, 2026-09-11 02:28 / 03:27).
+    //
+    // MIERT ITT: a hidat a figyelo kapja/hozza letre, de a hang-lanc KESOBB all fel
+    // (lusta betoltes, 19,5 s). Ez a bekotes AZONNAL megtortenik, es a lezaras-jelek
+    // kesobb erkeznek — igy nincs olyan ablak, amiben a kapu nem el.
+    //
+    // A HANGUZENET-UT IS BENNE VAN (sttInFlight): egy eppen felismeres alatt levo
+    // hanguzenet ugyanugy "folyamatban levo megszolalas", mint a csatorna-felvetel. Ha csak
+    // az egyiket neznenk, a koteg a masik alatt megis kimehetne.
+    this.bridge.attachSpeechInProgressSource(
+      (): boolean => this.speechInFlight.isInProgress() || this.sttInFlight,
+    );
+  }
 
   /**
    * Csatlakozás és figyelés indítása.
@@ -1056,6 +1086,10 @@ export class DiscordListener {
       // 🔊 A „dolgozom rajta" jelzés — a FELDOLGOZÁS kezdetén, nem a felvételkor.
       onProcessingStart: (): void => void this.cues?.play('heard'),
       onSpeechAttempt: (stats: SpeechAttemptStats): void => {
+        // ⏳ A KÖTEG-KAPU: innentől „folyamatban van egy megszólalás" — a csomag ⛔ nem mehet
+        // ki, amíg ki nem derül, mi lesz belőle (owner, 2026-09-11 02:28 és élesben 03:27).
+        this.speechInFlight.noteStarted();
+
         // 🔇 NE BESZÉLJÜNK EGYSZERRE: a felolvasás AZONNAL áll, és a türelmi idő minden
         // további megszólalásnál újraindul (owner, 2026-09-11 01:15).
         //
@@ -1088,6 +1122,10 @@ export class DiscordListener {
       // ezt NEM tudta megmondani, mert osszemosta az osszeolvadt megszolalast a valodi
       // veszteseggel (`voice-drop-probe.ts`).
       onSpeechDropped: (observation: VoiceDropObservation): void => {
+        // ⏳ A NÉMÁN ELDOBOTT felvétel is LEZÁRÁS: ezen az ágon ⛔ nincs `onHandled`, tehát
+        // enélkül a kapu beragadna, és a köteg az elévülésig (3 perc) állna.
+        this.speechInFlight.noteSettled();
+
         void this.safeLog({
           kind: 'error',
           summary: `[discord/listener] MA-VOICE-SPEECH-DROPPED-SILENTLY: `
@@ -1134,6 +1172,11 @@ export class DiscordListener {
         });
       },
       onHandled: (outcome: RecordingHandled): void => {
+        // ⏳ A MEGSZÓLALÁS LEZÁRULT — sikerrel VAGY bukással, mindkettő lezárás. Innentől a
+        // köteg-kapu elengedi. ⚠️ MINDEN ágra fut, a legelső utasításként: egy korai `return`
+        // különben beragasztaná a kaput, és a kézbesítés némán állna.
+        this.speechInFlight.noteSettled();
+
         // ⚠️ HAROM KIMENETEL, HAROM KOD — az osztalyozas TESZTELT fuggvenyben all
         // (`classifyRecordingOutcome`), mert ezt mar ketszer elrontottam.
         const outcomeCode: RecordingOutcomeCode = VoiceRecordingOutcome_Util.classify(outcome);
