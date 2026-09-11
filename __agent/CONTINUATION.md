@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-11 09:05
+**Utoljára frissítve:** 2026-09-11 12:10
 
 ---
 
@@ -69,6 +69,26 @@ A `mcp__fdp-agent-memory__*` eszközök **CONNECT_TIMEOUT**-tal elestek. ⛔ **N
 
 ⇒ **Ez NEM várakozási probléma** *(a szabály szerint ilyenkor ⛔ nincs újrapróbálkozás)* — a
 **kliens-oldali MCP-link** halt meg, nem a szerver. **Fallback: REST**, ugyanazon a porton.
+
+### ✅ A 12:00-S KÖR — a LinkedIn-profil vonal ELÉRHETŐ LETT
+
+| Mi | Állapot |
+|---|---|
+| ⏰ **Ébresztés-lánc** | ✅ **SIKER** — a 10:32-es ping ébresztette fel *(10:40 válasz)*; a hangszóró **nem kellett**. ⚠️ Korrekció: a ping **nem volt néma**, bent volt a voice-csatornán |
+| 🔗 **Profil-panel** | ✅ **ÉLŐ** — `/api/linkedin/profile-update` → `hasProposal: true`, **2** változó mező *(Headline 89→127 · About 1285→1684)*, **0** limit-túllépés. A DEV betette a **navigációba** |
+| 🔨 **DEV** | ✅ 9+2 tétel kész *(kliens 148 · szerver 110)*, **idle** — owner-kapun áll |
+| 📋 **Új feladatok** | 🗓️ munkanaptár bekötése **+ magyarázat** `org:task:6aa3c192766c802935c3db46` · 🧹 **takarítás ma 17:00** `org:task:6aa3c193766c802935c3db4d` |
+
+🔴 **SAJÁT HIBA, javítva:** a `/api/linkedin/profile` 404-ből arra következtettem, hogy a futó
+szerver **elavult kódot visz**. ⛔ Hamis volt — a végpont neve `profile-update`, és **működik**.
+A 404 **kétértelmű**, ⛔ nem bizonyíték. Kanonikus: `current/principles/post-development-verification.md`.
+
+### 🙋 AZ OWNERRE VÁR — a sorrend nem változott
+
+1. ⭐ **A profil-szöveg jóváhagyása/beillesztése** — *most már kattintással elérhető*: **LinkedIn → Profil**
+2. a *„bring in additional developers"* mondat: visszategyem-e?
+3. a **konkrét hibaszöveg** a felületről *(amíg nincs, ⛔ nem javítunk találgatásból)*
+4. 🔒 az **ElevenLabs-kulcs** rotációja
 
 ### ⏰ MA (2026-09-11)
 
