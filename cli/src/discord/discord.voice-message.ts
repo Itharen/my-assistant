@@ -10,6 +10,7 @@
 // elvesztek**. Ez a modul adja a szűrőnek azt a tudást, amivel meg tudja különböztetni a
 // „semmit" a „hangüzenettől".
 
+import type { SttSegmentation } from '../stt/stt.models.js';
 import { collectFlags, describeFlags } from '../stt/stt.flags.js';
 
 /** Egy Discord-csatolmány — csak az a néhány mező, amit a döntéshez használunk. */
@@ -179,6 +180,8 @@ export async function downloadVoiceAttachment(
 export function composeTranscriptForBatch(params: {
   transcript: string;
   durationSecs?: number;
+  /** 🧩 A darabolás képe, ha a hang nem fért a felismerő 30 mp-es ablakába. */
+  segmentation?: SttSegmentation;
 }): string {
   const length: string = params.durationSecs
     ? ` (${Math.round(params.durationSecs)} mp)`
@@ -186,7 +189,7 @@ export function composeTranscriptForBatch(params: {
   // ⭐ FLAGEK (owner-kérés, 2026-09-07): a gépi átirat és a gépelt szöveg RÁNÉZÉSRE AZONOS,
   // pedig az egyik szó szerinti utasítás, a másik valószínűségi tipp. A flag ezt teszi
   // láthatóvá — köztük azt is, ha az átirat MONDAT KÖZBEN ér véget.
-  const flags: string = describeFlags(collectFlags(params.transcript));
+  const flags: string = describeFlags(collectFlags(params.transcript, params.segmentation));
 
   return `🎙️ HANGÜZENET${length} — NEM gépelt szöveg\n[${flags}]\n${params.transcript}`;
 }

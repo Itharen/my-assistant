@@ -18,6 +18,7 @@
 
 import { DiscordBatchStore } from '../discord/discord.batch-store.js';
 import { sendDiscordMessage } from '../discord/discord.sender.js';
+import type { SttSegmentation } from '../stt/stt.models.js';
 import { collectFlags, describeFlags } from '../stt/stt.flags.js';
 
 /** A hang-csatornából jövő szöveg jelölése a kötegben. */
@@ -45,8 +46,15 @@ export interface VoiceTranscriptResult {
 export function composeVoiceChannelEntry(params: {
   transcript: string;
   speakerName: string;
+  /**
+   * 🧩 A darabolás képe, ha a hang nem fért a felismerő 30 mp-es ablakába.
+   *
+   * ⚠️ **Opcionális** — a hiánya „egy hívás"-t jelent. ⭐ Ha VAN, a jelölés **kimondja**:
+   * a feladat kikötése szerint a technikai korlát ⛔ nem maradhat néma.
+   */
+  segmentation?: SttSegmentation;
 }): string {
-  const flags: string = describeFlags(collectFlags(params.transcript));
+  const flags: string = describeFlags(collectFlags(params.transcript, params.segmentation));
 
   return `${VOICE_CHANNEL_MARKER} — ${params.speakerName} élő beszéde, NEM gépelt szöveg\n`
     + `[${flags}]\n${params.transcript}`;
@@ -106,6 +114,8 @@ export class VoiceChannelBridge {
     speakerId: string;
     speakerName: string;
     transcript: string;
+    /** 🧩 A darabolás képe — a jelölésbe kerül, ha több részletből állt össze. */
+    segmentation?: SttSegmentation;
   }): Promise<VoiceTranscriptResult> {
     const trimmed: string = params.transcript.trim();
 
@@ -118,7 +128,11 @@ export class VoiceChannelBridge {
       channelId: params.channelId,
       authorId: params.speakerId,
       authorName: params.speakerName,
-      content: composeVoiceChannelEntry({ transcript: trimmed, speakerName: params.speakerName }),
+      content: composeVoiceChannelEntry({
+        transcript: trimmed,
+        speakerName: params.speakerName,
+        ...(params.segmentation ? { segmentation: params.segmentation } : {}),
+      }),
       receivedAt: new Date().toISOString(),
     });
 

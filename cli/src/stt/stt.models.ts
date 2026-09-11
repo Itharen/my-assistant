@@ -44,4 +44,31 @@ export interface SttResult {
   suspicious: boolean;
   /** Miért gyanús. */
   suspicionReason?: string;
+  /**
+   * 🧩 Darabolva ismertük fel? *(Csak akkor van itt érték, ha TÖBB részlet volt.)*
+   *
+   * ⚠️ A hiánya azt jelenti: **egy** hívás, ⛔ nem azt, hogy „biztosan teljes".
+   */
+  segmentation?: SttSegmentation;
+}
+
+/**
+ * 🧩 A DARABOLÁS KIMONDOTT KÉPE — ha a hang nem fért a felismerő ablakába.
+ *
+ * > **A feladat kikötése (owner, 2026-09-11 15:54):** ha a teljes feldolgozás **technikai
+ * > korlátba** ütközik, az **kimondva** jelenjen meg — ⛔ néma csonkolás nincs.
+ *
+ * ⚠️ MIÉRT KELL EZ A HÍVÓNAK, ÉS NEM CSAK A NAPLÓNAK: a darabolás **javít** a helyzeten, de
+ * nem kockázat nélkül — a határon lévő szó elcsúszhat, és egy darab felismerése el is bukhat.
+ * ⇒ Az owner **látja** a jelölésben, hogy hány részletből állt össze a szöveg.
+ */
+export interface SttSegmentation {
+  /** Hány darabból állt össze az átirat. */
+  parts: number;
+  /** 🔴 Hány darab felismerése bukott el ⇒ ennyi helyen HIÁNYOS a szöveg. */
+  failedParts: number;
+  /** ⚠️ Hány vágás esett beszéd közben *(ott szó csúszhatott el)*. */
+  midSpeechCuts: number;
+  /** A felismerő MÉRT ablaka másodpercben — a jelölés ezzel magyarázza magát. */
+  windowSecs: number;
 }

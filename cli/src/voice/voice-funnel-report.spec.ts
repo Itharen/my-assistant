@@ -322,3 +322,53 @@ describe('🔴 a `delivered` szám a KIMENETEL-sorokból is jön', () => {
     expect(report.delivered).toBe(4);
   });
 });
+
+describe('buildVoiceFunnelReport — 🧩 a HOSSZÚ megszólalás láthatósága', () => {
+
+  it('🔴 a darabolt megszólalást KÜLÖN sorban számolja — ez volt a mérés VAKFOLTJA', async () => {
+    // ⚠️ MÉRT HIBA (2026-09-11): a 30 mp-en túli beszéd átirata CSONKA lett, de ✅ sikerként
+    // számolt, mert bekerült a kötegbe. ⇒ A 78%-os átviteli arány NEM IS LÁTTA a veszteséget.
+    const report = await build([
+      line('MA-VOICE-SPEECH-QUEUED'),
+      line('MA-VOICE-SPEECH-QUEUED', { parts: 3, failedParts: 0 }),
+      line('MA-VOICE-SPEECH-QUEUED', { parts: 2, failedParts: 0 }),
+    ]);
+
+    expect(report.queued).toBe(3);
+    expect(report.segmentedUtterances).toBe(2);
+    expect(report.segmentsFailed).toBe(0);
+  });
+
+  it('az egy részletes megszólalást ⛔ NEM számolja daraboltnak', async () => {
+    const report = await build([
+      line('MA-VOICE-SPEECH-QUEUED', { parts: 1, failedParts: 0 }),
+      line('MA-VOICE-SPEECH-QUEUED'),
+    ]);
+
+    expect(report.segmentedUtterances).toBe(0);
+  });
+
+  it('🔴 az elbukott részletet külön összesíti — az a VALÓDI hiány', async () => {
+    const report = await build([
+      line('MA-VOICE-SPEECH-QUEUED', { parts: 3, failedParts: 1 }),
+      line('MA-VOICE-SPEECH-DROPPED', { parts: 2, failedParts: 2 }),
+    ]);
+
+    expect(report.segmentedUtterances).toBe(2);
+    expect(report.segmentsFailed).toBe(3);
+  });
+
+  it('a tábla KIÍRJA a darabolás sorát', async () => {
+    const report = await build([line('MA-VOICE-SPEECH-QUEUED', { parts: 2, failedParts: 0 })]);
+    const text: string = renderVoiceFunnel(report);
+
+    expect(text).toContain('darabolva ismerve');
+    expect(text).toContain('>30 mp');
+  });
+
+  it('elbukott részletnél a tábla a HIÁNYT is kiírja', async () => {
+    const report = await build([line('MA-VOICE-SPEECH-QUEUED', { parts: 3, failedParts: 1 })]);
+
+    expect(renderVoiceFunnel(report)).toContain('HIÁNYOS');
+  });
+});

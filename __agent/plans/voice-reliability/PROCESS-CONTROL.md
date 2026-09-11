@@ -6,7 +6,7 @@
 > és a **sorrend** van.
 > **Ez a fájl az enyém (DEV).** A `DEV-HANDOFF.md` az asszisztensé — ⛔ oda nem írok státuszt.
 
-**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 12:55
+**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 16:30
 
 ---
 
@@ -39,6 +39,7 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **11** | 📝 **POSZT-FELÜLET** — ⛔ MÉG NINCS megépítve | 🔟 11:00 (B) | ⬜ **HÁTRA** *(owner-sorrend: profil → **posztok** → üzenetek)* | — |
 | **12** | 🔍 **A „mindenféle hiba"** — FELTÁRANDÓ | 🔟 11:00 (C) | 🟡 **EGY HIBA REPRODUKÁLVA ÉS JAVÍTVA**; a többi 🙋 owner-kapun | 2026-09-11 11:30 |
 | **13** | 🗓️ **MUNKANAPTÁR** — `ma calendar today` *(EGY funkció)* | 1️⃣1️⃣ 12:25 | ✅ **KÉSZ** — CLI 1075/1075, élő proba; 🙋 1 lépés owner-kapun *(újra-engedélyezés)* | 2026-09-11 12:55 |
+| **14** | 🎙️ **A HOSSZÚ HANGÜZENET vége levágódott** *(bemeneti szűk keresztmetszet)* | 1️⃣2️⃣ 15:54 | ✅ **KÉSZ** — mérve: a felismerő **30 mp**-es ablaka; 295→641 kar, CLI 1116/1116 | 2026-09-11 16:30 |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -579,11 +580,78 @@ szerver-újraindításkor** lép életbe; ⛔ nem indítom újra magamtól *(a s
 
 | Tétel | Mire vár | Mi oldaná fel |
 |---|---|---|
+| **14** *(hosszú hang)* | a **listener újraindulására** *(a futó példány még a régi kódot viszi)* | a következő LDP-ciklus / szerver-indulás — ⛔ nem indítom újra magamtól |
 | **13** *(naptár)* | a **naptár-engedély** kiadására | `ma email auth --account default` — böngésző + az owner **kattintó** jóváhagyása |
 | **11** *(poszt-felület)* | az owner **sorrendjére** *(profil → posztok → üzenetek)* | owner-jelzés, hogy jöhet |
 | **12** *(„mindenféle hiba")* | a **konkrét hibaszövegre** | ⛔ nem javítok olyat, amit nem reprodukáltam |
 
 ⇒ A hurok lezárása: jelentés az `AGENT_BUS.md`-ben, ⛔ új ébredés NEM.
+
+### 🎙️ A 14. TÉTEL — A HOSSZÚ HANGÜZENET VÉGE (2026-09-11 16:30)
+
+> **Owner, 15:54 + 15:55 (élesben, KÉTSZER):** *„még mindig levágta az előző üzenetemnek a
+> végét"* · *„Megint levágta a javításomat a végéről"*
+
+#### 🔬 ELŐSZÖR MÉRTEM — a handoff kikötése szerint
+
+**Alany:** a megőrzött 56,9 mp-es felvétel *(⭐ az 1. tétel nélkül ez a mérés lehetetlen)*.
+
+| Próba | Eredmény |
+|---|---|
+| **felezés** | teljes fájl **295** kar · felezve **279 + 348 = 627** kar ⇒ a 2. fél szövege **egyáltalán nem** szerepel a teljes átiratban |
+| **prefix-sorozat** | 15→148 · 25→252 · 28→280 · **30→295** · 32→295 · 40→295 · 56→295 ⇒ a határ **pontosan 30,0 mp** |
+| **fejléc-kizárás** | a felvevő 22 369,6 mp-et állít, de **javított** fejléccel a válasz **karakterre azonos** ⇒ ⛔ nem a fejléc |
+
+🔴 **A GYÖKÉR: a felismerő 30 másodperces ablaka**, hosszú-hang darabolás nélkül.
+
+#### ⭐ AMIT A MÉRÉS KIZÁRT — és ez a legfontosabb következmény
+
+| A handoff feltevése | Mérés |
+|---|---|
+| a **szegmentálás** *(`AfterSilence` 1000 ms)* | ⛔ **NEM** — a felvételek teljes hosszban a lemezen |
+| a **felvevő** | ⛔ **NEM** — ugyanaz |
+| a **felismerés utáni** út | ⛔ **NEM** — a csonka szöveg hiánytalanul bekerült a kötegbe |
+
+🔴 ⇒ **A 9. tételben leszögezett beszéd-észlelést NEM kell megváltoztatni**, tehát **nincs
+szükség owner-döntésre** róla. ⭐ Ezt **mérés** mondja ki, ⛔ nem feltevés.
+
+#### 🔴 A KÉT VESZTESÉG KÜLÖN DOLOG — a handoff összevonta őket
+
+A **23 „felismerés után elveszett"** megszólalás **mind 01-03 h és 13 h** között történt, és
+**22 közülük a töltelék-szó-őr** elutasítása *(`„Thank you."` stb.)*. ⛔ **15:53/15:54-kor egy
+sem.** ⇒ Az owner panasza **NEM** ez a 23 — az a **csonkolás**, ami ✅ **sikerként** számolt,
+mert bekerült a kötegbe. ⚠️ Ezért **a 78%-os arány nem is látta**.
+
+#### ✅ A JAVÍTÁS + IGAZOLÁS
+
+≤28 mp-es darabok, **csendnél** vágva *(mért küszöb: 1502 keret, `p25=504`, a szünet 200 alatt)*,
+az átiratok összefűzve. ⛔ **Az FDP AI-hoz nem nyúltunk** *(`fdp-ai-never-restart`)*.
+
+| Felvétel | Előtte | Most |
+|---|---|---|
+| 56,9 mp | 295 kar | **641** kar *(3 részlet)* |
+| **34,2 mp — a 15:53-as üzenet** | 299 kar | **445** kar *(2 részlet)* |
+| 8,8 mp | 96 kar | 96 kar, darabolás nélkül — **változatlan út** |
+
+🔴 **A DÖNTŐ BIZONYÍTÉK:** a 15:53-as üzenetből előkerült a hiányzó vég — az **évente ismétlődő
+dominó-adategyeztetés** mondata, ⭐ pontosan az, amit az owner ezután **kétszer** próbált
+megismételni.
+
+**A technikai korlát KIMONDVA** *(a handoff kikötése)*: `🧩 N részletben ismerve (30 mp-es
+ablak)` · `🔴 N részlet felismerése ELBUKOTT — a szöveg HIÁNYOS` · `⚠️ N vágás beszéd közben`.
+📊 **A tölcsér új sora:** `🧩 darabolva ismerve (>30 mp)`.
+⚠️ **Az átviteli arány ettől NEM javul** — mert a csonkolás soha nem is szerepelt benne; ezért
+kellett a mérésnek **új sor**.
+
+**Ellenőrzés:** CLI **1116/1116** · `tsc` tiszta · **pozitív kontroll ×2** *(darabolás
+kikapcsolva → 13 bukás; hiány-jelzés elhallgatva → 1 bukás)* · `dc rev` **2397 → 2397**
+*(0 új; a két új fájlon 0)* · `cv-*.ts` diff **üres**.
+
+⚠️ **Két hibát a saját tesztem fogott meg:** (1) végig hangos hangnál a vágás a sáv elejére
+esett *(5 mp veszteség darabonként)*; (2) a hiány-jelzést **kiszorította** az arány-őr indoklása.
+Mindkettő javítva, teszt őrzi.
+
+📌 Doksi: `__documentations/dev/VOICE_LONG_AUDIO.md` · `SKILLS.md`.
 
 ### 🗓️ A 13. TÉTEL — MUNKANAPTÁR (2026-09-11 12:55)
 

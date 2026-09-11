@@ -654,6 +654,32 @@ jutna el az asszisztenshez.
 
 📌 Tárolás: `~/.config/my-assistant/stt-ledger/` — ⛔ nem a repóban *(nyers felhasználói tartalom)*.
 
+### 🎙️ A HOSSZÚ hangüzenet — darabolva ismerjük fel (2026-09-11)
+
+🔴 **MÉRT KORLÁT:** az FDP AI felismerő **30,0 másodpercnél** befagy — a 56,9 mp-es felvételből
+**295** karaktert adott, a felezettjéből **627**-et. ⇒ A hosszabb üzenetek **vége levágódott**,
+és ez a mérésben **nem is látszott**: a csonka átirat ✅ **sikerként** számolt.
+
+⭐ **Most:** a 30 mp-nél hosszabb hangot **≤28 mp-es darabokra** bontjuk *(csendnél vágva)*, és
+az átiratokat összefűzzük. Élesben igazolva: **295 → 641** és **299 → 445** karakter.
+
+⛔ **Az FDP AI szolgáltatáshoz NEM nyúltunk** *(`fdp-ai-never-restart`)* — a darabolás
+teljesen a mi oldalunkon van.
+
+🔴 **A JELÖLÉS KIMONDJA** *(⛔ néma darabolás nincs)*:
+
+```
+🎙️ gépi átirat · 🧩 3 részletben ismerve (30 mp-es ablak)
+🎙️ gépi átirat · 🔴 1 részlet felismerése ELBUKOTT — a szöveg HIÁNYOS
+🎙️ gépi átirat · ⚠️ 1 vágás beszéd közben esett — ott szó csúszhatott el
+```
+
+📊 **A tölcsér-jelentésben új sor:** `🧩 darabolva ismerve (>30 mp)` — ⚠️ **az átviteli arány
+ettől NEM javul**, mert a csonkolás soha nem is szerepelt benne; ez a sor mutatja, hogy a
+mechanizmus dolgozik.
+
+📌 A teljes mérés, a kizárt gyanúk és a mért állandók: `__documentations/dev/VOICE_LONG_AUDIO.md`.
+
 ### 🗓️ `ma calendar` — a nap eseményei (munkanaptár, 2026-09-11)
 
 ```bash

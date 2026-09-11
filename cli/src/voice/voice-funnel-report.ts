@@ -67,6 +67,20 @@ export interface VoiceFunnelReport {
   /** Az eldobott felvételekben lévő hang összesen. */
   lostAudioSeconds: number;
   /**
+   * 🧩 Hány megszólalást kellett **darabolni**, mert nem fért a felismerő 30 mp-es ablakába.
+   *
+   * 🔴 MIÉRT KELL EZ A SOR — a MÉRÉS VAKFOLTJA VOLT *(2026-09-11)*: a 30 mp-nél hosszabb
+   * megszólalás átirata **csonka** lett, de ✅ **sikerként** számolt, hiszen bekerült a
+   * kötegbe. ⇒ Az átviteli arány **nem is látta** a veszteséget, pedig aznap a felvételek
+   * **13%-a** érintett volt, és azok a szövegük **40-50%-át** vesztették el.
+   *
+   * ⚠️ Ez a sor ezért **nem a hibát számolja**, hanem a **javítás működését**: ennyi
+   * megszólalás jött át úgy, hogy korábban csonkult volna.
+   */
+  segmentedUtterances: number;
+  /** 🔴 Ahol a darabolás közben egy részlet felismerése ELBUKOTT ⇒ HIÁNYOS szöveg. */
+  segmentsFailed: number;
+  /**
    * 🔴 AZ ÁTVITELI ARÁNY százalékban, vagy `null`, ha nem volt mit mérni.
    *
    * ⚠️ **`null` ≠ 0%.** Ha nem hangzott el megszólalás, az arány **értelmezhetetlen** — és
@@ -120,6 +134,10 @@ interface ActionLogLine {
     reason?: string;
     lostAudioSeconds?: number;
     deliveredSoFar?: number;
+    /** 🧩 Hany reszletbol allt ossze az atirat (a 30 mp-es ablak miatt). */
+    parts?: number;
+    /** 🔴 Hany reszlet felismerese bukott el ⇒ annyi helyen HIANYOS a szoveg. */
+    failedParts?: number;
   };
 }
 
@@ -164,6 +182,8 @@ export async function buildVoiceFunnelReport(params: {
     droppedAfterTranscribe: 0,
     skipped: 0,
     lostAudioSeconds: 0,
+    segmentedUtterances: 0,
+    segmentsFailed: 0,
     transferRatePct: null,
     attempts: 0,
   };
@@ -238,12 +258,14 @@ function applyEntry(report: VoiceFunnelReport, entry: ActionLogLine): void {
 
     case VOICE_LOG_CODES.queued:
       report.queued += 1;
+      applySegmentation(report, entry);
       applyDelivered(report, entry);
 
       return;
 
     case VOICE_LOG_CODES.dropped:
       report.droppedAfterTranscribe += 1;
+      applySegmentation(report, entry);
       applyDelivered(report, entry);
 
       return;
@@ -283,6 +305,21 @@ function applyDelivered(report: VoiceFunnelReport, entry: ActionLogLine): void {
  * mesterségesen rontaná az arányt. ⛔ A `skipped` sincs benne: a duplikátum és az idegen
  * beszélő **nem az owner elveszett mondata**.
  */
+/**
+ * 🧩 A darabolás beszámítása.
+ *
+ * ⚠️ **Csak 1-nél több részletnél** számol: az `1` azt jelenti, hogy a hang **belefért** az
+ * ablakba, tehát nincs mit jelenteni róla.
+ */
+function applySegmentation(report: VoiceFunnelReport, entry: ActionLogLine): void {
+  const parts: number = entry.extra?.parts ?? 1;
+
+  if (parts <= 1) return;
+
+  report.segmentedUtterances += 1;
+  report.segmentsFailed += entry.extra?.failedParts ?? 0;
+}
+
 function countAttempts(report: VoiceFunnelReport): number {
   return report.queued + report.droppedByRecorder + report.droppedAfterTranscribe;
 }
@@ -328,6 +365,12 @@ export function renderVoiceFunnel(report: VoiceFunnelReport, now: Date = new Dat
     `  ❌  felismerés után elveszett ..... ${report.droppedAfterTranscribe}`,
     `  ⚪  kihagyva (duplikátum/idegen) .. ${report.skipped}`,
     `  ⬜  üres felvétel (nem veszteség) . ${report.emptyFiles}`,
+    // 🧩 A HOSSZU MEGSZOLALAS — 2026-09-11 óta LATHATO. Korábban ez a veszteség a
+    // ✅ sikerek közt bújt meg: a 30 mp-en túli beszéd átirata csonkult, de bekerült.
+    `  🧩  darabolva ismerve (>30 mp) .... ${report.segmentedUtterances}`
+      + (report.segmentsFailed
+        ? `  🔴 ebből ${report.segmentsFailed} részlet ELBUKOTT — HIÁNYOS szöveg`
+        : ''),
     '',
     `  🔊 ELVESZETT HANG: ${report.lostAudioSeconds} másodperc`,
     '',

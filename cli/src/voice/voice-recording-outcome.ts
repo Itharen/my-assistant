@@ -9,6 +9,7 @@
 // `discord.listener` **naplózza**, a `comm.doctor` pedig **visszaolvassa**. Négy fogyasztó
 // egyetlen típus-halmazon — pont az, aminek saját helye van.
 
+import type { SttSegmentation } from '../stt/stt.models.js';
 import { VOICE_LOG_CODES } from './voice-log-codes.js';
 import type { MissedSpeechKind } from './voice-missed-speech.js';
 
@@ -38,6 +39,14 @@ export interface SpeechAttemptStats {
 
 /** Egy elkészült felvétel feldolgozásának kimenetele — a naplózáshoz és a teszthez. */
 export interface RecordingHandled {
+  /**
+   * 🧩 DARABOLVA ismertük fel? *(Csak ha TÖBB részlet volt.)*
+   *
+   * 🔴 MIÉRT UTAZIK EL A NAPLÓIG: a felismerő **30 mp-es ablaka** miatti veszteség eddig
+   * **teljesen láthatatlan** volt a mérésben — a csonka átirat ✅ **sikerként** számolt.
+   * ⇒ Ha a darabolás nem hagy nyomot a naplóban, ugyanúgy nem tudnánk, működik-e.
+   */
+  segmentation?: SttSegmentation;
   /** Az owneré volt-e a hang. Idegen beszélőnél `false`, és nem történik semmi más. */
   fromOwner: boolean;
   transcribed: boolean;

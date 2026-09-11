@@ -1189,6 +1189,15 @@ export class DiscordListener {
             code: outcomeCode,
             fromOwner: outcome.fromOwner,
             transcribed: outcome.transcribed,
+            // 🧩 A DARABOLAS a naploba is bekerul — ebbol szamol a tolcser-jelentes
+            // uj sora. ⚠️ Enelkul a 30 mp-es ablak miatti javitas MERHETETLEN lenne.
+            ...(outcome.segmentation
+              ? {
+                parts: outcome.segmentation.parts,
+                failedParts: outcome.segmentation.failedParts,
+                midSpeechCuts: outcome.segmentation.midSpeechCuts,
+              }
+              : {}),
             // 🔴 A KEZBESITETT DARABSZAM ITT IS KIMEGY. Merve 2026-09-08 01:35: a
             // `MA-VOICE-SPEECH-DETECTED` sor CSAK uj megszolalaskor irodik, tehat a KESOBB
             // befejezodo feldolgozasok (az STT percekig tart!) sosem kerultek naploba =>
@@ -1631,6 +1640,8 @@ export class DiscordListener {
     return composeTranscriptForBatch({
       transcript: result.text,
       ...(attachment.durationSecs === undefined ? {} : { durationSecs: attachment.durationSecs }),
+      // 🧩 A hosszú hangüzenetnél a darabolás is látszik — a mért 30 mp-es ablak miatt.
+      ...(result.segmentation ? { segmentation: result.segmentation } : {}),
     });
   }
 

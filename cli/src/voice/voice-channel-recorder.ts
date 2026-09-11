@@ -261,6 +261,9 @@ export async function handleFinishedRecording(params: {
     speakerId: params.userId,
     speakerName: params.ownerName,
     transcript: result.text.trim(),
+    // 🧩 A DARABOLÁS TOVÁBBMEGY a jelölésbe — ⛔ nem áll meg a naplónál. Az owner
+    // csak így látja, hogy összefűzött szöveget kapott (és hogy hiányzik-e belőle részlet).
+    ...(result.segmentation ? { segmentation: result.segmentation } : {}),
   });
 
   return {
@@ -271,6 +274,8 @@ export async function handleFinishedRecording(params: {
     heard: result.text.trim(),
     audioKept: audioKept,
     filename: params.filename,
+    // 🧩 A DARABOLÁS A NAPLÓIG MEGY — ⛔ nem áll meg a jelölésnél.
+    ...(result.segmentation ? { segmentation: result.segmentation } : {}),
   };
 }
 

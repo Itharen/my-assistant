@@ -76,3 +76,59 @@ describe('collectFlags + describeFlags', () => {
     expect(describeFlags(collectFlags(original))).not.toBe(original);
   });
 });
+
+describe('| describeFlags — 🧩 a DARABOLÁS kimondva', () => {
+
+  it('egyetlen hívásnál ⛔ NEM ír darabolást — nincs mit mondani róla', () => {
+    const text: string = describeFlags(collectFlags('Teljes mondat.'));
+
+    expect(text).not.toContain('részletben');
+  });
+
+  it('⭐ több részletnél KIMONDJA, és megmondja az OKÁT is', () => {
+    const text: string = describeFlags(collectFlags('Első. Második.', {
+      parts: 3,
+      failedParts: 0,
+      midSpeechCuts: 0,
+      windowSecs: 30,
+    }));
+
+    expect(text).toContain('3 részletben');
+    // ⚠️ Az ok nélkül a jelzés csak zaj lenne: az owner nem tudná, MIÉRT volt darabolás.
+    expect(text).toContain('30 mp');
+  });
+
+  it('🔴 az ELBUKOTT részletet HIÁNYOS-ként mondja ki — ⛔ nem elegánsan elhallgatva', () => {
+    const text: string = describeFlags(collectFlags('Csak az első rész.', {
+      parts: 3,
+      failedParts: 1,
+      midSpeechCuts: 0,
+      windowSecs: 30,
+    }));
+
+    expect(text).toContain('ELBUKOTT');
+    expect(text).toContain('HIÁNYOS');
+  });
+
+  it('a beszéd közbeni vágást is jelzi — ott szó csúszhatott el', () => {
+    const text: string = describeFlags(collectFlags('Valami szöveg.', {
+      parts: 2,
+      failedParts: 0,
+      midSpeechCuts: 1,
+      windowSecs: 30,
+    }));
+
+    expect(text).toContain('beszéd közben');
+  });
+
+  it('a gépi-átirat jelölés MINDIG megmarad a darabolás mellett is', () => {
+    const text: string = describeFlags(collectFlags('Szöveg.', {
+      parts: 2,
+      failedParts: 0,
+      midSpeechCuts: 0,
+      windowSecs: 30,
+    }));
+
+    expect(text).toContain('gépi átirat');
+  });
+});
