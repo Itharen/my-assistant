@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-11 12:10
+**Utoljára frissítve:** 2026-09-11 15:05
 
 ---
 
@@ -89,6 +89,20 @@ A 404 **kétértelmű**, ⛔ nem bizonyíték. Kanonikus: `current/principles/po
 2. a *„bring in additional developers"* mondat: visszategyem-e?
 3. a **konkrét hibaszöveg** a felületről *(amíg nincs, ⛔ nem javítunk találgatásból)*
 4. 🔒 az **ElevenLabs-kulcs** rotációja
+
+### ✅ A 15:00-S KÖR — a nap horgonyai a helyükön
+
+| Mi | Állapot |
+|---|---|
+| 🥤 **Pia-emlékeztető** | ✅ **KIMENT 15:00-kor** — pont a kért ablakban *(„3-4-5 körül")*. A kínai **19:00**-ig |
+| 🧹 Takarítás | ⏳ nyitva, határidő **18:30** *(a vendégek elé igazítva)* |
+| 🎉 Vendégek | **19:00-20:00** — innen **vendég-ablak** *(`private-topics-and-audience`)* |
+| 💼 Munka *(3 tétel)* | ⏳ nyitva — ⭐ **ezek csúsztathatók**, a bolt és a takarítás **nem** |
+| 🗓️ **Naptár** | ✅ `ma calendar today` kész · 🙋 **owner-kapu**: `ma email auth --account default` |
+| 🧹 Takarítás **utáni** befejezett tételek | ✅ a 10:30-as ébresztő és a 11:00-s míting **archiválva** |
+
+⚠️ **MÉRT OLVASÁSI CSAPDA:** a `fo tasks.list` a `dueDate`-et **UTC-ben** írja ki *(a 18:30+02:00
+ott `16:30`-ként látszik)*. ⛔ Ne olvasd helyi időnek — **+2 óra** a nyári időszámításban.
 
 ### ⏰ MA (2026-09-11)
 
