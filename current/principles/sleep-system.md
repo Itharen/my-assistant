@@ -97,3 +97,39 @@ közeledik a fix 18h-hoz:
 - Milyen finomságú legyen a tracking? Csak `wakeAt` + `sleepAt` per nap, vagy alvás-szakaszok is (pl. szunyókálás)?
 - A 26-28h-os ciklus "naptári napra" vetítve hogyan jelenjen meg? Lehet hogy egy kalendárium-napra 0 vagy 2 ébredés is jut.
 - Notifikáció / Google Home integráció (lásd külön task) — itt jönne be a tényleges proaktív emlékeztetés. Most chat-alapú.
+
+---
+
+## 🔴 2026-09-11 04:14 — MÉRT ELTOLÓDÁS: az utóbbi napokban **06-08 KÖRÜL** feküdt le
+
+> **Owner (hangcsatorna, szó szerint):** *„Kicsit éhes is vagyok azért, azért is [alszom] el
+> nehezebben… mert az [elalvásom] az elmúlt napokban, nem is tudom, **reggel nyolc körül,
+> hat-nyolc körül feküdtem**."*
+
+⇒ **A ciklusa jelenleg reggelre tolódott**: a szokásos elalvása **06:00-08:00** közé esik.
+Most **04:15 körül** próbál elaludni — ez **2-4 órával korábban**, mint amihez a teste szokott.
+
+### ⚠️ AMI EBBŐL KÖVETKEZIK — és amiért ezt MA fel kellett írni
+
+🔴 **Ma 11:00-kor online mítingje van.** A két tény együtt:
+
+| Forgatókönyv | Alvás a mítingig |
+|---|---|
+| ha **most** (≈04:15) elalszik | ~6,5 óra |
+| ha a **szokott** ritmusa nyer *(06:00-08:00)* | **3-5 óra**, vagy **kevesebb** |
+
+⇒ ⛔ **Nem szabad feltételeznem, hogy reggel 10-re kipihenten ébred.** Az
+[[wake-escalation]] létrája **nem formalitás** ma — reális esély van rá, hogy tényleg kell.
+
+### A SZABÁLY, AMI EBBŐL LETT
+
+⭐ **Az elalvás ideje MÉRT ADAT, nem a 18h-s képletből számolt érték.** A `sleep-system` fix
+18 órás ébrenléti paramétere **modell**; amikor az owner **kimondja**, mikor feküdt le, az
+**felülírja a modellt** — ⛔ nem fordítva. *(Ugyanaz a logika, mint a
+[[day-boundary-is-sleep]]-nél: „össze-vissza élek" ⇒ mérni kell, nem számolni.)*
+
+📌 **És egy jel, amit fel kell ismernem:** az *„éhes vagyok"* + *„nehezen alszom el"* páros
+**ellátás-zóna** jelzés *(`focus-includes-life`)* — ⛔ de hajnali DND-ben **ezt sem mondom ki**,
+csak rögzítem a következő ébren töltött körre.
+
+Kapcsolódó: [[day-boundary-is-sleep]] · [[wake-escalation]] · [[focus-includes-life]]
