@@ -111,3 +111,21 @@ elé/mögé ehhez igazodik.
 
 📌 **És a 3 napos szétcsapás innen indul** — a következő két nap zónája 🎉 **kikapcsolódás**,
 ⛔ nem munka *(`focus-includes-life`)*.
+
+
+---
+
+## ⏰ PONTOSÍTÁS 16:27-kor — a vendégek ELŐRÉBB csúsztak
+
+> **Owner:** *„úgy tűnik, hogy egy **két-két és fél óra múlva** már lehet számítani vendégekre."*
+
+⇒ **Érkezés: 18:30-19:00** *(a 16:27-es üzenettől számolva)* — a korábbi **19:00-20:00** helyett.
+
+| Következmény | |
+|---|---|
+| 🧹 takarítás határideje | **18:30 → 18:15** *(`org:task:6aa3c193766c802935c3db4d`)* |
+| 🔇 **vendég-ablak kezdete** | **19:00 → ~18:30** ⇒ a `private-topics-and-audience` **ekkortól** él |
+| 💼 a 3 munka-tétel | ⭐ **csúsztatható** — a takarítás **nem** |
+
+⚠️ **A becslés-forma számít:** *„két-két és fél óra múlva"* ⇒ **ablak**, nem időpont. A szűkebb
+végét veszem *(18:30)*, mert a **korai** vendég a kockázat, ⛔ nem a késői.
