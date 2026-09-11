@@ -6,7 +6,7 @@
 > és a **sorrend** van.
 > **Ez a fájl az enyém (DEV).** A `DEV-HANDOFF.md` az asszisztensé — ⛔ oda nem írok státuszt.
 
-**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 11:30
+**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 12:55
 
 ---
 
@@ -38,6 +38,7 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **10** | 🔗 **A PROFIL-PANEL ELÉRHETŐ a felületről** *(nav-link)* | 🔟 11:00 (A) | ✅ **KÉSZ** — kliens 148/148 | 2026-09-11 11:30 |
 | **11** | 📝 **POSZT-FELÜLET** — ⛔ MÉG NINCS megépítve | 🔟 11:00 (B) | ⬜ **HÁTRA** *(owner-sorrend: profil → **posztok** → üzenetek)* | — |
 | **12** | 🔍 **A „mindenféle hiba"** — FELTÁRANDÓ | 🔟 11:00 (C) | 🟡 **EGY HIBA REPRODUKÁLVA ÉS JAVÍTVA**; a többi 🙋 owner-kapun | 2026-09-11 11:30 |
+| **13** | 🗓️ **MUNKANAPTÁR** — `ma calendar today` *(EGY funkció)* | 1️⃣1️⃣ 12:25 | ✅ **KÉSZ** — CLI 1075/1075, élő proba; 🙋 1 lépés owner-kapun *(újra-engedélyezés)* | 2026-09-11 12:55 |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -574,9 +575,51 @@ szerver-újraindításkor** lép életbe; ⛔ nem indítom újra magamtól *(a s
 
 ## ➡️ A KÖVETKEZŐ KONKRÉT LÉPÉS
 
-⭐ **Minden nyitott tétel owner-kapun áll** *(11. = poszt-felület, az owner sorrendje szerint a
-profil-vonal után; 12. = a konkrét hibaszöveg)*.
+⭐ **Minden nyitott tétel owner-kapun áll:**
+
+| Tétel | Mire vár | Mi oldaná fel |
+|---|---|---|
+| **13** *(naptár)* | a **naptár-engedély** kiadására | `ma email auth --account default` — böngésző + az owner **kattintó** jóváhagyása |
+| **11** *(poszt-felület)* | az owner **sorrendjére** *(profil → posztok → üzenetek)* | owner-jelzés, hogy jöhet |
+| **12** *(„mindenféle hiba")* | a **konkrét hibaszövegre** | ⛔ nem javítok olyat, amit nem reprodukáltam |
+
 ⇒ A hurok lezárása: jelentés az `AGENT_BUS.md`-ben, ⛔ új ébredés NEM.
+
+### 🗓️ A 13. TÉTEL — MUNKANAPTÁR (2026-09-11 12:55)
+
+> **Owner, 12:19:** *„a **munkanaptár** előre kerül."* 🔴 A mért ok: a 11:00-as mítingről a
+> rendszer **csak azt tudta, hogy van** — kivel, miről, hol: semmi.
+
+⭐ **EGY funkció, ahogy kérte:** `ma calendar today [--day <ISO>]` → kezdés, vége, cím,
+helyszín/link, résztvevők. ⛔ **Nincs** írás, ismétlődés, felület, értesítés, naptár-egyesítés.
+
+**A két kikötés, és hol teljesül:**
+
+1. 🔴 **KIMONDOTT hiba, ⛔ nem üres lista** — `MA-CALENDAR-AUTH-REQUIRED` ·
+   `MA-CALENDAR-SCOPE-MISSING` · `MA-CALENDAR-READ-FAILED`, és a **teendő a hibaüzenetben** van.
+   ⇒ Az üres nap is **mondatot** kap: *„a naptár OLVASHATÓ volt, és a napon NINCS esemény."*
+2. ⭐ **FORRÁS-FÜGGETLEN** — a szerződés **egy fájl**
+   *(`cli/src/calendar/calendar-reader.contract.ts`)*. A nyitott owner-kérdés *(Google vagy
+   Microsoft)* ezért **nem blokkolt**: a parancs felülete és a kimenet alakja azonos.
+
+**Két MÉRT buktató, amit élő proba fogott meg:**
+
+- 🔴 **A fiók neve `default`, ⛔ NEM `primary`** — `primary`-vel a parancs
+  `MA-EMAIL-CONFIG-MISSING`-gel állt le. ⭐ A tévedés oka **névütközés**: a Google-oldalon a
+  **naptár** azonosítója `primary`. **Teszt őrzi.**
+- 🔴 **A scope bővítése a MEGLÉVŐ tokennek NEM ad jogot** — az élő proba pontosan ezt adta:
+  `grantedScopes: gmail.readonly, gmail.send` / `missingScope: calendar.readonly`.
+  ⭐ Ez **egyben a kikötés élő igazolása** is: a hiba **kimondott**, ⛔ nem üres nap.
+
+**Igazolás:** CLI **1075/1075** · `tsc` tiszta · **pozitív kontroll ×2** *(regisztráció kivéve →
+1 bukás; scope-ellenőrzés kivéve → 2 bukás)* · élő proba kilépési kóddal **1** ·
+`dc rev` **2410 → 2397** *(a saját 13 találatomat javítottam)*.
+
+⚠️ **Egy ismert találat marad:** `no-plain-function-export` a parancs-fájlon — ⭐ **mérve**,
+ugyanez a találat **mind a 31 többi** parancs-fájlon rajta van. Egy fájlban eltérni **két
+konvenciót** hozna ugyanabba a mappába ⇒ **owner/architektúra-szintű** döntés.
+
+📌 Doksi: `__documentations/dev/WORK_CALENDAR.md` · `SKILLS.md`.
 
 ### 🗄️ A 9. tétel korábbi jegyzete — archív
 

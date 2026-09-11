@@ -14,9 +14,21 @@ import {
 } from './email-account.config.js';
 import { describeEmailError, EmailToolError } from './email-error.js';
 
+/**
+ * A Google-engedelyek, amiket a desktop-flow ker.
+ *
+ * EGY HELYEN, szandekosan: a token-fajl a MEGADOTT scope-okkal keszul, es a lista bovitese
+ * ONMAGABAN NEM ad uj jogot a MAR meglevo tokennek — ujra kell engedelyezni
+ * (`ma email auth`). Ezert a naptar-olvaso KIMONDJA, ha a scope hianyzik, es megadja a
+ * parancsot; egy ures lista ott hazugsag lenne.
+ *
+ * 2026-09-11: +calendar.readonly (owner, 12:19 — a munkanaptar elore kerult).
+ * CSAK OLVASAS: a naptarba nem irunk (one-function-is-enough).
+ */
 export const GMAIL_OAUTH_SCOPES: readonly string[] = [
   'https://www.googleapis.com/auth/gmail.readonly',
   'https://www.googleapis.com/auth/gmail.send',
+  'https://www.googleapis.com/auth/calendar.readonly',
 ];
 
 interface GoogleOAuthTokenFile {

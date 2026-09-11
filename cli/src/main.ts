@@ -26,6 +26,7 @@ import {
   redactLinkedInSensitiveText,
 } from './linkedin/linkedin.error.js';
 import { InterfoodToolError } from './interfood/interfood.error.js';
+import { CalendarToolError } from './calendar/calendar.error.js';
 import { fail, makeRequestId, writeEnvelope } from './output/envelope.js';
 
 // ⚠️ A `.env` betöltése a `./bootstrap-env.js`-ben van, a LEGELSŐ importként — ide már késő
@@ -157,6 +158,10 @@ async function runVoiceSubcommand(command: string, args: string[]): Promise<void
   return (await import('./commands/voice.command.js')).runVoiceCommand(command, args);
 }
 
+async function runCalendarSubcommand(command: string, args: string[]): Promise<void> {
+  return (await import('./commands/calendar.command.js')).runCalendarCommand(command, args);
+}
+
 const COMMAND_TREE: Record<string, Record<string, CommandHandler>> = {
   cast: {
     discover: runDiscoverCommand,
@@ -223,6 +228,12 @@ const COMMAND_TREE: Record<string, Record<string, CommandHandler>> = {
   voice: {
     volume: (args: string[]) => runVoiceSubcommand('volume', args),
   },
+  // 🗓️ A MUNKANAPTAR (owner, 2026-09-11 12:19: „a munkanaptar elore kerul").
+  // ⚠️ UGYANAZ A CSAPDA, mint a `voice-funnel`-nel: enelkul a sor nelkul a parancs
+  // FUTASIDOBEN NEM LETEZIK, akkor is, ha a `tsc` es minden teszt zold. Ezert van ra elo proba.
+  calendar: {
+    today: (args: string[]) => runCalendarSubcommand('today', args),
+  },
   linkedin: {
     configure: (args: string[]) => runLinkedInSubcommand('configure', args),
     auth: (args: string[]) => runLinkedInSubcommand('auth', args),
@@ -239,6 +250,7 @@ const COMMAND_TREE: Record<string, Record<string, CommandHandler>> = {
     'menu-range': (args: string[]) => runInterfoodSubcommand('menu-range', args),
     'last-minute': (args: string[]) => runInterfoodSubcommand('last-minute', args),
     recommendation: (args: string[]) => runInterfoodSubcommand('recommendation', args),
+    feedback: (args: string[]) => runInterfoodSubcommand('feedback', args),
     auth: (args: string[]) => runInterfoodSubcommand('auth', args),
     orders: (args: string[]) => runInterfoodSubcommand('orders', args),
     foods: (args: string[]) => runInterfoodSubcommand('foods', args),
@@ -304,11 +316,16 @@ async function main(): Promise<void> {
     });
   } catch (err: unknown) {
     const message: string = describeEmailError(err);
-    const structuredError: EmailToolError | StockMirrorError | LinkedInToolError | InterfoodToolError | null =
+    // ⭐ A `CalendarToolError` IS strukturalt: igy a hiba-boritek a STABIL kodot viszi
+    // (`MA-CALENDAR-SCOPE-MISSING` stb.), nem a `E_FAILED` gyujtokodot. 🔴 A naptarnal ez
+    // nem kenyelem: a „nincs jogosultsag" es az „ures nap" csak a kodbol kulonbozik meg gepileg.
+    const structuredError:
+      EmailToolError | StockMirrorError | LinkedInToolError | InterfoodToolError | CalendarToolError | null =
       err instanceof EmailToolError
         || err instanceof StockMirrorError
         || err instanceof LinkedInToolError
         || err instanceof InterfoodToolError
+        || err instanceof CalendarToolError
         ? err
         : null;
     const code: string = structuredError?.code ?? 'E_FAILED';
@@ -359,6 +376,7 @@ function printHelp(): void {
       '  comm        Communication channel diagnostics + Discord batch flush',
       '  status      Authoritative status digest (within-hour / today / overdue)',
       '  tick        Hourly assistant tick — dry-run plan (sends nothing)',
+      '  calendar    A nap esemenyei egy forras-fuggetlen olvasoval (today)',
       '',
       'Run `ma <group> --help` for group-specific help.',
       '',
@@ -565,8 +583,10 @@ function printGroupHelp(group: string): void {
         '  ma interfood orders sync|list|week|coverage|patterns [--add-ons-only] [--summary] --pretty',
         '  ma interfood foods identify|list [--commit] [--summary] --pretty',
         '  ma interfood preference set|compare|portion|list --pretty',
-        '  ma interfood plan week [--meals-per-day 2] [--repetition-windows 7,14,28] [--summary] --pretty',
+        '  ma interfood plan week [--meals-per-day 2] [--carry-over-mode review|off] [--repetition-windows 7,14,28] [--summary] --pretty',
         '  ma interfood recommendation publish --selection <file> [--review <file>] [--output <file>] --pretty',
+        '  ma interfood feedback add --menu-item-id <id> --rating loved|liked|neutral|disliked|waste --reason <text> [--eaten-on YYYY-MM-DD] --pretty',
+        '  ma interfood feedback list --pretty',
         '  ma interfood nutrition compare --ids 35853,35859 --pretty',
         '  ma interfood cart show|add|set|subtract|remove|clear|diff|reconcile --pretty',
         '  ma interfood order show|check|change-preview|change-apply --pretty',
@@ -668,6 +688,32 @@ function printGroupHelp(group: string): void {
     );
     return;
   }
+  if (group === 'calendar') {
+    process.stdout.write(
+      [
+        '',
+        'ma calendar — a nap esemenyei (csak olvas)',
+        '',
+        'Subcommands:',
+        '  today   A mai (vagy a --day szerinti) nap esemenyei',
+        '',
+        'Flags:',
+        '  --day <YYYY-MM-DD>   Mas nap (helyi idoben ertelmezve)',
+        '  --account <name>     A forras-oldali fiok (default: default)',
+        '  --json --pretty      Gepi kimenet',
+        '',
+        'A hianyzo/lejart engedely KIMONDOTT hiba (MA-CALENDAR-AUTH-REQUIRED /',
+        'MA-CALENDAR-SCOPE-MISSING), nem ures lista — az ures naptar es a nincs-jogosultsag',
+        'kivulrol ugyanugy nez ki. A megoldo parancs a hibaban benne van.',
+        '',
+        'Examples:',
+        '  ma calendar today',
+        '  ma calendar today --day 2026-09-12 --json --pretty',
+        '',
+      ].join('\n'),
+    );
+    return;
+  }
   printHelp();
 }
 
@@ -696,4 +742,3 @@ function persistentErrorText(text: string): string {
   }
   return text;
 }
-

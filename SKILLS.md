@@ -654,6 +654,40 @@ jutna el az asszisztenshez.
 
 📌 Tárolás: `~/.config/my-assistant/stt-ledger/` — ⛔ nem a repóban *(nyers felhasználói tartalom)*.
 
+### 🗓️ `ma calendar` — a nap eseményei (munkanaptár, 2026-09-11)
+
+```bash
+  ma calendar today                     # a mai nap: kezdés, vége, cím, helyszín/link, résztvevők
+  ma calendar today --day 2026-09-12    # más nap — HELYI időben értelmezve
+  ma calendar today --json --pretty     # gépi kimenet
+```
+
+**Miért létezik** *(owner, 2026-09-11 12:19)*: *„a **munkanaptár** előre kerül."* 🔴 A mért ok:
+a 11:00-as mítingről a rendszer **csak azt tudta, hogy van** — kivel, miről, hol: semmi. Az
+ébresztés lefutott, a **felkészítés** nem.
+
+⭐ **NEM zöldmezős:** a Google OAuth desktop-flow **már él** *(Gmail)*, ezért ez `+1 scope`
+*(`calendar.readonly`)* + vékony kliens + **egy** parancs volt.
+
+🔴 **A HIÁNYZÓ ENGEDÉLY KIMONDOTT HIBA, ⛔ nem üres lista** — *„az üres naptár és a
+nincs-jogosultság kívülről ugyanúgy néz ki."* Kódok: `MA-CALENDAR-AUTH-REQUIRED` ·
+`MA-CALENDAR-SCOPE-MISSING` · `MA-CALENDAR-READ-FAILED`. A **teendő a hibaüzenetben** van.
+⇒ Az üres nap is mondatot kap: *„a naptár OLVASHATÓ volt, és a napon NINCS esemény."*
+
+⚠️ **BUKTATÓ 1 — a fiók neve `default`, ⛔ NEM `primary`.** Élő proba: `primary`-vel
+`MA-EMAIL-CONFIG-MISSING`. A névütközés csapdája: a Google-oldalon a **naptár** azonosítója
+`primary` — az más dolog.
+
+⚠️ **BUKTATÓ 2 — a scope bővítése a MEGLÉVŐ tokennek NEM ad jogot.**
+🙋 **Owner-kapus lépés:** `ma email auth --account default` *(böngésző + kattintó jóváhagyás)*.
+Addig a parancs **helyesen** `MA-CALENDAR-SCOPE-MISSING`-et ad.
+
+⭐ **Forrás-független:** a szerződés **egy fájl**
+*(`cli/src/calendar/calendar-reader.contract.ts`)*; Microsoft/`.ics`-olvasónál a parancs
+felülete és a kimenet alakja **változatlan**.
+
+📌 Részletek + a teljes mérés: `__documentations/dev/WORK_CALENDAR.md`.
+
 ## ⚠️ MÉRT CSAPDA — a `/tmp` NEM ugyanaz bashben és a Windows-Pythonban (2026-09-11)
 
 Git Bash `/tmp` ≠ a Python által látott `/tmp`. Ha a cwd az `E:` meghajtón van, a Windows-Python
