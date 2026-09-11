@@ -136,11 +136,20 @@ describe('composeBatchPrompt', () => {
     expect(prompt).not.toContain('Válasz-kötelezettség');
   });
 
-  it('tells the agent to stay silent while the owner is asleep', () => {
+  it('tells the agent to stay silent while the owner is asleep — not even an emoji', () => {
     const prompt = composeBatchPrompt([message()]);
 
     expect(prompt).toContain('alszik');
     expect(prompt).toContain('semmit ne küldj');
+    expect(prompt).toContain('még emojit sem');
+  });
+
+  it('asks for a single emoji as the ack for the agent own tasks', () => {
+    const prompt = composeBatchPrompt([message()]);
+
+    // Owner, 2026-09-11: „azt szerettem, amikor egy darab emojit küldtél" — a saját
+    // feladataimról nyugta jár, nem néma csend, és nem is szöveg.
+    expect(prompt).toContain('EGY DARAB EMOJIT');
   });
 
   it('marks truncation visibly instead of silently cutting content', () => {

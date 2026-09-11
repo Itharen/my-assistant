@@ -45,8 +45,9 @@ export function composeBatchPrompt(
     '📌 Válasz-szabály: Discordra CSAK akkor írj, ha a téma a FÓKUSZ része — az owner',
     'teendője vagy döntése. Fejlesztési / belső üzemeltetési témáról ⛔ NE írj Discordra:',
     'az a repóba megy, és a HALLGATÁS a helyes válasz.',
-    '🛏️ Ha az owner alszik vagy lefekvéshez készül, MINDEN üzenet ébren tartja —',
-    'ilyenkor ⛔ semmit ne küldj, csak valódi vészhelyzetben.',
+    '🙂 A SAJÁT feladataidról (kész / halad) ⛔ ne írj szöveget — küldj EGY DARAB EMOJIT.',
+    '🛏️ Ha az owner alszik vagy lefekvéshez készül (DND-idő), MINDEN üzenet ébren',
+    'tartja — ilyenkor ⛔ semmit ne küldj, még emojit sem; csak valódi vészhelyzetben.',
   ].join('\n');
 
   return truncateIfNeeded([header, deliveredAt, '', body, '', footer].join('\n'));
