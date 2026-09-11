@@ -1,10 +1,12 @@
 import {
-  classifyRecordingOutcome,
   handleFinishedRecording,
   startVoiceRecording,
-  type RecordingHandled,
   type TransplantedRecorder,
 } from './voice-channel-recorder.js';
+import {
+  VoiceRecordingOutcome_Util,
+  type RecordingHandled,
+} from './voice-recording-outcome.js';
 import type { VoiceChannelBridge } from './voice-channel-bridge.js';
 import type { SttResult } from '../stt/stt.models.js';
 
@@ -338,29 +340,29 @@ describe('voice-channel-recorder', () => {
 
 describe('classifyRecordingOutcome — három kimenetel, három kód', () => {
   it('✅ a kötegbe került felvétel: QUEUED', () => {
-    expect(classifyRecordingOutcome({
+    expect(VoiceRecordingOutcome_Util.classify({
       fromOwner: true, transcribed: true, queued: true, detail: 'ok',
     })).toBe('MA-VOICE-SPEECH-QUEUED');
   });
 
   it('🔴 az owner beszélt, de nem lett belőle semmi: DROPPED (ez a VESZTESÉG)', () => {
-    expect(classifyRecordingOutcome({
+    expect(VoiceRecordingOutcome_Util.classify({
       fromOwner: true, transcribed: false, queued: false, missed: 'not-understood', detail: 'x',
     })).toBe('MA-VOICE-SPEECH-DROPPED');
 
-    expect(classifyRecordingOutcome({
+    expect(VoiceRecordingOutcome_Util.classify({
       fromOwner: true, transcribed: false, queued: false, missed: 'recognition-failed', detail: 'x',
     })).toBe('MA-VOICE-SPEECH-DROPPED');
   });
 
   it('⚪ a DUPLIKÁTUM nem veszteség — és nem is QUEUED', () => {
-    expect(classifyRecordingOutcome({
+    expect(VoiceRecordingOutcome_Util.classify({
       fromOwner: true, transcribed: true, queued: false, detail: 'Ezt a szegmenst már feldolgoztuk.',
     })).toBe('MA-VOICE-SPEECH-SKIPPED');
   });
 
   it('⚪ az IDEGEN beszélő sem veszteség', () => {
-    expect(classifyRecordingOutcome({
+    expect(VoiceRecordingOutcome_Util.classify({
       fromOwner: false, transcribed: false, queued: false, detail: 'Nem az owner beszélt.',
     })).toBe('MA-VOICE-SPEECH-SKIPPED');
   });

@@ -1,5 +1,5 @@
 import { planFeedbackForDrop, planFeedbackForOutcome } from './voice-feedback-plan.js';
-import type { RecordingHandled } from './voice-channel-recorder.js';
+import type { RecordingHandled } from './voice-recording-outcome.js';
 import type { VoiceDropObservation } from './voice-drop-probe.js';
 
 function outcome(overrides: Partial<RecordingHandled>): RecordingHandled {
@@ -35,6 +35,32 @@ describe('planFeedbackForOutcome — mit hall és mit lát az owner', () => {
     const plan = planFeedbackForOutcome(outcome({ missed: 'not-understood' }));
 
     expect(plan.cue).toBe('unsure');
+    expect(plan.missed).toEqual({ kind: 'not-understood' });
+  });
+
+  it('⭐ AMIT ÉRTETTÜNK és az OK ÁTMEGY a jelentésbe (owner, 2026-09-11 01:29)', () => {
+    // ⛔ Ez NEM a hallucináció-őr lazítása: gyanús átiratra továbbra sem cselekszünk —
+    // csak megmondjuk, mit hallottunk, hogy Ő dönthessen.
+    const plan = planFeedbackForOutcome(outcome({
+      missed: 'not-understood',
+      heard: '  Jag måste bara vara  ',
+      reason: ' nyelv-eltérés ',
+    }));
+
+    expect(plan.missed).toEqual({
+      kind: 'not-understood',
+      heard: 'Jag måste bara vara',
+      reason: 'nyelv-eltérés',
+    });
+  });
+
+  it('⚠️ ÜRES átirat/ok nem kerül be — az üres idézőjel semmit nem mond', () => {
+    const plan = planFeedbackForOutcome(outcome({
+      missed: 'not-understood',
+      heard: '   ',
+      reason: '',
+    }));
+
     expect(plan.missed).toEqual({ kind: 'not-understood' });
   });
 

@@ -33,6 +33,7 @@ import { VoiceChannelBridge } from './voice-channel-bridge.js';
 import { VoiceDropProbe, type VoiceDropObservation } from './voice-drop-probe.js';
 import type { MissedSpeechKind } from './voice-missed-speech.js';
 import { VOICE_LOG_CODES } from './voice-log-codes.js';
+import type { RecordingHandled, SpeechAttemptStats } from './voice-recording-outcome.js';
 
 /**
  * A felvevő `recordings` könyvtára.
@@ -56,78 +57,13 @@ export interface TransplantedRecorder {
   onWavFileReadyForProcessing?: (data: { userId: string; filename: string }) => void;
 }
 
-/**
- * 🔴 MEGSZOLALAS-SZAMLALO — a NEMA ELDOBAS lathatova tetele.
- *
- * > **Owner (2026-09-07 22:08):** *„beszéltem, beszéltem, tulajdonképpen annak egy százaléka
- * > lett aztán transzkriptálva… De leginkább semmi nem ment át."*
- *
- * ⭐ A MERES, AMI HIANYZOTT: az atemelt felvevo hangero- es ZCR-alapu validacioja **nemán
- * eldobja** a megszolalasok tobbseget. A `onWavFileReadyForProcessing` hook **csak a
- * TULELOKET** latja — a kidobottakrol sem az owner, sem en nem tudok semmit.
- *
- * ⇒ Ezert a `receiver.speaking` esemenyre **parhuzamosan** ulunk ra. ⛔ Ez **megfigyeles, nem
- * modositas**: az atemelt kodhoz nem nyulunk (`transplant-not-rewrite`), csak megszamoljuk,
- * hany megszolalas INDULT, es osszevetjuk azzal, hany ERKEZETT meg a hookig.
- *
- * 📌 Enelkul a szuro allitgatasa **puszta talalgatas** lenne — pontosan az, amit a
- * `core-no-guessing` tilt.
- */
-export interface SpeechAttemptStats {
-  /** Hany megszolalast erzekelt a Discord (`speaking.start`). */
-  detected: number;
-  /** Hany jutott el a feldolgozo hookig. */
-  delivered: number;
-}
-
+/** A felvétel elindításának kimenetele. */
 export interface VoiceRecordingResult {
   started: boolean;
   detail: string;
   remedy?: string;
   /** 🔍 Az élő szonda — a tölcsér bármikor lekérdezhető róla (`probe.funnel`). */
   probe?: VoiceDropProbe;
-}
-
-/** Egy elkészült felvétel feldolgozásának kimenetele — a naplózáshoz és a teszthez. */
-export interface RecordingHandled {
-  /** Az owneré volt-e a hang. Idegen beszélőnél `false`, és nem történik semmi más. */
-  fromOwner: boolean;
-  transcribed: boolean;
-  queued: boolean;
-  detail: string;
-  /**
-   * 🔇 Ha nem jutott át: MIÉRT — hogy a hang-csatornában is látszódjon.
-   *
-   * ⚠️ Enélkül a „nem értettem" és a „meg sem hallottam" megkülönböztethetetlen az owner
-   * számára — pontosan ezt írta le 22:08-kor.
-   */
-  missed?: MissedSpeechKind;
-}
-
-/**
- * A felvétel kimenetelének OSZTÁLYOZÁSA — három kimenetel, három kód.
- *
- * 🔴 MÉRT SAJÁT HIBA, ezért van kiemelve és tesztelve: eredetileg **minden** `queued: false`
- * `MA-VOICE-SPEECH-DROPPED`-ként naplózódott — beleértve a **duplikátumot** *(a híd már
- * feldolgozta)* és az **idegen beszélőt**. Egyik sem veszteség, mégis veszteségnek látszott
- * volna, és épp azt a mérést rontotta volna el, amiért az egész készült.
- *
- * ⛔ A visszaút sem jó: a duplikátumot `QUEUED`-nak nevezni azt állítaná, hogy bekerült a
- * kötegbe — pedig nem. Ezért kap **saját, harmadik** kódot.
- */
-export type RecordingOutcomeCode =
-  /** ✅ Bekerült a kötegbe. */
-  | typeof VOICE_LOG_CODES.queued
-  /** 🔴 VESZTESÉG: az owner beszélt, de nem lett belőle semmi. */
-  | typeof VOICE_LOG_CODES.dropped
-  /** ⚪ Se nem siker, se nem veszteség: duplikátum, vagy nem az owner beszélt. */
-  | typeof VOICE_LOG_CODES.skipped;
-
-export function classifyRecordingOutcome(outcome: RecordingHandled): RecordingOutcomeCode {
-  if (outcome.queued) return VOICE_LOG_CODES.queued;
-  if (outcome.missed !== undefined) return VOICE_LOG_CODES.dropped;
-
-  return VOICE_LOG_CODES.skipped;
 }
 
 /**
@@ -210,7 +146,22 @@ export async function handleFinishedRecording(params: {
    * **„dolgozom rajta"**-t jelent. ⇒ A hang jó volt, a **pillanat** rossz.
    */
   onProcessingStart?: () => void;
-  read?: typeof readFile;
+  /**
+   * 🎙️ A NYERS HANG MEGŐRZÉSE — ⭐ **a felismerés ELŐTT**, kimenetelre való tekintet nélkül.
+   *
+   * 🔴 A MÉRT HIÁNY: a `onRecognitionFailed` **csak a technikai bukást** tette el, a
+   * *„hallottam, de nem értettem"* ágon pedig semmi ⇒ a hang **véglegesen** elveszett.
+   * A mérés és a teljes indoklás: `voice-utterance-archive.ts`.
+   *
+   * @returns megmaradt-e a hang — ⚠️ **mért** tény, ⛔ nem feltevés.
+   */
+  archive?: (info: { audio: Uint8Array; filename: string }) => Promise<boolean>;
+  /**
+   * A felvétel beolvasása — cserélhető a teszthez. ⚠️ **Szűkebb, mint a `typeof readFile`**, és
+   * ez szándékos: az utóbbi túlterhelt, amit egy hamis olvasó csak `as` átcímkézéssel tudott
+   * kielégíteni. ⭐ Így a szerződést a fordító **tényleg őrzi**.
+   */
+  read?: (path: string) => Promise<Buffer>;
 }): Promise<RecordingHandled> {
   if (params.userId !== params.ownerUserId) {
     return {
@@ -221,7 +172,7 @@ export async function handleFinishedRecording(params: {
     };
   }
 
-  const read: typeof readFile = params.read ?? readFile;
+  const read: (path: string) => Promise<Buffer> = params.read ?? readFile;
   const transcribe: typeof transcribeAudio = params.transcribe ?? transcribeAudio;
 
   let audio: Uint8Array;
@@ -237,6 +188,13 @@ export async function handleFinishedRecording(params: {
       detail: `A felvétel NEM olvasható: ${error instanceof Error ? error.message : String(error)}`,
     };
   }
+
+  // 🎙️ A MEGŐRZÉS AZ ELSŐ — ⛔ minden downstream lépés ELŐTT. A sorrend SZÁNDÉKOS: innentől
+  // bármi elhasalhat, a forrás akkor is a lemezen van. Owner: *„A megőrzés ELSŐBBSÉGET élvez
+  // a tisztaság előtt."*
+  const audioKept: boolean = params.archive
+    ? await params.archive({ audio: audio, filename: params.filename })
+    : false;
 
   // 🔊 Innentől TÉNYLEG dolgozunk rajta — a felvétel megvan és olvasható.
   // ⛔ Nem korábban: a „hallak" és a „dolgozom rajta" NEM ugyanaz a pillanat.
@@ -287,6 +245,12 @@ export async function handleFinishedRecording(params: {
       queued: false,
       missed: understoodButDoubtful ? 'not-understood' : 'recognition-failed',
       detail: detail,
+      // ⭐ A NYERS ÁTIRAT TOVÁBBMEGY — ⛔ nem a kötegbe, hanem a VISSZAJELZÉSBE. A
+      // hallucináció-őr változatlan: gyanús átiratra **továbbra sem cselekszünk**.
+      ...(result.text.trim() ? { heard: result.text.trim() } : {}),
+      ...(result.suspicionReason ? { reason: result.suspicionReason } : {}),
+      audioKept: audioKept,
+      filename: params.filename,
     };
   }
 
@@ -304,6 +268,9 @@ export async function handleFinishedRecording(params: {
     transcribed: true,
     queued: outcome.queued,
     detail: outcome.detail,
+    heard: result.text.trim(),
+    audioKept: audioKept,
+    filename: params.filename,
   };
 }
 
@@ -335,6 +302,8 @@ export async function startVoiceRecording(params: {
   onSpeechDropped?: (observation: VoiceDropObservation) => void;
   /** 🔴 Technikai felismerés-bukásnál — a hang bájtjaival, újrapróbálásra. */
   onRecognitionFailed?: (info: { audio: Uint8Array; filename: string; failure: string }) => void;
+  /** 🎙️ Továbbadva a `handleFinishedRecording`-nak — a nyers hang megőrzése a felismerés ELŐTT. */
+  archive?: (info: { audio: Uint8Array; filename: string }) => Promise<boolean>;
   /** A szonda saját hibái. ⚠️ Sosem fatálisak — a megfigyelés nem buktathatja meg a felvételt. */
   onProbeError?: (detail: string) => void;
   /** Tesztelhetőség: kész szonda átadása. */
@@ -409,6 +378,7 @@ export async function startVoiceRecording(params: {
         bridge: bridge,
         ...(params.onRecognitionFailed ? { onRecognitionFailed: params.onRecognitionFailed } : {}),
         ...(params.onProcessingStart ? { onProcessingStart: params.onProcessingStart } : {}),
+        ...(params.archive ? { archive: params.archive } : {}),
       })
         .then((outcome: RecordingHandled): void => params.onHandled?.(outcome))
         .catch((error: unknown): void => {

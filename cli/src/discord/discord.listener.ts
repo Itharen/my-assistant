@@ -17,6 +17,7 @@ import { Client, Events, GatewayIntentBits, Partials, type Message } from 'disco
 import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 import { decideVoiceJoinPermission } from '../voice/voice-lifecycle.js';
 import { VoiceReadAloudWatcher } from '../voice/voice-read-aloud-watcher.js';
+import { VoiceUtteranceArchive_Util } from '../voice/voice-utterance-archive.js';
 import { VoiceServiceWatch } from '../voice/voice-service-watch.js';
 import { speakInVoiceChannel } from '../voice/voice-speaker.js';
 import { resolveOutboundLogPath } from './discord.reply-tracker.js';
@@ -57,13 +58,13 @@ import {
   VoiceChannelPresence,
   readVoicePresenceConfig,
 } from '../voice/voice-channel-presence.js';
+import { startVoiceRecording } from '../voice/voice-channel-recorder.js';
 import {
-  classifyRecordingOutcome,
-  startVoiceRecording,
+  VoiceRecordingOutcome_Util,
   type RecordingHandled,
   type RecordingOutcomeCode,
   type SpeechAttemptStats,
-} from '../voice/voice-channel-recorder.js';
+} from '../voice/voice-recording-outcome.js';
 import { composeVoiceChannelEntry } from '../voice/voice-channel-bridge.js';
 import { planRetryDelivery, type RetryDeliveryPlan } from '../stt/stt.retry-delivery.js';
 import type {
@@ -128,6 +129,15 @@ const BACKFILL_MAX_AGE_MS: number = 12 * 60 * 60_000;
  * a lenyeg, hogy legyen FELSO HATAR.
  */
 const TRANSCRIBED_MEMORY_LIMIT: number = 500;
+
+/**
+ * Hány megszólalás-törzset tartunk nyilván a korrelációhoz.
+ *
+ * ⚠️ Jóval kisebb, mint a duplikátum-határ: a *fájlnév → törzs* párosításra csak addig van
+ * szükség, amíg a felismerés lefut *(mérve: néhány másodperctől 5 percig)*. ⛔ Korlát nélkül a
+ * `Map` egy hosszan futó figyelőben végtelenül nőne.
+ */
+const MAX_ARCHIVED_STEMS: number = 50;
 
 /** Discord-üzenet → a saját, szűk adatszerkezetünk. Egy helyen, hogy ne csússzon szét. */
 function toIncoming(message: Message): IncomingDiscordMessage {
@@ -211,6 +221,15 @@ export class DiscordListener {
    * addigra már MEGTÖRTÉNT volna. Ezért itt, a drága lépés ELŐTT szűrünk.
    */
   private readonly transcribedMessageIds: Set<string> = new Set();
+
+  /**
+   * 🎙️ A MEGŐRZÖTT megszólalások: *felvétel-fájlnév → archívum-törzs*.
+   *
+   * ⭐ MIÉRT KELL: a hangot a felismerés **előtt** tesszük el, a sorsát viszont csak **utána**
+   * tudjuk. A kettő között ez a nyilvántartás tartja össze őket — enélkül a jegyzet nem
+   * lenne hozzárendelhető a felvételhez.
+   */
+  private readonly archivedStems: Map<string, string> = new Map();
 
   /**
    * 🔴 A hangok, amiket nem sikerült felismerni — hogy NE VESSZENEK EL.
@@ -1007,6 +1026,16 @@ export class DiscordListener {
       onRecognitionFailed: (info: { audio: Uint8Array; filename: string; failure: string }): void => {
         void this.queueVoiceChannelForRetry(channelId, info);
       },
+      // 🎙️ A NYERS HANG MEGŐRZÉSE — ⭐ a felismerés ELŐTT, kimenetelre való tekintet nélkül.
+      //
+      // > **Owner, 2026-09-11 01:57 (hang):** *„biztosítani kéne azt, hogy elmenthessem a
+      // > hangüzeneteimet… ne kelljen újra elmondanom, mert nem mindig tudom ugyanúgy."*
+      //
+      // 🔴 A MÉRT HIÁNY: a fenti `onRecognitionFailed` **csak a technikai bukást** teszi el.
+      // A *„hallottam, de nem értettem biztosan"* ágon semmi nem hívódott ⇒ a `voice-funnel`
+      // 6 *„felismerés után elveszett"* tétele hanggal együtt, **véglegesen** elveszett.
+      archive: (info: { audio: Uint8Array; filename: string }): Promise<boolean> =>
+        this.archiveUtterance(channelId, info),
       onProbeError: (detail: string): void => {
         void this.safeLog({
           kind: 'error',
@@ -1017,7 +1046,7 @@ export class DiscordListener {
       onHandled: (outcome: RecordingHandled): void => {
         // ⚠️ HAROM KIMENETEL, HAROM KOD — az osztalyozas TESZTELT fuggvenyben all
         // (`classifyRecordingOutcome`), mert ezt mar ketszer elrontottam.
-        const outcomeCode: RecordingOutcomeCode = classifyRecordingOutcome(outcome);
+        const outcomeCode: RecordingOutcomeCode = VoiceRecordingOutcome_Util.classify(outcome);
 
         void this.safeLog({
           kind: outcomeCode === VOICE_LOG_CODES.dropped ? 'error' : 'note',
@@ -1036,6 +1065,10 @@ export class DiscordListener {
             ...(outcome.missed ? { missed: outcome.missed } : {}),
           },
         });
+
+        // 📒 A SORS FELJEGYZÉSE a megőrzött hang mellé — ⭐ a BIZONYTALAN átirat is.
+        // ⛔ Nem a kötegbe: oda változatlanul csak a megbízható átirat kerül.
+        void this.annotateUtterance(outcome);
 
         // 🗺️ Ugyanaz a TESZTELT tabla dont itt is. ⭐ Duplikatumnal es idegen beszelonel
         // CSEND a helyes valasz — ha szolnank, az owner azt hinne, elveszett valami.
@@ -1058,6 +1091,96 @@ export class DiscordListener {
     // újracsatlakozás különben két mintavételezőt hagyna ugyanazon a könyvtáron.
     this.dropProbe?.stop();
     this.dropProbe = result.probe ?? null;
+  }
+
+  /**
+   * 🎙️ A NYERS HANG MEGŐRZÉSE — ⭐ **a felismerés ELŐTT**, kimenetelre való tekintet nélkül.
+   *
+   * > **Owner, 2026-09-11 01:57 (hang):** *„biztosítani kéne azt, hogy elmenthessem a
+   * > hangüzeneteimet… minél többet beszélek, annál fontosabb, hogy ez el legyen mentve, és ne
+   * > kelljen újra elmondanom, mert **nem mindig tudom ugyanúgy**."*
+   *
+   * @returns megmaradt-e a hang — ⚠️ **mért** tény, ⛔ nem feltevés. A hívó ezt viszi tovább a
+   *   kimenetelbe, hogy a napló se állíthasson valótlant.
+   *
+   * ⛔ Hibát SOHA nem dob: a megőrzés kísérő funkció. ⚠️ De ⛔ nem is néma — a bukás
+   * `error` szintű naplósort kap, mert ilyenkor a hang **tényleg elveszhet**.
+   */
+  private async archiveUtterance(
+    channelId: string,
+    info: { audio: Uint8Array; filename: string },
+  ): Promise<boolean> {
+    const speakerId: string = (process.env['MA_DISCORD_USER_ID'] ?? '').trim();
+    const stem: string = VoiceUtteranceArchive_Util.buildStem(new Date(), speakerId);
+
+    // ⭐ A FÁJLNÉV → TÖRZS párosítás: a kimenetel később EZEN az azonosítón talál vissza a
+    // megőrzött hanghoz. ⛔ Enélkül a jegyzet nem lenne hozzárendelhető a felvételhez.
+    this.archivedStems.set(info.filename, stem);
+    this.forgetOldestArchivedStems();
+
+    const outcome = await VoiceUtteranceArchive_Util.keep({ audio: info.audio, stem: stem });
+
+    await this.safeLog({
+      kind: outcome.kept ? 'note' : 'error',
+      summary: `[discord/listener] ${outcome.kept ? 'MA-VOICE-UTTERANCE-KEPT' : 'MA-VOICE-UTTERANCE-KEEP-FAILED'}: `
+        + `${outcome.detail}`,
+      extra: {
+        code: outcome.kept ? 'MA-VOICE-UTTERANCE-KEPT' : 'MA-VOICE-UTTERANCE-KEEP-FAILED',
+        stem: stem,
+        channelId: channelId,
+        ...(outcome.kept ? {} : {
+          remedy: 'Ellenőrizd a ~/.config/my-assistant/voice-archive írhatóságát — enélkül '
+            + 'a bizonytalan megszólalások VÉGLEG elvesznek.',
+        }),
+      },
+    });
+
+    return outcome.kept;
+  }
+
+  /**
+   * 📒 A megszólalás SORSÁNAK feljegyzése a megőrzött hang mellé.
+   *
+   * ⭐ A NYERS ÁTIRAT AKKOR IS BEKERÜL, HA BIZONYTALAN — ez a 02:00-as kérés **2. rétege**.
+   * ⛔ Ez **nem** a hallucináció-őr lazítása: a köteg változatlanul csak a megbízható átiratot
+   * kapja meg. Ami változik: van mihez visszatérni.
+   */
+  private async annotateUtterance(outcome: RecordingHandled): Promise<void> {
+    const stem: string | undefined = outcome.filename
+      ? this.archivedStems.get(outcome.filename)
+      : undefined;
+
+    // ⚠️ Nincs törzs ⇒ nem is volt megőrzés (idegen beszélő, olvashatatlan felvétel).
+    // ⛔ Ilyenkor NEM írunk jegyzetet: egy hang nélküli jegyzet csak zaj lenne.
+    if (!stem) return;
+
+    await VoiceUtteranceArchive_Util.annotate({
+      stem: stem,
+      status: outcome.queued
+        ? 'queued'
+        : outcome.missed === 'not-understood' ? 'uncertain' : 'recognition-failed',
+      ...(outcome.heard ? { transcript: outcome.heard } : {}),
+      ...(outcome.queued ? {} : { reason: outcome.reason ?? outcome.detail }),
+      speakerId: (process.env['MA_DISCORD_USER_ID'] ?? '').trim(),
+      audioKept: outcome.audioKept ?? false,
+    });
+  }
+
+  /**
+   * A törzs-nyilvántartás nyesése.
+   *
+   * ⚠️ A `Map` különben **korlátlanul nőne** egy hosszan futó figyelőben — ugyanaz a minta,
+   * mint a `forgetOldestTranscribedIds`-nél. A korreláció néhány másodperc alatt megtörténik,
+   * tehát a régi tételekre már nincs szükség.
+   */
+  private forgetOldestArchivedStems(): void {
+    while (this.archivedStems.size > MAX_ARCHIVED_STEMS) {
+      const oldest: string | undefined = this.archivedStems.keys().next().value;
+
+      if (oldest === undefined) return;
+
+      this.archivedStems.delete(oldest);
+    }
   }
 
   /**

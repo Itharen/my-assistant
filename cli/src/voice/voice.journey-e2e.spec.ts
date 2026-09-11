@@ -24,11 +24,11 @@ import { join } from 'node:path';
 
 import { DiscordBatchStore } from '../discord/discord.batch-store.js';
 import { VoiceChannelBridge, VOICE_CHANNEL_MARKER } from './voice-channel-bridge.js';
+import { handleFinishedRecording } from './voice-channel-recorder.js';
 import {
-  classifyRecordingOutcome,
-  handleFinishedRecording,
+  VoiceRecordingOutcome_Util,
   type RecordingHandled,
-} from './voice-channel-recorder.js';
+} from './voice-recording-outcome.js';
 import { VoiceDropProbe, type VoiceDropObservation } from './voice-drop-probe.js';
 import { MissedSpeechReporter } from './voice-missed-speech.js';
 import { planFeedbackForDrop, planFeedbackForOutcome } from './voice-feedback-plan.js';
@@ -163,7 +163,7 @@ describe('🧭 hang-csatorna — kritikus user-journey', () => {
     expect(plan.missed).toBeNull();
 
     // ── 7. lépés: 🔴 A SZÓKINCS ODA-VISSZA — az író kódját az olvasó FELDOLGOZZA ──────────
-    log(classifyRecordingOutcome(outcome));
+    log(VoiceRecordingOutcome_Util.classify(outcome));
     await flushLog();
 
     const funnel: VoiceFunnelReport = await buildVoiceFunnelReport({ projectRoot: root, day: DAY });
@@ -275,9 +275,9 @@ describe('🧭 hang-csatorna — kritikus user-journey', () => {
     expect(sent.length).toBe(1);
 
     // ── 3. lépés: a mérésben egyik sem VESZTESÉG ─────────────────────────────────────────
-    log(classifyRecordingOutcome(stranger));
-    log(classifyRecordingOutcome(first));
-    log(classifyRecordingOutcome(second));
+    log(VoiceRecordingOutcome_Util.classify(stranger));
+    log(VoiceRecordingOutcome_Util.classify(first));
+    log(VoiceRecordingOutcome_Util.classify(second));
     await flushLog();
 
     const funnel: VoiceFunnelReport = await buildVoiceFunnelReport({ projectRoot: root, day: DAY });

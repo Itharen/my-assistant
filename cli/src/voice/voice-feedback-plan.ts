@@ -20,7 +20,7 @@
 // ⛔ EZ A MODUL NEM CSINÁL SEMMIT — csak **eldönti, mi történjen**. A lejátszás és a küldés a
 // hívóé. Így a döntés önmagában, mellékhatás nélkül vizsgálható.
 
-import type { RecordingHandled } from './voice-channel-recorder.js';
+import type { RecordingHandled } from './voice-recording-outcome.js';
 import type { VoiceCue } from './voice-cues.js';
 import type { MissedSpeech } from './voice-missed-speech.js';
 import type { VoiceDropObservation } from './voice-drop-probe.js';
@@ -50,7 +50,17 @@ export function planFeedbackForOutcome(outcome: RecordingHandled): VoiceFeedback
   if (outcome.queued) return { cue: 'understood', missed: null };
 
   if (outcome.missed === 'not-understood') {
-    return { cue: 'unsure', missed: { kind: 'not-understood' } };
+    return {
+      cue: 'unsure',
+      missed: {
+        kind: 'not-understood',
+        // ⭐ AMIT ÉRTETTÜNK, ÁTMEGY A JELENTÉSBE (owner, 2026-09-11 01:29). ⛔ Ez NEM a
+        // hallucináció-őr lazítása: gyanús átiratra továbbra sem cselekszünk — csak
+        // megmondjuk, mit hallottunk, hogy **ő** dönthessen.
+        ...(outcome.heard?.trim() ? { heard: outcome.heard.trim() } : {}),
+        ...(outcome.reason?.trim() ? { reason: outcome.reason.trim() } : {}),
+      },
+    };
   }
 
   if (outcome.missed === 'recognition-failed') {

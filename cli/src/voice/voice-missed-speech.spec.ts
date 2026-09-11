@@ -24,6 +24,61 @@ function makeSender(options: { sent?: boolean; throws?: boolean } = {}): {
   };
 }
 
+describe('composeMissedSpeechSummary — ⭐ AMIT ÉRTETTÜNK (owner, 2026-09-11 01:29)', () => {
+
+  it('🔴 a NYERS átirat és az OK is látszik — ⛔ a „nem cselekszem rá" használhatatlan önmagában', () => {
+    // Owner: „Ha hallottam, de nem értettem biztosan résznél, ott jó lenne, ha kiírnánk azt is,
+    // hogy mit hallottál, vagy miért nem lett biztos." ⇒ Így Ő dönti el, jól hallottam-e;
+    // nem nekem kell eltalálnom. Enélkül nem tudja, mit ismételjen meg és hogyan mondja másképp.
+    const text: string = composeMissedSpeechSummary({
+      speakerName: 'Itharen',
+      missed: [{
+        kind: 'not-understood',
+        heard: 'Jag måste bara vara en falla om en gång.',
+        reason: 'nyelv-eltérés',
+      }],
+    });
+
+    expect(text).toContain('Jag måste bara vara');
+    expect(text).toContain('nyelv-eltérés');
+  });
+
+  it('⚠️ a HOSSZÚ átirat csonkolva jelenik meg — a teljes a megőrzött jegyzetben van', () => {
+    // ⛔ Ez NEM adatvesztés: a forrás megmaradt (`voice-utterance-archive.ts`). Egy hosszú,
+    // félrehallott monológ teljes hosszban itt csak zaj lenne.
+    const text: string = composeMissedSpeechSummary({
+      speakerName: 'Itharen',
+      missed: [{ kind: 'not-understood', heard: 'a'.repeat(400) }],
+    });
+
+    expect(text).toContain('…');
+    expect(text.length).toBeLessThan(400);
+  });
+
+  it('átirat NÉLKÜL nem ír ki üres idézőjelet', () => {
+    const text: string = composeMissedSpeechSummary({
+      speakerName: 'Itharen',
+      missed: [{ kind: 'recognition-failed' }],
+    });
+
+    expect(text).not.toContain('amit értettem');
+  });
+
+  it('⭐ TÖBB bizonytalan megszólalás MINDEGYIKE látszik — ⛔ nem csak az első', () => {
+    // A csendes összevonás ugyanaz a hibaosztály, mint a néma csonkolás.
+    const text: string = composeMissedSpeechSummary({
+      speakerName: 'Itharen',
+      missed: [
+        { kind: 'not-understood', heard: 'első mondat' },
+        { kind: 'not-understood', heard: 'második mondat' },
+      ],
+    });
+
+    expect(text).toContain('első mondat');
+    expect(text).toContain('második mondat');
+  });
+});
+
 describe('composeMissedSpeechSummary — ami nem jutott át, az is látszik', () => {
   it('⭐ darabszámot ÉS másodpercet is mond — a másodperc mutatja a valódi veszteséget', () => {
     const text: string = composeMissedSpeechSummary({

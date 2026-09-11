@@ -95,9 +95,21 @@ hanem mert **valamit ki kell írniuk**.
 "Bye."   "Thank you."   "You."   "Thanks for watching."   "Bye-bye."
 ```
 
-⚠️ **A töltelék nem mindig angol.** Mérve 2026-09-11 02:22: `"í þetta kvartamur."` — **izlandi**,
-miközben az owner magyarul beszélt. ⇒ A jel nem a NYELV, hanem hogy az átirat **rövid, idegen
-nyelvű és a beszélgetéshez semmi köze**.
+⚠️ **A töltelék nem mindig angol — és az IZLANDI visszatérő.** Két mért eset **9 percen belül**:
+
+| Idő | Az átirat |
+|---|---|
+| 2026-09-11 02:22 | `"í þetta kvartamur."` |
+| 2026-09-11 02:31 | `"Ná, hvað er mást holið startung?"` |
+
+Mindkettő **izlandi**, miközben az owner magyarul beszélt.
+
+⭐ **Ez nem véletlen, hanem DIAGNÓZIS:** a felismerő érthetetlen magyar hangra **izlandira**
+tippel. ⇒ Ez **közvetlen bizonyíték** arra, hogy a nyelv rögzítése *(DEV-HANDOFF 01:24)* nem
+kozmetika — ha a nyelv magyarra van szögezve, ez a hibaosztály **eltűnik**.
+
+⇒ A jel tehát nem a NYELV önmagában, hanem hogy az átirat **rövid, idegen nyelvű, és a
+beszélgetéshez semmi köze**.
 
 *(A lista bővül — minden új előfordulás ide.)*
 

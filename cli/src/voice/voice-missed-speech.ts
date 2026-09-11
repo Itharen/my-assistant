@@ -29,10 +29,20 @@ export type MissedSpeechKind =
   /** A felvevő beszéd-validációja dobta ki a kész felvételt — némán. */
   | 'discarded-by-recorder';
 
+/** Egy megszólalás, ami NEM jutott át — és minden, amit tudunk róla. */
 export interface MissedSpeech {
   kind: MissedSpeechKind;
   /** Hány másodperc hang veszett el, ha tudjuk. */
   seconds?: number;
+  /**
+   * ❓ AMIT ÉRTETTÜNK — `not-understood`-nál a **nyers** átirat.
+   *
+   * > **Owner, 2026-09-11 01:29 (hang):** *„Ha hallottam, de nem értettem biztosan résznél,
+   * > ott jó lenne, ha kiírnánk azt is, hogy mit hallottál, vagy miért nem lett biztos."*
+   */
+  heard?: string;
+  /** MIÉRT nem lett biztos — rövid, konkrét ok. */
+  reason?: string;
 }
 
 export interface MissedSpeechReporterOptions {
@@ -104,13 +114,53 @@ export function composeMissedSpeechSummary(params: {
         group.reduce((sum: number, m: MissedSpeech): number => sum + (m.seconds ?? 0), 0),
       );
 
-      return `> • ${group.length}× ${entry.label}`
-        + (groupSeconds > 0 ? ` — ${groupSeconds} mp` : '');
+      return [
+        `> • ${group.length}× ${entry.label}`
+          + (groupSeconds > 0 ? ` — ${groupSeconds} mp` : ''),
+        ...composeHeardLines(group),
+      ].join('\n');
     })
     .filter((line: string): boolean => line.length > 0);
 
   return [header, ...lines].join('\n');
 }
+
+/**
+ * ⭐ AMIT ÉRTETTÜNK — a bizonytalan megszólalások nyers átirata, tételenként.
+ *
+ * > **Owner, 2026-09-11 01:29 (hang):** *„Ha hallottam, de nem értettem biztosan résznél, ott
+ * > jó lenne, ha kiírnánk azt is, hogy mit hallottál, vagy miért nem lett biztos."*
+ *
+ * ⭐ MIÉRT ÉR EZ SOKAT: így **ő** dönti el, hogy jól hallottam-e — ⛔ nem nekem kell eltalálnom.
+ * A puszta *„nem cselekszem rá"* igaz, de **használhatatlan**: nem tudja, mit ismételjen meg és
+ * hogyan mondja másképp.
+ *
+ * ⚠️ **Csonkolva**: egy hosszú, félrehallott monológ teljes hosszban itt csak zaj lenne — a
+ * teljes átirat a **megőrzött** jegyzetben van *(`voice-utterance-archive.ts`)*, ez csak a
+ * felismeréshez kell. ⛔ Ez nem adatvesztés: a forrás megmaradt.
+ */
+function composeHeardLines(group: MissedSpeech[]): string[] {
+  return group
+    .filter((m: MissedSpeech): boolean => Boolean(m.heard?.trim()))
+    .map((m: MissedSpeech): string => {
+      const heard: string = m.heard?.trim() ?? '';
+      const shown: string = heard.length > HEARD_PREVIEW_CHARS
+        ? `${heard.slice(0, HEARD_PREVIEW_CHARS)}…`
+        : heard;
+      const why: string = (m.reason ?? '').trim();
+
+      return `>   ↳ amit értettem: „${shown}"${why ? ` — miért bizonytalan: ${why}` : ''}`;
+    });
+}
+
+/**
+ * Ennyi karakter látszik az átiratból a jelentésben.
+ *
+ * ⭐ MÉRT KORLÁT: a felismerhetőséghez az első pár szó elég *(a mai svéd félrehallás —
+ * „Jag måste bara vara…" — 3 szóból azonnal látszott)*. A teljes szöveg a megőrzött
+ * jegyzetben van.
+ */
+const HEARD_PREVIEW_CHARS: number = 160;
 
 /**
  * 🔇 A kiesés-jelentő.
