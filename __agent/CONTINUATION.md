@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-11 03:18
+**Utoljára frissítve:** 2026-09-11 03:30
 
 ---
 
@@ -35,7 +35,12 @@
 |---|---|
 | `CronCreate` | ⛔ session-only, elvész — `d82bebb3` **törölve** |
 | `ScheduleWakeup` | ⛔ **head-blocking**: a CCAP a SessionQueue-ba teszi `delayUntil` flaggel ⇒ a lejáratig **minden mögötte álló üzenet is várakozik**. ⛔ Percnél hosszabbra TILOS |
-| **CCAP scheduler-job** *(`POST /api/sch/jobs`)* | ✅ **EZ a helyes eszköz** — MongoDB, túléli a session- és szerver-restartot |
+| **CCAP scheduler-job** *(`POST /api/sch/jobs`)* | ✅ perzisztens — **de** a queue-aware gate elnyomja, ha bármi áll a sorban |
+
+🔴 **ÉS A KETTŐ KIOLTJA EGYMÁST** *(03:28)*: a gate a **nyers** `hasQueuedItems`-et nézi, ami a
+**delay-held wakeup-elemet is számolja** ⇒ amíg wakeup függőben van, **minden ütemezett trigger
+elmarad**. ⛔ Egyszerre csak az EGYIKET használom. Az owner útja a **wakeup-lánc** — azt követem.
+⭐ Korrekció: a wakeup **túléli a szerver-restartot** (perzisztált queue-elem).
 
 ⭐ **A saját tick-em fázisa MÉRHETŐ:** job `6a9e3ccb3fff98f808dc9e92`, 3 óra,
 `GET /api/sch/jobs/<id>` → `nextDueAt`. Raszter *(CEST)*: **03:00 / 06:00 / 09:00 / 12:00**.
@@ -45,7 +50,9 @@ Részletek + recept: `current/principles/wake-escalation.md`.
 
 | Idő | Mi | Ref |
 |---|---|---|
-| **10:50** | ébresztés-eszkaláció *(⭐ **CCAP scheduler-job `6aa354d184f43155b757e2e8`** — perzisztens, `maxExecutions: 1`; igazolva: `nextDueAt` = 08:50Z)* | `wake-escalation.md` |
+| **09:00** *(tick)* | 🔴 **ITT KELL CSELEKEDNI:** ① aktivitás-ellenőrzés + Discord-ping ② **töröld** a `6aa354d184f43155b757e2e8` jobot ③ `ScheduleWakeup` **3600 s** | `wake-escalation.md` |
+| **10:00** *(wake)* | aktív? → ⛔ vége. Nem aktív? → `ScheduleWakeup` **3000 s** | ↑ |
+| **10:50** *(wake)* | 🔊 **Google Home**: *„Mindjárt kezdődik a meeting — 11:00-kor, online."* | ↑ |
 | **10:30** | ébresztő | `org:task:6aa34f65766c802935c3c6be` |
 | **11:00** | 📅 **míting, ONLINE** | `org:task:6aa34e92766c802935c3c6b7` |
 | **15:00** | 🥤 pia venni *(a kínai 19:00-ig)* | `org:task:6aa335f1766c802935c3c2a4` |
