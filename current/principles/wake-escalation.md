@@ -62,6 +62,10 @@ amiért nem tudok helytállni.
 
 > *„Mindjárt kezdődik a meeting — 11:00-kor, online."*
 
+🔇 **ÉS A HANGSZÓRÓT AZ EGÉSZ SZOBA HALLJA** *(owner, 2026-09-11 04:14)*: az ébresztő mondata
+**semleges** legyen — ⛔ semmi személyes, semmi magánjellegű. ⚠️ **Ma különösen:** 09-11 estétől
+**vendégek** vannak nála *(3 napos szétcsapás)*. Kanonikus: [[private-topics-and-audience]].
+
 ⚠️ A hangerő: a `cast-notifier` alapértelmezése **save → up → restore**
 *(`cast-notifier-defaults.md`)* — ébresztésnél ez **kell**, mert az esti halk szint reggel nem
 ébreszt fel.
