@@ -1,5 +1,42 @@
 # STATUS
 
+<!-- HONNIE-SESSION-STATUS:BEGIN -->
+## 📍 2026-09-11 02:02 — a session lezárása (owner elköszönt)
+
+**Ami ELKÉSZÜLT ebben a körben**
+
+| Terület | Állapot |
+|---|---|
+| 📄 **CV** | ✅ **VÉGLEGESÍTVE**: `current/cv/releases/2026-09/cv-2026-09.pdf`. Belépési pont a következő körhöz: `current/cv/README.md` |
+| 🔗 **LinkedIn olvasás** | ✅ élesben mérve: profil + **48 poszt** archiválva `current/linkedin/`-be, `scripts/linkedin-archive.py`-vel újrafuttatható |
+| 🖊️ **Poszt-szabályok** | ✅ az owner szó szerinti irányelvei: `current/principles/linkedin-post-writing.md`. **Kép-döntés: az ERŐSEK kapnak képet** |
+| 🎙️ **Hang** | ✅ megszólalok, a hallgatás és a DM-tükrözés megy |
+
+**A SORON LÉVŐ — ⚠️ a prioritás ebben a sorrendben áll**
+
+1. 🥇 **LinkedIn PROFIL-FRISSÍTÉS** — a javasolt szöveg **az én dolgom** *(a 2026-09-es CV-ből)*; a másoló-felület a DEV-é
+2. 🔊 a DEV-nél: hang-megőrzés *(62,5% átvitel)* · felolvasás-sor · darabolás · szüneteltetés beszéd közben · nyelv-rögzítés
+3. poszt-piszkozat *(T-74)* → posztoló felület *(T-73)*
+
+**⏰ IDŐZÍTETT:** `org:task:6aa335f1766c802935c3c2a4` — **2026-09-11 15:00**, piát venni *(a kínai 19:00-ig nyitva)*.
+
+**🔒 OWNER-DÖNTÉSRE VÁR:** az ElevenLabs-kulcs **újra a `server.log`-ba került**; rotáció = owner-döntés, hozzá nem nyúltam.
+<!-- HONNIE-SESSION-STATUS:END -->
+
+
+## 🛰️ OVERSEER-FIRST SZOLGÁLTATÁSÁLLAPOT ÉL — 2026-09-09 16:05
+
+✅ A My Assistant szerver 30 percenként frissíti és külön mutatja: Test Server, Production
+Server, Test/Production Webhook, Gateway, Overseer, Organizer. A két szerver és az Overseer
+közvetlenül mérődik; a négy szolgáltatás az Overseer célzott projektstátusza. Restart-biztos snapshot és
+`/api/healthz.services` is van. **105/105 server teszt zöld**, élő pulzus:
+`T-SRV✅ P-SRV✅ T-WH✅ P-WH⚠️ GW⚠️ OVS✅ ORG✅`.
+
+⚠️ A két sárga valós Overseer-jelzés: lejárt TLS a Production Webhookon és a Gatewayen.
+C-49 használata/aktív értesítése továbbra is owner-jóváhagyásra vár.
+
+---
+
 ## 🎙️ A HANG-CSATORNA FELVÉTELE BEKÖTVE — 2026-09-07 18:05
 
 A lánc: **átemelt CCAP-felvevő** *(szegmentálás, beszéd-észlelés — változatlanul)* → kész WAV →
