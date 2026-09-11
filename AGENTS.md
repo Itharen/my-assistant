@@ -649,6 +649,7 @@ megfogalmazása lesz a referencia.
 | `current/principles/recurring-tasks.md` | Takarítás / séta / mosás / fürdés / bevásárlás / kaja-rendelés szabályok |
 | `current/principles/stock-system.md` | Itthoni készlet alapérték + újrarendelési küszöb elemenként |
 | `current/principles/day-boundary-is-sleep.md` | 🛌 **A napokat az ALVÁS választja el, nem az éjfél.** Hajnalban a „ma" = az ELŐZŐ naptári nap, a „holnap" = UGYANAZ a nap. ⛔ A ciklusból kiszámolni TILOS („össze-vissza élek") — ha következménye van, mondjam ki a feltevést |
+| `current/principles/wake-escalation.md` | ⏰ **Ébresztés-eszkaláció**: aktivitás-ellenőrzés → Discord-ping → várakozás → 🔊 **Google Home** az esemény előtt 5-10 perccel. ⚠️ A 20 perces fő ütemezés raszterén egy 5-10 perces ablak **kimaradhat** ⇒ kritikus ébresztéshez külön `ScheduleWakeup`; és kimondom, hogy az ébresztés **nem garantált** |
 | `current/principles/sleep-system.md` | Csúszó alvás-ébrenlét ciklus (**18h fix** ébren / 8h alvás) + bedtime emlékeztető logika |
 | `current/principles/nzt-system.md` | NZT használati szabályok: max 2 on-nap, off ≥ on. User-eszköz a mélypontok / üresség-érzés kiszedésére |
 | `current/principles/methodology-authority.md` | **A my-assistant a kanonikus minta**, az organizer ehhez alkalmazkodik (nem fordítva) |
