@@ -1344,3 +1344,43 @@ nem hallok** — és ő ezt **nem tudja**, tehát beszél a semmibe.
 📌 Ideális esetben a sorrend is javul *(előbb hallgatás, aztán kilépés; belépés után azonnal
 hallgatás)* — de a **jelzés** akkor is kell, ha a rés technikailag nem tüntethető el.
 
+---
+
+## 2026-09-11 02:40 — 🏷️ LinkedIn-üzenetek: LÁTHATÓ rangsor és címkék
+
+> **Owner, 2026-09-11 02:38:** *„a LinkedIn üzeneteknél kellene valami olyasmi, ami **rangsorolás**,
+> meg **tegek**, …hogy be tudjál állítani jól, ami **vizuális nekem**, hogy **melyik a prió**."*
+
+⭐ **Az adat NAGY RÉSZE MÁR MEGVAN** — ⛔ ne építsd újra:
+
+| Ami van | Hol |
+|---|---|
+| `semanticCategory` **8 értékkel**, köztük `priority-direct-project` | `linkedin.models.ts` |
+| `semanticConfidence` *(high/medium/low)*, `semanticReason` *(egy mondat, MIÉRT)* | ugyanott |
+| `reviewState` *(fresh/stale/unreviewed)*, `needsReply`, `unread` | ugyanott |
+| a workspace **már mutatja** a `semantic*`, `needsReply`, `reviewState`, `unread` mezőket | `l-workspace.component.html` |
+
+### 🔴 AMI HIÁNYZIK — pontosan három dolog
+
+| # | Hiány | Miért számít |
+|---|---|---|
+| **1** | **RANGSOR — egyetlen sorrend.** Ma 8 kategória van, de nincs, ami megmondja, **melyik az ELSŐ** | ő nem kategóriát akar olvasni, hanem **sorrendet**: mit nyisson meg most |
+| **2** | **CÍMKÉK, amiket ÉN állítok.** A `semanticCategory` a gépi besorolás; kell **szabad címke** is *(pl. „árazás nyitva", „ügyfél visszajelzésére vár")* | a besorolás **általános**, a címke **konkrét** — és az ő szótárával |
+| **3** | **VIZUÁLIS jelölés.** Szín/jelvény, ⛔ nem mezőnév | *„ami vizuális nekem"* — egy `semanticCategory: actionable` szöveg **nem** vizuális |
+
+### Amit javaslok a rangsorra — ⛔ de MÉRD, ne tippelj
+
+A rendezés **három meglévő** mezőből számolható, új adat nélkül:
+
+```
+1. semanticCategory      (priority-direct-project > clarification-needed > actionable > a többi)
+2. needsReply            (igen elöl)
+3. a szál KORA           ⭐ mérve: a mai öt szál 17–79 napos — az öregedés VALÓDI jel
+```
+
+⚠️ **A kor a leggyakrabban kifelejtett tényező**, pedig a mai mérés szerint a legjobb lehetőség
+**62 napja** állt. ⇒ Aminek **lejár az ideje**, az menjen előre.
+
+⛔ **`one-function-is-enough`:** ez a **6. tétel után** jön, és **EGY** funkció — a rangsor. A
+szabad címkék külön kör.
+
