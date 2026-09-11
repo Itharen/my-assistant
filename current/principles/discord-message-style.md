@@ -350,3 +350,38 @@ darabolás csak a **háló**.
 
 ✅ **Ami MARAD:** mi változott a számára · mit kell tennie · milyen döntés vár rá.
 
+
+---
+
+## 8⃣ 🙂 A SAJÁT FELADATAIMRÓL: **EGY EMOJI**, nem hallgatás — ⛔ de DND-ben semmi
+
+> **Owner, 2026-09-11 03:51-03:52 (szó szerint):** *„a feladatokról, amit **neked** kell csinálni,
+> arról ugye **nem küldesz nekem Discord üzenetet**, de azt **szerettem, amikor egy darab emojit
+> küldtél**."* · *„persze **nem a don't disturb időben**."*
+
+⭐ **Ez FINOMÍTÁS, nem visszavonás.** A „ne írj a saját dolgaidról" **áll** — csak a néma
+hallgatás helyett **egy darab emoji** jár nyugtaként.
+
+| Helyzet | Amit küldök |
+|---|---|
+| **az ő** teendője / döntése | rendes, rövid üzenet *(a fenti szabályok szerint)* |
+| **az én** feladatom kész / halad | **EGY emoji.** ⛔ Nulla szöveg, nulla magyarázat |
+| 🛏️ **don't-disturb idő** *(alszik / lefekvéshez készül)* | ⛔ **SEMMI** — az emoji sem |
+
+### Miért jó ez neki — és mi a csapda
+
+⭐ **Az emoji nyugta:** látja, hogy **élek és haladok**, anélkül hogy **olvasnia** kellene.
+Nulla feldolgozási költség, mégsem csend.
+
+⛔ **A csapda, amibe ne essek:** az „egy emoji" **EGY karakter**, nem emoji + fél mondat, és nem
+emoji-sor. Ha magyarázni akarom, az azt jelenti, hogy **rossz csatornán vagyok** — az a repóba megy.
+
+### ⚠️ MÉG NINCS PONTOS DND-DEFINÍCIÓNK — ez a nyitott pont
+
+A „don't disturb idő" jelenleg **következtetés**: a `sleep-system.md` lefekvés-ablaka + az utolsó
+aktivitás + amit ő maga mond *(„már az ágyban fekszem")*. ⛔ **Nincs kapcsoló**, amit meg tudnék
+nézni. ⇒ **Bizonytalanságnál a csend a helyes** — egy elmaradt emoji ártalmatlan, egy hajnali
+értesítés nem. *(`Q` felvéve: kell-e explicit DND-kapcsoló.)*
+
+Kapcsolódó: [[focus-includes-life]] · [[focus-support]] · [[sleep-system]] ·
+[[discord-first-output]]
