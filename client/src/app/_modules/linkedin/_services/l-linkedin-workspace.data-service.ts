@@ -7,6 +7,8 @@ import type {
   LinkedInWorkspaceFilter,
   LinkedInWorkspaceInboxResponse,
   LinkedInWorkspaceThreadResponse,
+  LinkedInProfileUpdatePlan,
+  LinkedInProfilePastedRequest,
 } from '@server-models';
 
 import { L_LinkedInWorkspace_ApiService } from './l-linkedin-workspace.api-service';
@@ -35,5 +37,15 @@ export class L_LinkedInWorkspace_DataService {
 
   updateDraftStatus(request: LinkedInWorkspaceDraftStatusRequest): Promise<LinkedInWorkspaceDraftReceipt> {
     return this.api_AS.updateDraftStatus(request);
+  }
+
+  /** 🔗 A profil-frissítési terv — mezőnként a mostani és a javasolt szöveg. */
+  getProfileUpdatePlan(): Promise<LinkedInProfileUpdatePlan> {
+    return this.api_AS.getProfileUpdatePlan();
+  }
+
+  /** ✅ „Beillesztettem" jelölés — ⭐ a FRISS tervet adja vissza. */
+  markProfileFieldPasted(request: LinkedInProfilePastedRequest): Promise<LinkedInProfileUpdatePlan> {
+    return this.api_AS.markProfileFieldPasted(request);
   }
 }

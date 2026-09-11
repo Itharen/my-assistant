@@ -1,0 +1,92 @@
+<!--
+  🔗 A profil-frissítés felülete — „easy to use, copy-paste-es" (owner, 2026-09-11 01:52).
+  ⭐ MEZŐNKÉNT: a LinkedIn-en is mezőnként kell beilleszteni. ⛔ Nem egy nagy blob.
+  ⚠️ Modern vezérlés-folyam: @if / @for — a régi struktúr-direktívák elavultak.
+  (A nevük ITT SEM szerepel: a review a KOMMENTBEN is megtalálta — mérve.)
+-->
+<section class="l-profile-panel">
+  <header class="l-head">
+    <h2>🔗 LinkedIn profil-frissítés</h2>
+    <span class="l-progress">{{ progressLabel_$() }}</span>
+  </header>
+
+  <!-- ⛔ A HIBA SOSEM NÉMA a felületen. -->
+  @if (error_$()) {
+    <p class="l-error" role="alert">⚠️ {{ error_$() }}</p>
+  }
+
+  @if (loading_$()) {
+    <p class="l-muted">Betöltés…</p>
+  }
+
+  <!--
+    ⚠️ A JAVASLAT HIÁNYA NEM HIBA: azt az asszisztens írja meg. Ezt KI KELL MONDANI,
+    különben a panel üresen elromlottnak látszik.
+  -->
+  @if (!loading_$() && plan_$() && !plan_$()!.hasProposal) {
+    <p class="l-muted">
+      ⏳ Még nincs javasolt szöveg. Azt az asszisztens írja meg a 2026-09-es CV-ből — amint
+      elkészül, itt mezőnként megjelenik a mostani szöveg mellett.
+    </p>
+  }
+
+  <!-- 🔴 A TÚLLÓGÁS ITT derül ki, ⛔ nem a beillesztésnél. -->
+  @if (plan_$() && plan_$()!.overLimitCount > 0) {
+    <p class="l-error">
+      🔴 {{ plan_$()!.overLimitCount }} mező TÚLLÓG a LinkedIn korlátján — azokat rövidíteni
+      kell, különben a beillesztésnél némán levágódnak.
+    </p>
+  }
+
+  @if (plan_$()?.isComplete) {
+    <p class="l-done">✅ Minden változó mező beillesztve — a profil frissítve.</p>
+  }
+
+  <ul class="l-fields">
+    @for (field of changingFields_$(); track field.key) {
+      <li class="l-field" [class.l-pasted]="field.isPasted">
+        <div class="l-field-head">
+          <strong>{{ field.label }}</strong>
+          <span class="l-count" [class.l-over]="field.isOverLimit">
+            {{ field.proposedLength }} / {{ field.limit }}
+          </span>
+        </div>
+
+        <!-- ⭐ EGYMÁS MELLETT: a mostani és a javasolt. -->
+        <div class="l-compare">
+          <div class="l-side">
+            <span class="l-label">most a LinkedIn-en</span>
+            <p class="l-text l-current">{{ field.current || '(üres)' }}</p>
+            <span class="l-muted">{{ field.currentLength }} karakter</span>
+          </div>
+          <div class="l-side">
+            <span class="l-label">javasolt</span>
+            <p class="l-text l-proposed">{{ field.proposed }}</p>
+            <span class="l-muted">{{ field.proposedLength }} karakter</span>
+          </div>
+        </div>
+
+        <div class="l-actions">
+          <!-- ⭐ EGY GOMB = EGY MEZŐ vágólapra. Ez a feladat lényege. -->
+          <button type="button" class="l-copy" (click)="copyField(field)">
+            {{ copiedKey_$() === field.key ? '✅ vágólapon' : '📋 másolás' }}
+          </button>
+
+          <!-- ✅ A pipa mezőnként — hogy félbeszakítás után tudja, hol tartott. -->
+          <label class="l-check">
+            <input type="checkbox" [checked]="field.isPasted" (change)="togglePasted(field)" />
+            beillesztettem
+          </label>
+        </div>
+      </li>
+    }
+  </ul>
+
+  <div class="l-foot">
+    <button type="button" (click)="refresh()" [disabled]="loading_$()">🔄 újraolvasás</button>
+    <span class="l-muted">
+      ⚠️ A LinkedIn API csak olvas — a beillesztés kézzel történik, ezért van itt minden mező
+      külön gombbal.
+    </span>
+  </div>
+</section>

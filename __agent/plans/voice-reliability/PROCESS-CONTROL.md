@@ -6,7 +6,7 @@
 > és a **sorrend** van.
 > **Ez a fájl az enyém (DEV).** A `DEV-HANDOFF.md` az asszisztensé — ⛔ oda nem írok státuszt.
 
-**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 04:15
+**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 04:45
 
 ---
 
@@ -31,7 +31,7 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **3** | ✂️ **DARABOLÁS** csonkolás helyett | 01:30 | ✅ **KÉSZ** — CLI 956/956 | 2026-09-11 03:40 |
 | **4** | 🔇 **SZÜNETELTETÉS**, amíg az owner beszél | 01:20 | ✅ **KÉSZ** — CLI 980/980 | 2026-09-11 04:00 |
 | **5** | 🌐 **NYELV-ELTÉRÉS** *(a paraméter NEM létezik — mérve)* | 01:24 + 01:30 | ✅ **KÉSZ** — CLI 988/988 | 2026-09-11 04:15 |
-| **6** | 🔗 **LinkedIn PROFIL-FRISSÍTŐ felület** | 01:55 | ⏳ **SORON** | — |
+| **6** | 🔗 **LinkedIn PROFIL-FRISSÍTŐ felület** | 01:55 | ✅ **KÉSZ** — CLI 1003 · szerver 106 · kliens 144 | 2026-09-11 04:45 |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -312,7 +312,58 @@ első sabotage-kísérletet *(`if (false && foreign)`)* maga a **fordító** uta
 
 ---
 
+## ✅ 6. TÉTEL — LinkedIn PROFIL-FRISSÍTŐ FELÜLET (2026-09-11 04:45)
+
+**A korlát:** a LinkedIn API **csak olvas** ⇒ a profilt nem írjuk át. ⇒ A cél a
+**súrlódás-mentes átvitel**, pontosan a kért négy tulajdonsággal:
+
+| kért | megvan |
+|---|---|
+| mezőnként a mostani és a javasolt szöveg **egymás mellett** | ✅ két hasáb *(szűk kijelzőn egymás alá)* |
+| **egy gomb = egy mező** vágólapra | ✅ ⛔ nincs nagy blob |
+| karakterszám + **LinkedIn-limit** mezőnként | ✅ *(headline 220 · about 2600)*, túllógásnál piros |
+| **„beillesztettem" pipa** mezőnként | ✅ a szerveren tárolva ⇒ félbeszakítás után is megmarad |
+
+**Három réteg:** `linkedin-profile-fields.ts` *(CLI — a döntés, 15 teszt)* ·
+`linkedin-profile.{controller,data-service}.ts` *(szerver)* · `l-profile-update` *(kliens, 8 teszt)*.
+⭐ **SSOT:** a limitek és a „kész"-fogalom a **CLI**-ben vannak; a szerver és a kliens ⛔ nem
+másolja őket.
+
+⚠️ **A javaslat hiánya NEM hiba:** a panel **kimondja**, hogy az asszisztens még nem írta meg
+*(⛔ nem néz ki üresen elromlottnak)*. A szöveget `current/linkedin/profile-proposed.json`-ba
+kell írni — **az asszisztens dolga**, ⛔ nem a DEV-é.
+
+### ⚠️ Review: 23 → 4 — és mi az a 4
+
+Sokat találtam, mert **régebbi mintákat** másoltam, amiket a review azóta szigorított.
+**Megjavítva:** `@if`/`@for` a struktúr-direktívák helyett · `computed` signalok a
+sablon-metódusok helyett · `_$` utótag · nem-`async` `ngOnInit` · a komponens az
+**adat-szolgáltatón** át megy *(⛔ nem az API-n)* · hiba-becsomagolás `DyFM_Error`-ral ·
+a néma `catch` jelent · sor-hossz · osztálynév-egyezés · **minden `as` átcímkézés kivéve**
+*(szűk szerződés + explicit DI-token)*.
+
+⭐ **Ismét bejött a MÉRT csapda:** az `*ngIf` találat **a saját kommentemre** illeszkedett —
+ugyanaz, mint korábban a `no-native-browser-dialogs`-nál. Átfogalmazva.
+
+🙋 **A maradék 4 — mind DOKUMENTÁLT döntés, ⛔ egyik sincs elhallgatva:**
+
+1-2. **`endpoint-auth-preprocess` ×2** + 3. **`thin-controller`**: a LinkedIn-felület
+**szándékosan loopback-alapú** *(saját guard + saját teszt védi, és a 4 szomszéd végpont is
+így működik)*. ⛔ Nem tettem rá csak-ide-token-autht: ha a kliens nem küld tokent, a panel
+**némán elhallgatna** — pontosan az a hibafajta, amit ebben a körben máshol javítottam.
+⇒ **Az auth-modell owner-döntés.**
+4. **`no-dynamic-imports`**: ⭐ **MÉRT kényszer** — a `@cli/*` alias csak fordítási időben
+létezik, a `tsx` futásidőben nem oldja fel. Statikus importtal a szerver **nem indulna**;
+ezt a Google- és Spotify-panel élesben már megfizette. *(Ugyanaz, mint a hangerő-útvonalon.)*
+
+---
+
 ## ➡️ A KÖVETKEZŐ KONKRÉT LÉPÉS
+
+⭐ **A terv mind a 6 tétele KÉSZ.** ⇒ A hurok lezárása: SoT-doksi + jelentés az
+`AGENT_BUS.md`-ben, ⛔ új ébredés NEM.
+
+### 🗄️ A 6. tétel korábbi jegyzete — archív
 
 **6. tétel *(LinkedIn profil-frissítő felület)*:** ⚠️ **más domain** — a hang-vonal ezzel
 lezárult. Az adat készen áll: `current/linkedin/profile-current.json` a mostani állapot; a

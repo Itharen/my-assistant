@@ -12,6 +12,8 @@ import type {
   LinkedInWorkspaceFilter,
   LinkedInWorkspaceInboxResponse,
   LinkedInWorkspaceThreadResponse,
+  LinkedInProfileUpdatePlan,
+  LinkedInProfilePastedRequest,
 } from '@server-models';
 
 @Injectable({ providedIn: 'root' })
@@ -67,6 +69,43 @@ export class L_LinkedInWorkspace_ApiService {
         type: DyFM_HttpCallType.post,
         baseUrl: this.resolveBaseUrl(),
         endpoint: '/linkedin/draft/status',
+      }),
+      { body: request },
+    );
+  }
+
+  /**
+   * 🔗 A profil-frissítési terv — mezőnként a mostani és a javasolt szöveg.
+   *
+   * ⭐ A limitek és a „kész"-fogalom a **szervertől** jönnek *(SSOT a CLI-ben)* — ⛔ a kliens
+   * semmit nem éget be, mert különben a felület és a tényleges ellenőrzés elcsúszhatna.
+   */
+  async getProfileUpdatePlan(): Promise<LinkedInProfileUpdatePlan> {
+    return this.api_AS.call<LinkedInProfileUpdatePlan>(
+      new DyNX_ApiCall_Settings({
+        name: 'getLinkedInProfileUpdate',
+        type: DyFM_HttpCallType.get,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/linkedin/profile-update',
+      }),
+    );
+  }
+
+  /**
+   * ✅ „Beillesztettem" jelölés egy mezőre.
+   *
+   * ⭐ MIÉRT KELL: négy mezőt beilleszteni több percnyi kattintás — ha félbeszakad, tudnia
+   * kell, hol tartott.
+   *
+   * @returns a FRISS terv, hogy a felület ⛔ ne a saját feltevéséből rajzoljon újra.
+   */
+  async markProfileFieldPasted(request: LinkedInProfilePastedRequest): Promise<LinkedInProfileUpdatePlan> {
+    return this.api_AS.call<LinkedInProfileUpdatePlan, LinkedInProfilePastedRequest>(
+      new DyNX_ApiCall_Settings({
+        name: 'putLinkedInProfilePasted',
+        type: DyFM_HttpCallType.put,
+        baseUrl: this.resolveBaseUrl(),
+        endpoint: '/linkedin/profile-update/pasted',
       }),
       { body: request },
     );

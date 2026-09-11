@@ -38,7 +38,19 @@ export type {
   LinkedInWorkspaceDraftCreateRequest,
   LinkedInWorkspaceDraftStatusRequest,
   LinkedInWorkspaceDraftReceipt,
+  LinkedInProfileField,
+  LinkedInProfileUpdatePlan,
+  LinkedInProfilePastedRequest,
 } from '@server/_models/interfaces/integrations/linkedin.interface';
+
+export type {
+  InterfoodRecommendationPortion,
+  InterfoodRecommendationLifecycleState,
+  InterfoodRecommendationItem,
+  InterfoodRecommendationDay,
+  InterfoodRecommendationSnapshot,
+  InterfoodRecommendationLatestResponse,
+} from '@server/_models/interfaces/integrations/interfood.interface';
 
 // === (a meglévő server-envelope.interface.ts marad külön — wire shape-ek,
 //      itt nem re-export, mert már most is `import type ... from '../_models/server-envelope.interface'`

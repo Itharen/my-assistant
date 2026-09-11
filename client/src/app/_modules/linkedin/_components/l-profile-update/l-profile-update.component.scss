@@ -1,0 +1,137 @@
+// 🔗 A profil-frissítő panel — a meglévő panelek stílusát követi (dark, tömör).
+.l-profile-panel {
+  padding: 1rem;
+  border: 1px solid #444;
+  border-radius: 0.5rem;
+
+  .l-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+
+    h2 { margin: 0; }
+  }
+
+  .l-progress {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    color: var(--ma-fg-muted, #888);
+  }
+
+  .l-muted {
+    color: var(--ma-fg-muted, #888);
+    font-size: 0.82em;
+  }
+
+  .l-error {
+    color: #ff6b6b;
+    margin: 0.6rem 0;
+  }
+
+  .l-done {
+    color: #51cf66;
+    margin: 0.6rem 0;
+  }
+
+  .l-fields {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0;
+  }
+
+  .l-field {
+    border: 1px solid #333;
+    border-radius: 0.4rem;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+
+    // ✅ A beillesztett mező VISSZAFOGOTTABB — a szem a hátralévőkre ugrik.
+    &.l-pasted {
+      opacity: 0.55;
+      border-color: #2b5f34;
+    }
+  }
+
+  .l-field-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+  }
+
+  .l-count {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.82em;
+    color: var(--ma-fg-muted, #888);
+
+    // 🔴 A TÚLLÓGÁS piros — ITT kell kiderülnie, nem a beillesztésnél.
+    &.l-over {
+      color: #ff6b6b;
+      font-weight: 700;
+    }
+  }
+
+  // ⭐ EGYMÁS MELLETT — ahogy a LinkedIn-en is mezőnként dolgozik.
+  .l-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+
+    // ⚠️ Szűk kijelzőn egymás ALÁ: a két hasáb 400 px alatt olvashatatlan lenne.
+    @media (max-width: 720px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .l-side {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  .l-label {
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ma-fg-muted, #888);
+  }
+
+  .l-text {
+    margin: 0;
+    padding: 0.5rem;
+    border-radius: 0.3rem;
+    background: #1b1b1b;
+    // ⚠️ A hosszú szöveg TÖRJÖN, ne nyújtsa szét a panelt.
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+  }
+
+  .l-current { color: var(--ma-fg-muted, #999); }
+  .l-proposed { color: #e9ecef; }
+
+  .l-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.6rem;
+  }
+
+  .l-copy { cursor: pointer; }
+
+  .l-check {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+
+  .l-foot {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+}
