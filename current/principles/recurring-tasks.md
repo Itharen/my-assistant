@@ -384,3 +384,52 @@ azaz a **kihagyások számát**, nem egyetlen lejárt tételt.
 
 ⚠️ Ez **organizer-viselkedés**, nem a mi hibánk — de a **hiánya-jelzés** a mi dolgunk lehet:
 a lejárt, ismétlődő tételeknél a **kihagyott alkalmak számát** kell mutatni.
+
+---
+
+## 🔁 CSÚSZÓ MEGÚJÍTÁS — amikor az ismétlődésnek ELŐRE kell csúsznia (2026-09-11)
+
+> **Owner, 2026-09-11 15:54-15:55 (szó szerint):** *„fel kell venni egy **évente ismétlődő**
+> feladatot a dominós adategyeztetésről, ami minden évben **egy hónappal korábban** kell
+> csinálni."* · *„amikor megcsináljuk, akkor **onnantól számítva egy évig él**, és ugye mindig
+> **egy hónappal előbb** frissíteni kell ezt a dolgot, különben lejár. És ugye, hogyha
+> **ugyanakkorra állítanánk, akkor sose lennénk időben**, szóval mindig **csúsznia kell előrébb
+> egy hónapot**."*
+
+### A SZABÁLY
+
+```
+következő esedékesség  =  (utolsó ELVÉGZÉS + 1 év)  −  1 hónap
+```
+
+⚠️ **A horgony az ELVÉGZÉS, ⛔ nem a naptári évforduló.** Ez a különbség az egész lényege.
+
+| Kör | Elvégzés | Érvényes eddig | Következő emlékeztető |
+|---|---|---|---|
+| 1. | **2026-09-11** | 2027-09-11 | **2027-08-11** |
+| 2. | 2027-08-11 | 2028-08-11 | **2028-07-11** |
+| 3. | 2028-07-11 | 2029-07-11 | **2029-06-11** |
+
+⇒ Évente **egy hónapot vándorol visszafelé** a naptárban. Ez **szándékos**, nem drift.
+
+### ⭐ MIÉRT NEM ELÉG A „SIMA ÉVENTE"
+
+🔴 **Mert a lejárat az elvégzéstől számít, nem a naptártól.** Ha a feladat minden évben
+ugyanarra a napra esne, akkor az **elvégzés napján** járna le az érvényesség — vagyis
+**pontosan akkor, amikor még csak nekiállnánk**. ⇒ **Mindig elkésnénk.**
+*(Az owner szavával: „akkor sose lennénk időben".)*
+
+📌 **A mért ár, amit ez a szabály megelőz:** 2026 szeptemberében **kikapcsolták a Domino-számot**,
+mert az adategyeztetés elmaradt — ⛔ nem figyelmeztetés jött, hanem **szolgáltatás-megvonás**.
+
+### 🧩 ÁLTALÁNOSÍTHATÓ — ⛔ nem Domino-specifikus
+
+Minden olyan megújításra érvényes, ahol **az érvényesség az elvégzéstől ketyeg**: okmányok,
+bérletek, tanúsítványok, előfizetés-hitelesítések. **Felismerési jel:** *„X ideig érvényes"*
++ *„előbb kell megújítani"*. ⇒ Ilyenkor ⛔ **ne** naptári ismétlődést vegyek fel.
+
+⚠️ **Az organizer `recurrenceType`-ja ezt a mintát (még) nem ismeri** ⇒ a következő esedékesség
+**konkrét dátummal** kerül be, és **elvégzéskor kézzel kell felvenni a következőt**.
+📌 Ez **FR-jelölt** az organizernek: *„completion-anchored renewal, negatív eltolással"*.
+
+🔗 `org:task:6aa40936766c802935c3e758` *(Domino, következő: 2027-08-11)*
