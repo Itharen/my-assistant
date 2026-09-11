@@ -1897,3 +1897,53 @@ Te a **felületet** adod; a poszt **szövegét** ⛔ ne generáld és ⛔ ne mó
 
 📌 **A piszkozatok helyéről szólok külön** — jelenleg `current/linkedin/drafts/` van
 *(`.body.txt` = a pontos kimenő szöveg, `.md` = az indoklás)*. **Ezt a két-fájlos alakot olvasd.**
+
+---
+
+## 1️⃣4️⃣ 2026-09-12 00:10 — 🔎 AZ ÉBRENLÉT-DÖNTÉS TIPPELÉS, PEDIG MÉRHETŐ
+
+> **Mérve** — `ma comm doctor` *(2026-09-12 00:05)*: **13 rendben · 0 hiányzik · 1 részleges ·
+> 0 hibás**. ⭐ Ma **semmi nem romlott el** — de a **régóta sárga** tétel most vált fontossá:
+>
+> ```
+> 🟡 Ébrenlét-döntés forrása
+>    Fix órarend-tippelés — NEM mérés. Ez ellentmond a csúszó, 26 órás alvás-ciklusnak.
+>    → TEENDŐ: Kösd át a jelenlét-mérésre: ITTHON-jel VAGY Discord-válasz (+1 óra). Hyperplan MP-5.
+> ```
+
+### 🔴 MIÉRT MOST — a mai nap bizonyítéka
+
+Ma **kétszer** derült ki, hogy a fix órarend **hamis**:
+
+| Mérés | Mit mond a fix órarend | Mi volt a VALÓSÁG |
+|---|---|---|
+| **09:00-10:32** | „reggel ⇒ ébren" | 🔴 **aludt** *(idle 6,1 → 7,6 óra)* |
+| **00:00** *(most)* | „éjfél ⇒ alszik" | 🔴 **ébren, a gépnél** *(idle 0 s)* |
+
+⚠️ **És ez nem kozmetika:** erre épül a **hangszóró-kapu** *(`ma cast notify`)*. Rossz
+ébrenlét-döntés ⇒ **megszólal a Google Home**, amikor alszik — vagy **elhallgat**, amikor kéne.
+🔇 **Ma este ráadásul VENDÉGEK vannak** *(`private-topics-and-audience`)* — egy téves
+„ébren van" hangos megszólalás **a szobába** szólna.
+
+### A FELADAT — ⭐ EGY funkció: cseréld a tippet MÉRÉSRE
+
+```
+ébren?  =  friss AKTIVITÁS-minta      (server/activity-monitor/data/YYYY-MM-DD.jsonl)
+       VAGY friss Discord-válasz      (+1 óra türelmi ablak)
+```
+
+⚠️ **A fájl olvasásának KÉT MÉRT CSAPDÁJA** *(ma buktam el rajtuk, ne ismételd)*:
+- 🔴 **UTF-8 BOM** ⇒ `encoding='utf-8-sig'` *(hangosan elszáll — ártalmatlan)*
+- 🔴 a mező neve **`timestamp`**, ⛔ nem `ts` ⇒ a rossz kulcs **némán `None`-t ad**
+- ⭐ **A legmegbízhatóbb mező az `idleSeconds`** — kulcs-független, önmagában hordozza a választ
+
+### KÉSZ, HA
+
+- [ ] az ébrenlét-döntés **mérésből** jön, és a `comm doctor` sora **zöld**
+- [ ] ⛔ **bizonytalanságnál a „alszik" ág nyer** — a téves csend olcsó, a téves hangos nem
+- [ ] a döntés **indoklása látszik** *(melyik jel alapján, milyen friss)* — ⛔ ne puszta boolean
+- [ ] tesztek: ébren · alszik · **nincs adat** *(⚠️ ez a harmadik ág a lényeg)*
+- [ ] `npm test` zöld · `dc rev` 0 új találat · ⛔ semmilyen teszt nincs kikapcsolva
+
+📌 **Hétvégi keret:** az owner **09-13-ig ünnepel**, tehát ⛔ **semmilyen élő kísérlet a
+hangszóróval**. A tesztelés **fixtúrából** menjen.
