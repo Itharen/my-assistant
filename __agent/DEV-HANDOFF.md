@@ -1686,3 +1686,50 @@ felvettem. **A 8. LEZÁRVA** *(én csináltam meg, owner-felhatalmazással)*. Ma
 
 ⚠️ **A 9-nél a határ kemény:** `transplant-not-rewrite` — a `cv-*.ts` fájlokon a **`git diff`
 maradjon ÜRES**. A teszt azt rögzíti, ami **VAN**.
+
+---
+
+## 🔟 2026-09-11 11:00 — A FELÜLET: az owner NEM TALÁLJA a LinkedIn-panelokat + hibákat lát
+
+> **Owner, 2026-09-11 10:55:** *„Mindenféle **hibákat** látok megjelenni a My Assistant
+> felületén, és **nem látom a LinkedIn posztokhoz, meg a LinkedIn profilhoz a felületeket**,
+> amik elméletileg tervben voltak."*
+
+### 🔬 AMIT MÁR MEGMÉRTEM — ⛔ ne mérd újra
+
+| Kérdés | Mért válasz *(2026-09-11 10:58)* |
+|---|---|
+| a kiszolgált bundle **friss**-e? | ✅ **IGEN** — `client/dist/client/browser`, build **07:19**, és **tartalmazza** a `profile-update`-et *(`chunk-CDRMJUFV.js`, `main-Y5CT2VE7.js`)* |
+| léteznek-e a route-ok? | ✅ `/linkedin` → `L_Workspace_Component` · `/linkedin/profile` → `L_ProfileUpdate_Component` *(`linkedin.module.ts:10,12`)* |
+| van-e **navigációs link**? | 🔴 **CSAK `/linkedin`-re** *(`app.component.html:10`)* — a **profil-panelra NINCS** |
+| mit mutat a `/linkedin`? | az **üzenet**-munkamód *(Beszélgetések · Válasz-draft)* — ⛔ **nem** posztokat |
+| van-e **poszt-felület**? | 🔴 **NINCS** — soha nem épült meg |
+
+### ⇒ A BEJELENTÉS HÁROM KÜLÖN DOLOG
+
+**(A) ✅ BIZTOS — a profil-panel LÉTEZIK, de nincs rá ÚT.** Az owner nem tud eljutni a
+`/linkedin/profile`-ra, mert a menüben nincs link. ⇒ **Tedd be a navigációba.**
+⚠️ A `/linkedin` nem „LinkedIn" általában, hanem az **üzenetek** — a menü **hazudik** egy kicsit.
+Javasolt: a LinkedIn alá **két** belépő *(Üzenetek · Profil)*, vagy a workspace tetején egy
+látható link a profil-panelra. ⭐ **EGY funkció** — ⛔ ne építs menü-rendszert.
+
+**(B) ✅ BIZTOS — poszt-felület NINCS.** Ez **nem hiba, hanem hiány**: az owner kérte
+*(„kelleni fog majd egy felület is, amivel posztolok")*, de nem épült meg. ⛔ **Most NE kezdd el** —
+előbb a profil-vonal zárul le *(owner sorrendje: **profil → posztok → üzenetek**)*.
+📌 Csak **vedd fel a terv-fájlodba** hátralévő tételként.
+
+**(C) 🔍 FELTÁRANDÓ — a „mindenféle hiba".** ⛔ **Nem tudom, mit lát**, és ⛔ nem találgatok
+*(`uncertain-requests`)*. A **böngészőjében** jelennek meg; a szerver-log, amit elértem
+*(`logs/server.err.log`)*, **szeptember 6-i**, tehát nem ez a futás.
+⇒ **Megkértem az ownert a konkrét hibaszövegre.** Amíg nincs meg:
+- ✅ amit **addig is** tehetsz: nézd meg, hogy a `/linkedin` és a `/linkedin/profile` **hibamentesen
+  betölt-e** üres/hiányzó adattal is *(pl. nincs `profile-proposed.json`, üres thread-lista)* —
+  a **naiv-felhasználós UX-QA** kötelező *(`core-ux-qa-naive-user`)*;
+- ⛔ **ne javíts olyat, amit nem reprodukáltál.**
+
+### KÉSZ, HA
+
+- [ ] a profil-panel **elérhető a felületről** *(kattintással, ⛔ nem URL-begépeléssel)*
+- [ ] a poszt-felület **tételként** szerepel a `PROCESS-CONTROL.md`-ben — ⛔ nincs megépítve
+- [ ] `/linkedin` és `/linkedin/profile` **üres adattal is** hibamentes
+- [ ] `npm test` zöld · `dc rev` **0 új találat** · ⛔ semmilyen teszt nincs kikapcsolva
