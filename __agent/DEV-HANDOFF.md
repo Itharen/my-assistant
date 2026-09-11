@@ -1733,3 +1733,60 @@ előbb a profil-vonal zárul le *(owner sorrendje: **profil → posztok → üze
 - [ ] a poszt-felület **tételként** szerepel a `PROCESS-CONTROL.md`-ben — ⛔ nincs megépítve
 - [ ] `/linkedin` és `/linkedin/profile` **üres adattal is** hibamentes
 - [ ] `npm test` zöld · `dc rev` **0 új találat** · ⛔ semmilyen teszt nincs kikapcsolva
+
+---
+
+## 1️⃣1️⃣ 2026-09-11 12:25 — 🗓️ A MUNKANAPTÁR ELŐRE KERÜL — az owner ezt nevezte meg
+
+> **Owner, 2026-09-11 12:19:** *„ahhoz, hogy az asszisztensi feladataidat jól el tudd látni,
+> ahhoz majd itt egy-két dolgot **előre kell venni**, mint például a **munkanaptár**."*
+
+### 🔴 MIÉRT EZ A LEGSÜRGŐSEBB — mért, mai bizonyíték
+
+Ma 11:00-kor mítingje volt. A rendszer **csak azt tudta**, hogy *van* egy míting — mert az
+owner **szóban** mondta. ⛔ **Kivel · miről · milyen platformon: SEMMI.**
+⇒ Az ébresztés-eszkaláció lefutott, de a **felkészítés** nem — pedig az a nagyobb érték.
+*(Ugyanez 12:19-kor megismétlődött: „most jön egyből egy másik míting" — amiről szintén nem tudtam.)*
+
+### ⭐ A JÓ HÍR: A PLUMBING MÁR MEGVAN — mérve 2026-09-11 12:22
+
+| Eszköz | Hol | Állapot |
+|---|---|---|
+| Google OAuth desktop-flow *(PKCE, token-fájl, refresh)* | `cli/src/email/email-google-oauth.service.ts` | ✅ **működik élesben** *(Gmail)* |
+| a scope-lista **egy helyen** | ugyanott, `GMAIL_OAUTH_SCOPES` *(:17-20)* | ✅ bővíthető |
+| konfiguráció | `MY_ASSISTANT_EMAIL_GOOGLE_CLIENT_ID` *(`.env.example:9`)* | ✅ megvan |
+
+⇒ **Ez NEM zöldmezős integráció.** A legolcsóbb út: **+1 scope**
+*(`https://www.googleapis.com/auth/calendar.readonly`)* + egy vékony kliens + **egy** parancs.
+
+### A FELADAT — ⭐ EGY funkció, semmi több
+
+**`ma calendar today`** *(vagy `--day <ISO>`)* → a nap eseményei: **kezdés · vége · cím ·
+helyszín/link · résztvevők**. Ennyi.
+
+⛔ **NE** épits: írást/létrehozást · ismétlődés-kezelést · több naptár egyesítését · felületet ·
+értesítés-logikát. Azok **külön** tételek, ha egyáltalán kellenek *(`one-function-is-enough`)*.
+
+### ⚠️ AMIT NEM TUDUNK — és ami NEM blokkolja a munkát
+
+🙋 **Nyitott owner-kérdés:** a **munka**naptár ugyanabban a Google-fiókban van
+*(`itharen3@gmail.com`)*, vagy a **megbízó** rendszerében *(Google Workspace / Microsoft 365)*?
+**Megkérdezem.** ⛔ Ne várj rá:
+
+- ha **Google** *(bármelyik fiók)* → a most épített út **változtatás nélkül** működik, csak más
+  fiókkal kell engedélyezni;
+- ha **Microsoft** → a `.ics`-feed URL **ugyanezt a parancsot** ki tudja szolgálni egy második
+  olvasóval. ⇒ **A parancs felülete és a kimenet alakja azonos marad** — ezért érdemes a
+  beolvasást **forrás-függetlenre** tervezni *(egy `CalendarEvent` alak, mögötte cserélhető olvasó)*.
+
+### KÉSZ, HA
+
+- [ ] `ma calendar today` **valódi eseményeket** ad vissza *(nem mock)*
+- [ ] hiányzó/lejárt engedélynél **kimondott, cselekvést javasló hiba** — ⛔ nem üres lista
+      *(`core-rich-error-handling`: az üres naptár és a nincs-jogosultság **kívülről ugyanúgy néz ki**)*
+- [ ] a token-kezelés a **meglévő** szolgáltatást használja — ⛔ nincs második OAuth-implementáció
+- [ ] tesztek a kimenet-alakra + a hiba-ágra · `npm test` zöld · `dc rev` 0 új találat
+- [ ] `SKILLS.md` + `__documentations/dev/` frissítve **ugyanabban a change-setben**
+
+📌 A `PROCESS-CONTROL.md`-be **új, magas prioritású tételként** vedd fel. Az organizerben:
+`org:task:6aa3c192766c802935c3db46`.
