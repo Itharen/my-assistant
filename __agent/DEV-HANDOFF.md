@@ -1282,3 +1282,65 @@ jelenik meg, neki **csatornát kell váltania**, hogy elolvassa — pont akkor, 
 📌 Ezzel a hang-csatorna lesz a **teljes** felület: ott beszél, ott hallja a választ, és **ott
 olvassa** is.
 
+---
+
+## 2026-09-11 02:30 — ⏳ A KÖTEG VÁRJA MEG A FOLYAMATBAN LÉVŐ MEGSZÓLALÁST + újraindítás-jelzés
+
+> **Owner, 2026-09-11 02:28**, két tétel.
+
+### (A) ⏳ A kötegelés kapui közül HIÁNYZIK a „most épp beszél" kapu
+
+> *„várjon legalább egy másfél-két beszélgetés időnyit… És az üzenetcsomagot csak akkor szabad
+> elküldeni, ha **nem kezdtünk el következő üzenetet se**. Tehát ha most közben elkezdtünk egy
+> **voice detection**-t, akkor **meg kell várni, hogy abból mi lesz**, mielőtt elküldenénk a
+> következő csomagot. **( HACSAK! nem vár nagyon sok üzenet a sorban…)**"*
+
+**A MÉRT jelenlegi állapot** — `discord.bridge.ts` `decideFlush()` kapui:
+
+| Kapu | Van? |
+|---|---|
+| üres köteg | ✅ |
+| `isBusyProcessing` *(a session dolgozik)* | ✅ |
+| `queuedItemCount` *(áll már tétel a CCAP sorában)* | ✅ |
+| `isQueueLocked` | ✅ |
+| **elcsendesedési ablak** — `collectWindowMs: 20 000` a LEGÚJABB üzenet óta | ✅ |
+| biztonsági szelep — `maxHoldMs: 15 perc` a legrégebbi tételre | ✅ |
+| 🔴 **FUT-E ÉPP FELVÉTEL / megszólalás-detektálás** | ⛔ **NINCS** |
+
+⇒ **Pontosan ez a rés.** A 20 másodperces csend-ablak akkor is letelhet, ha az owner **épp
+beszél** — a felvétel még tart, a szöveg még nincs kész, és a köteg **nélküle megy ki**.
+
+**A kérés:** új kapu — *„folyamatban van egy megszólalás/felvétel"* → ⛔ **nem küldünk**, amíg az
+le nem zárult *(sikerrel vagy bukással — mindkettő lezárás)*.
+
+⚠️ **Az owner kivétele SZÓ SZERINT érvényes:** *„HACSAK nem vár nagyon sok üzenet a sorban"* ⇒ a
+`maxHoldMs`-szelep **fölülírja** ezt a kaput is, különben egy hosszú monológ alatt korlátlanul
+állnának az üzenetek. A szelep **marad**.
+
+📌 A *„másfél-két beszélgetésnyi"* ⇒ a `collectWindowMs` **20 s** valószínűleg kevés. ⛔ Ne tippelj:
+a `voice-funnel` adataiból **mérd meg**, mennyi a tipikus szünet két megszólalása között, és abból
+számolj.
+
+### (B) 🔊 ÚJRAINDÍTÁSKOR JELEZZ — hangban is, szövegben is
+
+> *„Amikor újraindul a szerver, akkor **még mindig előbb egyszer csak nem hallgatsz**, és aztán
+> utána lépsz csak ki, sőt, előbb lépsz vissza, és csak később kezdesz el hallgatni. Legalább
+> jelzés, hangjelzéseket kell ezekre adjunk, meg igazából **egy üzenet sem ártana**."*
+
+**A valódi panasz nem a sorrend, hanem a LÁTHATATLANSÁG:** van egy ablak, amikor **bent vagyok, de
+nem hallok** — és ő ezt **nem tudja**, tehát beszél a semmibe.
+
+```
+    ⛔ NE ÍGY:   [hallgatás vége] … [kilépés] … [belépés] … (csend) … [hallgatás kezdete]
+    ✅ HANEM:    minden átmenet JELZETT, és az owner tudja, mikor hallom
+```
+
+| Elvárás | |
+|---|---|
+| **hangjelzés** a hallgatás **kezdetén és végén** | ő a csatornában ül, ott van a füle |
+| **szöveges üzenet** is | ⭐ a hang elszáll; a szöveg megmarad, és a hang-csatorna szövegében is ott legyen *(02:10-es szakasz)* |
+| ⚠️ **a rés maga is jelzés** | ha bent vagyok, de még nem hallok, azt **ki kell mondani** — ⛔ nem elég a csend |
+
+📌 Ideális esetben a sorrend is javul *(előbb hallgatás, aztán kilépés; belépés után azonnal
+hallgatás)* — de a **jelzés** akkor is kell, ha a rés technikailag nem tüntethető el.
+
