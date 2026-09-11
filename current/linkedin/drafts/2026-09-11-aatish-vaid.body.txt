@@ -1,19 +1,12 @@
 Hi Aatish,
 
-Thanks for reaching out. The shape works well for me: remote, fractional, and decoupling a monolith is the kind of problem I like.
+Thank you for reaching out — the shape of the role works: remote, fractional, and decoupling a monolith is the kind of problem I work on.
 
-Two things worth saying up front, so neither of us spends time on a mismatch.
+One thing upfront: I don't take PHP work. And on a decoupling job my usual recommendation is to build the new system alongside the old one rather than keep carving up the existing codebase — in which case the language is an open question anyway.
 
-PHP is not part of my stack, and I don't take PHP coding work. Mine is TypeScript / NodeJS / Angular, plus Python, C# and Unity.
+My main requirements are contractor-only, fully remote work and a flexible schedule. My minimum rate is 75 EUR/hour.
 
-And on the monolith itself: when I look at a decoupling job, my usual answer is not to keep carving up the old codebase, but to build the new system properly alongside it — and in that case the language question is open anyway, not fixed to PHP.
-
-So if the role is architecture and technical leadership on that transition, I am interested. If it is 80% writing PHP, I am not the right person.
-
-On terms: contractor only, through my own company. Project engagements first, short and long alike; a subcontractor arrangement works too.
-
-Which one is it?
+If the role is the architecture and technical leadership of that transition, I'd be happy to discuss the details.
 
 Best,
-Balázs Tahi-Tóth
-Future Development Program Kft.
+Balazs

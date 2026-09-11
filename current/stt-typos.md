@@ -94,6 +94,11 @@ hanem mert **valamit ki kell írniuk**.
 ```
 "Bye."   "Thank you."   "You."   "Thanks for watching."   "Bye-bye."
 ```
+
+⚠️ **A töltelék nem mindig angol.** Mérve 2026-09-11 02:22: `"í þetta kvartamur."` — **izlandi**,
+miközben az owner magyarul beszélt. ⇒ A jel nem a NYELV, hanem hogy az átirat **rövid, idegen
+nyelvű és a beszélgetéshez semmi köze**.
+
 *(A lista bővül — minden új előfordulás ide.)*
 
 ⚠️ **A felismerő ilyenkor NEM jelez hibát.** Az átirat szabályos, rövid, nyelvtanilag helyes —

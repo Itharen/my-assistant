@@ -1,9 +1,13 @@
 # LinkedIn-üzenetek feldolgozási szabályai
 
-> **Állapot:** v1 javaslat, owner-review alatt · **Dátum:** 2026-08-26
+> **Állapot:** aktív, owner által megerősített · **Dátum:** 2026-09-05
 >
 > Ez a fájl az agentfüggetlen, kanonikus viselkedési szabály. A futtatható folyamat:
 > `__agent/flows/on-demand/linkedin-inbox-review/`.
+>
+> **Képességengedély:** a LinkedIn-üzenetek olvasása mindig jóváhagyott; a küldés és
+> más külső LinkedIn-művelet nem. Kanonikus határ:
+> `current/principles/noninvasive-capability-authorization.md`.
 
 ## 1. Cél és határ
 
@@ -104,6 +108,29 @@ English:
 First, apologies for the delayed response — I was on an extended vacation. If the opportunity is still open, it could be interesting.
 ```
 
+### ⛔ PHP — NEM VÁLLALJUK (owner, 2026-09-11 02:22)
+
+> *„ha PHP van, akkor azt **nem PHP-zunk**. Viszont a monolit bontás, azt inkább azt mondanám amúgy
+> is, hogy **új rendszert kéne építeni**, és akkor azt nem PHP-ra kéne, hanem bármi másra kb."*
+> *„…ez **szabály** is, meg az, hogy ilyenkor **ajánlhatsz jobbat**, hogyha például valami új
+> dologról van szó, vagy láthatóan valami nagy újraírásról."*
+
+⚠️ **A PHP NEM a transzparencia-modul esete.** Az *(lent)* arról szól, hogy egy technológia nem a
+fő területe, **de lefedhető**. A PHP-nál nincs ilyen: **nem vállaljuk**, és ezt ki is mondjuk.
+
+### ⭐ ÉS ILYENKOR AJÁNLHATOK JOBBAT
+
+Ha a megkeresés **új rendszerről** vagy **látható nagy újraírásról** szól, a válasz **nem áll meg
+az elutasításnál** — szakmai álláspontot is adhat.
+
+**A mért példa** *(Aatish, 2026-09-11)*: „PHP monolith decoupling, 80% coding" →
+*„a decoupling-nál az a szokásos ajánlásom, hogy a régi kódbázis faragása helyett **mellé épüljön
+az új rendszer** — és akkor a nyelv kérdése amúgy is nyitott."*
+
+📌 **Miért ez a helyes hang:** az elutasítás azt mondja, *hova nem illek*. Az ajánlás azt, *hogyan
+kell ezt csinálni* — az **konzultáns**, nem jelentkező. ⛔ De csak ott, ahol tényleg van
+álláspont; ⛔ általános okoskodás nem.
+
 ### Nem saját technológia — transzparencia-modul
 
 C#, Python, Flutter vagy más, a kanonikus core stacken kívüli technológia esetén az alapüzenetbe kerül.
@@ -156,8 +183,8 @@ One important note: [TECHNOLOGY] is not part of my core stack, although current 
 
 ## 5. Determinisztikus és szemantikus osztályozás
 
-`needsReply` technikailag akkor igaz, ha a legutolsó nem törölt üzenet inbound. Ez csak jelöltlista. Minden jelöltet
-a teljes thread alapján az alábbi egyik kategóriába kell tenni:
+A legutolsó nem törölt inbound üzenet csak `technicalNeedsReplyCandidate`, nem valódi `needsReply`. Minden ilyen
+jelöltet a teljes thread alapján az alábbi egyik kategóriába kell tenni:
 
 - `actionable` — valódi személy, válasz vagy döntés szükséges;
 - `priority-direct-project` — közvetlen projektmegbízás vagy konkrét projektmegkeresés; kiemelten és elsőként
@@ -171,6 +198,17 @@ a teljes thread alapján az alábbi egyik kategóriába kell tenni:
 
 Az agent nem állíthatja, hogy egy draft el lett küldve. A `sent-confirmed` kizárólag LinkedInből visszaolvasott
 kimenő üzenettel igazolható.
+
+`needsReply=true` kizárólag friss, az aktuális `latestMessageId`-hoz kötött agenti/owneri review után lehet, és csak
+az `actionable`, `priority-direct-project` vagy `clarification-needed` kategóriáknál. Új utolsó üzenet esetén a
+korábbi review `stale`, kikerül a válaszqueue-ból, és újra a `review-needed` listára kerül. A
+`closed-no-reply`, `automated-ignore`, `duplicate-opportunity`, `snoozed` és `sent-confirmed` soha nem jelenhet meg
+a **Válaszra vár** nézetben. A review kötelezően megőrzi a kategóriát, döntést, bizonyosságot, rövid indokot,
+forrást, időpontot és az értékelt legutolsó üzenet azonosítóját.
+
+Az agent által készített draft ugyanahhoz a `latestMessageId`-hoz kötődik. Új üzenetnél megmarad előzményként, de
+`ELAVULT` jelölést kap és nem töltődik be automatikusan. Az agenti batch-writeback egy műveletben menti a review-kat
+és csak a valóban reply-worthy elemek draftjait; ismételt azonos batch nem hozhat létre draft-duplikátumot.
 
 ## 6. Kompatibilitási kivonat
 

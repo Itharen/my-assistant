@@ -1,21 +1,10 @@
-Kedves Orsolya,
+Szia Orsolya,
 
-elnézést a késői válaszért — a megkeresésed sajnos elkerülte a figyelmemet.
+Először is elnézést a késői válaszért — hosszabb szabadságon voltam. Ha a lehetőség még aktuális, érdekes lehet: a szoftverarchitektúra és az agentic AI-fejlesztés pontosan az, amivel foglalkozom.
 
-A pozíció pontosan az, amivel foglalkozom: szoftverarchitektúra és AI-rendszerek, azon belül is
-agentic fejlesztés — saját agent-rendszereket, RAG-infrastruktúrát és MCP-eszközöket építek és
-üzemeltetek. Az alvállalkozói forma rendben van: a saját cégemen keresztül dolgozom, kizárólag
-kontraktorként.
+Fő feltételeim: contractor-only, full remote és rugalmas időbeosztás. Az alvállalkozói forma rendben van. A minimum díjam 75 EUR/óra — egy kérdésem van ehhez: a csapat és a dokumentáció munkanyelve magyar vagy angol?
 
-Mielőtt telefonálnánk, három dolog segítene eldönteni, hogy reális-e:
+Ha ezek megfelelnek, szívesen beszélek a részletekről. Telefonon általában késő délután vagyok elérhető.
 
-1. **Remote:** a munka végezhető-e teljes egészében távolról? Az onboarding, a rendszerek
-   megismerése és az ügyfél-egyeztetés természetesen kivétel.
-2. **Időbeosztás:** kötött napi sáv van, vagy a leszállított munka számít?
-3. **Nyelv:** a csapat és a dokumentáció magyar vagy angol?
-
-Ha ezek passzolnak, szívesen beszélünk telefonon: +36 30 481 0741.
-
-Üdvözlettel,
-Tahi-Tóth Balázs
-Future Development Program Kft.
+Köszönöm,
+Balázs
