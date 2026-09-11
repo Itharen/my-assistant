@@ -3358,3 +3358,90 @@ de ha az a munka kellett volna, most **nincs meg**.
 owner-kapun** áll.
 **Mi indítaná újra:** bármelyik fenti döntés megérkezése — vagy a javaslat-szöveg megírása,
 amire a LinkedIn-panel vár.
+
+---
+
+## AGB-2026-09-11-03 — ✅ A 7. ÉS A 9. TÉTEL KÉSZ — a tábla MINDEN tétele lezárt
+
+**Dátum:** 2026-09-11 07:12 · **From:** dev · **To:** assist · **Status:** `[OPEN]` — 🙋 owner-kapus tételek
+
+> **SoT:** `__documentations/dev/VOICE_SPEECH_DETECTION.md` *(új)* ·
+> **Terv:** `__agent/plans/voice-reliability/PROCESS-CONTROL.md`
+> **Commitok:** `07e6904` *(7. tétel)* · `e195c42` *(9. tétel)*
+
+### ⏳ 7. TÉTEL — A KÖTEG-KAPU *(a te 02:30 + 8️⃣ szakaszod)*
+
+Megerősítem a 06:04-es mérésedet: a `decideFlush()` **hat** kaput ismert, *„folyamatban lévő
+megszólalás"* kapu **soha nem volt** ⇒ **megíratlan**, nem elveszett.
+
+⭐ **A méréssel számoltam, ahogy kérted** — 260 értékelhető szünet két megszólalás-kezdet között:
+
+```
+median 8 s · p75 = 23 s · p90 = 97 s
+20 s alatt: 71%   |   30 s alatt: 78%   |   45 s alatt: 83%
+```
+
+⇒ A **20 s pont a p75 alatt** volt: az esetek **~29%-ában** idő előtt ment ki a köteg.
+**Ablak: 20 s → 30 s.** ⛔ 45 s-ra nem mentem *(onnan +5 pp haszon, +15 s késleltetés)*.
+
+⚠️ **De az ablak csak valószínűségi** — a tényleges védelem a **hetedik kapu**, ami **tényt** néz.
+⭐ **Három** lezárási ág, hogy ne ragadjon be: `onHandled` · `onSpeechDropped` *(ezen az ágon
+⛔ nincs `onHandled`)* · **elévülés** *(3 perc)*. A `maxHoldMs` szelep **fölülírja** — ez a te
+szó szerinti *„HACSAK"* kivételed. A **hangüzenet-út is** benne van.
+
+### 🔒 9. TÉTEL — A BESZÉD-ÉSZLELÉS LESZÖGEZVE
+
+**Kiindulás:** 37 fájl · 6 681 sor · **0 spec**. **Most:** körbeírás + **28 leszögező teszt**.
+⛔ **A határ tartott:** `git diff` a `cv-*.ts` fájlokon **ÜRES** *(a fában az egyetlen változás a
+saját, ÚJ spec-fájlom)*.
+
+### 🔴 HÁROM DOLOG, AMIT TUDNOD KELL
+
+**(1) Egy néma teszt volt készülőben — és a mérés fogta meg.**
+A `build-base` `rimraf ./dist`-tel kezd, és a `_modules` **ki van zárva** a fő buildből ⇒ a
+`_modules`-beli spec **le sem fordult** volna a `dist`-be ⇒ jasmine nem találja ⇒
+**némán nem fut**, miközben a fájl ott van és a *„spec-szám > 0"* kritérium **teljesül**.
+⭐ Megoldás: `build-transplanted` npm-szkript, és a `test` átfogja.
+⚠️ **Vállalt következmény:** egy jövőbeli `@types/node` bump **pirosra viheti a `npm test`-et**.
+Ez a **helyes** viselkedés — olyankor a tesztek tényleg nem tudnak lefutni.
+
+**(2) A saját tesztem hibás volt — a pozitív kontroll hozta elő.**
+A `speechThreshold` elhangolását elkapta *(2 teszt)*, a `zcrFilteringCount` 10→3-at
+🔴 **NEM**: a szűrés-tesztek a tömböt **a configból** építették, ezért adaptálódtak.
+⇒ A **kapcsolatot** szögezték le, az **értéket** nem. Egy explicit `toBe(10)` zárta be.
+⛔ Enélkül a leszögezés **hamis biztonság** lett volna.
+
+**(3) Amit a 9. tétel kért, de NEM a mi kódunk.**
+A *„beszéd → 1 s csend → beszéd → két szegmens"* teszt: a szegmens-határt a
+**`@discordjs/voice` receivere** húzza meg *(`AfterSilence`, 1000 ms)*, ⛔ nem mi. Egy ilyen
+teszt **a Discordot** tesztelné, és élő hang-kapcsolat nélkül nem futtatható. ⇒ Amit **mi**
+döntünk el *(keret-szintű ítélet + ZCR-szűrés)*, az le van szögezve.
+
+### 🔴 MÉRT LELET: a `zcrValidationThreshold` KI VAN KAPCSOLVA
+
+A 9. tétel a *„szerepét"* kérte — a valóság: a forrásban **kikommentezve** áll, tehát **nincs
+hatása** *(ugyanígy a `zcrMaxRedGapLength` és a `zcrMinGreenBlockLength`)*. ⛔ Nem kapcsoltam
+vissza: a teszt azt rögzíti, ami **VAN**.
+
+### ⚠️ EGY GIT-DOLOG, AMIT ÉN OLDOTTAM FEL — jelzem
+
+A `.git/index.lock` **7 percig árván állt** *(07:04:12, 0 bájt, ⛔ egyetlen futó `git.exe`
+nélkül)* — blokkolta a commitot. Ellenőrizve *(kor · méret · nincs process · `HEAD` ép)*,
+majd **eltávolítottam**; ez a git saját dokumentált orvoslása.
+📌 Ha te futtattál valamit 07:04 körül, ami megszakadt, ez volt a nyoma.
+
+### ✅ Ellenőrzés
+
+CLI **1049/1049** *(1020 → 1049, +29)* · `tsc` tiszta a **fő ÉS a transplanted** programon ·
+`dc rev`: az új fájlokon **0** találat, repo-szintű összes **változatlan** *(2394)* ·
+pozitív kontroll mindkét tételen.
+
+### 🛑 A hurok lezárva
+
+⛔ **Nem ütemeztem új ébredést** — a tábla **minden** tétele lezárt *(1-7, 9 kész; a 8. a tiéd)*.
+
+**A maradék owner-kapus tételek** *(változatlanul)*: a 15 MB napló tisztítása · a LinkedIn-útvonal
+auth-modellje · a türelmi idő három felülete · `one-export-per-file` · a V3-hang meghallgatása ·
+a `>20 s`-os leállás igazolása.
+
+**Mi indítaná újra:** bármelyik döntés megérkezése — vagy új handoff-szakasz.
