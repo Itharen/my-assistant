@@ -163,3 +163,47 @@ a `nextDueAt` mezője **megmondja a következő triggert**. ⇒ A döntési szab
 | ✅ amit tettem | **CCAP scheduler-job `6aa354d184f43155b757e2e8`**, `daily 10:50` Europe/Budapest, `maxExecutions: 1` |
 | igazolás | `GET .../jobs/6aa354d184f43155b757e2e8` → `nextDueAt: 2026-09-11T08:50:00.000Z` = **10:50 CEST** ✅ |
 | ⚠️ ami marad | ha a **CCAP szerver áll** 10:50-kor, kimarad. A saját ébresztője marad az **elsődleges** |
+
+---
+
+## ❓ „MŰKÖDIK-E KÉT SCHEDULE UGYANARRA A SESSIONRE?" — mérve 2026-09-11 03:22
+
+> **Owner, 2026-09-11 03:14:** *„A CCAP-ban is van beépített Schedule Wake Up, amit pontosan
+> ugyanúgy hívsz meg, mint amikor a sajátodat meghívod… **te azt hiszed, hogy a sajátodat hívod**,
+> de ilyenkor elindul a CCAP-nek a Schedule Wake Up-ja, ami **jól működik** amúgy."* ·
+> *„amit most viszont beállítottál, az egy másik sztori, **azt nem is teszteltem még**, hogy vajon
+> működik-e, ha **két schedule van beállítva ugyanarra a sessionre**, mert most ez történik."*
+
+⭐ **Igaza van mindkettőben.** A `ScheduleWakeup` tényleg a CCAP-é — és a rövid várakozásra
+**jó eszköz**; a tilalom CSAK a hosszú várakozásra szól *(head-blocking, lásd fent)*.
+
+### A két-schedule kérdés — a válasz KÉT RÉTEGŰ
+
+| Réteg | Mit csinál | Verdikt |
+|---|---|---|
+| **collision-resolver** | `getLastNonSkippedForJob(jobId)` — a job a **SAJÁT** előző futását nézi *(`sch-runner.control-service.ts:180`)* | ✅ **Két job NEM látja egymást.** Nem blokkolják egymást |
+| 🔴 **queue-aware gate** | `SQ_ControlService.hasQueuedItems(sessionId)` — **session-szintű** *(`sch-runner…ts:395-406`)* | ⛔ **ITT ütköznek** |
+
+🔴 **A MÉRT KOCKÁZAT** — `BUG-SCH-SUPPRESS-SCHEDULED-TRIGGER-WHEN-QUEUE-HAS-DELAYED-001`:
+
+> *„Amikor van message a message queue-ban **bármilyen formában** legyen az delayed message,
+> olyankor nem kéne elküldjük a sc[heduled message-et]"*
+
+⇒ **Ha a session sorában BÁRMI áll, az ütemezett trigger NÉMÁN elmarad.** Tehát ha 10:50-kor
+ott ül a queue-ban a 3 órás tick promptja *(vagy egy Discord-üzenet)*, **az ébresztő kimarad**.
+
+⭐ **Ami tompítja:** a sorban csak akkor áll valami, ha **forgalom van** — és a forgalom
+jellemzően azt jelenti, hogy **ébren van**. ⛔ De nem légmentes: egy beragadt régi elem is elnyomná.
+
+⭐ **Ami véd:** *„csak POZITÍV bizonyíték nyom el triggert"* — az olvasás hibája **nem** blokkol,
+és a kézi „Trigger Now" **soha** nem nyomódik el. Nincs beragadó flag *(állapotmentes gate)*.
+
+### Amit ebből vinni kell
+
+1. ⛔ **Ne kombinálj `ScheduleWakeup`-ot ütemezett jobbal ugyanazon a sessionön** — a wakeup
+   queue-eleme **pont azt a gate-et** húzza be, ami az ütemezett triggert elnyomja. **Dupla kár.**
+2. 📌 **Az ütemezett ébresztő BEST-EFFORT, nem garancia** — ezt ⛔ nem hallgatom el.
+3. ✅ **Az ELSŐ futás nem eshet collision-skipbe** *(nincs előző execution → `buildNoCollision`)* —
+   egy friss one-shot job ennyivel jobb helyzetből indul, mint egy régóta futó.
+4. 🔍 **Utólag ellenőrizhető:** `GET /api/sch/executions?jobId=<id>` — a skip **auditálva van**
+   *(`lastSkippedAt` a jobon is látszik; a fő tickem pl. 2026-09-10 22:00-kor skip-elt)*.
