@@ -219,12 +219,16 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
   ne indíts újabb login ablakot, hanem a visszaadott `nextSafeAction` szerint diagnosztizálj és olvass vissza.
 - Történeti jelöltek: `ma interfood orders patterns --minimum-units 2 --limit 30 --pretty`; a
   `--double-orders-only` csak azokat mutatja, amelyekből legalább egy napon összesen kettő vagy több adag volt.
-  Ez megfigyelt bizonyíték, nem explicit preferencia; csak owner-megerősítés után használd a `preference set`-et.
+  Az aktív értelmezési szabályok egyetlen SSOT-ja: `current/principles/interfood-food-preferences.md`.
 - Opcionális leves/desszert feltárás: `ma interfood orders patterns --add-ons-only --minimum-units 1 --limit 30
   --pretty`. A `plan week` napi `addOns` kimenete külön kezeli őket: nem számítanak bele a napi 2 főételbe. Exact
-  identity legalább 5 korábbi rendelési napon csak `favoriteCandidates` megerősítési jelölt; recommendation kizárólag
-  explicit owner-confirmed exact-food `favorite` lehet, és csak az jogosíthat későbbi kosárjavaslatra.
-- Explicit preferencia: `preference set|compare|portion|list`; az SSOT `current/interfood/preferences.json`.
+  identity legalább 5 korábbi rendelési napon owner-confirmed liked, ezért quantity-one ajánlás lehet broad
+  family/pattern favorite és score-heurisztika előtt; 1–4 nap csak evidencia. Explicit későbbi korrekció és hard
+  reject felülírja.
+- Explicit preferencia: `preference set|compare|portion|list`; a gépi projekció `current/interfood/preferences.json`,
+  az ember által olvasható normatív SSOT `current/principles/interfood-food-preferences.md`.
+  Több `preference set` írás ugyanabba a JSON-store-ba **mindig sorosan** fusson: külön processzek párhuzamos
+  read-modify-write-ja elveszítheti az egyik frissítést. Minden batch után célzott `preference list` readback kell.
   Általános névminta: `preference set --scope food-name-pattern`; adagválasztás:
   `preference portion --pattern <névrészlet> --prefer small|full [--except-pattern <névrészlet>]`.
   A planner csak tényleges `small|full` occurrence-re alkalmazza; `unspecified` adagot nem talál ki.
@@ -240,9 +244,10 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
   lefedett napokat ne rendeld újra, csak jelezd a kihagyásukat.
 - A napi alapértelmezett igény 2 adag: `plan week --meals-per-day 2`, illetve
   `orders coverage --expected-per-day 2`. A recommendation sorok `quantity` összege számít, nem a sorszám.
-  Normálisan két külön food identity kell; small+full ugyanabból nem két étel. Explicit `favorite` exact sorból
-  `quantity=2` csak akkor lehet, ha az exact ételt már rendelték legalább egyszer; ismeretlen/kísérleti étel soha
-  nem 2×. Két külön identitynél is előbb eltérő elsődleges ételcsaládot válassz.
+  Normálisan két külön food identity kell; small+full ugyanabból nem két étel. `quantity=2` csak explicit
+  **exact-food** `favorite` jelölésből lehet, ha az exact ételt már rendelték legalább egyszer; broad family/pattern
+  favorite nem jogosít duplázásra, ismeretlen/kísérleti étel pedig soha nem 2×. Két külön identitynél is előbb
+  eltérő elsődleges ételcsaládot válassz.
 - A leves és desszert opcionális `+ tétel`: a napi két főétel mellett, nem helyette. A planner a kategória alapján
   kizárja őket a főétel-allokációból és külön `soup` / `dessert` slotban kezeli őket.
 - Levest és desszertet csak explicit owner-confirmed exact-food kedvencként ajánlj. Ismeretlen vagy pusztán
@@ -302,6 +307,14 @@ NEM azt, hogy nincs ilyen (`core-no-guessing`)._
   a leadott order change pénzügyi preview-hashhez kötött külön approvalt igényel.
 - Folyamatos dokumentáció: minden új Interfood-kérés, működési tapasztalat és döntés ugyanabban a change-setben
   kerüljön az összes érintett helyre; kötelező mátrix: `current/principles/interfood-continuous-documentation.md`.
+- Aktuális, képes My Assistant nézet publikálása: `ma interfood recommendation publish --selection <selection.json>
+  [--review <review.md>] --pretty`. Ez fail-closed módon élő menühöz ellenőriz, majd kizárólag a stabil
+  `current/interfood/latest-recommendation.json` snapshotot írja; a felület és API csak ezt olvassa.
+- Étel-visszajelzés: `ma interfood feedback add --menu-item-id <id> --rating
+  loved|liked|neutral|disliked|waste --reason "..." [--eaten-on YYYY-MM-DD] --pretty`, illetve `feedback list`.
+  A visszajelzés rangsorolási evidencia, nem írja át némán az explicit preferenciákat.
+- Napok közti átcsoportosítás: `plan week --carry-over-mode review` (alapértelmezett) csak review-köteles 4→0
+  lehetőséget ad. Tárolhatóság/melegíthetőség megerősítése nélkül nem kerülhet kosárba; `off` kikapcsolja.
 
 ### Konzol-pulzus — mi történik a rendszerben (`SystemPulse_Service`)
 
@@ -640,3 +653,20 @@ jutna el az asszisztenshez.
 `transcript` / `retry`.
 
 📌 Tárolás: `~/.config/my-assistant/stt-ledger/` — ⛔ nem a repóban *(nyers felhasználói tartalom)*.
+
+## ⚠️ MÉRT CSAPDA — a `/tmp` NEM ugyanaz bashben és a Windows-Pythonban (2026-09-11)
+
+Git Bash `/tmp` ≠ a Python által látott `/tmp`. Ha a cwd az `E:` meghajtón van, a Windows-Python
+a `/tmp/x.txt`-t **`E:\tmp\x.txt`**-ként oldja fel *(drive-relatív gyökér)* — ott pedig **régi,
+azonos nevű fájl** lehet.
+
+🔴 **Mért következmény:** egy bash-heredokkal írt `/tmp/row.txt`-et a Python **egy korábbi
+session hagyatékaként** olvasott be, és **rossz sort szúrt be** a `CLAUDE.md`-be — hibaüzenet
+nélkül. Két kör ment el rá, mire kiderült.
+
+**Recept:**
+- ⛔ Ne adj át adatot bash → Python között `/tmp`-n keresztül.
+- ✅ **Ágyazd be az adatot magába a szkriptbe** *(a `.py` forrás UTF-8-ként olvasódik)*, vagy
+  használj **abszolút Windows-utat**.
+- ✅ **Írás után OLVASD VISSZA** ugyanabban a futásban, és **írasd ki az eredményt** —
+  a „nem dobott hibát" ⛔ nem bizonyíték.
