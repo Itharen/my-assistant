@@ -21,6 +21,8 @@ import { VoiceUtteranceArchive_Util } from '../voice/voice-utterance-archive.js'
 import { VoicePlaybackIdle_Util } from '../voice/voice-playback-idle.js';
 import { VoiceSpeechQueue } from '../voice/voice-speech-queue.js';
 import { VoiceSpeechSplit_Util } from '../voice/voice-speech-split.js';
+import { VoiceSpeechGrace_Util } from '../voice/voice-speech-grace.js';
+import { VoiceSpeechHold } from '../voice/voice-speech-hold.js';
 import { VoiceServiceWatch } from '../voice/voice-service-watch.js';
 import { speakInVoiceChannel } from '../voice/voice-speaker.js';
 import { resolveOutboundLogPath } from './discord.reply-tracker.js';
@@ -295,6 +297,13 @@ export class DiscordListener {
   private speechQueue: VoiceSpeechQueue | null = null;
 
   /**
+   * 🔇 A felolvasás szüneteltetője — *„ne beszéljünk egyszerre"*.
+   *
+   * ⚠️ A sor MELLETT él, nem benne: a sor a **sorrendről** dönt, ez az **időzítésről**.
+   */
+  private speechHold: VoiceSpeechHold | null = null;
+
+  /**
    * A FOLYAMATBAN LÉVŐ hang-esemény-írások.
    *
    * ⭐ MIÉRT KELL NYILVÁNTARTANI: a leállás során írt „kiléptem" sor az EGYETLEN nyoma
@@ -473,6 +482,14 @@ export class DiscordListener {
 
     this.readAloud?.stop();
     this.readAloud = null;
+
+    // 🔴 A SZÜNETELTETŐ LEÁLLÍTÁSA FELOLDJA A TARTÁST. ⛔ Enélkül egy kilépés közben aktív
+    // tartás a sort **örökre** tartva hagyná, és minden későbbi felolvasás elmaradna — némán.
+    this.speechHold?.stop();
+    this.speechHold = null;
+
+    // ⚠️ A sort NEM ürítjük ki: ha visszacsatlakozunk, a várakozó üzenetek elhangozhatnak.
+    // ⛔ A kiürítés pontosan az a veszteség, amit a sor megszüntet.
 
     this.cues?.detach();
     this.cues = null;
@@ -695,6 +712,26 @@ export class DiscordListener {
             remedy: 'Ha ez tartósan fennáll, vagy a lejátszás akadt be, vagy több üzenet megy '
               + 'ki, mint amennyi kimondható — az utóbbi a Discord-üzenet HOSSZÁN javítható.',
           },
+        });
+      },
+    });
+
+    // 🔇 A SZÜNETELTETŐ — owner, 2026-09-11 01:15: „amikor elkezdek beszélni… szüneteltetni
+    // kéne a felolvasást. Aztán újra folytatni. (Hogy ne beszéljünk egyszerre.)"
+    //
+    // ⭐ A JELFORRÁS MÁR MEGVOLT: az `onSpeechAttempt` (`receiver.speaking`) — ⛔ nem építünk
+    // másikat, ezt kötjük rá (a feladat kikötése).
+    this.speechHold?.stop();
+    this.speechHold = new VoiceSpeechHold({
+      hold: (): void => this.speechQueue?.hold() ?? undefined,
+      release: (): void => this.speechQueue?.release() ?? undefined,
+      // ⚠️ MINDEN megszólaláskor újra kérdezve — így futás közben átállítható, újraindítás nélkül.
+      graceMs: (): Promise<number> => VoiceSpeechGrace_Util.read(),
+      onNote: (detail: string): void => {
+        void this.safeLog({
+          kind: 'note',
+          summary: `[discord/listener] MA-VOICE-SPEECH-HOLD: ${detail}`,
+          extra: { code: 'MA-VOICE-SPEECH-HOLD' },
         });
       },
     });
@@ -1019,6 +1056,15 @@ export class DiscordListener {
       // 🔊 A „dolgozom rajta" jelzés — a FELDOLGOZÁS kezdetén, nem a felvételkor.
       onProcessingStart: (): void => void this.cues?.play('heard'),
       onSpeechAttempt: (stats: SpeechAttemptStats): void => {
+        // 🔇 NE BESZÉLJÜNK EGYSZERRE: a felolvasás AZONNAL áll, és a türelmi idő minden
+        // további megszólalásnál újraindul (owner, 2026-09-11 01:15).
+        //
+        // 🔴 MÉRVE (2026-09-11 03:45): a saját felolvasásom VISSZAJÖHET az ő mikrofonján —
+        // 4 észlelés 0-3 mp-cel a hangom után. ⛔ Ezért NEM tiltjuk le a lejátszás alatti
+        // észlelést (az a félbeszakíthatóságot szüntetné meg): a szünet maga MEGSZÜNTETI a
+        // visszhang forrását, a feloldás pedig IDŐ-alapú ⇒ végtelen szünet nem lehetséges.
+        this.speechHold?.noteOwnerSpeech();
+
         // 🔇 ITT MAR NEM SZOLALUNK MEG — owner, 2026-09-10 18:07 (hangcsatorna):
         // „meg mindig a typing hangot hallom, pedig ennek a hangnak akkor kene lejatszodni,
         //  amikor elkezdett feldolgozni az uzeneteket, es nem pedig amikor elkezdett felvenni."

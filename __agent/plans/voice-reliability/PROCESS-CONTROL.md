@@ -6,7 +6,7 @@
 > és a **sorrend** van.
 > **Ez a fájl az enyém (DEV).** A `DEV-HANDOFF.md` az asszisztensé — ⛔ oda nem írok státuszt.
 
-**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 03:40
+**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 04:00
 
 ---
 
@@ -29,8 +29,8 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **2** | 🔢 **FIFO SOR** a felolvasásra | 01:33 (A) | ✅ **KÉSZ** — commit `0e0bd73`, CLI 935/935 | 2026-09-11 03:20 |
 | **2b** | 🧹 **NAPLÓ-ÁRADÁS** *(élő ellenőrzésből jött elő)* | — | ✅ **KÉSZ** — a napló 95%-a zaj volt | 2026-09-11 03:30 |
 | **3** | ✂️ **DARABOLÁS** csonkolás helyett | 01:30 | ✅ **KÉSZ** — CLI 956/956 | 2026-09-11 03:40 |
-| **4** | 🔇 **SZÜNETELTETÉS**, amíg az owner beszél | 01:20 | ⏳ **SORON** *(`hold()`/`release()` már megvan)* | — |
-| **5** | 🌐 **NYELV-PARAMÉTER** a felismerésnek | 01:24 + 01:30 | ⬜ hátra | — |
+| **4** | 🔇 **SZÜNETELTETÉS**, amíg az owner beszél | 01:20 | ✅ **KÉSZ** — CLI 980/980 | 2026-09-11 04:00 |
+| **5** | 🌐 **NYELV-PARAMÉTER** a felismerésnek | 01:24 + 01:30 | ⏳ **SORON** | — |
 | **6** | 🔗 **LinkedIn PROFIL-FRISSÍTŐ felület** | 01:55 | ⬜ hátra | — |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
@@ -208,7 +208,65 @@ karakterre pontos „nulla veszteség")*; visszaállítva újra zöld.
 
 ---
 
+## ✅ 4. TÉTEL — SZÜNETELTETÉS (2026-09-11 04:00)
+
+### 🔴 A MÉRÉS, AMI A TERVET ELDÖNTÖTTE — a handoff kikötése volt
+
+*„saját magamra ne süljön el — ezt **méréssel** zárd ki, ne feltételezéssel."*
+
+**43** sikeres felolvasás, **213** megszólalás-észlelés. A felolvasás utáni **első** észlelés
+késése *(23 esetben)*:
+
+```
+23 · 32 · 34 · 37 · 38 · 38 · 39 · 40 · 40 · 42 · 43 · 45 · 45 · 47 · 49 · 50 · 50 · 51 · 60  mp
+                                                        ↑ az owner válaszol
+0,0 · 1,0 · 2,0 · 3,0  mp   ← 🔴 VISSZHANG-ALÁÍRÁS
+```
+
+⇒ **Négy észlelés 0-3 másodperccel a saját hangom után.** Ember nem kezd beszélni 0,0
+másodperccel az én hangom után ⇒ nyitott mikrofon + hangszóró mellett a **saját felolvasásom
+visszajön** az ő megszólalásaként.
+
+⚠️ **A szerkezeti szűrő ezt NEM fogja meg:** a `receiver.speaking` az ő **Discord-azonosítóján**
+jön, tehát nem a botot látjuk — hanem **az ő mikrofonját, amibe az én hangom szól bele**.
+
+### ⭐ MIÉRT NEM LEHET EBBŐL VÉGTELEN SZÜNET
+
+1. 🔴 **A SZÜNET MEGSZÜNTETI A VISSZHANG FORRÁSÁT** — az én hangom elhallgat ⇒ nincs több
+   visszhang ⇒ a türelmi idő letelik ⇒ folytatjuk. A rendszer **önjavító**; a legrosszabb eset
+   egy ~2,5 s akadás.
+2. **A feloldás IDŐ-alapú**, ⛔ nem egy *„elhallgatott"* jelre vár, ami elmaradhat.
+
+⛔ **Ezért NEM tiltottam le a lejátszás alatti észlelést:** az pont a félbeszakíthatóságot
+szüntetné meg, amit az owner kért. ⚠️ Helyette **minden tartás és feloldás naplóba kerül a
+késéssel** — ha akadás-hurok alakul ki, az a naplóból azonnal látszik.
+
+### Mi készült
+
+| fájl | mi |
+|---|---|
+| `voice-speech-hold.ts` | a szüneteltető: azonnali tartás · **minden** megszólalás újraindítja a türelmi időt · idő-alapú feloldás · a leállítás **feloldja** a tartást |
+| `voice-speech-grace.ts` | a türelmi idő — **paraméter**, ⛔ nem beégetve; alapérték **2,5 s** *(a kért 2-3 s sáv közepe)*; ⭐ **ugyanabban a könyvtárban**, mint a hangerő |
+| `voice-number-setting.ts` | a közös beállítás-mechanika *(a review `code-duplication` találatára)* |
+| `discord.listener.ts` | a **meglévő** jelforrásra kötve *(`onSpeechAttempt`)* — ⛔ nem építettem másikat |
+
+⭐ **Pozitív kontroll:** kiiktattam a türelmi idő újraindítását és a leállítás-feloldást ⇒
+**3 teszt** bukott; visszaállítva újra zöld.
+
+⚠️ **Review:** 5 új találatból **2 maradt** *(mindkettő a már ismert, owner-kapus
+`one-export-per-file` illetve `no-as-cast` a típus-szókincsen)*. Közben megjavítva: a
+duplikáció *(közös util)*, két `no-as-cast` *(az időzítő-fogantyú **maga hordozza** a
+lemondását)*, és a bracket-hozzáférés.
+
+🙋 **AMI OWNER-KAPUN ÁLL ehhez a tételhez:** a türelmi idő **CLI + szerver + kliens** felülete
+*(a hangerőnél ez a három megvan)*. Most fájlból és env-változóból állítható — ⭐ a **működés
+kész**, a **három felület** külön kör. ⛔ Nem toltam mellé *(`one-function-is-enough`)*.
+
+---
+
 ## ➡️ A KÖVETKEZŐ KONKRÉT LÉPÉS
+
+### 🗄️ A 4. tétel korábbi jegyzete — archív
 
 **4. tétel *(szüneteltetés)*:** a sor-oldal **készen áll** *(`hold()` / `release()`, tesztelve)*.
 Ami hátra van: a **jelforrás** — a megszólalás-észlelés már létezik
