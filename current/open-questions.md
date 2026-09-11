@@ -837,3 +837,17 @@ hogy minden rendben ment-e"*.
 és lehet, hogy elcsúszott. A válasz eldönti, mikor kell szólnom.
 
 - **Q-2026-09-11-01** *(linkedin, fontosság: m)* — **Kap-e képet minden poszt, csak az erős, vagy marad a „csak ahol hozzáad"?** Owner 01:50-kor jelezte, hogy a régi „gyengébbek kapjanak képet" logikát elveti. **Javaslatom: az ERŐSEK** — a kép erősítő, nem mankó; a „mindegyik" tölteléket szülne, ami ütközik a saját AI-stock-tilalmával. Részletek + mérés: `current/principles/linkedin-post-writing.md`. **Státusz: `answered` (2026-09-11 01:54)** — *„Jó, jó a javaslatod. Menjünk a felé, igen, hogy akkor kapjanak az erősek képet."* ⇒ a gyenge poszt nem kap képet, azt átírjuk vagy kihagyjuk.
+
+### Q-2026-09-11-01 — a füzike-kúra a buli ELŐTT vagy UTÁN induljon? *(life, `l`)*
+
+**Státusz:** `open` · **Felvéve:** 2026-09-11 04:20
+
+Az owner 04:16-kor kérte a **7 napos kisvirágú füzike teakúrát** *(napi 1, van itthon)*. Alapból
+**2026-09-11-től 09-17-ig** vettem fel. ⚠️ De **09-11 estétől 09-13-ig 3 napos buli** van
+*(ital, cigi)* — lehet, hogy a kúrának több értelme van **09-14-től 09-20-ig**, a szabadság
+és a self-development hetében.
+
+**Ajánlás:** maradjon a **09-11-es indulás** — ő most mondta, hogy tartani akarja, és a
+halasztás a tipikus elsüllyedés-minta. Ha ő mást akar, egy mondattal eltolható.
+
+📌 `current/principles/health-system.md` · `org:task:6aa3650c766c802935c3cb24`

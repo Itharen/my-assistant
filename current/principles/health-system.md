@@ -135,3 +135,32 @@ kibukik. Ez egy klasszikus deferred-task → forgotten-task minta.
 - Napi notification / nudge: "matrac ✅?"
 - Health-journal entry: `matrac: yes|no`, opcionális: `meditation|stretch|workout`
 - Streak-tracking: szabályosan teljesített napok száma
+
+---
+
+## 🍵 AKTÍV KÚRA — kisvirágú füzike tea, 7 nap (2026-09-11 … 09-17)
+
+> **Owner, 2026-09-11 04:16 (szó szerint):** *„kéne tartanom egy kisvirágú füzike kúrát, egy
+> heteset, **minden nap egy teát**. **Van itthon, csak mindig elfelejtem.**"*
+
+⭐ **A megnevezett probléma a FELEJTÉS, nem a beszerzés** *(„van itthon")*. ⇒ Itt ⛔ nincs
+bevásárlás-teendő; az **egyetlen** dolgom a **napi emlékeztetés**.
+
+| | |
+|---|---|
+| mit | **kisvirágú füzike** *(Epilobium parviflorum)* tea — **napi 1** |
+| meddig | **7 nap**: 2026-09-11 … 2026-09-17 |
+| ki csinálja | 🤖 **én emlékeztetek** · 🙋 ő issza meg |
+| organizer | `org:task:6aa3650c766c802935c3cb24` |
+
+### Hogyan emlékeztetek — ⛔ ne süllyedjen el
+
+- **A napi körben** *(az első ébren töltött kör)* megnézem, ment-e már a mai tea.
+- ⛔ **Külön üzenetet nem küldök érte hajnalban** *(`private-topics-and-audience`, DND)* — a tea
+  **beleépül a napindításba**, nem külön riasztás.
+- ⭐ **A kúra ÖNMAGÁT ZÁRJA:** 09-17 után ez a szakasz **stale-bannerrel** megjelölendő
+  *(`core-stale-doc-marking`)* — ⛔ nem törlendő, mert a kúra ténye történeti adat.
+
+⚠️ **Nyitott apróság:** 09-11 estétől 09-13-ig **3 napos buli** van. Ha inkább a buli **után**
+indulna a kúra *(09-14 … 09-20)*, az is járható — **vissza kell kérdezni, amikor ébren van**
+*(`Q-2026-09-11-01`)*. ⛔ Magamtól nem tolom el: ő **most** mondta, hogy tartani akarja.
