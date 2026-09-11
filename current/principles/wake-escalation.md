@@ -207,3 +207,54 @@ jellemzően azt jelenti, hogy **ébren van**. ⛔ De nem légmentes: egy beragad
    egy friss one-shot job ennyivel jobb helyzetből indul, mint egy régóta futó.
 4. 🔍 **Utólag ellenőrizhető:** `GET /api/sch/executions?jobId=<id>` — a skip **auditálva van**
    *(`lastSkippedAt` a jobon is látszik; a fő tickem pl. 2026-09-10 22:00-kor skip-elt)*.
+
+---
+
+## 🔴 A KETTŐ KIZÁRJA EGYMÁST — és ez a rendszer egy mért gyengesége (2026-09-11 03:28)
+
+> **Owner, 2026-09-11 03:16-03:17:** *„akár mostantól is beállíthatsz egy schedule wake-up-ot a
+> következő fontos ébredésre, és akkor **kapsz egy izét, egy lockot**, és akkor fogsz ébredni
+> legközelebb azzal az üzenettel."* · *„elméletileg **6-kor** lesz a következő, aztán **9-kor**…
+> És akkor **9-kor beállíthatsz magadnak egy schedule wake-up-ot**, ami X óra, Y perc után
+> küldődjön el."*
+
+⭐ **Ez az ő tervezett útja, és tudja, hogy lockkal jár.** ⇒ Ezt követem.
+
+### ⚠️ DE: a `ScheduleWakeup` és az ütemezett job KIOLTJA EGYMÁST
+
+🔴 **Mérve** — `sq.control-service.ts:1423`:
+
+```ts
+hasQueuedItems(sessionId) { return !!queue?.length; }          // ⚠️ NYERS — a delay-held elemet IS számolja
+hasDeliverableQueuedItems(sessionId) { … isHeadDeliverable(…) } // ✅ a jövőbeli delayUntil-t KISZŰRI
+```
+
+A scheduler queue-aware gate-je a **NYERSET** használja *(`sch-runner…ts:395`)*.
+⇒ **Amíg egy `ScheduleWakeup` delay-held eleme a sorban ül, MINDEN ütemezett trigger elmarad**
+arra a sessionre. A kód maga nevezi meg ezt az esetet *(„pl. CC ScheduleWakeup delayed-prompt")* —
+a ghost-reconcile **pont emiatt** váltott át a `hasDeliverable…`-ra, a scheduler **nem**.
+
+📌 **Következmény a gyakorlatban:** ⛔ **ne fusson egyszerre a kettő.** Vagy wakeup-lánc, vagy
+ütemezett job — a kettő együtt **rosszabb, mint bármelyik önmagában**.
+
+🔍 **Ez valószínűleg BUG a CCAP-ban** *(a gate szándéka: „ne szúrjunk be üzenetet egy user-üzenet
+mögé" — egy delay-held wakeup viszont nem user-üzenet)*. ⇒ Jelezni az ownernek, nem magamtól javítani.
+
+### ⭐ AMI VISZONT JOBB, MINT HITTEM: a wakeup TÚLÉLI A SZERVER-RESTARTOT
+
+A wakeup **két** dolgot hoz létre: egy in-memory `setTimeout`-ot **és** egy **perzisztált
+queue-elemet** `delayUntil`-lel *(`sq.control-service.ts` „Persisted queue recovery (server restart)")*.
+A kézbesítést a **queue head-blocking gate-je** végzi a lejáratkor — tehát a restart a `setTimeout`-ot
+elviszi, de a **queue-elem megmarad**. ⇒ ⛔ Korábban azt írtam, hogy restartkor elvész — **pontatlan volt**.
+
+### A MAI TERV (2026-09-11) — a döntési szabály alkalmazva
+
+| Idő | Mit teszek |
+|---|---|
+| **06:00** tick | ⛔ semmi — a következő tick *(09:00)* **a határidő előtt** van |
+| **09:00** tick | 1️⃣ aktivitás-ellenőrzés + **Discord-ping** · 2️⃣ a **10:50-es jobot törlöm** *(hogy ne oltsa ki a láncot)* · 3️⃣ `ScheduleWakeup` **3600 s → 10:00** |
+| **10:00** wake | aktivitás-ellenőrzés. Ha **aktív** → ⛔ vége, nem ébresztek. Ha nem → `ScheduleWakeup` **3000 s → 10:50** |
+| **10:50** wake | 🔊 **Google Home** — *„Mindjárt kezdődik a meeting — 11:00-kor, online."* |
+
+⚠️ **A lánc ára:** 09:00–10:50 között a sorom **fel van tartva** — amit ekkor ír, az a következő
+wake-nél érkezik meg hozzám, nem azonnal. **Ezt ő tudja és vállalta** *(„kapsz egy lockot")*.
