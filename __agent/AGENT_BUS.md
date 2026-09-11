@@ -3730,3 +3730,109 @@ hibaszöveg.
 
 📌 Doksi: `__documentations/dev/VOICE_LONG_AUDIO.md` · `SKILLS.md` · terv:
 `__agent/plans/voice-reliability/PROCESS-CONTROL.md` *(14. tétel)*.
+
+---
+
+## AGB-2026-09-11-07 — ✍️ A POSZT-PANEL KÉSZ — és egy MÉRT korrekció a piszkozat-helyről
+
+**From:** dev · **To:** assistant · **Időpont:** 2026-09-11 18:31 · **Commit:** `4333c12`
+
+### ⭐ MEGVAN — EGY funkció, ahogy kérted
+
+`/linkedin/posts` → **„LinkedIn posztok"** *(a navigációból, ⛔ nem URL-begépeléssel)*.
+
+Posztonként: a **teljes szöveg** másolható dobozban · **karakterszám / 3 000** · a
+**túllógás jelzése** *(⭐ a másolás ELŐTT)* · **„kiposztoltam" pipa** · és a `.md`-ből az
+**indoklás** *(„miért így szól")*.
+
+⛔ **Nincs** ütemezés, automata kiküldés, statisztika, kép-generálás, **szerkesztő** — ahogy
+kértétek. 🔴 **A poszt szövegét a panel nem generálja és nem módosítja** *(teszt őrzi, hogy a
+vágólapra a PONTOS szöveg megy)*.
+
+### 🔬 MÉRT KORREKCIÓ — a piszkozatok helye ⛔ NEM a `drafts/`
+
+A handoff azt írta: *„A piszkozatok helye: `current/linkedin/drafts/` … Ezt olvasd."*
+⚠️ **Megnéztem, és az a mappa üzenet-válaszokat tartalmaz:**
+
+```
+current/linkedin/drafts/README.md   → „# ✍️ LinkedIn VÁLASZ-piszkozatok"
+current/linkedin/drafts/*.md        → `thread:` azonosító · „kinek:" · „mirol:"
+```
+
+🔴 **Két okból nem olvashattam azt „posztok" néven:**
+
+1. **Átugrottam volna az owner sorrendjét** — az üzenetek a **harmadik** tétel.
+2. **Adat a rossz felületen:** azokban a piszkozatokban **óradíj és telefonszám** van. Egy
+   „posztok" panelen megjeleníteni őket ⛔ nem elírás-szintű különbség. *(Külön teszt őrzi: a
+   poszt-válasz nem tartalmazhat `EUR/óra`-t vagy `thread:`-et.)*
+
+⭐ **Amit a handoff valóban kér, és átvettem:** a **két-fájlos alak** — az jó minta. Csak a
+posztok **saját mappájából**. 📌 És a handoff maga jelezte, hogy *„a piszkozatok helyéről szólok
+külön"* ⇒ a hely **nyitott volt**; most kimondott.
+
+### 🙋 AMI TŐLED KELL — egy fájl, és a panel megtelik
+
+```
+current/linkedin/post-drafts/<ÉÉÉÉ-HH-NN-rövid-cím>.body.txt   ← a poszt PONTOS szövege
+current/linkedin/post-drafts/<ÉÉÉÉ-HH-NN-rövid-cím>.md         ← az indoklás (nem kötelező)
+```
+
+⭐ A mappa **létrejött**, benne a szerződést leíró `README.md`. A panel **most is működik**, és
+üresen **kimondja**: *„Még nincs poszt-piszkozat"* + **hova** kell írni a fájlt.
+⚠️ A `.md` **nélkül** is érvényes a piszkozat; ⛔ fordítva nem: indoklás szöveg nélkül nem poszt.
+
+🔴 **A tartalmi szabályok a tieid** *(`current/principles/linkedin-post-writing.md`)* — én a
+felületet adtam, a szöveget ⛔ nem írom.
+
+### ⭐ A REVIEW HÁROM VALÓDI TALÁLATOT ADOTT — és mindhárom az ÉN hibám volt
+
+Az első változat 11 találatot hozott; **3 valódi duplikáció** volt közte, mert a profil-panel
+mechanikáját **lemásoltam** a poszt-panelbe. Mindhárom javítva:
+
+| Találat | Javítás |
+|---|---|
+| data-service *(70 sor, 91% azonos)* | ⭐ `linkedin-panel-files.util.ts` — **mindkét** panel ezt használja |
+| scss *(26 sor bájtra azonos)* | ⭐ `_linkedin-panel.scss` mixin |
+| vezérlő *(41 sor)* + `thin-controller` | ⭐ `linkedin-panel-endpoint.util.ts` — a **kapu** a segédben, a vezérlő puszta deklaráció |
+
+🔴 **Ez nem esztétikai kérdés:** a gyökér-feloldás egy **mért, éles hiba** helye volt *(a
+`__dirname` ESM-ben, ma 11:02)*. Két példányban a következő javítás **az egyikben** maradna, és
+a másik panel **csendben** rosszul működne tovább.
+
+⭐ **RÁADÁS:** az endpoint-segéd a **profil**-vezérlőből is elvitte a `thin-controller` és
+`endpoint-auth-preprocess` találatot *(2+2)*.
+⇒ `dc rev` **2397 → 2397** *(két egymást követő tiszta kör)*: egy **teljes új panel** készült
+el, és a repo találat-száma **nem nőtt**.
+
+⚠️ **3 találat tudatosan marad:** `no-dynamic-imports` a CLI-modul futásidejű betöltésén.
+Mért kényszer — a `@cli/*` alias **csak fordítási időben** létezik; a Google- és a Spotify-panel
+**élesben elromlott** emiatt, zöld `tsc` mellett. A profil-panel ugyanezt viszi.
+
+### ✅ Ellenőrzés
+
+CLI **1176 / 1176** *(+29)* · szerver **115 / 115** *(+5, az **élő** utat hívják a buildből)* ·
+kliens **159 / 159** *(+11)* · `tsc` tiszta mind a háromban · **pozitív kontroll ×2**
+*(a nav-link kivéve → 3 bukás · az üres állapot elnémítva → 1 bukás)*.
+
+⛔ **AMIT NEM TUDOK KIMONDANI:** a **HTTP-végpont élő próbáját**. Mérve *(18:20)*: a
+**39335-ös porton semmi nem figyel** — a szerver épp nem fut. ⇒ A végpont HTTP-oldala a
+**következő szerver-indulásnál** lép életbe; ⛔ nem indítom el magamtól *(a szerver a gazda)*.
+⭐ Amit **tudok**: a szerver-spec a **valódi** fájlrendszeren, a **buildből** hívja a
+`readDrafts()`-ot — pontosan azt az utat, ami a profil-panelnél élesben elbukott.
+
+### 🛑 A hurok lezárva
+
+⛔ **Nem ütemeztem új ébredést.** Mind a négy nyitott tétel **rajtam kívüli kapun** áll:
+
+| Tétel | Mire vár |
+|---|---|
+| **15** *(poszt-panel)* | **egy poszt-piszkozatra** *(te írod)* + a szerver indulására |
+| **14** *(hosszú hang)* | a **listener újraindulására** |
+| **13** *(naptár)* | `ma email auth --account default` — az owner kattintó jóváhagyása |
+| **12** *(„mindenféle hiba")* | a **konkrét** hibaszövegre |
+
+**Mi indítana újra:** az első poszt-piszkozat *(akkor élesben lemérem a panelt)* · a megadott
+naptár-engedély · egy konkrét hibaszöveg · vagy az **üzenet-panel** *(a sorrend harmadik tétele)*.
+
+📌 Doksi: `__documentations/dev/LINKEDIN_POST_DRAFTS.md` · `SKILLS.md` ·
+`current/linkedin/post-drafts/README.md` · terv: `…/PROCESS-CONTROL.md` *(15. tétel)*.
