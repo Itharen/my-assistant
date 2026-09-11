@@ -872,7 +872,48 @@ el, **melyik olvasót** kell mögé tenni és **mit** kell engedélyezni.
 milyen címkézést használ, mi számít mítingnek, mi csak blokkolt idő.
 *(`org:task:6aa3c192766c802935c3db46`)*
 
-### Q-2026-09-11-03 — tároljam-e a Wi-Fi jelszavakat? *(meta / biztonság, `m`)*
+### Q-2026-09-11-03 — ~~tároljam-e a Wi-Fi jelszavakat?~~ → **HÁLÓZAT-TÉRKÉP** *(meta, `m`)*
+
+> 🔄 **ÁTFOGALMAZVA az owner pontosítása után (2026-09-11 18:41).** ⛔ Az eredeti kérdésem
+> **rossz problémát** oldott meg: a vendég-hozzáférésre gondoltam, ő viszont **nem arra** kérte.
+
+> **Owner (szó szerint):** *„itt most **nem a vendégeknek az elérése miatt** akartam ezt, hanem
+> hogy pont, hogy **tudjam, mit kell beleírni a QR-kód generátorába**… van **két router**, azon
+> **két-kétféle Wi-Fi**… 5G-s meg 2,4-es, és mindegyik kicsit máshogy van beállítva, **más a név,
+> más a jelszó**. Ezeket lenne jó, ha le tudnád tárolni… hogy meg tudjad mondani, **melyik hogy
+> van, meg hogy mi volt az elképzelés**, mert **már fingom nincs** — azért van ilyen sok, mert
+> sok okos eszköz van a lakásban, és mindegyiknek más kell, meg **egy-egy router már nem bírta
+> el** a sok okos eszközt."*
+
+### ⭐ A VALÓDI IGÉNY: nem titok-tár, hanem **DOKUMENTÁCIÓ**
+
+A kérdés nem az, hogy „biztonságos-e jelszót tárolni", hanem hogy **elveszett a topológia
+ismerete**. ⇒ **4 hálózat** *(2 router × 2 sáv)*, mindegyik **más névvel, jelszóval és
+SZEREPPEL** — és a szerep az, ami hiányzik: *melyik eszköz miért került arra a hálózatra*.
+
+📌 **A vendég-QR már kész** *(owner megcsinálta 18:40-kor)* — ⇒ a guest-use-case **lezárva**,
+az eredeti aggályom ott **nem is releváns**.
+
+### Amit tárolni kell — hálózatonként
+
+`router` · `sáv (2,4 / 5 GHz)` · `SSID` · `jelszó` · ⭐ **`mire való / mi volt az elképzelés`**
+· `mely eszközök vannak rajta`
+
+### A tárolás — változatlanul
+
+- 🔒 **Gitignorált helyi tár** *(`~/.config/my-assistant/`)* — ⛔ **soha** a repóba *(pusholva van)*
+- ⛔ Visszamondás **csak DM-ben**, ⛔ soha a felolvasó úton *(voice-csatorna = hangos)*
+- ⭐ A **szerep-leírás** *(„mi volt az elképzelés")* viszont **nem titok** — az **mehet a repóba**,
+  jelszó nélkül. ⇒ **Kettéválasztva** a legjobb: a *miért* verziózva, a *jelszó* nem.
+
+### Következő lépés
+
+⏳ **A hétvége után** *(owner fáradt, vendégek jönnek)*: felveszem tőle a 4 hálózat adatait.
+⛔ Most nem kérem el.
+
+---
+
+### Q-2026-09-11-03/RÉGI — az eredeti, szűkebb kérdés *(megtartva, `core-stale-doc-marking`)*
 
 **Státusz:** `open` · **Felvéve:** 2026-09-11 17:05
 
