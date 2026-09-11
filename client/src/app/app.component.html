@@ -7,7 +7,17 @@
       <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
       <a routerLink="/status" routerLinkActive="active">Status</a>
       <a routerLink="/reports" routerLinkActive="active">Reports</a>
-      <a routerLink="/linkedin" routerLinkActive="active">LinkedIn</a>
+      <!-- 🔗 KETTO belepo, mert a "/linkedin" NEM "LinkedIn altalaban", hanem az UZENETEK.
+           Owner, 2026-09-11 10:55: "nem latom a LinkedIn posztokhoz, meg a LinkedIn
+           profilhoz a feluleteket". A profil-panel LETEZETT (/linkedin/profile), de nem
+           volt ra link — csak URL-begepelessel volt elerheto.
+           EGY funkcio: ket link, nem menu-rendszer. -->
+      <a
+        routerLink="/linkedin"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">LinkedIn üzenetek</a>
+      <a routerLink="/linkedin/profile" routerLinkActive="active">LinkedIn profil</a>
+      <a routerLink="/interfood" routerLinkActive="active">Interfood</a>
     </nav>
   </header>
   <main class="app-main">

@@ -19,8 +19,8 @@ import { Request, Response } from 'express';
 import { DyFM_HttpCallType } from '@futdevpro/fsm-dynamo';
 import { DyNTS_Controller, DyNTS_Endpoint_Params } from '@futdevpro/nts-dynamo';
 
-import { LinkedinProfile_DataService } from './linkedin-profile.data-service';
-import { LinkedInWorkspace_LoopbackGuard } from './linkedin-workspace-loopback.guard';
+import { LinkedinProfile_DataService } from './linkedin-profile.data-service.js';
+import { LinkedInWorkspace_LoopbackGuard } from './linkedin-workspace-loopback.guard.js';
 
 /**
  * A LinkedIn profil-frissítés felülete.

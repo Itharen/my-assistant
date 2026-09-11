@@ -6,7 +6,7 @@
 > és a **sorrend** van.
 > **Ez a fájl az enyém (DEV).** A `DEV-HANDOFF.md` az asszisztensé — ⛔ oda nem írok státuszt.
 
-**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 07:10
+**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 11:30
 
 ---
 
@@ -35,6 +35,9 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **7** | ⏳ **KÖTEG-KAPU** — ne menjen ki a csomag, amíg megszólalás van folyamatban | 02:30 + 8️⃣ | ✅ **KÉSZ** — CLI 1020/1020 | 2026-09-11 06:18 |
 | **8** | 💬 Discord-lábléc *(válaszkényszer ↔ fókusz)* | 03:20 | 🙋 **AZ ASSZISZTENS CSINÁLTA MEG** — ⛔ nem az enyém | 2026-09-11 03:40 |
 | **9** | 🔒 **BESZÉD-ÉSZLELÉS körbeírása + tesztekkel leszögezése** | 04:11 | ✅ **KÉSZ** — CLI 1049/1049, 28 leszögező teszt | 2026-09-11 07:10 |
+| **10** | 🔗 **A PROFIL-PANEL ELÉRHETŐ a felületről** *(nav-link)* | 🔟 11:00 (A) | ✅ **KÉSZ** — kliens 148/148 | 2026-09-11 11:30 |
+| **11** | 📝 **POSZT-FELÜLET** — ⛔ MÉG NINCS megépítve | 🔟 11:00 (B) | ⬜ **HÁTRA** *(owner-sorrend: profil → **posztok** → üzenetek)* | — |
+| **12** | 🔍 **A „mindenféle hiba"** — FELTÁRANDÓ | 🔟 11:00 (C) | 🟡 **EGY HIBA REPRODUKÁLVA ÉS JAVÍTVA**; a többi 🙋 owner-kapun | 2026-09-11 11:30 |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -51,6 +54,21 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
   **elveszti a fonalat**. ⇒ Súlyosabb, mint a kényelmi tételek.
 - **A 9. a hang-vonal után, de minden további hang-munka ELŐTT** — mert az egész hang-lánc
   **ezen áll**, és ma **0 spec** védi.
+- 🔴 **A 10. AZONNAL**, mert **nulla kódot** igényel a panelen: a funkció **kész volt**, csak
+  **nem volt rá út**. ⇒ A legnagyobb haszon a legkisebb változásért.
+- **A 11. a 10. UTÁN**, az owner kimondott sorrendje szerint: **profil → posztok → üzenetek**.
+- **A 12. owner-kapun** áll: ⛔ nem javítok olyat, amit **nem reprodukáltam**
+  *(`uncertain-requests`)*.
+
+### 🔴 A TANULSÁG A 10. TÉTELBŐL — „kész a tervben, nem létezik a felületen"
+
+A profil-panel **megépült, tesztelve, commitolva** — és az owner **nem találta meg**, mert a
+menüben **nem volt rá link**. ⚠️ A tervem szerint a 6. tétel **kész** volt; a valóságban a
+funkció **elérhetetlen**.
+
+⇒ **Új kilépési feltétel minden felület-tételhez:** *„eljut-e hozzá **kattintással**, ⛔ nem
+URL-begépeléssel?"* — és erre **teszt** is kell, mert ez a hibafajta **csendes**: a route él, a
+komponens fordul, a teszt zöld, és a funkció mégis **nem létezik** a használó számára.
 
 ### ⭐ A SZABÁLY, AMI EBBŐL LETT — a 8️⃣-as szakasz tanulsága
 
@@ -488,9 +506,76 @@ vissza: a teszt azt rögzíti, ami **VAN**.
 
 ---
 
+## ✅ 10. TÉTEL — A PROFIL-PANEL ELÉRHETŐ (2026-09-11 11:30)
+
+**A nav most két belépőt ad:** `LinkedIn üzenetek` *(`/linkedin`)* és `LinkedIn profil`
+*(`/linkedin/profile`)*.
+⚠️ Az üzenet-linken `[routerLinkActiveOptions]="{ exact: true }"` — enélkül **mindkettő**
+aktívnak látszana a profil-oldalon *(prefix-egyezés)*, ami apró, de valódi hazugság a felületen.
+
+⭐ **És teszt is van rá** *(4 spec)*, mert **ez a hibafajta CSENDES:** a route él, a komponens
+fordul, a teszt zöld — és a funkció mégis **nem létezik** a használó számára.
+**Pozitív kontroll:** a linket kivéve **3 teszt** bukott.
+
+⚠️ **Egy review-találat marad itt:** a `dead-route-links` *„Unknown route target:
+`/linkedin/profile`"*-t mond. ⭐ **Bizonyított eszköz-korlát, ⛔ nem defekt:** ugyanez a szabály
+**6 MEGLÉVŐ** találatot ad a `/reports/dev-io` és `/reports/user-io` útvonalakra — azok
+**működő** gyerek-route-ok lustán betöltött modulban, amiket a checker nem tud feloldani.
+
+## 🟡 12. TÉTEL — EGY HIBÁT REPRODUKÁLTAM ÉS JAVÍTOTTAM
+
+⭐ Az *„üres adattal is hibamentesen betölt-e"* ellenőrzés közben **élesben megfogtam** egy
+valódi hibát — ⇒ ez **nem találgatás**, hanem reprodukált defekt:
+
+```
+GET http://127.0.0.1:39335/api/linkedin/profile-update
+  →  MA-LINKEDIN-PROFILE-READ-FAILED
+```
+
+### 🔴 A GYÖKÉR — és MINDKETTŐ az én regresszióm volt
+
+**(1) `__dirname` ESM-ben.** A szerver `"type": "module"`, ahol a `__dirname` ⛔ **nem létezik**.
+⚠️ A `tsc` **zöld** volt, mert a `@types/node` **globálisan deklarálja** ⇒ a hiba **csak élő
+hívásra** derült ki. A hat szomszéd szerver-fájl mind `fileURLToPath(import.meta.url)`-t
+használ; az enyém volt az **egyetlen** `__dirname`-es.
+🔴 **Ugyanaz a hibaosztály, mint a `@cli/*` alias-csapda** — amiről **én** írtam a
+figyelmeztetést ugyanabba a fájlba, és **három sorral lejjebb** beleestem.
+
+**(2) A szint-számolás nem lehet helyes MINDKÉT futásban.** Mérve:
+
+```
+src:    server/src/_routes/linkedin          → 4 szint = a repo gyökere
+build:  server/build/server/src/_routes/...  → 5 szint = a repo gyökere
+```
+
+⇒ Egy fix szám **vagy** a `tsx`-es fejlesztői futásban, **vagy** a buildben téved. ⚠️ És a
+build-oldali tévedés **nem kivétel**, hanem **csendes üresség**: a panel
+*„nincs mit frissíteni"*-t mutatna. ⭐ Ezért **jelölő-keresés** *(`__agent` + `cli`)*, a CLI
+`resolveProjectRoot` mintája szerint — és ha a jelölő nincs meg, **kimondott hiba**, ⛔ nem csend.
+
+### ⭐ IGAZOLÁS — két független úton
+
+1. **Közvetlen futtatás `tsx`-szel a `src`-ből** *(pontosan úgy, ahogy a szerver fut)*:
+   `readPlan()` **teljes tervet ad**, a mostani ÉS a javasolt szöveggel.
+2. **Új szerver-spec** *(4 db)*, ami a **build**-ből az **élő utat** hívja.
+   ⚠️ Ez a spec **hiányzott** — ezért csúszhatott át: a tiszta mező-logikát 15 CLI-spec fedi, a
+   **futásidejű útvonal-feloldást** viszont **egy sem**.
+
+⭐ **Ráadás, amit közben javítottam:** három **kiterjesztés nélküli** import a saját
+szerver-fájljaimban *(`.js` nélkül)*. A `tsx` ezt tolerálja, a **buildelt ESM nem** — a
+szerver-spec `ERR_MODULE_NOT_FOUND`-dal bukott, amíg ki nem javítottam.
+
+🙋 **AMI OWNER-KAPUN MARAD:** a *„mindenféle"* többi darabja. ⛔ Nem javítok olyat, amit nem
+reprodukáltam *(`uncertain-requests`)* — a konkrét hibaszövegre várunk.
+⚠️ **A futó szerver-példány még a régi kódot viszi** — a javítás a **következő
+szerver-újraindításkor** lép életbe; ⛔ nem indítom újra magamtól *(a szerver a gazda)*.
+
+---
+
 ## ➡️ A KÖVETKEZŐ KONKRÉT LÉPÉS
 
-⭐ **A tábla MINDEN tétele lezárt** *(1-7, 9 kész; a 8. az asszisztensé)*.
+⭐ **Minden nyitott tétel owner-kapun áll** *(11. = poszt-felület, az owner sorrendje szerint a
+profil-vonal után; 12. = a konkrét hibaszöveg)*.
 ⇒ A hurok lezárása: jelentés az `AGENT_BUS.md`-ben, ⛔ új ébredés NEM.
 
 ### 🗄️ A 9. tétel korábbi jegyzete — archív

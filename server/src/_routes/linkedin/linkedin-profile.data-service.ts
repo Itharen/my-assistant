@@ -17,11 +17,12 @@
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { DyFM_Error } from '@futdevpro/fsm-dynamo';
 
-import { SwallowedFailure_Util } from '../../_collections/swallowed-failure.util';
+import { SwallowedFailure_Util } from '../../_collections/swallowed-failure.util.js';
 
 /**
  * A CLI mező-modul betöltése.
@@ -42,9 +43,53 @@ function loadFieldsModule(): Promise<typeof import('@cli/linkedin/linkedin-profi
   return cliModulePromise;
 }
 
-/** A projekt gyökere — a `server/src/_routes/linkedin`-ből négy szinttel feljebb. */
+/**
+ * A projekt gyökere — **jelölő-keresessel**, ⛔ nem szint-szamolassal.
+ *
+ * ## 🔴 KET MERT HIBA VEZETETT IDE (2026-09-11 11:02 es 11:08)
+ *
+ * **(1) `__dirname` ESM-ben.** A szerver `"type": "module"`, ahol a `__dirname` ⛔ **nem
+ * letezik** ⇒ futasidoben `ReferenceError`. ⚠️ A `tsc` **zold** volt, mert a `@types/node`
+ * globalisan deklaralja ⇒ a hiba **csak elo hivasra** derult ki:
+ * `GET /api/linkedin/profile-update` → `MA-LINKEDIN-PROFILE-READ-FAILED`.
+ * ⇒ Ez resze volt annak, amit az owner *„mindenfele hiba"*-kent latott.
+ *
+ * **(2) A SZINT-SZAMOLAS nem lehet helyes MINDKET futasban.** Merve:
+ *
+ * ```
+ * src:    server/src/_routes/linkedin         → 4 szint = a repo gyokere
+ * build:  server/build/server/src/_routes/... → 5 szint = a repo gyokere
+ * ```
+ *
+ * ⇒ Egy fix szam **vagy a `tsx`-es fejlesztoi futasban, vagy a buildben** teved. A masodik
+ * hiba pont ezert bukott ki: a spec a **buildbol** fut, es a mostani profil-szoveg **ures**
+ * lett — ⚠️ ⛔ **nem kivetellel**, hanem **csendes uressegkent**, ami a panelen
+ * „nincs mit frissiteni"-nek latszik. Az a legrosszabb kimenetel.
+ *
+ * ⭐ EZERT JELOLOT KERESUNK, a CLI `resolveProjectRoot` mintaja szerint *(`__agent` + `cli`)* —
+ * az **fuggetlen** attol, honnan futunk.
+ */
 function resolveRepoRoot(): string {
-  return join(__dirname, '..', '..', '..', '..');
+  let directory: string = dirname(fileURLToPath(import.meta.url));
+
+  for (let depth: number = 0; depth < 10; depth += 1) {
+    if (existsSync(join(directory, '__agent')) && existsSync(join(directory, 'cli'))) {
+      return directory;
+    }
+
+    const parent: string = join(directory, '..');
+
+    if (parent === directory) break;
+    directory = parent;
+  }
+
+  // ⛔ NEM NEMA: ha a jelolot nem talaljuk, a hivo `DyFM_Error`-t kap — a **csendes ureseg**
+  // helyett **kimondott** hiba. (A panel igy „nem olvashato"-t mutat, nem azt, hogy nincs
+  // mit frissiteni.)
+  throw new Error(
+    'A projekt gyokere nem talalhato (`__agent` + `cli` jelolo) — '
+    + `a kereses innen indult: ${dirname(fileURLToPath(import.meta.url))}`,
+  );
 }
 
 /** A futásidejű állapot fájlja. */

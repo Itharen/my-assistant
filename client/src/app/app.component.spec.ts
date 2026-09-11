@@ -38,6 +38,66 @@ describe('AppComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
+  describe('🔗 a NAVIGACIO — a panel legyen ELERHETO kattintassal', () => {
+
+    // > **Owner, 2026-09-11 10:55:** *„nem latom a LinkedIn posztokhoz, meg a LinkedIn
+    // > profilhoz a feluleteket, amik elmeletileg tervben voltak."*
+    //
+    // A MERT GYOKER: a profil-panel LETEZETT (`/linkedin/profile`), de a menuben NEM volt
+    // ra link => csak URL-begepelessel volt elerheto. A terv szerint "kesz" volt, a
+    // feluleten viszont NEM LETEZETT.
+    //
+    // Ez a teszt azert van, mert EZ A HIBAFAJTA CSENDES: a route el, a komponens fordul,
+    // a teszt zold — es az owner megsem talalja.
+
+    /**
+     * A nav-linkek — `Element`-kent, `as` atcimkezes NELKUL.
+     *
+     * A `querySelectorAll` `NodeListOf<Element>`-et ad; az `Element`-en a `getAttribute` es a
+     * `textContent` is megvan, tehat nincs mit atcimkezni.
+     */
+    function navAnchors(fixture: ComponentFixture<AppComponent>): Element[] {
+      return Array.from(fixture.nativeElement.querySelectorAll('nav a'));
+    }
+
+    function navHrefs(): string[] {
+      const fixture: ComponentFixture<AppComponent> = TestBed.createComponent(AppComponent);
+
+      fixture.detectChanges();
+
+      return navAnchors(fixture).map((anchor: Element): string => anchor.getAttribute('href') ?? '');
+    }
+
+    it('a PROFIL-panelra van nav-link', () => {
+      expect(navHrefs()).toContain('/linkedin/profile');
+    });
+
+    it('az UZENET-munkamodra is megvan a link', () => {
+      expect(navHrefs()).toContain('/linkedin');
+    });
+
+    it('a ket LinkedIn-belepo KULON link — nem ugyanaz az utvonal', () => {
+      const linkedin: string[] = navHrefs()
+        .filter((href: string): boolean => href.startsWith('/linkedin'));
+
+      expect(linkedin.length).toBe(2);
+      expect(new Set(linkedin).size).toBe(2);
+    });
+
+    it('a link SZOVEGE megmondja, melyik mit nyit — a "LinkedIn" onmagaban felrevezeto volt', () => {
+      const fixture: ComponentFixture<AppComponent> = TestBed.createComponent(AppComponent);
+
+      fixture.detectChanges();
+
+      const labels: string[] = navAnchors(fixture)
+        .map((anchor: Element): string => (anchor.textContent ?? '').trim());
+
+      expect(labels).toContain('LinkedIn profil');
+      expect(labels.some((label: string): boolean => label.includes('LinkedIn') && label !== 'LinkedIn profil'))
+        .toBeTrue();
+    });
+  });
+
   it('exposes a title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     expect(fixture.componentInstance.title).toBe('my-assistant');
