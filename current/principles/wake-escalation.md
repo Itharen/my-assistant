@@ -24,6 +24,13 @@ hangos ébresztés **fölösleges zaj**.
 | Lépcső | Eszköz | Mikor lép tovább |
 |---|---|---|
 | **1. mérés** | `server/activity-monitor` *(ablak + idle)* | ha **van** aktivitás → ⛔ nem ébresztek, csak írok |
+
+> ⚠️ **Az 1. lépcső korlátja — owner, 2026-09-11 03:25:** *„Ha már az ágyban fekszem, nem jelez
+> az érzékelő."* ⇒ A mérés **csak a gép előtti jelenlétet** látja. Az **„ágyban, de ébren"**
+> és az **„alszik"** állapot **megkülönböztethetetlen** — mindkettő „nincs aktivitás".
+> ⭐ **Ez a létrára nézve rendben van**, mert a lépcsők **sorrendje** véd: a Discord-ping (2.)
+> halk, és ha ébren van, **ő maga állítja le** a láncot. ⛔ Csak azt nem szabad hinnem, hogy a
+> „nincs aktivitás" **bizonyíték** az alvásra — az csak **hiányzó bizonyíték az ébrenlétre**.
 | **2. Discord** | `ma comm say` | ha **nem válaszol** a következő körig |
 | **3. várakozás** | a **3 órás** fő ütemezés vagy egy **CCAP scheduler-job** ⛔ *(nem `ScheduleWakeup` — lásd lent)* | — |
 | **4. hang** | `ma cast notify` *(Google Home)* | **T−5…10 perc** — ez az **utolsó** lépcső |
@@ -237,8 +244,27 @@ a ghost-reconcile **pont emiatt** váltott át a `hasDeliverable…`-ra, a sched
 📌 **Következmény a gyakorlatban:** ⛔ **ne fusson egyszerre a kettő.** Vagy wakeup-lánc, vagy
 ütemezett job — a kettő együtt **rosszabb, mint bármelyik önmagában**.
 
-🔍 **Ez valószínűleg BUG a CCAP-ban** *(a gate szándéka: „ne szúrjunk be üzenetet egy user-üzenet
-mögé" — egy delay-held wakeup viszont nem user-üzenet)*. ⇒ Jelezni az ownernek, nem magamtól javítani.
+### ⛔ EZ NEM BUG — SZÁNDÉKOS TERVEZÉS *(owner-korrekció, 2026-09-11 03:24)*
+
+> *„**Nem bug, ez a szándékos működés.** Hogyha delayed message van, amit schedule wake-up-pal
+> küldtek, vagy én beállítottam egy delayed message-et, az queue-ba kerül, és az **megfogja a
+> queue-t**… Sőt, amikor a queue-ban vannak dolgok, akkor a **schedule triggering sem küld
+> triggert**, mert **fogva van az a session**. Ez szándékosan van így."* ·
+> *„Ennek a célja, hogy **teljes kontrollunk legyen a session fölött**."*
+
+🔴 **Tévedtem, és ezt vissza kell vonni:** a nyers `hasQueuedItems` **nem elnézés**, hanem a
+tervezés lényege. A sor egy **birtoklási zár**: aki elemet tesz bele, az **birtokolja a sessiont**,
+amíg az le nem jár. Az ütemezett trigger azért marad el, mert a session **foglalt** — ⛔ nem azért,
+mert valaki elfelejtett szűrni.
+
+⚠️ **A tanulság rólam:** két függvény közti eltérésből *(`hasQueuedItems` vs.
+`hasDeliverableQueuedItems`)* **szándékot** olvastam ki. Az eltérés **tény** volt, a „bug"
+**következtetés** — és nem az enyém volt kimondani. ⇒ Eltérésnél a helyes forma:
+**„ez eltér, mi a szándék?"**, ⛔ nem **„ez bug"**. *(`core-no-guessing`)*
+
+📌 **Ami ebből GYAKORLATILAG következik, változatlanul érvényes:** ⛔ ne fusson egyszerre
+wakeup-lánc és ütemezett job ugyanazon a sessionön. De ez mostantól **a rendszer szabálya**,
+amihez igazodom — nem hiba, amit jelenteni kell.
 
 ### ⭐ AMI VISZONT JOBB, MINT HITTEM: a wakeup TÚLÉLI A SZERVER-RESTARTOT
 
