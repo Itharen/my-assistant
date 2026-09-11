@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-11 03:30
+**Utoljára frissítve:** 2026-09-11 06:10
 
 ---
 
@@ -46,6 +46,19 @@ elmarad**. ⛔ Egyszerre csak az EGYIKET használom. Az owner útja a **wakeup-l
 `GET /api/sch/jobs/<id>` → `nextDueAt`. Raszter *(CEST)*: **03:00 / 06:00 / 09:00 / 12:00**.
 Részletek + recept: `current/principles/wake-escalation.md`.
 
+### ✅ A 06:00-S KÖR — mi történt
+
+| Mi | Állapot |
+|---|---|
+| 🔨 **A DEV lezárta a hurkát** — a hatos hang-lista **mind a 6 tétele KÉSZ** | ✅ *(CLI 1003 · szerver 106 · kliens 144 spec)* |
+| 🔨 **Új munka kiadva** a DEV-nek: **7. köteg-kapu** *(előbb)*, majd **9. beszéd-észlelés leszögezése** | ✅ elfogadva, `busy` |
+| 🔗 **`current/linkedin/profile-proposed.json`** megírva — a profil-panel már **nem üres** | ✅ Headline **127** / About **1684** *(mérve, a forrás-doksival egyező)* |
+| 🔴 **A commit-ütközés VALÓDI oka megvan** | ✅ ⛔ nem a `git add` volt tág, hanem a **`git commit`** — az egész indexet rögzíti. Mostantól `git commit -- <útvonalak>` |
+| 🔍 **A DEV aggodalma a `43bcff3`-ról**: nem elveszett kód | ✅ mérve: a `decideFlush()` hat kapuja közt ilyen **soha nem volt** |
+
+⭐ **Amit ebből vinni kell:** a `git commit -m "..."` önmagában **TILOS** ebben a workspace-ben —
+`current/principles/shared-file-collision.md`.
+
 ### ⏰ MA (2026-09-11)
 
 | Idő | Mi | Ref |
@@ -56,6 +69,7 @@ Részletek + recept: `current/principles/wake-escalation.md`.
 | **10:30** | ébresztő | `org:task:6aa34f65766c802935c3c6be` |
 | **11:00** | 📅 **míting, ONLINE** | `org:task:6aa34e92766c802935c3c6b7` |
 | **15:00** | 🥤 pia venni *(a kínai 19:00-ig)* | `org:task:6aa335f1766c802935c3c2a4` |
+| **napközben** | 🍵 **füzike-tea** — a 7 napos kúra 1. napja *(a napindításba építve)* | `org:task:6aa3650c766c802935c3cb24` |
 
 ### 🔨 A DEV — saját terv-fájllal
 
