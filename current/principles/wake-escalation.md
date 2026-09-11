@@ -337,3 +337,26 @@ egymást", ezért a jobot 09:00-kor törölni kell. ⚠️ **Az interferencia va
 10:50  mérés → aktív/válaszolt? ⇒ VÉGE. Nem? → 🔊 GOOGLE HOME (semleges mondat)
        ⭐ tartalék ugyanerre a percre: sch-job 6aa354d184f43155b757e2e8
 ```
+
+
+---
+
+## 🔬 A JELENLÉT-FÁJL OLVASÁSA — két mért csapda (2026-09-11 10:02)
+
+A `server/activity-monitor/data/YYYY-MM-DD.jsonl` olvasásakor **kétszer buktam el csendben**:
+
+| Csapda | Mi történik | Recept |
+|---|---|---|
+| 🔴 **UTF-8 BOM** | `json.loads` **kivétellel** áll meg az első soron | `encoding='utf-8-sig'` |
+| 🔴 **a mező neve `timestamp`**, ⛔ nem `ts` | `r.get('ts')` **némán `None`-t ad** — a kód „lefut", az eredmény **értelmetlen** | a kulcsot **mérd ki**: `sorted(rows[-1].keys())` |
+
+⚠️ **A második a veszélyesebb:** a BOM **hangosan** elszáll, a rossz kulcs **halkan** hazudik.
+Egy `last ACTIVE: None` kimenet **ugyanúgy néz ki**, mintha nem lenne aktív minta — vagyis
+pont az ébresztés-döntést rontaná el.
+
+⭐ **A mért séma** *(2026-09-11)*:
+`timestamp` · `idleState` *(`active` / `idle`)* · `idleSeconds` · `processName` ·
+`windowTitle` · `appCategory`.
+
+📌 **A döntéshez a legmegbízhatóbb mező az `idleSeconds`** — önmagában hordozza a választ
+*(7,12 óra ⇒ alszik)*, és ⛔ nem függ attól, hogy jól találtam-e el az időbélyeg kulcsát.
