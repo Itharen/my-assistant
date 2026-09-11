@@ -1384,3 +1384,47 @@ A rendezés **három meglévő** mezőből számolható, új adat nélkül:
 ⛔ **`one-function-is-enough`:** ez a **6. tétel után** jön, és **EGY** funkció — a rangsor. A
 szabad címkék külön kör.
 
+---
+
+## 2026-09-11 02:42 — 🎚️ A SZÜNETELTETÉS HISZTERÉZISE — gyorsan állj meg, LASSAN indulj
+
+> **Owner, 2026-09-11 02:39 (élő megfigyelés):** *„olyan volt, mintha tényleg abbahagynád,
+> miközben beszélek, de csak ilyen **ezredmásodpercekre**, ezért aztán **nagyon fura lett tőle a
+> hangod**. Ilyenkor nem csak abban a mikroszekundumban kell elhallgass, hanem **utána még várnod
+> kell egy-két másodpercet**, mielőtt folytatnád, mert lehet, hogy **én még beszélek**."*
+
+### ⚠️ ELŐSZÖR: MI EZ VALÓJÁBAN? — két olvasat, ⛔ ne tippelj
+
+**Mérve 2026-09-11 02:42:** a `cli/src/voice/*.ts`-ben **nincs** `pause` / `barge` / `duck`
+találat, és a 01:20-as tétel a terv-fájlban **`⬜ hátra`**. ⇒ A szüneteltetés **még nincs
+megírva**.
+
+| Olvasat | Következmény |
+|---|---|
+| **A** — mégis van valamilyen megszakítás *(pl. a lejátszó akad, ha jön a bejövő hang)* | akkor ez **véletlen** viselkedés, és a hiszterézis **rá is vonatkozik** |
+| **B** — a hang **magától darabos** *(hálózat, puffer, `SupervisedChild`)* | ⭐ akkor ez **MÁS hiba**, és a szüneteltetés **nem javítja** |
+
+🔴 **Ezt MÉRÉSSEL kell eldönteni, mielőtt bármit írsz:** szólal-e meg a darabosság **akkor is**,
+ha az owner **nem beszél**? Ha igen → **B**, és külön hiba.
+
+### A KÖVETELMÉNY — ez a 01:20-as tétel PONTOSÍTÁSA
+
+```
+megszólal        → ⚡ AZONNAL szünet          (gyors reakció, ez jó így)
+elhallgat        → ⏳ VÁRJ 1-2 másodpercet    ⭐ EZ HIÁNYZOTT
+még mindig csend → ▶️ folytatás ONNAN, ahol abbamaradt
+```
+
+⭐ **A neve: hiszterézis** — a be- és kikapcsolási küszöb **nem ugyanaz**. ⛔ Szimmetrikus
+küszöbbel a rendszer **csattog**: minden apró zajra megáll és azonnal újraindul, és pont ezt
+hallotta az owner *(„nagyon fura lett tőle a hangod")*.
+
+| Paraméter | Érték |
+|---|---|
+| szünet-küszöb | azonnal *(változatlan)* |
+| **folytatás-késleltetés** | **1-2 s**, ⭐ **paraméter**, ⛔ nem beégetett szám |
+| ⚠️ minimális szünet-hossz | ha a szünet <100 ms lenne, **ne is szüneteltessünk** — a mikro-megszakítás rosszabb, mint a semmi |
+
+📌 Az owner indoka szó szerint: *„mert lehet, hogy én még beszélek."* ⇒ A késleltetés **nem
+kényelem, hanem az ő beszédének a védelme**.
+
