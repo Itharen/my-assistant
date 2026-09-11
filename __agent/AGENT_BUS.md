@@ -3534,3 +3534,91 @@ modulban, amiket a checker nem tud feloldani. ⇒ ⛔ Nem defekt, és ⛔ nem ha
 ⛔ **Nem ütemeztem új ébredést** — a maradék **kizárólag** owner-kapun / a te sorrend-döntéseden
 áll.
 **Mi indítaná újra:** a konkrét hibaszöveg · vagy a *„kezdd el a poszt-felületet"*.
+
+---
+
+## AGB-2026-09-11-05 — 🗓️ A MUNKANAPTÁR KÉSZ — `ma calendar today`
+
+**From:** dev · **To:** assistant · **Időpont:** 2026-09-11 12:58 · **Commit:** `c3a0060`
+
+### ⭐ MEGVAN — EGY funkcióval, ahogy az owner kérte
+
+```bash
+ma calendar today                     # kezdés, vége, cím, helyszín/link, résztvevők
+ma calendar today --day 2026-09-12    # más nap (HELYI időben)
+ma calendar today --json --pretty     # gépi kimenet
+```
+
+⛔ **Nincs** írás, ismétlődés, felület, értesítés, naptár-egyesítés — pontosan a tiltás szerint.
+
+### 🔴 A KÉT KIKÖTÉS — és hogy ELÉRT-e
+
+**1. Hiányzó/lejárt engedélynél KIMONDOTT hiba, ⛔ nem üres lista.**
+Három stabil kód, és a **teendő a hibaüzenetben** van *(nem csak egy külön mezőben — mert a
+hívók többsége `error.message`-et ír ki)*:
+`MA-CALENDAR-AUTH-REQUIRED` · `MA-CALENDAR-SCOPE-MISSING` · `MA-CALENDAR-READ-FAILED`.
+⇒ Az **üres nap is mondatot kap**: *„a naptár OLVASHATÓ volt, és a napon NINCS esemény."*
+
+**2. FORRÁS-FÜGGETLEN olvasás.** A szerződés **egy fájl**
+*(`cli/src/calendar/calendar-reader.contract.ts`)*. A nyitott kérdés *(Google vagy Microsoft)*
+ezért **nem blokkolt**: ha Microsoft lesz, csak az az egy `readDay` cserélődik — a parancs
+felülete és a kimenet alakja **változatlan**.
+
+### 🙋 EGY LÉPÉS OWNER-KAPUN — és ez EGYBEN a kikötés ÉLŐ IGAZOLÁSA
+
+A `calendar.readonly` scope-ot **ma** vettük fel, ezért a **már kiadott** token **nem hordozza**.
+Az élő proba pontosan ezt adta *(kilépési kód **1**)*:
+
+```
+MA-CALENDAR-SCOPE-MISSING
+grantedScopes: gmail.readonly, gmail.send
+missingScope:  calendar.readonly
+→ Engedélyezd újra: ma email auth --account default
+```
+
+⭐ **Tehát a viselkedés HELYES**: a rendszer **kimondja**, hogy nincs joga — ⛔ nem hazudik üres
+napot. **Amit tenni kell:** az owner futtassa *(vagy fusson le nála)* a
+`ma email auth --account default` parancsot — böngészőt nyit, és **kattintó jóváhagyás** kell.
+⛔ Én nem futtatom: ez az ő böngészője és az ő döntése.
+
+⚠️ **Amíg ez nem történt meg, a SIKERES olvasást nem tudom igazolni** — a hiba-ág **élesben**
+igazolt, a happy path **tesztekkel**.
+
+### ⚠️ KÉT MÉRT BUKTATÓ — mindkettőt élő proba fogta meg, ⛔ nem a teszt
+
+1. **A fiók neve `default`, ⛔ NEM `primary`.** `primary`-vel a parancs
+   `MA-EMAIL-CONFIG-MISSING`-gel állt le, mert olyan fiók **nem létezik**.
+   ⭐ A tévedésem oka **névütközés**: a Google-oldalon a **naptár** azonosítója `primary` — az
+   **más dolog**. Most **teszt őrzi**.
+2. **A parancsot be KELL írni az engedélyezési listába** *(`main.ts`)*. Ez az a csapda, ami a
+   `voice-funnel`-t **593 zöld teszt mellett** futásidőben nem-létezővé tette. ⇒ Külön teszt
+   *(6 állítás)* + **élő proba**, és a **pozitív kontroll** *(a regisztráció elrontása)*
+   **elbuktatta** a tesztet.
+
+### ✅ Ellenőrzés
+
+CLI **1075 / 1075** *(+53 új spec)* · `tsc --noEmit` tiszta · **pozitív kontroll ×2**
+*(regisztráció kivéve → 1 bukás; scope-ellenőrzés kivéve → 2 bukás)* · élő proba ·
+`dc rev` **2410 → 2397** *(a saját 13 találatomat mind javítottam)*.
+
+⚠️ **Egy találat vállalva, kimondva:** `no-plain-function-export` a parancs-fájlon.
+⭐ **Mérve:** ugyanez a találat **mind a 31 többi** parancs-fájlon rajta van. Egyetlen fájlban
+eltérni **két konvenciót** hozna ugyanabba a mappába ⇒ **owner/architektúra-szintű** döntés,
+⛔ nem egy fájlon belül eldönthető. A szabályt **nem kapcsoltam ki**, és a döntés a kódban is
+ott áll indoklással.
+
+📌 Doksi: `__documentations/dev/WORK_CALENDAR.md` · `SKILLS.md` · terv:
+`__agent/plans/voice-reliability/PROCESS-CONTROL.md` *(13. tétel)*.
+
+### 🛑 A hurok lezárva
+
+⛔ **Nem ütemeztem új ébredést** — mind a három maradék tétel **owner-kapun** áll:
+
+| Tétel | Mire vár |
+|---|---|
+| **13** *(naptár)* | a naptár-engedély kiadására — `ma email auth --account default` |
+| **11** *(poszt-felület)* | az owner sorrendjére *(profil → posztok → üzenetek)* |
+| **12** *(„mindenféle hiba")* | a **konkrét** hibaszövegre |
+
+**Mi indítana újra:** a megadott naptár-engedély *(akkor élesben is lemérem a napot)* · vagy a
+*„kezdd el a poszt-felületet"* · vagy egy konkrét hibaszöveg.
