@@ -82,3 +82,32 @@ tehát **előbb**, mint a szabadság hete.
 📌 **A szétcsapás-napok alatt ⛔ nem tolok rá munkát** — de a **játékfejlesztési** ág azt jelenti,
 hogy **lehet** fejlesztési igény *(„attól függ, van-e AI kapacitás")*. ⇒ Készenlét, ⛔ nem
 kezdeményezés.
+
+
+---
+
+## ⏱️ A MA ESTI HORGONY — MÉRVE (owner, 2026-09-11 14:48)
+
+> *„Olyan **7-8 körül** várhatóak a haverok."*
+
+⇒ **A vendégek érkezése: 2026-09-11 19:00-20:00.** Ez a nap **kemény horgonya** — minden más
+elé/mögé ehhez igazodik.
+
+| Sorrend ma | |
+|---|---|
+| 1. **munka** | epikek `org:task:6aa3f84c766c802935c3e457` · értékelés Andrásnak `…e45e` · draft+metaadat Jira-jegyek `…e465` |
+| 2. 🧹 **takarítás** | `org:task:6aa3c193766c802935c3db4d` — határidő **18:30**-ra igazítva *(eredetileg 17:00)* |
+| 3. 🎉 **vendégek** | **19:00-20:00** |
+
+### 🔇 AMI 19:00-TÓL AUTOMATIKUSAN ÉLETBE LÉP
+
+🔴 **Vendég-ablak** ⇒ `private-topics-and-audience` **teljes szigorral**:
+
+- ⛔ **Semmi magánjellegű** — se hangosan, se szövegben *(mert ha bent van a voice-csatornán,
+  a szöveg is **elhangzik**; ezt ma 10:46-kor mérve tanultuk meg)*.
+- 🔊 A **Google Home** ilyenkor **különösen** kerülendő — az egész szoba hallja.
+- ⭐ **Bizonytalanságnál**: úgy kezelem, mintha vendég lenne — **19:00-tól ez nem is feltevés,
+  hanem tudott tény**.
+
+📌 **És a 3 napos szétcsapás innen indul** — a következő két nap zónája 🎉 **kikapcsolódás**,
+⛔ nem munka *(`focus-includes-life`)*.
