@@ -125,9 +125,9 @@ megismételni, ⛔ nem a tesztet átírni.
 
 | Ellenőrzés | Eredmény |
 |---|---|
-| CLI-tesztek | **1116 / 1116** zöld *(+41 új)* |
+| CLI-tesztek | **1120 / 1120** zöld *(+45 új)* |
 | `tsc --noEmit` | tiszta |
-| Pozitív kontroll ×2 | darabolás kikapcsolva → **13 bukás**; a hiány-jelzés elhallgatva → **1 bukás** |
+| Pozitív kontroll ×3 | darabolás kikapcsolva → **13 bukás** · hiány-jelzés elhallgatva → **1 bukás** · töredék-számolás kikapcsolva → **2 bukás** |
 | `dc rev` | **2397 → 2397** *(0 új találat; a két új fájlon **0**)* |
 | `git diff` a `cv-*.ts`-en | **üres** *(`transplant-not-rewrite`)* |
 
@@ -151,5 +151,40 @@ megismételni, ⛔ nem a tesztet átírni.
   ismerve (>30 mp)` mutatja, hogy a mechanizmus dolgozik.
 - **A futó listener még a régi kódot viszi** — a javítás a **következő szerver-indulásnál** lép
   életbe. ⛔ Nem indítom újra magamtól *(a szerver a gazda, `ldp-default-runtime`)*.
-- A **23 töltelék-őrös** elutasítás *(B eset)* **külön tétel** — ⛔ nem ez a javítás oldja meg,
-  és ⛔ nem is reprodukáltam, hogy közülük melyik volt valódi beszéd.
+- **A futó listener újraindulásáig** a fenti számok a **megépített kódra** igazoltak, nem az
+  élő beszélgetésre — az első hosszú üzenet a következő szerver-indulás után lesz a bizonyíték.
+
+---
+
+## 🔬 A „B" ESET UTÓMÉRÉSE — a 23 elveszett megszólalás VALÓJÁBAN
+
+A handoff azt írta: *„a veszteség zöme a felismerés utáni szakaszon van (23 vs. 4) — ez az a 23,
+amit meg kell menteni."* ⚠️ **Megmértem, és ez az olvasat téves.**
+
+A megőrzött hang megmondja, mi volt bennük. Mind a **12** megőrzött, `uncertain` felvétel:
+
+```
+0,6 mp → „Thank you."     0,4 mp → „you"      0,8 mp → „you"
+0,5 mp → „Thanks."        0,7 mp → „is"       1,6 mp → „-"
+0,4 mp → „Thank you."     0,8 mp → „you"      2,3 mp → „Thanks."
+0,4 mp → „Thank you."     0,3 mp → „you"      0,6 mp → „-"
+```
+
+🔴 **MINDEGYIK 0,3-2,3 másodperc.** ⇒ Ezek **légzés és mondat-farok** töredékek, amikbe a
+felismerő `„Thank you."`-t hallucinált — ⛔ **egyetlen elveszett owner-mondat sincs köztük**.
+*(Időben is ez látszik: 21 db hajnali 01-03 h között, 2 db 13 h-kor — ⛔ 15:53/15:54-kor egy sem.)*
+
+⇒ **A töltelék-szó-őr jól dolgozik**, és nincs mit „megmenteni" ezen az ágon.
+
+⚠️ **ÉS EBBŐL EGY MÁSIK KÖVETKEZTETÉS IS ADÓDIK:** a **78%-os átviteli arány pesszimista** —
+a nevezőben ott van 23 **másodperc alatti töredék** is, ami sosem volt mondat.
+
+⭐ **Ezért a tölcsér-jelentés MEGNEVEZI őket** *(⛔ de nem vonja ki az arányból — a metrikát nem
+szépítjük)*:
+
+```
+❌  felismerés után elveszett ..... 23  ⏱️ ebből 23 a másodperc alatti töredék (nem mondat)
+```
+
+⚠️ A hossz **hiánya** ⛔ nem számít töredéknek: a régi napló-sorokban nincs benne, és a
+*„nem tudom"* nem állítható *(`core-no-guessing`)*.

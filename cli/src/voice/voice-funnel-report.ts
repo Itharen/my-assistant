@@ -81,6 +81,18 @@ export interface VoiceFunnelReport {
   /** 🔴 Ahol a darabolás közben egy részlet felismerése ELBUKOTT ⇒ HIÁNYOS szöveg. */
   segmentsFailed: number;
   /**
+   * ⏱️ A „felismerés után elveszett"-ből ennyi volt **másodperc alatti töredék**.
+   *
+   * 🔴 MÉRT INDOK (2026-09-11): aznap a **23** ilyen megszólalás **mindegyike 0,3-2,3 mp**
+   * volt — légzés és mondat-farok, amibe a felismerő `„Thank you."`-t hallucinált.
+   * ⛔ **Egyik sem volt elveszett owner-mondat.**
+   *
+   * ⚠️ MIÉRT KELL EZ A SOR: enélkül a tábla azt sugallta, hogy **23 mondat** veszett el — és
+   * ez a hamis olvasat a **javítást is rossz irányba** vitte volna. ⭐ A töredéket nem
+   * hallgatjuk el és nem is vonjuk ki az arányból; **megnevezzük**, hogy olvasható legyen.
+   */
+  droppedTinyFragments: number;
+  /**
    * 🔴 AZ ÁTVITELI ARÁNY százalékban, vagy `null`, ha nem volt mit mérni.
    *
    * ⚠️ **`null` ≠ 0%.** Ha nem hangzott el megszólalás, az arány **értelmezhetetlen** — és
@@ -138,6 +150,8 @@ interface ActionLogLine {
     parts?: number;
     /** 🔴 Hany reszlet felismerese bukott el ⇒ annyi helyen HIANYOS a szoveg. */
     failedParts?: number;
+    /** ⏱️ A felvetel hossza masodpercben — a toredek es a mondat elvalasztasahoz. */
+    audioSecs?: number;
   };
 }
 
@@ -184,6 +198,7 @@ export async function buildVoiceFunnelReport(params: {
     lostAudioSeconds: 0,
     segmentedUtterances: 0,
     segmentsFailed: 0,
+    droppedTinyFragments: 0,
     transferRatePct: null,
     attempts: 0,
   };
@@ -265,6 +280,14 @@ function applyEntry(report: VoiceFunnelReport, entry: ActionLogLine): void {
 
     case VOICE_LOG_CODES.dropped:
       report.droppedAfterTranscribe += 1;
+
+      // ⏱️ MASODPERC ALATTI TOREDEK? Akkor nem elveszett mondat — es ezt KIMONDJUK.
+      // ⚠️ A hossz hianya NEM szamit toredeknek: a regi naplo-sorokban nincs benne, es a
+      // „nem tudom" ⛔ nem allithato „toredek"-nek (`core-no-guessing`).
+      if ((entry.extra?.audioSecs ?? Number.MAX_SAFE_INTEGER) < 1) {
+        report.droppedTinyFragments += 1;
+      }
+
       applySegmentation(report, entry);
       applyDelivered(report, entry);
 
@@ -362,7 +385,12 @@ export function renderVoiceFunnel(report: VoiceFunnelReport, now: Date = new Dat
     `  📼  felvétel a feldolgozásig ...... ${report.delivered}`,
     `  ✅  kötegbe került ................ ${report.queued}`,
     `  🎚️  a felvevő eldobta ............. ${report.droppedByRecorder}`,
-    `  ❌  felismerés után elveszett ..... ${report.droppedAfterTranscribe}`,
+    `  ❌  felismerés után elveszett ..... ${report.droppedAfterTranscribe}`
+      + (report.droppedTinyFragments
+        // ⏱️ Mérve 2026-09-11: aznap MIND a 23 ilyen 0,3-2,3 mp-es töredék volt (légzés,
+        // mondat-farok) — ⛔ egyik sem elveszett mondat. A tábla ezt mondja ki.
+        ? `  ⏱️ ebből ${report.droppedTinyFragments} a másodperc alatti töredék (nem mondat)`
+        : ''),
     `  ⚪  kihagyva (duplikátum/idegen) .. ${report.skipped}`,
     `  ⬜  üres felvétel (nem veszteség) . ${report.emptyFiles}`,
     // 🧩 A HOSSZU MEGSZOLALAS — 2026-09-11 óta LATHATO. Korábban ez a veszteség a

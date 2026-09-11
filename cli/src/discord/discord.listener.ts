@@ -1189,6 +1189,11 @@ export class DiscordListener {
             code: outcomeCode,
             fromOwner: outcome.fromOwner,
             transcribed: outcome.transcribed,
+            // ⏱️ A HOSSZ a naploba is bekerul — ebbol latszik, hogy egy „elveszett"
+            // megszolalas valojaban masodperc alatti toredek volt-e (merve: mind a 23 az volt).
+            ...(outcome.audioSecs === undefined
+              ? {}
+              : { audioSecs: Math.round(outcome.audioSecs * 10) / 10 }),
             // 🧩 A DARABOLAS a naploba is bekerul — ebbol szamol a tolcser-jelentes
             // uj sora. ⚠️ Enelkul a 30 mp-es ablak miatti javitas MERHETETLEN lenne.
             ...(outcome.segmentation

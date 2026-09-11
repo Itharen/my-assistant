@@ -28,6 +28,7 @@ import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { VoiceConnection } from '@discordjs/voice';
 
+import { SttAudioWindow_Util } from '../stt/stt-audio-window.js';
 import { transcribeAudio } from '../stt/stt.client.js';
 import { VoiceChannelBridge } from './voice-channel-bridge.js';
 import { VoiceDropProbe, type VoiceDropObservation } from './voice-drop-probe.js';
@@ -189,6 +190,9 @@ export async function handleFinishedRecording(params: {
     };
   }
 
+  // ⏱️ A HOSSZ MÉRÉSE — a hangból, ⛔ nem a fejléc állításából (az 22 369,6 mp-et mond).
+  const audioSecs: number | null = SttAudioWindow_Util.durationSecs(audio);
+
   // 🎙️ A MEGŐRZÉS AZ ELSŐ — ⛔ minden downstream lépés ELŐTT. A sorrend SZÁNDÉKOS: innentől
   // bármi elhasalhat, a forrás akkor is a lemezen van. Owner: *„A megőrzés ELSŐBBSÉGET élvez
   // a tisztaság előtt."*
@@ -251,6 +255,7 @@ export async function handleFinishedRecording(params: {
       ...(result.suspicionReason ? { reason: result.suspicionReason } : {}),
       audioKept: audioKept,
       filename: params.filename,
+      ...(audioSecs === null ? {} : { audioSecs: audioSecs }),
     };
   }
 
@@ -274,6 +279,7 @@ export async function handleFinishedRecording(params: {
     heard: result.text.trim(),
     audioKept: audioKept,
     filename: params.filename,
+    ...(audioSecs === null ? {} : { audioSecs: audioSecs }),
     // 🧩 A DARABOLÁS A NAPLÓIG MEGY — ⛔ nem áll meg a jelölésnél.
     ...(result.segmentation ? { segmentation: result.segmentation } : {}),
   };

@@ -40,6 +40,16 @@ export interface SpeechAttemptStats {
 /** Egy elkészült felvétel feldolgozásának kimenetele — a naplózáshoz és a teszthez. */
 export interface RecordingHandled {
   /**
+   * ⏱️ A felvétel hossza másodpercben — a MÉRÉSHEZ, ⛔ nem a döntéshez.
+   *
+   * 🔴 MÉRT INDOK (2026-09-11): a „felismerés után elveszett" **23 megszólalás** mindegyike
+   * **0,3-2,3 másodperces** töredék volt *(légzés, mondat-farok)*, amibe a felismerő
+   * `„Thank you."`-t hallucinált — ⛔ **NEM elveszett mondat**. Enélkül a mérésből az a hamis
+   * következtetés jött, hogy 23 owner-mondat veszett el, és a **javítást is oda** vitte.
+   * ⇒ A hossz a naplóba kerül, hogy a tölcsér-jelentés ezt **meg tudja mutatni**.
+   */
+  audioSecs?: number;
+  /**
    * 🧩 DARABOLVA ismertük fel? *(Csak ha TÖBB részlet volt.)*
    *
    * 🔴 MIÉRT UTAZIK EL A NAPLÓIG: a felismerő **30 mp-es ablaka** miatti veszteség eddig

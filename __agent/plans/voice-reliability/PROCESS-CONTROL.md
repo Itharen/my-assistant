@@ -6,7 +6,7 @@
 > és a **sorrend** van.
 > **Ez a fájl az enyém (DEV).** A `DEV-HANDOFF.md` az asszisztensé — ⛔ oda nem írok státuszt.
 
-**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 16:30
+**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 16:38
 
 ---
 
@@ -39,7 +39,7 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **11** | 📝 **POSZT-FELÜLET** — ⛔ MÉG NINCS megépítve | 🔟 11:00 (B) | ⬜ **HÁTRA** *(owner-sorrend: profil → **posztok** → üzenetek)* | — |
 | **12** | 🔍 **A „mindenféle hiba"** — FELTÁRANDÓ | 🔟 11:00 (C) | 🟡 **EGY HIBA REPRODUKÁLVA ÉS JAVÍTVA**; a többi 🙋 owner-kapun | 2026-09-11 11:30 |
 | **13** | 🗓️ **MUNKANAPTÁR** — `ma calendar today` *(EGY funkció)* | 1️⃣1️⃣ 12:25 | ✅ **KÉSZ** — CLI 1075/1075, élő proba; 🙋 1 lépés owner-kapun *(újra-engedélyezés)* | 2026-09-11 12:55 |
-| **14** | 🎙️ **A HOSSZÚ HANGÜZENET vége levágódott** *(bemeneti szűk keresztmetszet)* | 1️⃣2️⃣ 15:54 | ✅ **KÉSZ** — mérve: a felismerő **30 mp**-es ablaka; 295→641 kar, CLI 1116/1116 | 2026-09-11 16:30 |
+| **14** | 🎙️ **A HOSSZÚ HANGÜZENET vége levágódott** *(bemeneti szűk keresztmetszet)* | 1️⃣2️⃣ 15:54 | ✅ **KÉSZ** — mérve: a felismerő **30 mp**-es ablaka; 295→641 kar, CLI 1120/1120 | 2026-09-11 16:38 |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -643,13 +643,25 @@ ablak)` · `🔴 N részlet felismerése ELBUKOTT — a szöveg HIÁNYOS` · `�
 ⚠️ **Az átviteli arány ettől NEM javul** — mert a csonkolás soha nem is szerepelt benne; ezért
 kellett a mérésnek **új sor**.
 
-**Ellenőrzés:** CLI **1116/1116** · `tsc` tiszta · **pozitív kontroll ×2** *(darabolás
-kikapcsolva → 13 bukás; hiány-jelzés elhallgatva → 1 bukás)* · `dc rev` **2397 → 2397**
+**Ellenőrzés:** CLI **1120/1120** · `tsc` tiszta · **pozitív kontroll ×3** *(darabolás
+kikapcsolva → 13 bukás; hiány-jelzés elhallgatva → 1 bukás; töredék-számolás kikapcsolva → 2 bukás)* · `dc rev` **2397 → 2397**
 *(0 új; a két új fájlon 0)* · `cv-*.ts` diff **üres**.
 
 ⚠️ **Két hibát a saját tesztem fogott meg:** (1) végig hangos hangnál a vágás a sáv elejére
 esett *(5 mp veszteség darabonként)*; (2) a hiány-jelzést **kiszorította** az arány-őr indoklása.
 Mindkettő javítva, teszt őrzi.
+
+#### 🔬 A „B" ESET UTÓMÉRÉSE — a 23 megszólalás VALÓJÁBAN
+
+A handoff szerint *„ez az a 23, amit meg kell menteni"*. ⚠️ **Megmértem: az olvasat téves.**
+A megőrzött hang szerint mind a 12 `uncertain` felvétel **0,3-2,3 másodperces** *(légzés,
+mondat-farok)*, amibe a felismerő `„Thank you."`-t hallucinált. ⛔ **Egyetlen elveszett
+owner-mondat sincs köztük** — és 15:53/15:54-kor **egy sem** történt.
+
+⇒ A töltelék-őr **jól dolgozik**. ⚠️ Viszont a **78%-os arány pesszimista**: a nevezőben 23
+másodperc alatti töredék is benne van. ⭐ Ezért a tölcsér most **megnevezi** őket
+*(`⏱️ ebből N a másodperc alatti töredék`)* — ⛔ de **nem vonja ki** az arányból: a metrikát
+nem szépítjük.
 
 📌 Doksi: `__documentations/dev/VOICE_LONG_AUDIO.md` · `SKILLS.md`.
 

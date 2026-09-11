@@ -372,3 +372,46 @@ describe('buildVoiceFunnelReport — 🧩 a HOSSZÚ megszólalás láthatósága
     expect(renderVoiceFunnel(report)).toContain('HIÁNYOS');
   });
 });
+
+describe('buildVoiceFunnelReport — ⏱️ a MÁSODPERC ALATTI töredék megnevezése', () => {
+
+  it('🔴 a töredéket KÜLÖN megnevezi — ⛔ nem tűnhet elveszett mondatnak', async () => {
+    // ⚠️ MÉRT INDOK (2026-09-11): aznap MIND a 23 „felismerés után elveszett" megszólalás
+    // 0,3-2,3 mp-es töredék volt (légzés, mondat-farok), amibe a felismerő „Thank you."-t
+    // hallucinált. ⛔ Egyik sem volt elveszett owner-mondat — a tábla korábban mégis úgy
+    // olvasódott, és ez a hamis olvasat a JAVÍTÁST is rossz irányba vitte volna.
+    const report = await build([
+      line('MA-VOICE-SPEECH-DROPPED', { audioSecs: 0.4 }),
+      line('MA-VOICE-SPEECH-DROPPED', { audioSecs: 0.8 }),
+      line('MA-VOICE-SPEECH-DROPPED', { audioSecs: 12 }),
+    ]);
+
+    expect(report.droppedAfterTranscribe).toBe(3);
+    expect(report.droppedTinyFragments).toBe(2);
+    // 🔴 ⛔ A TÖREDÉKET NEM VONJUK KI az arányból — megnevezzük, de nem szépítjük a számot.
+    expect(report.attempts).toBe(3);
+  });
+
+  it('⚠️ a hossz HIÁNYA nem számít töredéknek — a „nem tudom" ⛔ nem állítható', async () => {
+    // A régi napló-sorokban nincs hossz. ⛔ Abból nem következtetünk (`core-no-guessing`).
+    const report = await build([
+      line('MA-VOICE-SPEECH-DROPPED'),
+      line('MA-VOICE-SPEECH-DROPPED'),
+    ]);
+
+    expect(report.droppedAfterTranscribe).toBe(2);
+    expect(report.droppedTinyFragments).toBe(0);
+  });
+
+  it('a tábla KIÍRJA a töredék-számot, ha van', async () => {
+    const report = await build([line('MA-VOICE-SPEECH-DROPPED', { audioSecs: 0.5 })]);
+
+    expect(renderVoiceFunnel(report)).toContain('másodperc alatti töredék');
+  });
+
+  it('töredék nélkül ⛔ NEM ír plusz szöveget a sorba', async () => {
+    const report = await build([line('MA-VOICE-SPEECH-DROPPED', { audioSecs: 9 })]);
+
+    expect(renderVoiceFunnel(report)).not.toContain('töredék');
+  });
+});
