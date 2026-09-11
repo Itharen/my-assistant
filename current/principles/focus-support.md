@@ -550,3 +550,34 @@ Van EGYETLEN olyan mondatom, ami az Ő teendőjéről vagy döntéséről szól?
 beszélgetés-kezdeményezés. A helyes visszajelzés rá **a működő funkció**, nem egy üzenet arról,
 hogy felírtam.
 
+
+
+---
+
+## ⏳ A „DEADZONE" — mikor VAN kapacitása, és ezért mikor érdemes kérnem (2026-09-11 16:25)
+
+> **Owner, 2026-09-11 16:25-16:26 (szó szerint):** *„Üres járatnak neveztem, de valójában nem
+> üres járat, csak ugye **munkában is agentekkel dolgozom**, ott is az agentek időnként, amikor
+> kiadok egy sor feladatot, **hosszabb ideig dolgoznak**, és ilyenkor azért marad egy kis
+> **plusz kapacitásom**."* · *„Most megint volt egy ilyen kis **deadzone**, gyorsan ki is
+> szaladtam a boltba a piákért."*
+
+⭐ **Ez megmagyarázza a nap ritmusát:** a „mítingen van / dolgozik" nem összefüggő blokk. Vannak
+benne **rövid, kiszámíthatatlan ablakok**, amíg az ő agentjei futnak — és ezekben **tényleg
+elintéz** dolgokat *(ma: Telekom-hívás **és** a bolt, mindkettő deadzone-ban)*.
+
+### AMIT EBBŐL A SAJÁT VISELKEDÉSEMRE KELL VINNI
+
+| Igaz | ⇒ Ezért |
+|---|---|
+| az ablakok **rövidek** és **előre nem láthatók** | a kérésem legyen **egy lépés, azonnal elvégezhető** — ⛔ ne „nézd át és döntsd el" |
+| ő **maga** dönti el, mikor van ablak | ⛔ nem kérdezem, hogy „ráérsz-e" — **leteszem** a kérést, és ő felveszi |
+| a deadzone **értékes** | ⛔ nem töltöm meg státusz-jelentéssel; **egy emoji** elég, ha nincs teendő |
+
+⭐ **A mai bizonyíték rá, hogy ez működik:** a 15:00-s pia-emlékeztetőm **egy mondat + egy
+cselekvés** volt — és a következő deadzone-ban **meg is történt**. ⛔ Egy hosszabb, mérlegelést
+kérő üzenet ugyanabba az ablakba **nem fért volna bele**.
+
+📌 **A takarítás ebből:** ha egy időzített emlékeztetőt tettem félre *(sch-job / wakeup)* és az
+esemény **közben megtörtént**, azt **azonnal törlöm** — különben fölöslegesen szólal meg egy
+olyan ablakban, ami másra kellene. *(Ma: a 17:15-ös job **törölve**, amint szólt, hogy megvolt.)*
