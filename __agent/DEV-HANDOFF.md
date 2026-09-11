@@ -1790,3 +1790,50 @@ helyszín/link · résztvevők**. Ennyi.
 
 📌 A `PROCESS-CONTROL.md`-be **új, magas prioritású tételként** vedd fel. Az organizerben:
 `org:task:6aa3c192766c802935c3db46`.
+
+---
+
+## 1️⃣2️⃣ 2026-09-11 15:54 — 🎙️ A HOSSZABB HANGÜZENETEK VÉGE LEVÁGÓDIK
+
+> **Owner, 2026-09-11 15:54 + 15:55:** *„Úgy látom, hogy **még mindig levágta az előző üzenetemnek
+> a végét**… Át kéne adni a devnek, hogy a **hosszabb hangüzeneteket is fel kell tudjuk
+> dolgozni**."* · *„**Megint levágta a javításomat a végéről**…"*
+
+⭐ **Élő, ismételt bizonyíték:** a 15:53-as üzenete csonka lett, a 15:54-es **javítása is**, és a
+15:54-es köteg fejlécén ott a `⚠️ GYANÚS TAGOLÁS — hiányozhat a vége` jelölő. ⇒ A meglévő
+**gyanú-jelző működik**, a **megőrzés** nem.
+
+### 🔬 MÉRT ADAT — `ma comm voice-funnel --day 2026-09-11` *(15:58-kor)*
+
+| Mutató | Érték |
+|---|---|
+| **átviteli arány** | 🟡 **78 %** *(123 megszólalásból)* |
+| 🔴 **felismerés UTÁN elveszett** | **23** megszólalás |
+| a felvevő eldobta | 4 |
+| elveszett hang | 1,3 mp |
+
+⇒ **A veszteség zöme NEM a felvevőnél van, hanem a felismerés UTÁN** *(23 vs. 4)*. Ez az a
+**23**, amit meg kell menteni.
+
+### ⛔ AMIT NE FELTÉTELEZZ
+
+⚠️ **Nem néztem meg, hol vágódik le** — csak azt mértem, hogy **hol vész el** *(a funnel szerint
+a felismerés utáni szakaszon)*. A konkrét ok lehet: a felismerő **saját hossz-korlátja** · a
+szegmentálás zárja le korán *(`AfterSilence 1000 ms`)* · vagy a felismerés utáni út dobja el.
+⛔ **Mérd meg, melyik** — ⛔ ne kezdj javítani hipotézisre *(`core-no-guessing`)*.
+
+📌 **Kiindulási pont, amit már leszögeztél:** a 9. tétel 28 tesztje a beszéd-észlelést rögzíti —
+**ha a szegmentálás a ludas, az a tesztekből ki fog derülni**, és akkor ⚠️ a leszögezett
+viselkedést kell **owner-döntéssel** megváltoztatni, ⛔ nem csendben átírni.
+
+### KÉSZ, HA
+
+- [ ] **megmérted és leírtad**, hol vész el a 23 megszólalás — ⛔ nem tipp, hanem mérés
+- [ ] a **hosszú** hangüzenet **hiánytalanul** átjön *(reprodukálható teszttel: hosszú minta be → teljes szöveg ki)*
+- [ ] ha a teljes feldolgozás **technikai korlátba** ütközik, az **kimondva** jelenik meg
+      *(⛔ nem néma csonkolás — a `⚠️ GYANÚS TAGOLÁS` jelző ehhez **jó minta**)*
+- [ ] a funnel **átviteli aránya mérhetően javul** — a szám a bizonyíték
+- [ ] `npm test` zöld · `dc rev` 0 új találat · ⛔ semmilyen teszt nincs kikapcsolva
+
+📌 **Prioritás: MAGAS.** Az owner **minden** inputja ezen az úton jön — ez a rendszer **bemeneti
+szűk keresztmetszete**. A poszt-felület várhat.
