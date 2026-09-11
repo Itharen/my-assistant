@@ -851,3 +851,23 @@ Az owner 04:16-kor kérte a **7 napos kisvirágú füzike teakúrát** *(napi 1,
 halasztás a tipikus elsüllyedés-minta. Ha ő mást akar, egy mondattal eltolható.
 
 📌 `current/principles/health-system.md` · `org:task:6aa3650c766c802935c3cb24`
+
+### Q-2026-09-11-02 — a MUNKAnaptár Google-ben vagy Microsoftban van? *(project, `h`)*
+
+**Státusz:** `open` · **Felvéve:** 2026-09-11 12:28
+
+Az owner 12:19-kor **előre vette** a munkanaptár bekötését. A technikai út attól függ, hol él:
+
+| Ha… | Mit jelent |
+|---|---|
+| **ugyanaz a Google-fiók** *(`itharen3@gmail.com`)* | ⭐ a legolcsóbb: **+1 scope** a meglévő, élesben működő Gmail-OAuth-hoz *(`email-google-oauth.service.ts:17-20`)* |
+| **a megbízó Google Workspace-e** | ugyanaz az út, csak **másik fiókkal** kell engedélyezni |
+| **Microsoft 365 / Outlook** | ⛔ más út: a naptár **`.ics`-feed URL**-je kell *(Outlook → Naptár → Megosztás → ICS-link)* |
+
+⭐ **Ez NEM blokkolja a fejlesztést:** a DEV **forrás-független** olvasót épít, tehát a
+`ma calendar today` felülete és kimenete **mindhárom esetben ugyanaz**. A válasz csak azt dönti
+el, **melyik olvasót** kell mögé tenni és **mit** kell engedélyezni.
+
+📌 A kérdés **második fele** ugyanilyen fontos, és csak ő tudja: *mit jelentenek a bejegyzései* —
+milyen címkézést használ, mi számít mítingnek, mi csak blokkolt idő.
+*(`org:task:6aa3c192766c802935c3db46`)*
