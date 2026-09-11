@@ -1,6 +1,6 @@
 {
   "name": "@my-assistant/cli",
-  "version": "0.1.677",
+  "version": "0.1.678",
   "private": true,
   "description": "my-assistant CLI — TTS push to Google Home / Nest speakers, Spotify resume, volume orchestration. Self-built, FOSS-only.",
   "type": "module",
@@ -24,7 +24,8 @@
     "build-clean": "npm run clean && npm run build-base",
     "build-n-test": "pnpm run prep && pnpm run build-base && pnpm test && npm i -g --force && ma --help",
     "typecheck": "tsc --noEmit",
-    "test": "npm run build-base && jasmine --config=spec/support/jasmine.json",
+    "build-transplanted": "tsc -p tsconfig.transplanted.json && tsx scripts/transplanted-build-fix.ts",
+    "test": "npm run build-base && npm run build-transplanted && jasmine --config=spec/support/jasmine.json",
     "test:coverage": "npm run build-base && c8 --reporter=text --reporter=lcov --reporter=html jasmine --config=spec/support/jasmine.json",
     "discover": "tsx src/main.ts cast discover",
     "notify": "tsx src/main.ts cast notify",

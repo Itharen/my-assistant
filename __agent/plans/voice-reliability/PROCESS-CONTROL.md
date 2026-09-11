@@ -6,7 +6,7 @@
 > és a **sorrend** van.
 > **Ez a fájl az enyém (DEV).** A `DEV-HANDOFF.md` az asszisztensé — ⛔ oda nem írok státuszt.
 
-**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 06:18
+**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 07:10
 
 ---
 
@@ -34,7 +34,7 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **6** | 🔗 **LinkedIn PROFIL-FRISSÍTŐ felület** | 01:55 | ✅ **KÉSZ** — CLI 1003 · szerver 106 · kliens 144 | 2026-09-11 04:18 |
 | **7** | ⏳ **KÖTEG-KAPU** — ne menjen ki a csomag, amíg megszólalás van folyamatban | 02:30 + 8️⃣ | ✅ **KÉSZ** — CLI 1020/1020 | 2026-09-11 06:18 |
 | **8** | 💬 Discord-lábléc *(válaszkényszer ↔ fókusz)* | 03:20 | 🙋 **AZ ASSZISZTENS CSINÁLTA MEG** — ⛔ nem az enyém | 2026-09-11 03:40 |
-| **9** | 🔒 **BESZÉD-ÉSZLELÉS körbeírása + tesztekkel leszögezése** | 04:11 | ⏳ **SORON** | — |
+| **9** | 🔒 **BESZÉD-ÉSZLELÉS körbeírása + tesztekkel leszögezése** | 04:11 | ✅ **KÉSZ** — CLI 1049/1049, 28 leszögező teszt | 2026-09-11 07:10 |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -430,7 +430,70 @@ mégis kimehetne.
 
 ---
 
+## ✅ 9. TÉTEL — A BESZÉD-ÉSZLELÉS LESZÖGEZÉSE (2026-09-11 07:10)
+
+> **Owner, 2026-09-11 04:11:** *„…az **kurva jól működik** — azt amúgy **nagyon alaposan
+> rögzítenünk is kéne, körbeírni, nagyon alaposan tesztekkel fixálni a funkcionalitást**."*
+
+**Mért kiindulás:** 37 fájl · 6 681 sor · **0 spec**. ⇒ A legjobban működő darab volt a
+legvédetlenebb.
+
+| rész | hol |
+|---|---|
+| **körbeírás** | `__documentations/dev/VOICE_SPEECH_DETECTION.md` — **mért** értékekkel, ⛔ nem a kódból parafrazeálva; a `VOICE_CONTROL_REFERENCE.md`-ből **hivatkozva** *(SSoT)* |
+| **leszögezés** | `cli/src/_modules/voice/voice-speech-detection.characterization.spec.ts` — **28 spec** |
+
+⛔ **A HATÁR TARTOTT:** `git diff` a `cv-*.ts` fájlokon **ÜRES** — a fában az **egyetlen**
+változás a **saját, új** spec-fájlom *(`??`)*.
+
+### 🔴 A BUKTATÓ, AMI NÉMA TESZTET ADOTT VOLNA — mérve
+
+```
+build-base  =  rimraf ./dist && tsc -p tsconfig.json    ← a dist-et TÖRLI,
+                                   és a _modules KI VAN ZÁRVA belőle
+npm test    =  build-base && jasmine  dist/**/*.spec.js
+```
+
+⇒ A `_modules`-beli spec **le sem fordult** volna a `dist`-be ⇒ jasmine **nem találja** ⇒
+🔴 **némán NEM FUT** — miközben a fájl ott van, és a *„spec-szám > 0"* kritérium **teljesül**.
+⚠️ Pontosan az a hibafajta, ami ellen az egész munka szól.
+
+⭐ **A megoldás:** `build-transplanted` npm-szkript, és a `test` **átfogja**. ⚠️ Vállalt
+következmény: egy jövőbeli `@types/node` bump pirosra viheti a `npm test`-et — ⭐ ez a **helyes**
+viselkedés: ilyenkor a tesztek tényleg nem tudnak lefutni.
+
+### ⭐ AMIT A POZITÍV KONTROLL HOZOTT ELŐ — a saját tesztem hibája
+
+| sabotage | elkapta? |
+|---|---|
+| `speechThreshold` 0,008 → 0,08 | ✅ **2 teszt** |
+| `zcrFilteringCount` 10 → 3 | 🔴 **NEM** — a szűrés-tesztek a tömböt **a configból** építik, ezért **adaptálódtak** |
+
+⇒ A tesztek a **kapcsolatot** szögezték le, az **értéket** nem. Egy explicit `toBe(10)` zárta be.
+⛔ **Enélkül a leszögezés hamis biztonság lett volna.**
+
+### ⚠️ AMIT A FELADAT KÉRT, DE NEM A MI KÓDUNK
+
+A *„beszéd → 1 s csend → beszéd → két szegmens"* teszt. **Mérve
+(`cv-recording.control-service.ts:113`):** a szegmens-határt a **`@discordjs/voice` receivere**
+húzza meg *(`AfterSilence`, 1000 ms)*, ⛔ nem mi. Egy ilyen teszt **a Discordot** tesztelné, és
+élő hang-kapcsolat nélkül nem is futtatható. ⇒ Amit **mi** döntünk el *(keret-szintű ítélet +
+ZCR-szűrés)*, az **le van szögezve**.
+
+### 🔴 MÉRT LELET: a `zcrValidationThreshold` KI VAN KAPCSOLVA
+
+A feladat a *„szerepét"* kérte — a valóság: a forrásban **kikommentezve** áll, tehát **nincs
+hatása**. *(Ugyanígy a `zcrMaxRedGapLength` és a `zcrMinGreenBlockLength`.)* ⛔ Nem kapcsoltam
+vissza: a teszt azt rögzíti, ami **VAN**.
+
+---
+
 ## ➡️ A KÖVETKEZŐ KONKRÉT LÉPÉS
+
+⭐ **A tábla MINDEN tétele lezárt** *(1-7, 9 kész; a 8. az asszisztensé)*.
+⇒ A hurok lezárása: jelentés az `AGENT_BUS.md`-ben, ⛔ új ébredés NEM.
+
+### 🗄️ A 9. tétel korábbi jegyzete — archív
 
 **9. tétel *(a beszéd-észlelés leszögezése)*:** ⛔ **`transplant-not-rewrite`** — a `cv-*.ts`
 fájlokon a `git diff` maradjon **ÜRES**. Két rész: **(1)** körbeírás

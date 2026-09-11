@@ -101,6 +101,10 @@ keret rajta.
 
 ## 7. Kapcsolódó
 
+- 🔒 **`VOICE_SPEECH_DETECTION.md`** — ⭐ **HOGYAN dönti el, hogy beszélek-e**: a hangerő-küszöb,
+  a ZCR, a ZCR-szűrés és a többségi-zöld kapu — **mért** értékekkel, és 28 leszögező teszttel.
+  *(Owner, 2026-09-11 04:11: „nagyon alaposan rögzítenünk is kéne… tesztekkel fixálni".)*
+  ⇒ Ez a doksi a **láncról** szól; a **döntési logika** ott van részletezve.
 - `__documentations/dev/FDP_AI_STT.md` — a saját STT/TTS szolgáltatás *(ide kötjük)*
 - `__agent/capabilities/CATALOG.md` — **C-34** (voice channel), **C-33** (voice üzenet),
   **C-35** (STT/TTS)
