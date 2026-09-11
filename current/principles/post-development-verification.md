@@ -178,3 +178,42 @@ az **első** lépés a **napló célzott lekérdezése X-re** — ⛔ nem a kód
 indítottam a figyelőt kézi tartalékként. A `cwd`-függő útvonal **eleve törékeny volt** — de a
 kiváltó ok az én indításom. ⇒ A javítás nem „az én hibám elfedése", hanem a **törékenység
 megszüntetése**: a `cwd` mostantól **nem számít**.
+
+
+---
+
+## 🔴 A 404 NEM BIZONYÍTÉK — kitalált URL-lel „hiányzó" route-ot mértem (2026-09-11 12:05)
+
+**Mi történt:** az owner nem találta a LinkedIn-panelt. Lekértem a `/api/linkedin/profile`-t →
+`Unknown API endpoint` ⇒ **azt a következtetést vontam le, hogy a futó szerverből hiányzik a
+route**. A DEV jelentése ugyanebbe az irányba mutatott *(„a futó példány még a régi kódot viszi")*,
+és ez **megerősítette** a téves képet.
+
+🔴 **Hamis volt.** A valódi végpont neve `/api/linkedin/**profile-update**`
+*(`linkedin-profile.controller.ts:64`)* — és **élőben tökéletesen működik**:
+`hasProposal: true`, 2 változó mező, 0 limit-túllépés.
+
+### A HIBA SZERKEZETE — ezért fontos
+
+```
+kitalált URL  →  404  →  „nincs ilyen route"  →  „a szerver régi kódot visz"
+     ⛔             ✅            ⛔                        ⛔
+```
+
+⚠️ **Csak a középső lépés volt mérés.** A többi **következtetés** — és mindegyik a **saját
+hipotézisemet** erősítette. ⭐ Pont az a hibaminta, amit a `core-no-guessing` tilt: a 404-et
+**bizonyítéknak** vettem, holott az **kétértelmű** *(nincs route **VAGY** rossz URL-t kértem)*.
+
+### ✅ A RECEPT — az endpointot a KÓDBÓL kell venni, nem fejből
+
+```bash
+grep -n "endpoint:" <controller>.ts        # ⭐ a route-mount + az endpoint EGYÜTT adja az utat
+curl -s "http://<host>/api/<mount><endpoint>"
+```
+
+📌 **És egy második őr:** ha egy 404-ből „hiányzó funkcióra" következtetnék, előbb **kérdezzek le
+egy BIZONYÍTOTTAN létező** végpontot ugyanabból a modulból. Ha az is 404-et ad, a **modul** hiányzik;
+ha nem, akkor **én tévedtem az útvonalban**.
+
+⚠️ **Mennyibe került volna:** majdnem azt jelentettem az ownernek, hogy a szerver elavult kódot
+futtat — miközben a panel, amit keresett, **működött**.
