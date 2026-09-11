@@ -1837,3 +1837,63 @@ viselkedést kell **owner-döntéssel** megváltoztatni, ⛔ nem csendben átír
 
 📌 **Prioritás: MAGAS.** Az owner **minden** inputja ezen az úton jön — ez a rendszer **bemeneti
 szűk keresztmetszete**. A poszt-felület várhat.
+
+---
+
+## 1️⃣3️⃣ 2026-09-11 18:05 — ⭐ KÖSZÖNET A KORREKCIÓÉRT + a POSZT-FELÜLET indulhat
+
+### 1️⃣ A „23 elveszett megszólalás" — **az én olvasatom volt hibás**, jól tetted, hogy megmérted
+
+⭐ **Pontosan ezt kell csinálni.** A handoffom irányt adott *(„ez az a 23, amit meg kell menteni")*,
+és az az irány **rossz** volt. Te nem fogadtad el — **megnézted a mintát**, és kiderült: mind
+**0,3-2,3 mp-es töredék**, egyetlen owner-mondat sem, és a panasz idejében **egy sem**.
+
+⭐ **És a metrikát sem szépítetted:** megnevezted a töredéket, de **nem vontad ki** az arányból.
+Ez a helyes forma — a **láthatóvá tétel**, ⛔ nem a szám javítása.
+
+📌 Felírtam magamnak: `current/principles/post-development-verification.md` — *„a számláló nem
+jelentés"*. ⛔ Metrikára tervet építeni csak a **minta** megnézése után.
+
+⚠️ **Ami ebből RÁD tartozik:** ha egy handoffom **tényként** állít valamit, ami **méréssel
+cáfolható**, ⭐ **cáfold** — ⛔ ne dolgozz rossz irányba udvariasságból. Ez mostantól **elvárás**.
+
+---
+
+### 2️⃣ A POSZT-FELÜLET — ✅ **INDULHAT** *(a korábbi tiltás feloldva)*
+
+> **Owner sorrendje:** profil → **posztok** → üzenetek.
+
+A **profil-vonal kész**: a panel él, a javaslat betöltve *(`hasProposal: true`)*, a beillesztés
+már **owner-kapu**, ⛔ nem fejlesztési tétel. ⇒ **A posztok jönnek.**
+
+### ⭐ A MINTA MÁR MEGVAN — ⛔ ne tervezz újat
+
+A **profil-panel** ugyanezt a problémát oldja meg: a LinkedIn API **nem ír**, csak olvas ⇒ a cél
+**nem az automatizálás, hanem a súrlódás-mentes átvitel**. Ugyanaz a recept:
+
+| Profil-panel *(kész)* | Poszt-felület *(ez a feladat)* |
+|---|---|
+| mezőnként másolható szöveg | **posztonként** másolható szöveg |
+| limit + túllógás-jelzés | LinkedIn poszt-limit *(3 000 kar.)* + jelzés |
+| „beillesztettem" pipa, futásidejű állapot | „kiposztoltam" pipa, ugyanoda |
+| forrás: `profile-proposed.json` | forrás: **a piszkozat-fájlok** |
+
+### A FELADAT — ⭐ EGY funkció
+
+**Egy lista a megírt poszt-piszkozatokról + posztonként egy másolható szövegdoboz.** Ennyi.
+
+⛔ **NE** épits: ütemezést · automatikus kiküldést · statisztikát · kép-generálást ·
+szerkesztőt *(a szöveget **én** írom fájlba)*.
+
+⚠️ **A tartalmi szabályok az ENYÉMEK, ⛔ nem a tiéd:** `current/principles/linkedin-post-writing.md`.
+Te a **felületet** adod; a poszt **szövegét** ⛔ ne generáld és ⛔ ne módosítsd.
+
+### KÉSZ, HA
+
+- [ ] a panel **elérhető a navigációból** *(⚠️ a profilnál ez kimaradt — ne ismételjük)*
+- [ ] **üres** piszkozat-listával is hibamentes, és **kimondja**, hogy nincs még poszt
+- [ ] a limit-túllógás **a beillesztés ELŐTT** derül ki
+- [ ] `npm test` zöld · `dc rev` 0 új találat · ⛔ semmilyen teszt nincs kikapcsolva
+
+📌 **A piszkozatok helyéről szólok külön** — jelenleg `current/linkedin/drafts/` van
+*(`.body.txt` = a pontos kimenő szöveg, `.md` = az indoklás)*. **Ezt a két-fájlos alakot olvasd.**
