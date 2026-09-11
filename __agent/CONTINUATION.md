@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-11 06:10
+**Utoljára frissítve:** 2026-09-11 09:05
 
 ---
 
@@ -59,13 +59,25 @@ Részletek + recept: `current/principles/wake-escalation.md`.
 ⭐ **Amit ebből vinni kell:** a `git commit -m "..."` önmagában **TILOS** ebben a workspace-ben —
 `current/principles/shared-file-collision.md`.
 
+### ⚠️ FAM — az MCP-LINK HALOTT, a SZOLGÁLTATÁS ÉL (mérve 2026-09-11 09:01)
+
+A `mcp__fdp-agent-memory__*` eszközök **CONNECT_TIMEOUT**-tal elestek. ⛔ **Nem** jelentem
+„FAM-unavailable"-ként — lefuttattam a kötelező probe-ot:
+
+`GET http://127.0.0.1:39265/api/health` → **`ready: true`**, `hydration.complete: true`,
+6/6 tár kész, uptime ~11,6 óra.
+
+⇒ **Ez NEM várakozási probléma** *(a szabály szerint ilyenkor ⛔ nincs újrapróbálkozás)* — a
+**kliens-oldali MCP-link** halt meg, nem a szerver. **Fallback: REST**, ugyanazon a porton.
+
 ### ⏰ MA (2026-09-11)
 
 | Idő | Mi | Ref |
 |---|---|---|
-| **09:00** *(tick)* | 🔴 **ITT KELL CSELEKEDNI:** ① aktivitás-ellenőrzés + Discord-ping ② **töröld** a `6aa354d184f43155b757e2e8` jobot ③ `ScheduleWakeup` **3600 s** | `wake-escalation.md` |
-| **10:00** *(wake)* | aktív? → ⛔ vége. Nem aktív? → `ScheduleWakeup` **3000 s** | ↑ |
-| **10:50** *(wake)* | 🔊 **Google Home**: *„Mindjárt kezdődik a meeting — 11:00-kor, online."* | ↑ |
+| **09:00** *(tick)* | ✅ **MEGTÖRTÉNT** — mérés: **alszik** *(idle 6,1 óra, utolsó aktív 02:51)*; ⛔ ping NEM *(túl korai)*; `ScheduleWakeup` beállítva → **10:02** | `wake-escalation.md` |
+| **10:00** *(wake)* | mérés → aktív? ⇒ **VÉGE**. Nem? → `ScheduleWakeup` **1800 s** | ↑ |
+| **10:30** *(wake)* | mérés → aktív? ⇒ **VÉGE**. Nem? → 💬 **DISCORD-PING** *(halk)* → `ScheduleWakeup` **1200 s** | ↑ |
+| **10:50** *(wake)* | 🔊 **Google Home** — ⚠️ **semleges** mondat *(vendégek!)*. ⭐ tartalék: sch-job `6aa354d184f43155b757e2e8` **MEGTARTVA** | ↑ |
 | **10:30** | ébresztő | `org:task:6aa34f65766c802935c3c6be` |
 | **11:00** | 📅 **míting, ONLINE** | `org:task:6aa34e92766c802935c3c6b7` |
 | **15:00** | 🥤 pia venni *(a kínai 19:00-ig)* | `org:task:6aa335f1766c802935c3c2a4` |
