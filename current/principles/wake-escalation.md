@@ -360,3 +360,34 @@ pont az ébresztés-döntést rontaná el.
 
 📌 **A döntéshez a legmegbízhatóbb mező az `idleSeconds`** — önmagában hordozza a választ
 *(7,12 óra ⇒ alszik)*, és ⛔ nem függ attól, hogy jól találtam-e el az időbélyeg kulcsát.
+
+
+---
+
+## ✅ AZ ELSŐ ÉLES FUTÁS — SIKER, és a 4. lépcső NEM KELLETT (2026-09-11 10:40)
+
+| Lépcső | Idő | Eredmény |
+|---|---|---|
+| **1. mérés** | 09:00 · 10:02 · 10:32 | alszik *(idle 6,1 → 7,12 → 7,62 óra, monoton)* |
+| **2. Discord-ping** | **10:32** | ⭐ **EZ ÉBRESZTETTE FEL** — 53 karakter, semleges |
+| **3. várakozás** | 10:33 → | — |
+| **4. 🔊 Google Home** | 10:52-re ütemezve | ⛔ **NEM FUTOTT LE** — 10:40-kor válaszolt *(„Jó reggelt kívánok!")* |
+
+⭐ **A létra pont úgy működött, ahogy tervezve volt: a legkevésbé zavaró csatorna elég volt.**
+A hangos lépcső **elsülhetett volna**, de nem kellett — és ez a **siker** mérőszáma, ⛔ nem a
+kihasználatlanság jele.
+
+### A KÉT DÖNTÉS, AMI EZT LEHETŐVÉ TETTE
+
+1. ⛔ **Nem pingeltem 09:00-kor.** Ha akkor ébresztem, **1,5 órával kevesebbet alszik** — és
+   ugyanoda jutunk. A ping **10:32-kor** pont a kért *„fél órával előtte"* ablakba esett.
+2. ⭐ **A tartalék-job megtartása ártalmatlan volt** — és a siker után **törölhető**:
+   `DELETE /api/sch/jobs/6aa354d184f43155b757e2e8` → `{"deleted":true}` *(10:44)*.
+
+### 📌 AMIT A KÖVETKEZŐ ALKALOMRA VINNI KELL
+
+- **A halk csatorna elég lehet** ⇒ ⛔ ne ugorjunk a hangosra „biztos, ami biztos" alapon.
+- **A ping ideje a kért ablakhoz igazodik**, ⛔ nem a legkorábbi lehetséges pillanathoz.
+- **Siker esetén takaríts:** a tartalék-jobot törölni kell, különben napokig ott marad.
+- ⚠️ **Az alvás ára mérve:** 02:51 *(utolsó gép-aktivitás)* → 10:40 = **~7,8 óra** a gép szerint.
+  A telefonos beszélgetés miatt a **valódi** elalvás ~04:20 volt ⇒ **~6,3 óra tényleges alvás**.
