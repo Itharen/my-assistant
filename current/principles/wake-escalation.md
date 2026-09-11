@@ -25,8 +25,9 @@ hangos ébresztés **fölösleges zaj**.
 |---|---|---|
 | **1. mérés** | `server/activity-monitor` *(ablak + idle)* | ha **van** aktivitás → ⛔ nem ébresztek, csak írok |
 
-> ⚠️ **Az 1. lépcső korlátja — owner, 2026-09-11 03:25:** *„Ha már az ágyban fekszem, nem jelez
-> az érzékelő."* ⇒ A mérés **csak a gép előtti jelenlétet** látja. Az **„ágyban, de ébren"**
+> ⚠️ **Az 1. lépcső korlátja — owner, 2026-09-11 03:27:** *„azt magyaráztam, hogy **már az ágyban
+> fekszem. Már a telefonnal beszélgetünk.**"* ⇒ A mérés **csak a gép előtti jelenlétet** látja —
+> az ágyból, telefonról folytatott beszélgetés **nem látszik benne**. Az **„ágyban, de ébren"**
 > és az **„alszik"** állapot **megkülönböztethetetlen** — mindkettő „nincs aktivitás".
 > ⭐ **Ez a létrára nézve rendben van**, mert a lépcsők **sorrendje** véd: a Discord-ping (2.)
 > halk, és ha ébren van, **ő maga állítja le** a láncot. ⛔ Csak azt nem szabad hinnem, hogy a

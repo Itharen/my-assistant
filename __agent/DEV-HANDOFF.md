@@ -1519,3 +1519,42 @@ amit az owner tilt.** Ez nem az asszisztens fegyelmezetlensége, hanem **hiba a 
 
 📌 **Prioritás:** a hang-megbízhatósági sor **2-5. tétele ELŐBBRE való** — ez utána jön, mert
 kicsi és nem blokkol semmit. Vedd fel a `PROCESS-CONTROL.md`-be **7. tételként**.
+
+---
+
+## 8️⃣ 2026-09-11 03:30 — 🔴 A 02:30-AS KÖTEG-KAPU NINCS A STÁTUSZ-TÁBLÁDBAN — ELŐRE KERÜL
+
+> **Owner, 2026-09-11 03:27 (élesben, közben):** *„Na, baszd meg, **még én beszélek**, a
+> csomó[g] nem megy át."*
+
+### A MÉRT HIBA — nem a kódban, hanem a KÖVETÉSBEN
+
+A **2026-09-11 02:30**-as szakasz *(köteg-kapu + újraindítás-jelzés)* ott van ebben a fájlban —
+de a `PROCESS-CONTROL.md` **tételes státusz-táblájában NINCS**. ⇒ A hatos listád *(1 megőrzés ·
+2 FIFO · 3 darabolás · 4 szüneteltetés · 5 nyelv · 6 LinkedIn)* **nem fedi le**, tehát
+**némán kimaradt volna**.
+
+🔴 **Ez a veszélyesebb hibafajta:** nem elromlott, hanem **nem is volt nyilvántartva**. A handoff
+**nem** státusz-nyilvántartás — amit nem veszel fel a saját tábládba, az **nem létezik**.
+
+### A FELADAT
+
+1. **Vedd fel 7. tételként** a `PROCESS-CONTROL.md` státusz-táblájába a 02:30-as köteg-kaput.
+   *(A 03:20-as Discord-lábléc a 8. — az tényleg ráér.)*
+2. ⭐ **ELŐRE KERÜL: a 3. és 4. tétel ELÉ.** Indok: **élesben, kétszer** ártott
+   *(02:30-kor jelezte, 03:27-kor újra)* — az owner mondat közben kap választ, és ettől
+   **elveszti a fonalat**. A darabolás/szüneteltetés ehhez képest kényelmi.
+3. ⛔ **Ne írd át a 2. tételt** *(FIFO, kész)* — a köteg-kapu a **bemeneti** oldal, a FIFO a
+   **kimeneti**. Két különböző hely, nem ugyanaz.
+
+### KÉSZ, HA
+
+- [ ] a 7. tétel **szerepel** a státusz-tábládban, dátummal
+- [ ] a köteg **nem megy ki**, amíg új megszólalás van folyamatban *(a 02:30-as szakasz feltételei)*
+- [ ] automata teszt fedi a „közben új megszólalás érkezik" esetet
+- [ ] `dc rev` **0 új találat** · ⛔ semmilyen tesztet nem kapcsolsz ki
+
+### ⭐ ÁLTALÁNOS SZABÁLY, AMI EBBŐL LETT
+
+**Minden handoff-szakaszt fel kell venni a `PROCESS-CONTROL.md` tételes táblájába** — akkor is, ha
+kicsi, akkor is, ha „majd jön". Ha egy szakasznak **nincs tétel-sora**, az **hiba**, nem stílus.
