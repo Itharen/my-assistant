@@ -6,7 +6,7 @@
 > és a **sorrend** van.
 > **Ez a fájl az enyém (DEV).** A `DEV-HANDOFF.md` az asszisztensé — ⛔ oda nem írok státuszt.
 
-**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 04:00
+**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 04:15
 
 ---
 
@@ -30,8 +30,8 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **2b** | 🧹 **NAPLÓ-ÁRADÁS** *(élő ellenőrzésből jött elő)* | — | ✅ **KÉSZ** — a napló 95%-a zaj volt | 2026-09-11 03:30 |
 | **3** | ✂️ **DARABOLÁS** csonkolás helyett | 01:30 | ✅ **KÉSZ** — CLI 956/956 | 2026-09-11 03:40 |
 | **4** | 🔇 **SZÜNETELTETÉS**, amíg az owner beszél | 01:20 | ✅ **KÉSZ** — CLI 980/980 | 2026-09-11 04:00 |
-| **5** | 🌐 **NYELV-PARAMÉTER** a felismerésnek | 01:24 + 01:30 | ⏳ **SORON** | — |
-| **6** | 🔗 **LinkedIn PROFIL-FRISSÍTŐ felület** | 01:55 | ⬜ hátra | — |
+| **5** | 🌐 **NYELV-ELTÉRÉS** *(a paraméter NEM létezik — mérve)* | 01:24 + 01:30 | ✅ **KÉSZ** — CLI 988/988 | 2026-09-11 04:15 |
+| **6** | 🔗 **LinkedIn PROFIL-FRISSÍTŐ felület** | 01:55 | ⏳ **SORON** | — |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -264,7 +264,61 @@ kész**, a **három felület** külön kör. ⛔ Nem toltam mellé *(`one-functi
 
 ---
 
+## ✅ 5. TÉTEL — NYELV-ELTÉRÉS (2026-09-11 04:15)
+
+### 🔴 A KÉRT PARAMÉTER NEM LÉTEZIK — mérve, nem feltételezve
+
+A feladat: *„Ha az API támogat explicit `language` paramétert, azt kell átadni."* ⇒ Megmértem.
+Ugyanazt a **megőrzött** felvételt *(⭐ az 1. tétel munkája!)* kétszer küldtem be:
+
+```
+language paraméter NÉLKÜL  →  { "text": "Thanks." }
+?language=hu               →  { "text": "Thanks." }     ← BETŰRE UGYANAZ
+```
+
+⇒ Az FDP AI `/api/recognition` a paramétert **elfogadja, de figyelmen kívül hagyja**, és a
+közzétett végpont-lista sem említi. ⛔ **Nem elfelejtettük átadni — nincs mit átadni.**
+*(⛔ Az FDP AI szolgáltatáshoz nem nyúltunk: `fdp-ai-never-restart`.)*
+
+⭐ **Ráadás-lelet:** a magyar felvétel **„Thanks."**-re fordult — vagyis a hiba **reprodukálható
+a megőrzött hangon**. Enélkül csak az owner beszámolója lett volna.
+
+### ⚠️ AMIT ELSŐRE ROSSZUL TERVEZTEM — és a mérés megfogta
+
+Az 56 megőrzött átiratból **13** nem tartalmazott magyar ékezetet, és mind a 13 bukott
+felismerés volt. ⇒ Kézenfekvőnek tűnt az *„ékezet-hiány = gyanús"* szabály.
+
+🔴 **De az „Igen." és a „Nem." is ékezet nélküli** — és azok az owner **legfontosabb válaszai**.
+Egy ilyen szabály a **jóváhagyását** dobta volna el. *(A kód ezt a csapdát már ismerte: az
+„igen"/„ok" **szándékosan** nincs a filler-listán, és egy teszt védi. ⛔ Nem írtam felül.)*
+
+### A megoldás: magyarban NEM LÉTEZŐ betűk — EGY szabály
+
+*(A feladat kikötése: „⛔ ne építs köré nagy detektálás-logikát.")*
+
+| mérés | eredmény |
+|---|---|
+| a 10 ismert bukás a mért adatból | **10/10 elkapva** *(előtte 5/10)* |
+| valódi magyar üzenetek megjelölve | **0** |
+| a 46 „magyarnak látszó" átiratból megjelölve | 2 — ⭐ **mindkettő ISLANDI** *(csak az á/í/ó miatt látszottak magyarnak)* |
+
+⇒ **Zero valódi hamis pozitív.** Az izlandi (þ ð æ), lengyel (ę ł ż), cseh, román, német,
+északi, török és **minden nem-latin írás** *(cirill · görög · héber · arab · CJK · kana)*
+megjelölve; az angol *(Hunglish)* ⛔ érintetlen, mert az angol sem használ ilyen betűt.
+
+⭐ **Pozitív kontroll:** a regexet soha-nem-találóra állítottam ⇒ **3 teszt** bukott. ⚠️ Az
+első sabotage-kísérletet *(`if (false && foreign)`)* maga a **fordító** utasította el
+*(strict-null)* — ez is védelem.
+
+---
+
 ## ➡️ A KÖVETKEZŐ KONKRÉT LÉPÉS
+
+**6. tétel *(LinkedIn profil-frissítő felület)*:** ⚠️ **más domain** — a hang-vonal ezzel
+lezárult. Az adat készen áll: `current/linkedin/profile-current.json` a mostani állapot; a
+**javasolt** szöveget az asszisztens írja *(⛔ nem az én dolgom)*. A felületnek mezőnként kell
+egymás mellé tennie a kettőt: **egy gomb = egy mező vágólapra** · karakterszám + LinkedIn-limit
+*(headline 220 · about 2600)* · **„beillesztettem" pipa** mezőnként.
 
 ### 🗄️ A 4. tétel korábbi jegyzete — archív
 

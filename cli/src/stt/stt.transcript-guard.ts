@@ -45,6 +45,11 @@ const COLLAPSE_FILLERS: string[] = [
   'thank you',
   'thanks',
   'you',
+  // 🔴 MÉRVE 2026-09-11: az 56 megőrzött átirat közül ezek is TELJES átiratként fordultak elő,
+  // bukott felismerésből — ugyanaz az osztály, mint a „thanks". ⛔ Az owner magyarul beszél,
+  // tehát egy teljes átiratként álló angol köszönés sosem az, amit mondott.
+  'yeah',
+  'bye',
 ];
 
 // ⛔ „igen" és „ok" SZÁNDÉKOSAN NINCS a listán, pedig kézenfekvő lenne.
@@ -56,6 +61,50 @@ const COLLAPSE_FILLERS: string[] = [
 // 📌 Amikor először mégis felvettem őket, ez a teszt bukott el — helyesen. A bukott
 // felismerésből származó „igen"-t úgyis az ARÁNY-ellenőrzés fogja meg, ha hosszú a hang;
 // az pedig nem téveszti össze a valódi rövid válasszal, mert a hanghosszt is nézi.
+
+/**
+ * 🌐 BETŰK, AMIK A MAGYARBAN NEM LÉTEZNEK — a nyelv-eltérés MÉRHETŐ jele.
+ *
+ * ## 🔴 MIÉRT EZ, ÉS MIÉRT NEM A NYELV-PARAMÉTER
+ *
+ * > **Owner, 2026-09-11 01:24:** *„a felismerés nyelve legyen rögzítve magyarra, ne
+ * > találgasson."* — és **01:30:** *„ne építs köré nagy detektálás-logikát: egy paraméter,
+ * > és kész."*
+ *
+ * ⭐ **MEGMÉRTEM (2026-09-11 04:10), hogy van-e ilyen paraméter.** Ugyanazt a megőrzött
+ * felvételt kétszer küldtem be az FDP AI `/api/recognition`-jára:
+ *
+ * ```
+ * language paraméter NÉLKÜL  →  { "text": "Thanks." }
+ * ?language=hu               →  { "text": "Thanks." }     ← BETŰRE UGYANAZ
+ * ```
+ *
+ * ⇒ A végpont a paramétert **elfogadja, de FIGYELMEN KÍVÜL HAGYJA**, és a közzétett
+ * végpont-lista sem említi. ⛔ **A kért paraméter tehát nem létezik** — nem elfelejtettük
+ * átadni, hanem nincs mit átadni. *(⛔ Az FDP AI szolgáltatáshoz nem nyúlunk:
+ * `fdp-ai-never-restart`.)*
+ *
+ * ⇒ Ezért a handoff **tartalék**-ágát valósítjuk meg *(„a válasz nyelvét ellenőrizni kell")*,
+ * a kért **minimális** formában: **EGY szabály**, ⛔ nem detektálás-rendszer.
+ *
+ * ## ⭐ MIÉRT PONT A BETŰK — és miért NEM az ékezet-hiány
+ *
+ * Az 56 megőrzött átiratból **13** nem tartalmazott magyar ékezetet, és **mind a 13** bukott
+ * felismerés volt *(`Það er hann.` · `Dziękuję.` · `ありがとうございました` · `Thanks.` · …)*.
+ * ⚠️ **DE az ékezet-hiány mégis rossz szabály lenne:** az *„Igen."* és a *„Nem."* is ékezet
+ * nélküli — és azok az owner **legfontosabb válaszai**. Egy ilyen szabály a **jóváhagyását**
+ * dobná el. *(A kód ezt a csapdát már ismerte: az „igen"/„ok" szándékosan nincs a
+ * filler-listán.)*
+ *
+ * ⭐ Ez a szabály viszont **magyarban NEM LÉTEZŐ betűkre** figyel. A magyar helyesírás ezeket
+ * soha nem használja, tehát ⛔ nincs olyan magyar mondat, amit tévesen megjelölne — az angol
+ * szavak *(Hunglish)* pedig érintetlenek, mert az angol sem használ ilyet.
+ */
+const FOREIGN_LETTERS: RegExp =
+  // izlandi (þ ð æ) · lengyel (ą ę ł ń ś ź ż ć) · cseh/szlovák (č ř š ž ě ů ť ď ľ ĺ)
+  // · román (ă ș ț) · német (ß) · északi (å ø) · török (ı ğ) · spanyol (ñ) · francia (ç œ)
+  // · és MINDEN nem-latin írás (cirill · görög · héber · arab · CJK · hiragana · katakana)
+  /[þðæąęłńśźżćčřšžěůťďľĺășțßåøığñçЀ-ӿͰ-Ͽ֐-׿؀-ۿ぀-ヿ一-鿿가-힯]/u;
 
 /**
  * Ennél rövidebb átiratot önmagában nem tekintünk megbízhatónak.
@@ -83,6 +132,7 @@ export const MIN_CHARS_PER_SECOND: number = 2;
 /** Ennél rövidebb hangnál nem számolunk arányt — ott a szórás túl nagy. */
 export const RATIO_MIN_DURATION_SECS: number = 4;
 
+/** Az átirat-ellenőrzés eredménye. */
 export interface GuardVerdict {
   suspicious: boolean;
   reason?: string;
@@ -118,6 +168,21 @@ export function inspectTranscript(
       suspicious: true,
       reason: `Ismert modell-hallucináció mintája ("${hit}") — csendre/zajra adott szemét-kimenet, `
         + 'nem valódi beszéd.',
+    };
+  }
+
+  // 🌐 NYELV-ELTÉRÉS — magyarban nem létező betű az átiratban.
+  //
+  // ⚠️ A SORREND: a konkrét hallucináció-minta ELŐBB fut (az nevesíti a mintát), de ez még az
+  // arány-ellenőrzés ELŐTT — mert a nyelv-eltérés **hanghossz nélkül is** biztos jel, az arány
+  // viszont csak elég hosszú hangnál működik.
+  const foreign: RegExpMatchArray | null = trimmed.match(FOREIGN_LETTERS);
+
+  if (foreign) {
+    return {
+      suspicious: true,
+      reason: `NYELV-ELTÉRÉS: az átirat magyarban nem létező betűt tartalmaz ("${foreign[0]}") `
+        + '— a felismerő más nyelvre tévedt. ⛔ Nem cselekszem rá.',
     };
   }
 

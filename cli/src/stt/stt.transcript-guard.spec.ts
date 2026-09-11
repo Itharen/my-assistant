@@ -1,5 +1,62 @@
 import { inspectTranscript } from './stt.transcript-guard.js';
 
+describe('inspectTranscript — 🌐 NYELV-ELTÉRÉS (owner, 2026-09-11 01:24)', () => {
+
+  // > **Owner:** *„a felismerés nyelve legyen rögzítve magyarra, ne találgasson."*
+  // > **01:30:** *„ne építs köré nagy detektálás-logikát: egy paraméter, és kész."*
+  //
+  // ⭐ MÉRVE (2026-09-11 04:10): az FDP AI `/api/recognition` a `language=hu` paramétert
+  // **elfogadja, de figyelmen kívül hagyja** — ugyanaz a megőrzött felvétel BETŰRE ugyanazt
+  // adta vele és nélküle (`{"text":"Thanks."}`). ⇒ A kért paraméter **nem létezik**, ezért a
+  // handoff TARTALÉK-ága valósul meg: EGY szabály, ⛔ nem detektálás-rendszer.
+
+  it('🔴 az IZLANDI átirat megjelölve — ezt kétszer is jelentette az owner', () => {
+    // Élő adat a megőrzött átiratokból: „Það er hann." / „Ná, hvað er mást holið startung?"
+    const verdict = inspectTranscript('Það er hann.', {});
+
+    expect(verdict.suspicious).toBeTrue();
+    expect(verdict.reason).toContain('NYELV-ELTÉRÉS');
+  });
+
+  it('🔴 a LENGYEL és a JAPÁN is — mindkettő élő adat', () => {
+    expect(inspectTranscript('Dziękuję.', {}).suspicious).toBeTrue();
+    expect(inspectTranscript('ありがotうございました'.replace('ot', 'と'), {}).suspicious).toBeTrue();
+  });
+
+  it('🔴 a CIRILL írás is — a modell ismert orosz szemét-kimenete', () => {
+    expect(inspectTranscript('Продолжается', {}).suspicious).toBeTrue();
+  });
+
+  it('⭐ a VALÓDI magyar szöveg ÉRINTETLEN — ékezetekkel is', () => {
+    for (const text of [
+      'Köszönöm, akkor ezt csináld.',
+      'Jó reggelt! Nézd meg a naptáram, légyszi.',
+      'Az ő ügye, meg a mieink is — összefűzve.',
+    ]) {
+      expect(inspectTranscript(text, {}).suspicious).withContext(text).toBeFalse();
+    }
+  });
+
+  it('🔴 az „Igen." és a „Nem." NEM gyanús — ezek a LEGFONTOSABB válaszai', () => {
+    // ⚠️ EZÉRT NEM az ékezet-hiányra figyelünk: az „Igen."/„Nem." ékezet nélküli, és egy
+    // ékezet-alapú szabály az owner JÓVÁHAGYÁSÁT dobná el. A kód ezt a csapdát már ismerte
+    // („igen"/„ok" szándékosan nincs a filler-listán) — ezt a döntést ⛔ nem írjuk felül.
+    expect(inspectTranscript('Igen.', {}).suspicious).toBeFalse();
+    expect(inspectTranscript('Nem.', {}).suspicious).toBeFalse();
+  });
+
+  it('⭐ az ANGOL szavak (Hunglish) érintetlenek — az angol sem használ ilyen betűt', () => {
+    expect(inspectTranscript('A deploy után nézd meg a pipeline-t.', {}).suspicious).toBeFalse();
+    expect(inspectTranscript('Csinald meg a code review-t.', {}).suspicious).toBeFalse();
+  });
+
+  it('a MÉRT angol töltelék-köszönések is megjelölve', () => {
+    // Élő adat: teljes átiratként fordultak elő bukott felismerésből.
+    expect(inspectTranscript('Yeah.', {}).suspicious).toBeTrue();
+    expect(inspectTranscript('Bye.', {}).suspicious).toBeTrue();
+  });
+});
+
 describe('inspectTranscript', () => {
   it('accepts a normal Hungarian sentence', () => {
     expect(inspectTranscript('Kerlek nezd meg, mikor indul a vonat.').suspicious).toBe(false);
