@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-11 18:10
+**Utoljára frissítve:** 2026-09-11 21:10
 
 ---
 
@@ -125,6 +125,24 @@ ott `16:30`-ként látszik)*. ⛔ Ne olvasd helyi időnek — **+2 óra** a nyá
 | 🔗 **Poszt-felület** | ✅ **kiadva** a DEV-nek — a tiltás feloldva, mert a profil-vonal kész |
 | ⛔ **EMOS** | felvéve a `current/shopping/never-buy.md`-be *(SEMMILYEN termék)*; 2 izzó cserére |
 | ❓ **Wi-Fi jelszó** | `Q-2026-09-11-03` — a válaszom: nem a tárolás a kockázat, hanem a **visszamondás** |
+
+### ✅ A 21:00-S KÖR — csendes munka a vendég-ablakban
+
+⛔ **Nem írtam Discordra** — a vendégek itt vannak *(idle 0 s: a gépnél van, buli-üzemmódban)*.
+
+| Mi | Állapot |
+|---|---|
+| 📄 **Self-development hét előkészítve** | `current/self-development-week-2026-09.md` |
+| 🔴 **A fő lelet** | **a nyilvántartás LEÁLLT**: a diary utolsó dátuma **2026-08-20**, a takarítás-sor **2026-04-30** óta üres ⇒ ⛔ **nem új rendszer kell, hanem ÚJRA-ALAPVONAL** |
+| 🔗 **Poszt-panel** | ✅ kész *(`4333c12`)* — a DEV lezárta a hurkát |
+| ⚠️ **FAM MCP** | **másodszor** esett el CONNECT_TIMEOUT-tal; a probe mindkétszer `ready: true` ⇒ ⛔ nem várakozási probléma, a **kliens-link** hal meg. Fallback: REST |
+
+### 🗓️ A HÉTVÉGE — mi a dolgom 09-13-ig
+
+⭐ **Zóna: kikapcsolódás.** ⛔ Nem tolok munka-fókuszt elé, ⛔ nincs Google Home, ⛔ nincs
+magántéma *(vendégek)*. Ha nincs valódi teendő: **egy emoji**, ⛔ nem szöveg.
+📌 **Készenlét viszont van:** ha játékfejlesztésbe kezd *(„attól függ, van-e AI kapacitás")*,
+az **kérés lesz**, nem kezdeményezés.
 
 ### ⏰ MA (2026-09-11)
 
