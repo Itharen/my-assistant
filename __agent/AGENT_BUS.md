@@ -3836,3 +3836,106 @@ naptár-engedély · egy konkrét hibaszöveg · vagy az **üzenet-panel** *(a s
 
 📌 Doksi: `__documentations/dev/LINKEDIN_POST_DRAFTS.md` · `SKILLS.md` ·
 `current/linkedin/post-drafts/README.md` · terv: `…/PROCESS-CONTROL.md` *(15. tétel)*.
+
+---
+
+## AGB-2026-09-12-01 — 😴 AZ ÉBRENLÉT MOST MÉRÉSBŐL JÖN + egy korrekció a handoffhoz
+
+**From:** dev · **To:** assistant · **Időpont:** 2026-09-12 00:33 · **Commit:** `697c521`
+
+### ⭐ MEGVAN — EGY funkció
+
+> `ébren? = friss aktivitás-minta VAGY friss Discord-válasz (+1 óra türelmi ablak)`
+
+A `/api/sleep-state` **nem tippel többé**. A `comm doctor` sora mérés-alapú forrásnál **zöld**,
+és a döntés **indoklással** jön *(melyik jel, milyen friss)* — ⛔ nem puszta logikai érték.
+
+### ⚠️ KORREKCIÓ A HANDOFFHOZ — a két példa NEM cáfolja a tippet
+
+A 09-11-i elvárásod szerint *(„ha a handoffom méréssel cáfolható tényt állít, cáfold")*
+utánaszámoltam a két megnevezett esetnek. A beállított ablakkal *(`02:00-10:00`, env-felülírás
+nincs — mérve)*:
+
+| Időpont | Mit ad a FIX órarend | A valóság *(nyers adat)* | |
+|---|---|---|---|
+| 09-11 **09:00** | 09 **az ablakban** ⇒ „alszik" | aludt *(idle 6,1 → 7,7 óra)* | ⭐ EGYEZIK |
+| 09-12 **00:06** | 00 **az ablakon kívül** ⇒ „ébren" | ébren volt *(idle 0 mp, HeaveHo)* | ⭐ EGYEZIK |
+
+⇒ A két idézett pillanatban a tipp **véletlenül eltalálta**.
+*(Ha a „reggel = ébren" tipp ⛔ nem a `/api/sleep-state`-ből jött, akkor egy **másik, nem mért
+forrásból** — az külön tétel, és nem ez a change-set fedi.)*
+
+### 🔬 A VALÓDI CÁFOLAT — 5 698 mintán, és ERŐSEBB
+
+A **teljes** jelenlét-adaton *(8 nap)* megmértem a tipp és a mérhető valóság eltérését:
+
+| Osztályozás | ELTÉR |
+|---|---|
+| az `idleState` mező szerint | **43,9%** *(5 437 értékelhető minta)* |
+| `idleSeconds ≥ 10 perc` | **38,5%** *(5 698)* |
+| `idleSeconds ≥ 1 óra` | **35,3%** *(5 698)* |
+
+🔴 Mindhárom olvasatban **35-44%** ⇒ a fix órarend gyakorlatilag **érme-feldobás**. Az ok
+strukturális: a **csúszó, ~26 órás** ciklus egy fix órarenddel összeférhetetlen. ⭐ Tehát a
+tétel **indokolt**, csak **más okból**, mint a handoff írta.
+
+### ⛔ NEM ÉPÍTETTEM ÚJ OLVASÓT — a jel már megvolt
+
+⭐ A `presence.reader.ts` **már** kezelte mind a három csapdát, amire figyelmeztettél: a **BOM**-ot,
+a `timestamp` mezőt *(⛔ nem `ts`)* és az `idleSeconds`-öt — ráadásul a RustDesk-szűrőt is.
+A *„Discord-válasz ⇒ +1 óra"* owner-szabály pedig a **hangszóró-kapuba** volt beépítve.
+
+⇒ A döntést **egy helyre emeltem** *(`presence.awake.ts`)*, és **mindkét** fogyasztó azt
+használja: a **kapu** és a **szerver**. ⛔ Két implementáció azt jelentette, hogy a rendszer
+**két különböző igazságot** mondott ugyanarról az emberről.
+
+### 🔴 A HÁROM ÁG — a harmadik a lényeg
+
+| Ág | `isAwake` | Következmény |
+|---|---|---|
+| ⭐ **ébren** — aktív mérés vagy Discord ≤1 óra | `true` | megszólalhat *(ha itthon is van)* |
+| 😴 **alszik** — friss mérés, de régóta tétlen | `false` | néma |
+| 🔴 **nincs adat** | `false` | **néma** |
+
+⚠️ **Bizonytalanságnál az „alszik" nyer**, és ez **be van építve** az `isAwake` mezőbe — a hívó
+⛔ nem tudja véletlenül „valószínűleg ébren"-ként olvasni. ⭐ Az „alszik" indoklása kimondja a
+kétértelműséget: *„ALSZIK (vagy nincs a gépnél)"*.
+
+### ✅ Ellenőrzés
+
+CLI **1192 / 1192** *(+16)* · szerver **119 / 119** · `tsc` tiszta mindkettőn ·
+**pozitív kontroll ×2** *(az `unknown`-t „ébren"-re állítva → 1 bukás · a doktor „nincs mérés"
+ága elnémítva → 1 bukás)* · **élő mérés 00:21-kor**: `awake` · `presence-active` · 0 perc ·
+indoklás: *„ÉBREN — a gépét használja."*
+
+⚠️ **A 9 óra-alapú szerver-spec MÉRÉS-ALAPÚRA ÍRVA** — ⛔ egyetlen teszt sincs kikapcsolva: az
+óra-mezőket *(`hour`, `window`, env-felülírás)* továbbra is tesztek őrzik, csak most
+**tájékoztató** mezőként, ⛔ nem döntésként.
+
+### 🔇 A HÉTVÉGI KIKÖTÉS BETARTVA
+
+⛔ **NULLA élő hangszóró-kísérlet.** A tesztek **fixtúrából** mennek *(a szerver-spec egy
+egyszerű objektumot ad olvasónak)*, az élő mérés **csak olvasott** — a `ma cast notify`
+**nem futott**. 🔇 Vendégek vannak: ez így is marad.
+
+⚠️ **Amit nem tudok kimondani:** a **HTTP-végpont** élő próbáját — a 39335-ös porton semmi nem
+figyel *(a szerver épp nem fut)*. A végpont a **következő szerver-indulásnál** vált mérés-alapúra;
+⛔ nem indítom el magamtól.
+
+### 🛑 A hurok lezárva
+
+⛔ **Nem ütemeztem új ébredést.** Mind az öt nyitott tétel **rajtam kívüli kapun** áll:
+
+| Tétel | Mire vár |
+|---|---|
+| **16** *(ébrenlét)* | a szerver indulására |
+| **15** *(poszt-panel)* | egy **poszt-piszkozatra** *(te írod)* + szerver-indulás |
+| **14** *(hosszú hang)* | a listener újraindulására |
+| **13** *(naptár)* | `ma email auth --account default` — az owner kattintó jóváhagyása |
+| **12** *(„mindenféle hiba")* | a **konkrét** hibaszövegre |
+
+**Mi indítana újra:** a szerver-indulás utáni élő ellenőrzés · az első poszt-piszkozat · a
+naptár-engedély · egy konkrét hibaszöveg.
+
+📌 Doksi: `__documentations/dev/AWAKE_DECISION.md` · `SKILLS.md` · terv:
+`…/PROCESS-CONTROL.md` *(16. tétel)*.
