@@ -57,6 +57,7 @@
 | zsugor | **6 palackos zsugorfóliázott csomag**; más italokra is használható | készlet / csomagolási mértékegység | 2026-08-27 user-definíció ✅ |
 | tálcasör | **24 darabos sörtálca** | készlet / csomagolási mértékegység | 2026-08-27 user-definíció ✅ |
 | „egy csomag sör” alapértelmezése | **6 darabos sörös csomag**, nem tálcasör | készlet / vásárlási preferencia | 2026-08-27 user-definíció ✅ |
+| Cloud kód | **Claude Code** | tech / terméknév | 2026-09-09 user korrekció ✅ („A cloud kód az tipikus félrehallás. Valójában azt mondtam, hogy claude code.”) |
 
 ---
 
@@ -72,3 +73,54 @@
 
 - `current/principles/working-style.md` — STT-tűrés általános elve
 - `current/open-questions.md` — `Q-2026-05-07-01..04` STT-bizonytalan tételek
+## 2026-09-09 — Interfood ételnév
+
+- `csirkemájpaprikás` → `csirkemellpaprikás`
+- Az előbbi transkript-félrehallás volt; nem létező ételként és nem preferenciaként kezelendő.
+
+---
+
+## 🔴 ÜRESJÁRATI HALLUCINÁCIÓ — a rövid angol töltelék NEM TARTALOM
+
+> **Owner, 2026-09-11 02:05:** *„Az a **bye**, az egy **tipikus félrehallás**, olyan, mint a
+> **thank you**, meg **you**."*
+
+⭐ **Ez nem elírás, hanem HIBA-OSZTÁLY.** A Whisper-típusú modellek csendre, zajra vagy
+érthetetlen hangra **rövid angol töltelék-mondatot** adnak vissza — nem azért, mert elhangzott,
+hanem mert **valamit ki kell írniuk**.
+
+### A jelek, amiknél GYANAKODNI KELL
+
+```
+"Bye."   "Thank you."   "You."   "Thanks for watching."   "Bye-bye."
+```
+*(A lista bővül — minden új előfordulás ide.)*
+
+⚠️ **A felismerő ilyenkor NEM jelez hibát.** Az átirat szabályos, rövid, nyelvtanilag helyes —
+és **teljes értékű üzenetnek látszik**.
+
+### 🔴 A MÉRT KÁR — 2026-09-11 02:01
+
+Az owner egy **bekezdésnyi** tartalmat mondott *(a DEV leállt; emlékeztetni kell a FAM-frissítésre,
+a terv-fájlra és a ScheduleWakeup-ra)*. Hozzám ennyi ért el:
+
+```
+"Bye."
+```
+
+⇒ **Elköszöntem tőle**, miközben ő épp munkát adott. A hiba nem az volt, hogy nem értettem —
+hanem hogy **azt hittem, értem**.
+
+### A SZABÁLY
+
+| Ha az átirat | Akkor |
+|---|---|
+| **kizárólag** egy rövid angol töltelék *(és a beszélgetés magyarul folyik)* | ⛔ **NEM tartalom.** Kezeld sikertelen felismerésként: ne cselekedj rá, és **kérdezz vissza** — *„ennyi ért el: »…«, mit mondtál?"* |
+| töltelék **+ valódi tartalom** | a tartalom érvényes, a töltelék eldobható |
+
+⛔ **Elköszönni SOHA nem búcsú-átiratra.** A beszélgetés lezárása **következmény** — ha tévedek,
+elmegyek, miközben ő dolgozna velem.
+
+📌 **Fejlesztési oldal:** a detektálás a felismerőbe való *(`__agent/DEV-HANDOFF.md`, 02:07-es
+szakasz)* — de a **viselkedési** szabály itt él, és akkor is érvényes, ha a kód még nem szűri.
+

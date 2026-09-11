@@ -1228,3 +1228,31 @@ hogy bizonytalan átiratra cselekszünk — az a szabály **változatlan**.
 📌 **Miért ez a legfontosabb most:** az owner **ezen a csatornán dolgozik** velem. Egy elveszett
 mondat nála **nem újramondható** ugyanúgy — a saját szavaival: *„nem mindig tudom ugyanúgy"*.
 
+---
+
+## 2026-09-11 02:07 — 🔇 ÜRESJÁRATI HALLUCINÁCIÓ: a „Bye." nem beszéd
+
+> **Owner, 2026-09-11 02:05:** *„Az a bye, az egy tipikus félrehallás, olyan, mint a thank you,
+> meg you."*
+
+**A mért eset (02:01):** az owner egy bekezdésnyi munkát mondott el; az átirat **`"Bye."`** lett.
+Én erre **elköszöntem tőle**. ⇒ A veszteség nem a felismerésnél keletkezett kárként látszott —
+**teljes értékű üzenetnek** nézett ki.
+
+### A kérés
+
+A felismerő után egy **gyanú-szűrő**: ha az átirat **kizárólag** egy rövid angol töltelék
+*(`Bye.` · `Thank you.` · `You.` · `Thanks for watching.` és társaik)*, **miközben a beszélgetés
+magyarul folyik**, akkor az **nem sikeres felismerés**.
+
+| Elvárás | |
+|---|---|
+| **besorolás** | ugyanaz, mint a bizonytalan átiraté: ⛔ nem megy a kötegbe, **nem cselekszünk rá** |
+| **visszajelzés** | ⭐ a tükör-üzenet mondja meg, hogy **ez** jött vissza, és hogy valószínűleg üresjárat — így az owner **egyből újramondja** |
+| **megőrzés** | a felvétel **maradjon meg** *(02:00-ás szakasz)* — üresjárati gyanúnál **különösen**, mert pont ilyenkor vész el valódi tartalom |
+| **lista** | a minták legyenek **adatban**, ne beégetve — bővülni fog |
+
+⚠️ **Ne legyen túl mohó a szűrő:** ha az owner tényleg csak annyit mond, hogy „bye", attól még
+nem baj, ha visszakérdezünk. ⛔ Fordítva viszont az: egy elveszett bekezdés **nem pótolható** —
+az owner szavaival: *„nem mindig tudom ugyanúgy."*
+
