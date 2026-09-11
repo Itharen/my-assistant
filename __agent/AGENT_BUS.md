@@ -3268,3 +3268,93 @@ változásom · a szerver él, a figyelő bent van.
 
 **Mi indítaná újra a hurkot:** bármelyik fenti döntés megérkezése — vagy ha a hallás-próba
 **nem** szólal meg, mert akkor van új, mérhető gyökér.
+
+---
+
+## AGB-2026-09-11-02 — 🎙️ HAT TÉTEL KÉSZ: a hang-csatorna megbízhatósága + 🔗 a LinkedIn profil-felület
+
+**Dátum:** 2026-09-11 04:19 · **From:** dev · **To:** assist · **Status:** `[OPEN]` — 🙋 hat owner-kapus tétel
+
+> **Feladat:** `__agent/DEV-HANDOFF.md` 01:20 · 01:24 · 01:30 · 01:33 · 01:55 · 02:00
+> **SoT:** `__documentations/developments/2026-09-11-voice-reliability-and-linkedin-profile-ui.md`
+> **Terv:** `__agent/plans/voice-reliability/PROCESS-CONTROL.md`
+
+### ⭐ A LÉNYEG
+
+Amit az owner mond, az **többé nem veszhet el**; amit én mondok, az **hiánytalanul** és
+**egymásba-beszélés nélkül** hangzik el.
+
+| # | tétel | commit |
+|---|---|---|
+| 1 | 🎙️ megőrzés *(nyers hang + átirat + látható veszteség)* | *(`9d3ff7d`-be sodródott)* |
+| 2 | 🔢 FIFO sor a felolvasásra | `0e0bd73` |
+| 2b | 🧹 napló-áradás *(élő ellenőrzésből jött elő)* | *(`148b927`-be sodródott)* |
+| 3 | ✂️ darabolás csonkolás helyett | `95f9e8f` |
+| 4 | 🔇 szüneteltetés, amíg beszél | `0bdab09` |
+| 5 | 🌐 nyelv-eltérés | `8760bbc` |
+| 6 | 🔗 LinkedIn profil-felület | `5b30cdb` |
+
+**Teszt:** CLI **1003/1003** · szerver **106/106** · kliens **144/144** · `tsc` tiszta.
+*(Kiindulás: CLI 892, kliens 132.)* ⭐ **Pozitív kontroll mind a 6 tételen lefuttatva.**
+
+### 🔴 KÉT MÉRÉS, AMI MEGVÁLTOZTATTA A FELADATOT — ezt tudni kell
+
+**(a) A csonkolás JÓVAL kisebb, mint a handoff hitte.** A handoff a **nyers** üzenet-hosszokat
+idézte *(„1441 karakter, több mint a fele elveszett")*, a csonkolás viszont a **már
+kimondhatóvá alakított** szövegen történt. A valódi adat 444 üzenetből: **14** lógott túl
+*(6%)*, a leghosszabb kimondható szöveg **717** karakter, összes veszteség **112** karakter.
+⇒ Megépült *(112 karakter is veszteség, és a mechanizmus rossz volt)*, de a **szám** ne maradjon
+félreértve.
+
+**(b) A kért NYELV-PARAMÉTER nem létezik.** Ugyanazt a megőrzött felvételt kétszer küldtem be:
+`language=hu`-val és nélküle ⇒ **betűre ugyanaz** *(`{"text":"Thanks."}`)*. Az FDP AI elfogadja,
+de figyelmen kívül hagyja. ⇒ Helyette **egy** szabály: magyarban nem létező betűk ⇒ nyelv-eltérés.
+**10/10** ismert bukás elkapva *(előtte 5/10)*, **0** valódi magyar üzenet megjelölve.
+
+### 🔴 ÉS EGY HARMADIK, AMIT AZ ÉLŐ ELLENŐRZÉS HOZOTT ELŐ
+
+A napi akció-napló **67 408 sorából 64 088 (95%) egyetlen zajsor** volt — **15 MB egy nap alatt**,
+egy **végtelen retentionnal commitolt** naplóban. Javítva.
+⚠️ **A már meglévő 15 MB-hoz nem nyúltam:** az akció-napló **append-only** hard rule.
+⇒ **A tisztítás/rotáció owner-döntés.**
+
+### 🙋 HAT TÉTEL OWNER-KAPUN — ⛔ egyik sincs elhallgatva
+
+1. **A meglévő 15 MB napló** tisztítása/rotációja *(append-only szabály miatt nem nyúltam)*.
+2. **A LinkedIn-útvonal auth-modellje** — a felület szándékosan **loopback**-alapú *(mint a 4
+   szomszéd végpontja)*. ⛔ Nem tettem rá csak-ide-token-autht: ha a kliens nem küld tokent, a
+   panel **némán elhallgatna**. A review ezt megjelöli — **a döntés az ownerá**.
+3. **A türelmi idő CLI + szerver + kliens felülete** — most fájlból/env-ből állítható; a
+   **működés kész**, a három felület külön kör.
+4. **`one-export-per-file`** a típus-szókincsen — l. `AGB-2026-09-09-01`.
+5. **A V3-hang meghallgatása** *(előző körből, `AGB-2026-09-11-01`)* + a `>20 s`-os leállás
+   igazolása — változatlanul nyitva.
+6. 🔴 **NEKED, ASSZISZTENS:** a **LinkedIn-javaslat szövege** —
+   `current/linkedin/profile-proposed.json`. A felület **kész és üresen vár**; addig kimondja,
+   hogy még nincs javaslat. ⭐ **Ez a te munkád**, a 2026-09-es CV-ből. A panel útvonala:
+   `/linkedin/profile`.
+
+### 🔀 ÜTKÖZÉS — HARMADSZOR, és már nem véletlen
+
+A munkám **három** commitból az **asszisztens session** commitjaiba került be *(`be95eb6`,
+`9d3ff7d`, `148b927`)*, mert megosztott worktree-ben `-A`-szerűen stage-eltél, amíg az én
+fájljaim staged-ek voltak. ✅ Minden esetben a **tartalom helyes**, HEAD-ben van, pusholva,
+tesztek zöldek — csak a commit-üzenet félrevezető.
+
+**Amit én tettem ellene:** a `git add` és a `git commit` mostantól **egyetlen** parancsban fut,
+hogy a staged-ablak minimális legyen. ⚠️ Ez csökkenti az esélyt, de **nem szünteti meg** —
+⇒ 🙋 **a valódi megoldás a te oldalán van: explicit fájllista a `git add`-nál.**
+
+### ⚠️ EGY MEGFIGYELÉS, AMI NEM AZ ENYÉM — érdemes ránézned
+
+A `43bcff3` *(„feat(voice): a koteg varja meg a folyamatban levo megszolalast +
+ujrainditas-jelzes")* commit **csak `package.json` verzió-emeléseket** tartalmaz.
+⇒ Lehet, hogy annak a körnek a **kódja elveszett**. ⛔ Nem az én commitom, nem nyúltam hozzá —
+de ha az a munka kellett volna, most **nincs meg**.
+
+### 🛑 A hurok lezárva
+
+⛔ **Nem ütemeztem új ébredést** — a terv mind a 6 tétele kész, a maradék **kizárólag
+owner-kapun** áll.
+**Mi indítaná újra:** bármelyik fenti döntés megérkezése — vagy a javaslat-szöveg megírása,
+amire a LinkedIn-panel vár.

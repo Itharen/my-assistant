@@ -6,7 +6,7 @@
 > és a **sorrend** van.
 > **Ez a fájl az enyém (DEV).** A `DEV-HANDOFF.md` az asszisztensé — ⛔ oda nem írok státuszt.
 
-**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 04:45
+**Létrehozva:** 2026-09-11 02:05 · **Utoljára frissítve:** 2026-09-11 04:18
 
 ---
 
@@ -31,7 +31,7 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **3** | ✂️ **DARABOLÁS** csonkolás helyett | 01:30 | ✅ **KÉSZ** — CLI 956/956 | 2026-09-11 03:40 |
 | **4** | 🔇 **SZÜNETELTETÉS**, amíg az owner beszél | 01:20 | ✅ **KÉSZ** — CLI 980/980 | 2026-09-11 04:00 |
 | **5** | 🌐 **NYELV-ELTÉRÉS** *(a paraméter NEM létezik — mérve)* | 01:24 + 01:30 | ✅ **KÉSZ** — CLI 988/988 | 2026-09-11 04:15 |
-| **6** | 🔗 **LinkedIn PROFIL-FRISSÍTŐ felület** | 01:55 | ✅ **KÉSZ** — CLI 1003 · szerver 106 · kliens 144 | 2026-09-11 04:45 |
+| **6** | 🔗 **LinkedIn PROFIL-FRISSÍTŐ felület** | 01:55 | ✅ **KÉSZ** — CLI 1003 · szerver 106 · kliens 144 | 2026-09-11 04:18 |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -312,7 +312,7 @@ első sabotage-kísérletet *(`if (false && foreign)`)* maga a **fordító** uta
 
 ---
 
-## ✅ 6. TÉTEL — LinkedIn PROFIL-FRISSÍTŐ FELÜLET (2026-09-11 04:45)
+## ✅ 6. TÉTEL — LinkedIn PROFIL-FRISSÍTŐ FELÜLET (2026-09-11 04:18)
 
 **A korlát:** a LinkedIn API **csak olvas** ⇒ a profilt nem írjuk át. ⇒ A cél a
 **súrlódás-mentes átvitel**, pontosan a kért négy tulajdonsággal:
