@@ -1428,3 +1428,32 @@ hallotta az owner *(„nagyon fura lett tőle a hangod")*.
 📌 Az owner indoka szó szerint: *„mert lehet, hogy én még beszélek."* ⇒ A késleltetés **nem
 kényelem, hanem az ő beszédének a védelme**.
 
+---
+
+## 2026-09-11 02:45 — 📅 A MUNKANAPTÁR BEKÖTÉSE
+
+> **Owner, 2026-09-11 02:42:** *„majd a **munkanaptáramat** összeköthetnénk veled, mert most is
+> például **holnap reggel 11-kor lesz egy mítingem**. És ezek **kb. csak a munkanaptárból
+> derülnek ki**."*
+
+⭐ **Ez az én első számú területemet érinti** *(időbeosztás, `schedule-guardian`)* — és pont ott
+vagyok **vak**: ha egy esemény csak a munkanaptárban van, én **nem tudok róla**, tehát nem tudok
+készülődést, odajutást és ébredést sem tervezni.
+
+**A mai eset a bizonyíték:** a 11:00-s mítingről **02:42-kor**, szóban értesültem — nyolc órával
+előtte, véletlenül. ⇒ Kézzel felvettem *(`org:task:6aa34e92766c802935c3c6b7`)*, de a **részleteket
+nem tudom**: hol, kivel, miről.
+
+| Kikötés | Miért |
+|---|---|
+| **READ-ONLY** az első körben | ⛔ a naptárába **nem írunk**; előbb lássuk, aztán beszéljünk az írásról |
+| **a Google-vonal már él** | `ma google auth/status/query` — ⛔ ne építs új integrációt, ha ez a naptár is Google-ös. **Mérd meg**, melyik szolgáltató |
+| a **részletek** kellenek, nem csak az időpont | hol · kivel · online vagy helyszín — ezekből lesz a **készülődés** és az **odajutás** |
+| ütközés-jelzés | ha egy esemény ütközik azzal, amit én írtam fel az organizerbe, az **jelzés** |
+
+🔒 A munkanaptár **ügyfél-adatokat** tartalmazhat *(nevek, cégek, meeting-linkek)* ⇒ gitignore-olt
+lokál tár, ⛔ a repóba **semmi**.
+
+📌 **Sorrend:** ez a lista **végére** megy — a hang-vonal *(1-5)* és a profil-felület *(6)* előbbre
+való. ⛔ De ne vesszen el: amíg nincs bekötve, **minden munkahelyi esemény vakfolt**.
+
