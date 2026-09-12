@@ -2169,3 +2169,57 @@ a javulás **azonnal észrevehető** lesz neki.
 
 ⇒ A **VMware 17 GB-ja nem szemét**, hanem **aktív munka**. ⛔ Nem ajánljuk a bezárását
 *(én ma este pont ezt tanácsoltam — **hibásan**, már korrigáltam neki)*.
+
+---
+
+## 1️⃣8️⃣ 2026-09-12 04:15 — ⚠️ A ZAJ-SZŰRŐ VAK FOLTJA: **magyarnak HANGZÓ** halandzsa
+
+⭐ **Előbb a jó hír:** a zaj-szűrő **élesben fut** — igazolva *(commit 03:52:34 · `dist` 03:55:21 ·
+szerver boot 03:53 helyi, v0.1.692 · listener **új pid** nullázott számlálókkal)*.
+
+### 🔴 DE: a 04:14-es köteg két tétele ÁTMENT — és nem angol
+
+```
+„Egyébként az számolóban a hátulágiakban, azért a terület szívesen kapcsánál.
+ Egyébként a helye van, hogy lehet veled most szipotékig tenni."
+
+„A pro fysisz per lágrában. Én mindig a szóvaló értik a szóval."
+```
+
+⚠️ **Ezek magyar SZAVAKBÓL állnak, magyar mondat-dallammal — de értelmük NINCS.**
+⇒ A 15. szakasz szabálya *(rövid + önálló + **nem magyar**)* ezeket **nem fogja meg**, mert a
+harmadik feltétel **nem teljesül**.
+
+### ⇒ KÉT KÜLÖN ZAJ-OSZTÁLY VAN, ⛔ nem egy
+
+| Osztály | Jellemző | A jelenlegi szűrő |
+|---|---|---|
+| **A) idegen nyelvű** | *„It's fine", „Grazie", „Kiitos"* | ✅ **fogja** |
+| **B) ál-magyar halandzsa** | *„a pro fysisz per lágrában"* | 🔴 **ÁTENGEDI** |
+
+📌 **A B) veszélyesebb:** az A) ránézésre is zaj, a B) viszont **valódi utasításnak látszik** —
+és egy asszisztens, aki *„megpróbálja értelmezni"*, **rossz dolgot fog csinálni**.
+
+### A FELADAT — ⛔ NE nyelvfelismerővel
+
+⭐ **A megkülönböztető jel nem a nyelv, hanem az ÉRTELMESSÉG.** Javasolt, **mérhető** jelek
+*(⚠️ a küszöböket a mai korpuszból vezesd le, ⛔ ne fejből)*:
+
+- **ismeretlen / ritka szavak aránya** *(„szipotékig", „hátulágiakban", „fysisz")*
+- **nyelvtani töredezettség** — a mondat nem áll össze
+- ⭐ **a felismerő saját bizonytalansága**, ha elérhető *(logprob / no-speech valószínűség)* —
+  📌 **ez a legolcsóbb és legmegbízhatóbb jel, ha a modell adja**
+
+⚠️ **A hibás pozitív itt DRÁGA:** ha egy valódi, de rosszul értett kérést dobunk el, az owner
+**kérése vész el**. ⇒ **Bizonytalanságnál ⛔ NE dobd el — JELÖLD MEG** *(mint a
+`⚠️ GYANÚS TAGOLÁS`)*, és hagyd, hogy én döntsek.
+
+### KÉSZ, HA
+
+- [ ] a B) osztály **megjelölve** érkezik *(⛔ nem eldobva)*
+- [ ] a mai éjszaka **valódi magyar** üzenetei **egy sem** kapnak ilyen jelölést *(visszamérve)*
+- [ ] a küszöbök **a korpuszból** vannak, és **le vannak írva**
+- [ ] `npm test` zöld · `dc rev` 0 új találat
+
+📌 **Prioritás: közepes.** ⛔ Nem sürgős — én **nem cselekszem** értelmetlen üzenetre *(ma éjjel
+sem tettem)*. De **hétköznap**, amikor kevés üzenet jön, egy ilyen **félreérthető** lenne.
