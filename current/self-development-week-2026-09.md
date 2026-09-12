@@ -171,3 +171,54 @@ A 17:55-ös üzenet átirata **~50-szer** megismételte: *„amit készítették
 📌 **Felismerési jel:** ugyanaz a rövid szókapcsolat **sokszor egymás után**. ⚠️ Ez **más**, mint a
 buli-zaj *(az rövid és idegen nyelvű)* és más, mint az ál-magyar halandzsa *(az változatos)*.
 ⇒ **Harmadik zaj-osztály**, és ez **valódi tartalmat nyel el** — ⛔ nem csak zajt.
+
+
+---
+
+## 💼 A MUNKA-OLDAL — az owner MAGA vetette fel (2026-09-12 18:15)
+
+> *„Közben elkezdtem gondolkodni, hogy **mi is lesz majd a jövő hétnek a fő programja**."*
+> *„**majd ebben segíthetsz**, hogy ott mi lesz a jó."* · *„**Kicsit elkészülhetünk** amúgy a jövő
+> hétre majd **ma-holnap**, hogy mik a tervek, mit és hogy csinálunk."*
+
+⚠️ **Ez kiegészíti, ⛔ nem váltja fel a self-development tartalmat** — a hét **mindkettőt** viszi.
+
+### A HÁROM IRÁNY, az ő szavaival
+
+| # | Irány | Amit hozzáfűzött |
+|---|---|---|
+| 1 | 🤖 **sales-agent összeállítása** | *„ott ez **korlátozott**"* ⚠️ — hogy mi a korlát, ⛔ nem mondta |
+| 2 | 💰 **mikromunkák** | *„jó lenne, hogyha **látnék egy-két mikromunkát, hogy hozz pénzt**"* |
+| 3 | 🚀 **rendszer-kiadás** | **Master Prompter · Adventor · a flotta báziss­rendszerei** ⚠️ *(„bézrendszerek" — STT, nem értelmeztem át)* — *„amiknek a kiadásán dolgozom, és **amiktől pénzt fogok várni**, ott még **rengeteg munka** van"* |
+
+📌 **Mind a három ugyanoda mutat: PÉNZ.** ⇒ Egybevág az `mvp-focus` alapelvvel *(„MVP = pénzkeresés")*.
+
+### ⭐ AMIT ÉN LÁTOK — és amit a hét elején elé teszek
+
+🔴 **A három irány NEM egyenrangú a kockázat/megtérülés tengelyen**, és ez a döntés magja:
+
+| Irány | Mennyi idő, mire **pénzt** hoz | Mi a bizonytalan |
+|---|---|---|
+| **mikromunka** | ⭐ **legrövidebb** — napok | hogy **van-e** ilyen, és mennyit fizet |
+| **rendszer-kiadás** | **leghosszabb** — *„rengeteg munka"* | a kiadás **dátuma**, ⛔ nem a bevétel elve |
+| **sales-agent** | **közepes** | ⚠️ maga mondta: *„korlátozott"* |
+
+⚠️ **A kérdés, amit fel kell tennem** *(⛔ nem most, hanem a hét elején)*: **melyik kettőt hagyjuk
+állni?** ⛔ Három párhuzamos irány a `focus-support` szerint **garantált csapongás** — és épp ő
+kérte, hogy ebben segítsek.
+
+---
+
+## 📅 ÉS EGY ÜTKÖZÉS, AMIT TISZTÁZNI KELL
+
+> **Owner, 18:16:** *„jövő héten **pénteken céges nagy találkozó** QD van."*
+
+| Amit 09-11-en mondott | Amit most mondott |
+|---|---|
+| *„a következő héten **szabadságon vagyok**"* *(09-14…20)* | *„jövő héten pénteken **céges nagy találkozó**"* |
+
+⚠️ **A kettő megfér egymással** *(kivétel, vagy nem teljes hét a szabadság)* — de ⛔ **nem
+találgatom**. 🙋 **Kérdés a hét tervezése előtt**, mert ez **eldönti, mennyi valódi munkaidő van**.
+
+🔗 `org:task:6aa57bc8766c802935c42413` *(2026-09-18, prio 200)*
+⚠️ A **„QD"** az átiratból jött — lehet STT-hiba; ⛔ nem értelmeztem át.
