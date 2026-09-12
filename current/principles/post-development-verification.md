@@ -255,3 +255,43 @@ az arányból *(`❌ felismerés után elveszett … 23 ⏱️ ebből 23 a máso
 ⭐ **A helyes javítás a LÁTHATÓVÁ TÉTEL, nem a szám javítása.**
 
 🔗 `2f0503a` *(a megnevezés)* · `95ef2a4` *(a valódi ok: a 30 mp-es ablak)*
+
+
+---
+
+## 🔴 HÁROMSZOR EGY NAP ALATT — a nyers adat igaz, a JELENTÉSE nem (2026-09-12)
+
+Ma **három** hibás következtetést vontam le, és **mindháromszor helyes volt a mért szám**:
+
+| # | Amit MÉRTEM *(igaz)* | Amit HITTEM *(hamis)* | Mi volt a valóság |
+|---|---|---|---|
+| 1 | `/api/linkedin/profile` → **404** | „a futó szerver régi kódot visz" | **rossz URL** — a végpont `profile-update` |
+| 2 | funnel: **23** „felismerés után elveszett" | „23 elveszett **mondat**" | **0,3-2,3 mp-es töredékek**, egy mondat sem |
+| 3 | `receivedAt: 2026-09-12T01:05Z` | „01:05, **~2 órája** vár" | **UTC** ⇒ 03:05 helyi, **~20 perces** |
+
+### ⭐ A KÖZÖS MINTA — és ezért egy szabály, nem három
+
+```
+mérés  →  ÉRTELMEZÉS  →  következtetés  →  cselekvés
+  ✅          ⛔              ⛔               ⛔
+```
+
+🔴 **A hiba MINDIG a második lépésben volt** — ott, ahol a számhoz **mértékegységet, hatókört
+vagy jelentést** rendeltem. És mert a szám igaz volt, a következtetés **meggyőzőnek érződött**.
+
+### ✅ A HÁROM KÉRDÉS, AMIT A MÉRÉS UTÁN FEL KELL TENNEM
+
+1. ⏱️ **Milyen egységben / zónában van?** — `Z` = **UTC**. A `fo tasks.list` is UTC-t ír
+   *(ma ezt is elrontottam, 15:05-kor)*. ⇒ **+2 óra** nyári időszámításban.
+2. 🔍 **Mit számol pontosan?** — a „23 elveszett" **darabot** mond, ⛔ nem **tartalmat**.
+   ⇒ **Nézd meg a mintát**, ne csak a számot.
+3. ❓ **Van-e MÁS magyarázat ugyanerre a számra?** — a 404 jelenthet *„nincs route"* **VAGY**
+   *„rossz URL"*. ⇒ Ha kettő van, **egyik sem bizonyíték**, amíg el nem döntöd.
+
+📌 **A költség, amit ma okoztam:** egy téves „elavult a szerver" riasztás · egy **rossz irányba
+küldött** fejlesztési feladat · egy **hamis incidens-jelentés** *(„34 üzenet 2 órára beragadt")*,
+amit vissza kellett vonnom — plusz egy **rossz tanács** *(„zárd be a VMware-t")*, miközben azon
+**a CCAP-fejlesztés futott**.
+
+⭐ **A tanulság nem az, hogy mérjek többet** — hanem hogy **a mérés és a következtetés között
+álljak meg**.
