@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-11 21:10
+**Utoljára frissítve:** 2026-09-12 03:20
 
 ---
 
@@ -143,6 +143,26 @@ ott `16:30`-ként látszik)*. ⛔ Ne olvasd helyi időnek — **+2 óra** a nyá
 magántéma *(vendégek)*. Ha nincs valódi teendő: **egy emoji**, ⛔ nem szöveg.
 📌 **Készenlét viszont van:** ha játékfejlesztésbe kezd *(„attól függ, van-e AI kapacitás")*,
 az **kérés lesz**, nem kezdeményezés.
+
+### 🎉 2026-09-12 (szo) HAJNAL — a BULI-ÉJSZAKA mérlege
+
+⚠️ **A nap NEM váltott** *(`day-boundary-is-sleep`)*: az owner **még nem aludt** — ⛔ nincs napindítás.
+
+| Mi | Mérés / állapot |
+|---|---|
+| 🔴 **A nyitott mikrofon megfojtotta a láncot** | **722** érzékelés / **259** felvétel / **16** valódi input *(tegnap egész nap: 123 / 9 / 96)* |
+| 🐢 **Ezért „nem ment semmi"** | a CLI **120 s fölé** nyúlt *(reggel: másodpercek)*; RAM **100,5/127 GB**, **17 GB Memory Compression** |
+| 🎤 **Új szabály** | nyitva maradt mikrofon ⇒ 🔊 **hangosan szólok rá, vendég esetén is** *(a tartalom nem személyes ⇒ ez ADATVÉDELEM)* |
+| 🔇 **Zaj-minta** | **rövid + önálló + nem magyar** — ⚠️ a **három EGYÜTT**, ⛔ nem „minden angol" |
+| 🔨 **DEV** | dolgozik a zaj-szűrőn + a két értesítés-higiénián · a ma éjjeli anyag **labelled korpusz** |
+| 🎮 **Owner** | ⛔ **be van ívva, játszik** — `#focus: játék`, tőlem semmi |
+| ⚠️ **Push** | egyszer elbukott *(`ssh … port 22: Connection timed out`)*, újrapróbára ment — ⭐ a commit **lokálisan megvolt**, nem veszett el |
+
+### 📌 A KÖVETKEZŐ KÖRÖK DOLGA — hétvége, 09-13-ig
+
+⛔ **Nincs munka-fókusz, nincs hangszóró, nincs magántéma.** Ha nincs valódi teendő: **egy emoji**.
+📌 **Ébredéskor** *(hosszú tétlen szakasz után az első aktív minta)* → **napindítás**, és akkor a
+`self-development-week-2026-09.md` a legfontosabb olvasnivaló.
 
 ### ⏰ MA (2026-09-11)
 
