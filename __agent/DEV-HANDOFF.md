@@ -2074,3 +2074,54 @@ kézbesítés **elbukott és nem próbálkozott újra**.
    rendszerébe beköthetnénk egy-két ilyet is, hogy **éppen hogyan pörög a gép**."*
    ⭐ Mért indok: ma éjjel a RAM-csúcs **ő maga** okozta *(CCAP local-model futtatás hang- és
    embedding-feldolgozás közben)*, és **nem látta előre**.
+
+---
+
+## 🔴 1️⃣6️⃣ VISSZAVONVA — NEM VOLT INCIDENS. Az én időzóna-hibám volt (2026-09-12 03:26)
+
+⛔ **A 16. szakasz állítása HAMIS. Ne dolgozz rajta.**
+
+### A MÉRÉS, AMI MEGDÖNTÖTTE
+
+```
+date -u  →  UTC most:   01:25:49
+date     →  helyi most: 03:25:49
+```
+
+A `pending-inbound.jsonl` `receivedAt` mezője **UTC**, `Z` végződéssel:
+`2026-09-12T01:05:12Z` = **03:05 helyi idő**. ⇒ Az „01:05-01:21-es" üzenetek valójában
+**03:05-03:21-esek** voltak — **~20 percesek**, ⛔ nem 2 órásak.
+
+**És azóta meg is érkeztek:** `delivered-inbound.jsonl` → **485** kézbesített, a `pending`-ben
+**3** maradt *(a normál gyűjtő-ablak)*.
+
+| Amit állítottam | A valóság |
+|---|---|
+| 34 üzenet **2 órára** beragadt | ⛔ **~20 perc**, a normál köteg-ablak |
+| újabbak **megelőzték** a régebbieket | ⛔ **nem** — UTC-t hasonlítottam helyihez |
+| a `maxHoldMs` szelep **nem nyílt** | ⛔ **nincs bizonyíték rá** |
+
+### 🔴 A HIBA SZERKEZETE — MA MÁSODSZOR
+
+Ez a **harmadik** eset ma, amikor **igaz adatból hamis következtetést** vontam le:
+
+| # | Amit láttam | Amit hibásan hittem |
+|---|---|---|
+| 1 | `/api/linkedin/profile` → **404** | „a szerver régi kódot visz" *(rossz URL volt)* |
+| 2 | funnel: **23 elveszett** | „23 elveszett **mondat**" *(másodperc alatti töredékek voltak)* |
+| 3 | `receivedAt: 01:05Z` | „01:05 **helyi**" *(UTC volt)* |
+
+⭐ **A közös minta:** a **nyers adat igaz volt**, a **mértékegység / jelentés** nem.
+📌 Kanonikus: `current/principles/post-development-verification.md`.
+
+### AMI A 16. SZAKASZBÓL ÉRVÉNYES MARAD
+
+✅ **A három kísérő kérés VÁLTOZATLANUL él** *(ezek az owner szavai, nem az én méréseim)*:
+1. 💬 **voice-echo a DM-be is**
+2. 🧾 a **„N. próbálkozásra sikerült"** jelzés hiányzik abból, amit **én** kapok
+3. 📊 **gép-terhelés** a státusz-rendszerbe
+
+🔍 **És egy NYITOTT kérdés, amit az owner vetett fel** *(03:17, az ő szava — ⛔ nem az én mérésem)*:
+*„mintha nem mennének át az üzenetek csak akkor, amikor **elsül a háromórás trigger**."*
+⇒ **Ezt érdemes megmérni** — de ⛔ **incidens-feltételezés nélkül**: lehet, hogy a köteg-ablak
+normálisan működik, és csak **a várakozási idő érzete** hosszú.
