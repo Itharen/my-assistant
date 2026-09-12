@@ -40,6 +40,18 @@ export const VOICE_LOG_CODES = {
   missedReportFailed: 'MA-VOICE-MISSED-REPORT-FAILED',
   /** ⚠️ Egy hangjelzés lejátszása elbukott. */
   cueFailed: 'MA-VOICE-CUE-FAILED',
+  /**
+   * 🎤 A KÖTEG-KAPU zaj-özön miatt **elengedte** a puszta észleléseket *(19. tétel)*.
+   *
+   * 🔴 MIÉRT KELL RÁ NAPLÓ-SOR: mérve 2026-09-12 — a kapu **90,0 percig** volt zárva egy éjszaka
+   * alatt *(a 01:22-04:52 ablak 43%-a)*, és ennek **90%-a** puszta `speaking start` jelekből jött
+   * *(757 jel / 295 lezárás ⇒ 462 lezáratlan)*. Az owner ezalatt **kétszer** kérdezte, miért nem
+   * mennek át az üzenetei *(03:17 — 9,0 perce zárva · 04:22 — 4,8 perce zárva)*.
+   *
+   * ⇒ Az elnyomás **állapot-váltása** naplóba kerül, mert egy néma elnyomás ugyanolyan
+   * láthatatlan hiba lenne, mint amilyen a 90 perces zárás volt.
+   */
+  batchGateNoise: 'MA-VOICE-BATCH-GATE-NOISE',
 } as const;
 
 export type VoiceLogCode = typeof VOICE_LOG_CODES[keyof typeof VOICE_LOG_CODES];

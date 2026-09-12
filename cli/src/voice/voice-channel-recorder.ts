@@ -145,8 +145,12 @@ export async function handleFinishedRecording(params: {
    * ⚠️ A jelzés eddig a **megszólalás észlelésekor** szólt (`onSpeechAttempt`) — vagyis akkor,
    * amikor **elkezdett beszélni**. A hang viszont a CCAP `typing.mp3`-ja, ami nála
    * **„dolgozom rajta"**-t jelent. ⇒ A hang jó volt, a **pillanat** rossz.
+   *
+   * ⭐ A FÁJLNÉV IS ÁTMEGY *(19. tétel, 2026-09-12)*: a köteg-kapu ebből tudja, hogy egy
+   * **valódi felvétel** feldolgozása tart — és a kimenetel **ugyanezzel** a névvel oldja fel.
+   * ⛔ Sorrend-alapú párosítás nem elég: a feldolgozás párhuzamos.
    */
-  onProcessingStart?: () => void;
+  onProcessingStart?: (info: { filename: string }) => void;
   /**
    * 🎙️ A NYERS HANG MEGŐRZÉSE — ⭐ **a felismerés ELŐTT**, kimenetelre való tekintet nélkül.
    *
@@ -202,7 +206,7 @@ export async function handleFinishedRecording(params: {
 
   // 🔊 Innentől TÉNYLEG dolgozunk rajta — a felvétel megvan és olvasható.
   // ⛔ Nem korábban: a „hallak" és a „dolgozom rajta" NEM ugyanaz a pillanat.
-  params.onProcessingStart?.();
+  params.onProcessingStart?.({ filename: params.filename });
 
   const result = await transcribe({
     audio: audio,
@@ -305,7 +309,7 @@ export async function startVoiceRecording(params: {
   /** 🔴 Minden ERZEKELT megszolalasnal hivodik — ez teszi lathatova a nema eldobast. */
   onSpeechAttempt?: (stats: SpeechAttemptStats) => void;
   /** 🔊 Továbbadva a `handleFinishedRecording`-nak — a feldolgozás kezdetén szól. */
-  onProcessingStart?: () => void;
+  onProcessingStart?: (info: { filename: string }) => void;
   /**
    * 🔍 Minden NÉMÁN ELDOBOTT felvételnél hívódik — másodpercben megadva, mennyi hang veszett el.
    *

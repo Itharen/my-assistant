@@ -692,6 +692,56 @@ rendszer csak a **szignált** adja.
 
 📌 A teljes mérés + ami szándékosan kimaradt: `__documentations/dev/VOICE_NOISE_FILTER.md`.
 
+### ⏳ A KÖTEG-KAPU ZAJ-IMMUNITÁSA (2026-09-12) — „miért nem mennek át az üzeneteim?"
+
+🔴 **MÉRT PROBLÉMA:** a köteg-kaput a Discord **`speaking start`** jele töltötte *(757 / éjszaka)*,
+de a **felvétel-kimenetel** ürítette *(295)* ⇒ **462 lezáratlan** jel, mindegyik **180 mp**-ig
+zárva tartotta a kaput. A kapu **90,0 percig** volt zárva egy 3,5 órás ablakban *(43%)*, és az
+owner **kétszer** kérdezte, miért nem mennek át az üzenetei *(03:17 — 9,0 perce zárva · 04:22 —
+4,8 perce zárva)*.
+
+⭐ **A JAVÍTÁS — ⛔ NEM az ablak rövidítése** *(a `collectWindowMs` 30 mp és a `maxHoldMs` 15 perc
+VÁLTOZATLAN)*:
+
+```
+(1) egy VALÓDI FELVÉTEL feldolgozása alatt a kapu ZÁRVA     — mérve: median 2 mp, max 11 mp
+(2) ZAJ-ÖZÖN alatt a puszta ÉSZLELÉS NEM zárja a kaput      — küszöb: a MÉRT 12 zaj / 10 perc
+(3) egyébként minden VÁLTOZATLAN                            — a 2026-09-11-es viselkedés
+```
+
+⚠️ A zaj-jelölés ott fut be a kapuba, ahol megszületik *(`onHandled` → `noteSettled({isNoise})`)*,
+és a párosítás **fájlnév** szerint megy — ⛔ nem sorrend szerint, mert a feldolgozás párhuzamos.
+📊 Teszt *(az owner kérte)*: „1 valódi + 50 zaj 10 percen át" ⇒ a köteg **+144 mp**-nél kimegy;
+**pozitív kontrollal** igazolva *(zaj-jelölés nélkül bent ragad)*.
+🔎 Az elnyomás **látszik**: `MA-VOICE-BATCH-GATE-NOISE` napló-sor, csak **állapot-váltáskor**.
+
+📌 A teljes mérés: `__documentations/dev/VOICE_BATCH_GATE.md`.
+
+### ⚠️ ÉRTELMESSÉG-JELÖLÉS — magyarnak HANGZÓ halandzsa (2026-09-12)
+
+🔴 **A VAK FOLT:** a zaj-szűrő a *„nem magyar"* feltételre épül, ezért a **magyar szavakból álló,
+értelmetlen** átirat átmegy *(„A pro fysisz per lágrában.")*. ⇒ Külön jel kell: az **értelmesség**.
+
+```
+ÉRTELMESSÉG-GYANÚ ⇐ BESZÉDBŐL jött ÉS ≥ 8 tartalmi szó
+                    ÉS ismeretlen-arány ≥ 0,22 ÉS ≥ 3 ismeretlen szó
+```
+
+⛔ **SOHA nem dob el — csak JELÖL** *(owner: „bizonytalanságnál jelöld meg, és én döntök")*.
+📚 A szótár: `cli/data/hu-lexicon.txt` — **generált, git-trackelt** artefakt, újragenerálás:
+
+```bash
+PYTHONUTF8=1 python scripts/build-hu-lexicon.py      # 338 md-fájl ⇒ 15 953 szó
+```
+
+⚠️ A lexikon a repó markdown-jaiból jön *(gyakoriság ≥ 2)*, ⛔ **nem** az átiratokból — különben a
+halandzsa-szavak önmagukat legitimálnák. Hiányzó fájl ⇒ **fail-open**: nincs jelölés.
+📊 **Visszamérve az éles kódon, 279 beszéd-átiraton: 0 hamis jelölés** a valódi magyarokon;
+⚠️ a recall **2 / 6** *(kimondva — a mért átfedés miatt nincs szigorúbb küszöb hamis jelölés nélkül)*.
+🙋 **Owner-döntésre vár:** a tágítás *(3/6, de 4 hamis)* és a helyi-LLM-es értelmesség-ítélet.
+
+📌 A teljes mérés + a 3 elvetett jel: `__documentations/dev/VOICE_MEANINGFULNESS_MARK.md`.
+
 ### 😴 Az ÉBRENLÉT-DÖNTÉS — mérésből, ⛔ nem órarendből (2026-09-12)
 
 🔴 **MÉRT PROBLÉMA:** a `/api/sleep-state` **fix órarendből** tippelt *(`02:00-10:00 = alvás`)*.

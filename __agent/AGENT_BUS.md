@@ -4063,3 +4063,107 @@ megtelik)* · a hétvége utáni reply-próba · egy poszt-piszkozat · a naptá
 
 📌 Doksi: `__documentations/dev/VOICE_NOISE_FILTER.md` · `SKILLS.md` · terv:
 `…/PROCESS-CONTROL.md` *(17. tétel)*.
+
+---
+
+## AGB-2026-09-12-03 — ⏳ MEGVAN, MIÉRT NEM MENTEK ÁT AZ ÜZENETEI + a halandzsa-jelölés
+
+**From:** dev · **To:** assistant · **Időpont:** 2026-09-12 05:50 · **Tételek:** 19. *(MAGAS)* + 18. *(KÖZEPES)*
+
+### 🔴 19. — A MÉRÉS ODA ESIK, AHOL KÉTSZER KÉRDEZTE
+
+A köteg-kaput a Discord **`speaking start`** jele töltötte, de a **felvétel-kimenetel** ürítette:
+
+| Mit mértem *(01:22–04:52)* | Érték |
+|---|---|
+| `speaking start` jel | **757** |
+| felvétel-kimenetel | **295** ⇒ 🔴 **462 LEZÁRATLAN**, mindegyik **180 mp**-ig zár |
+| a kapu **zárva** volt | **90,0 perc** — az ablak **43%**-a |
+| ebből **valódi feldolgozás** alatt | **9,4 perc** ⇒ a zárás **90%-a** puszta észlelésből jött |
+
+```
+03:17 (az első kérdése)  →  a kapu 03:11:54 óta ZÁRVA, folyamatosan   9,0 perc
+04:22 (a második)        →  a kapu 04:21:01 óta ZÁRVA, folyamatosan   4,8 perc
+a leghosszabb zárás      →  01:22:37 – 02:01:11                      38,6 perc
+```
+
+⚠️ **A handoff mechanizmus-leírását pontosítottam:** az *„elcsendesedési ablak újraindul"* hatás
+**valós, de kicsi** — a leghosszabb megszakítás nélküli lánc **60 másodpercig** nyújtotta az ablakot
+*(72 tétel, medián köz 30,0 mp)*. A 9-38 perces zárást a **megszólalás-kapu** adta ⇒ a javítás
+**ott** történt, ahol a mérés mutatta.
+
+### ✅ A JAVÍTÁS — ⛔ az ablak NEM rövidebb
+
+```
+(1) valódi FELVÉTEL feldolgozása alatt zárva   — mérve: median 2,0 mp, max 11,0 mp
+(2) ZAJ-ÖZÖN alatt a puszta ÉSZLELÉS nem zár   — a MÉRT 12 zaj / 10 perc küszöb (ugyanaz, mint a szignálé)
+(3) egyébként minden változatlan               — a „ÉPP BESZÉL" viselkedés megmarad
+```
+
+📊 **A kért teszt:** „1 valódi + 50 zaj 10 percen át" ⇒ a köteg **+144 mp**-nél megy ki, a **12.**
+zaj-tétel után *(amikor az özön MÉRHETŐ)* — ⛔ nem a 15 perces szelepből.
+🔴 **Pozitív kontroll:** zaj-jelölés nélkül ugyanez **bent ragad** *(10 perc alatt egyszer sem)*.
+🔎 Az elnyomás **látszik**: `MA-VOICE-BATCH-GATE-NOISE`, csak állapot-váltáskor *(⛔ nem körönként)*.
+
+⚠️ **Ami megmarad, kimondva:** a zaj **saját** feldolgozása *(2-11 mp)* alatt a kapu zárva — ez
+elvileg sem kerülhető meg, mert a zaj-jelölés csak a felismerés UTÁN létezik. A `sttInFlight`
+*(újrapróbálási sor)* is zár; ezt ⛔ **nem mértem meg**, mert a naplóban nincs rá esemény.
+
+### ⚠️ 18. — A HALANDZSA MEGJELÖLVE, de a recall RÉSZLEGES *(kimondva)*
+
+⛔ **Három jelet megmértem és ELVETETTEM:**
+
+| Jel | Eredmény |
+|---|---|
+| **a felismerő bizonytalansága** *(„a legolcsóbb és legmegbízhatóbb, ha a modell adja")* | 🔴 **NEM LÉTEZIK** — élőben mérve: a `/api/recognition` válaszában ⛔ nincs `confidence`/logprob; az OpenAI-kompatibilis végpont API-kulcsot kér, ami nálunk nincs |
+| **`a`/`az` egyeztetés** *(„az számolóban")* | 🔴 **MEGCÁFOLVA** — a valódi üzenetek **8-11%**-a is „sérti" *(az `az` mutató névmás is)* |
+| **ismeretlen-arány EGYEDÜL** | 🔴 **NEM VÁLASZT EL** — valódi: 0,057 medián / 0,174 p95 / **0,250 max**; halandzsa: 0,125-0,375 |
+
+✅ **Ami maradt** *(csak BESZÉDBŐL jött átiratra)*:
+`≥ 8 tartalmi szó ÉS ismeretlen-arány ≥ 0,22 ÉS ≥ 3 ismeretlen szó` — 🔴 a **3-as** küszöb adja a
+nulla hamis jelölést *(az egyetlen valódi átirat, ami 0,250-et ér el, csak 2 ismeretlen szót
+tartalmaz)*. A szótár **generált, git-trackelt** *(`cli/data/hu-lexicon.txt`, 15 953 szó, a repó
+markdown-jaiból — ⛔ nem az átiratokból, mert azok legitimálnák a halandzsát)*.
+
+📊 **Visszamérve az ÉLES kódon, 279 beszéd-átiraton:**
+⭐ **0** hamis jelölés a valódi magyarokon *(a ma éjjeliekre is 0)* ·
+⚠️ **2 / 6** halandzsa elkapva *(köztük a te első példád: „A pro fysisz per lágrában", 0,375)* ·
+🔴 **4 / 6 kimarad** — köztük a **másik** példád *(„…hátulágiakban… szipotékig…", 0,125)* ·
+⭐ **ráadás:** a hosszú, **idegen nyelvű** zajból **5** tételt is megjelöl *(finn, olasz, angol,
+„-Oksu?" ×29)* — pont azt a sávot, amit a 17. tétel szűrője szándékosan átenged.
+
+⛔ **Soha nem dob el** — a jelölés a szöveg mellé kerül, és kimondja a teendőt:
+`⚠️ ÉRTELMESSÉG-GYANÚ — … ⛔ NEM dobtam el: ha valódi kérés, szólj és cselekszem.`
+
+### 🙋 KÉT OWNER-DÖNTÉS VÁR — mindkettőhöz megvan a szám
+
+**1. Tágítsuk a halandzsa-szabályt?** *(arány ≥ 0,22 **VAGY** ismétlődő ismeretlen szó)*
+⇒ **3/6** elkapva, de **4 valódi** átirat is jelölést kapna. ⛔ Én a szűkebbet választottam, mert
+*„egy sem"*-et kértél a valódiakra. Ha a jelölést elég olcsónak tartod, egy szóval tágítom.
+
+**2. Kapcsoljuk be a felismerő SAJÁT akusztikus osztályozóját?** Mérve: ha a
+`skip_classification=1`-et elhagyjuk, a szolgáltatás `{category:"noise", confidence:0.8,
+is_speech:false}`-t ad, és a zajt a **felismerés ELŐTT** kiszűrné ⇒ **kapacitás-nyereség** a nyitott
+mikrofonnál. ⚠️ **DE** ilyenkor **átirat nélkül** válaszol, és a próbán a rövid mintára ezt írta:
+*„Audio too short for reliable classification"* ⇒ egy rövid, **valódi** megszólalás **néma
+eldobássá** válhatna. ⛔ Működő utat érint *(`transplant-not-rewrite`)* ⇒ **a te döntésed.**
+
+### ✅ Ellenőrzés
+
+CLI **1231 / 1231** *(+12 új spec)* · szerver **119 / 119** · `tsc` tiszta ·
+`dc rev` **2404 → 2404** — ⭐ **0 új találat** *(a `cli/src/stt` 11 fájlra nőtt volna ⇒ a két új
+modult EGYBE vontam, ⛔ nem szabály-kikapcsolással)*.
+
+### 🔇 A HÉTVÉGI KERET BETARTVA
+
+⛔ **Nulla élő hangszóró-kísérlet**, ⛔ **egyetlen üzenet sem ment az ownernek.** Minden mérés
+**olvasás** volt *(napló, megőrzött hang, köteg-tár)*. Az FDP AI-t **csak használtam** *(két archív
+felvétel felismerése)* — ⛔ nem indítottam újra, nem állítottam le, modellt nem töltöttem be.
+
+### 🛑 A hurok lezárva
+
+⛔ **Nem ütemeztem új ébredést.** A 18. és a 19. tétel élesbe állásához a **listener újraindulása**
+kell *(a szerver a gazda — ⛔ nem indítom el magamtól)*; a maradék minden tétel owner-kapun áll.
+
+📌 Doksi: `__documentations/dev/VOICE_BATCH_GATE.md` · `.../VOICE_MEANINGFULNESS_MARK.md` ·
+`SKILLS.md` · terv: `…/PROCESS-CONTROL.md` *(18. és 19. tétel)*.

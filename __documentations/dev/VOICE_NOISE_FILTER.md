@@ -10,6 +10,10 @@
 felvétel / 16 valódi input** egy este alatt *(egy normál nap: 123 / 9 / 96)*; ugyanabban az
 ablakban a `comm doctor` **120 s fölé** nyúlt és a memória **100,5/127 GB**-on állt.
 
+> ⭐ **FOLYTATÁS (2026-09-12, 19. tétel):** a szűrés önmagában **nem elég** — a kiszűrt zaj a
+> **köteg-ablakot** is nyújtotta *(mérve: a kapu 90,0 percig volt zárva egy éjszaka alatt)*.
+> 📌 `VOICE_BATCH_GATE.md`.
+
 ---
 
 ## 🔬 A MÉRÉS — labelled korpusz, ⛔ nem intuíció
@@ -82,7 +86,10 @@ innentől nem megy ki sikerként**. ⛔ Nem kellett hozzá új kapu.
 
 ⚠️ **A maradék 13** *(amit átengedünk)*: hosszú nem-magyar szöveg *(szándékos)*, illetve
 **magyarnak látszó halandzsa** *(„Nincs más, hogy", „A keresem van.")* — az utóbbi magyar, tehát
-a szűrő **elvileg sem** nyúl hozzá. 🙋 Ez **külön tétel**, ha az owner kéri.
+a szűrő **elvileg sem** nyúl hozzá.
+⭐ **2026-09-12 (18. tétel): ez MEGVAN** — de ⛔ **nem eldobásként, hanem JELÖLÉSKÉNT**
+*(`⚠️ ÉRTELMESSÉG-GYANÚ`)*, és a recall szándékosan részleges *(2/6)*, hogy a valódi üzenetekre
+**0** hamis jelölés jusson. 📌 `VOICE_MEANINGFULNESS_MARK.md`.
 
 ---
 

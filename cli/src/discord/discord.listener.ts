@@ -321,6 +321,15 @@ export class DiscordListener {
   private readonly speechInFlight: VoiceSpeechInFlight = new VoiceSpeechInFlight();
 
   /**
+   * 🎤 Zaj-ozon miatt el volt-e nyomva a koteg-kapu a LEGUTOBBI kerdesnel *(19. tetel)*.
+   *
+   * ⭐ MIERT KELL: a kapu allapotat 15 mp-enkent kerdezzuk. Ezt a mezot csak azert tartjuk, hogy
+   * a naploba az ALLAPOT-VALTAS kerulhessen be, ⛔ ne minden kor. Az elnyomas nema bevezetese
+   * ugyanolyan lathatatlan hiba lenne, mint amilyen a 90 perces zaras volt.
+   */
+  private isGateNoiseSuppressed: boolean = false;
+
+  /**
    * A FOLYAMATBAN LÉVŐ hang-esemény-írások.
    *
    * ⭐ MIÉRT KELL NYILVÁNTARTANI: a leállás során írt „kiléptem" sor az EGYETLEN nyoma
@@ -362,9 +371,28 @@ export class DiscordListener {
     // A HANGUZENET-UT IS BENNE VAN (sttInFlight): egy eppen felismeres alatt levo
     // hanguzenet ugyanugy "folyamatban levo megszolalas", mint a csatorna-felvetel. Ha csak
     // az egyiket neznenk, a koteg a masik alatt megis kimehetne.
-    this.bridge.attachSpeechInProgressSource(
-      (): boolean => this.speechInFlight.isInProgress() || this.sttInFlight,
-    );
+    this.bridge.attachSpeechInProgressSource((): boolean => {
+      // 🎤 A 19. TETEL: a kapu allapota INDOKLASSAL jon vissza, es a zaj-ozon miatti elnyomas
+      // LATHATO lesz a naploban — de csak a VALTASNAL, kulonben 15 mp-enkent irna egy sort.
+      const gate = this.speechInFlight.diagnose();
+
+      if (gate.suppressedByNoise !== this.isGateNoiseSuppressed) {
+        this.isGateNoiseSuppressed = gate.suppressedByNoise;
+
+        void this.safeLog({
+          kind: 'note',
+          summary: `[discord/listener] ${VOICE_LOG_CODES.batchGateNoise}: ${gate.reason}`,
+          extra: {
+            code: VOICE_LOG_CODES.batchGateNoise,
+            suppressedByNoise: gate.suppressedByNoise,
+            detectedCount: gate.detectedCount,
+            noiseCount: gate.noiseCount,
+          },
+        });
+      }
+
+      return gate.inProgress || this.sttInFlight;
+    });
   }
 
   /**
@@ -1084,7 +1112,12 @@ export class DiscordListener {
       // annak egy százaléka lett aztán transzkriptálva". Enelkul sem o, sem en nem tudjuk,
       // HANY megszolalas veszett el — es a szuro allitgatasa puszta talalgatas lenne.
       // 🔊 A „dolgozom rajta" jelzés — a FELDOLGOZÁS kezdetén, nem a felvételkor.
-      onProcessingStart: (): void => void this.cues?.play('heard'),
+      onProcessingStart: (info: { filename: string }): void => {
+        // ⏳ A 19. TETEL: EZ az a tartas, ami zaj-ozonben is ervenyes — mert egy VALODI felvetel
+        // feldolgozasa fut, es abbol MINDIG lesz kimenetel (merve: 279 → 279, median 2 mp).
+        this.speechInFlight.noteProcessingStarted(info.filename);
+        void this.cues?.play('heard');
+      },
       onSpeechAttempt: (stats: SpeechAttemptStats): void => {
         // ⏳ A KÖTEG-KAPU: innentől „folyamatban van egy megszólalás" — a csomag ⛔ nem mehet
         // ki, amíg ki nem derül, mi lesz belőle (owner, 2026-09-11 02:28 és élesben 03:27).
@@ -1175,7 +1208,14 @@ export class DiscordListener {
         // ⏳ A MEGSZÓLALÁS LEZÁRULT — sikerrel VAGY bukással, mindkettő lezárás. Innentől a
         // köteg-kapu elengedi. ⚠️ MINDEN ágra fut, a legelső utasításként: egy korai `return`
         // különben beragasztaná a kaput, és a kézbesítés némán állna.
-        this.speechInFlight.noteSettled();
+        //
+        // 🎤 A 19. TETEL KET ADATA MEGY AT: a FAJLNEV (ez oldja fel a feldolgozas-tartast,
+        // sorrend-fuggetlenul) es a ZAJ-JELOLES (ebbol meri a kapu az ozont — csak a NEM-zaj
+        // megszolalas tarthatja vissza a koteget).
+        this.speechInFlight.noteSettled({
+          ...(outcome.filename ? { filename: outcome.filename } : {}),
+          ...(outcome.isNoise ? { isNoise: true } : {}),
+        });
 
         // ⚠️ HAROM KIMENETEL, HAROM KOD — az osztalyozas TESZTELT fuggvenyben all
         // (`classifyRecordingOutcome`), mert ezt mar ketszer elrontottam.

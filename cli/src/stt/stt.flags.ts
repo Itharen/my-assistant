@@ -12,6 +12,7 @@
 // követné el, amit el akarunk kerülni: magabiztosan rosszat állítani.
 
 import type { SttSegmentation } from './stt.models.js';
+import { SttMeaningfulness_Util } from './stt.meaningfulness.js';
 
 /** Az ismert félrehallások. SSOT a magyarázatokkal: `current/stt-mishearings.md`. */
 const KNOWN_MISHEARINGS: { heard: string; likely: string }[] = [
@@ -48,6 +49,20 @@ export interface TranscriptFlags {
   failedParts: number;
   /** ⚠️ Ennyi vágás esett beszéd közben. */
   midSpeechCuts: number;
+  /**
+   * ⚠️ ÉRTELMESSÉG-GYANÚ — magyarnak HANGZÓ, de értelmetlen átirat *(18. tétel)*.
+   *
+   * > **Owner, 2026-09-12 04:15:** *„Magyar szavak, magyar dallam, értelem nélkül… a
+   * > megkülönböztető jel NEM a nyelv, hanem az ÉRTELMESSÉG."* · *„bizonytalanságnál NE dobd el
+   * > — JELÖLD MEG, és én döntök."*
+   *
+   * 🔴 EZ CSAK JELÖLÉS. ⛔ A szöveget nem írja át, nem dobja el, és ⛔ nem állítja a
+   * `suspicious`/`isNoise` jelzőt. A küszöbök mérése: `stt.meaningfulness.ts`.
+   *
+   * ⚠️ A hiánya ⛔ NEM azt jelenti, hogy „biztosan értelmes" — csak azt, hogy a mért
+   * küszöböket nem lépte át *(recall: 6 felcímkézett halandzsából 2)*.
+   */
+  meaningDoubt?: string;
 }
 
 /**
@@ -78,7 +93,19 @@ export function findMishearings(text: string): { heard: string; likely: string }
  * @param segmentation a darabolás képe, ha a hang nem fért a felismerő ablakába.
  *   ⚠️ **Opcionális** — a hiánya „egy hívás"-t jelent, ⛔ nem „nem tudom".
  */
-export function collectFlags(text: string, segmentation?: SttSegmentation): TranscriptFlags {
+export function collectFlags(
+  text: string,
+  segmentation?: SttSegmentation,
+  /**
+   * A szótár-kérdés — ⭐ **injektálható**, hogy a jelölés fájl-olvasás nélkül tesztelhető legyen.
+   *
+   * ⚠️ Alapból a generált repó-lexikon felel; ha az nincs meg, `true`-t ad mindenre ⇒ ⛔ nincs
+   * jelölés *(fail-open, l. `stt.hu-lexicon.ts`)*.
+   */
+  isKnownWord: (word: string) => boolean = (word: string): boolean => SttMeaningfulness_Util.isKnownWord(word),
+): TranscriptFlags {
+  const meaning = SttMeaningfulness_Util.inspect({ text: text, isKnownWord: isKnownWord });
+
   return {
     machineTranscribed: true,
     looksTruncated: looksTruncated(text),
@@ -86,6 +113,7 @@ export function collectFlags(text: string, segmentation?: SttSegmentation): Tran
     parts: segmentation?.parts ?? 1,
     failedParts: segmentation?.failedParts ?? 0,
     midSpeechCuts: segmentation?.midSpeechCuts ?? 0,
+    ...(meaning.reason ? { meaningDoubt: meaning.reason } : {}),
   };
 }
 
@@ -114,6 +142,16 @@ export function describeFlags(flags: TranscriptFlags): string {
 
   if (flags.midSpeechCuts > 0) {
     parts.push(`⚠️ ${flags.midSpeechCuts} vágás beszéd közben esett — ott szó csúszhatott el`);
+  }
+
+  // ⚠️ AZ ÉRTELMESSÉG-GYANÚ — ⛔ NEM eldobás, hanem KÉRDÉS az ownerhez (18. tétel).
+  //
+  // ⭐ MIÉRT ÍGY VAN MEGFOGALMAZVA: a jelölés címzettje KETTŐ — a session (én) és az owner. A
+  // sessionnek azt kell tudnia, hogy ⛔ ne cselekedjen magabiztosan rá; az ownernek azt, hogy a
+  // szöveg **megvan** és ⛔ nem veszett el. Ezért a jelölés a TEENDŐT is kimondja.
+  if (flags.meaningDoubt) {
+    parts.push(`⚠️ ÉRTELMESSÉG-GYANÚ — ${flags.meaningDoubt}. Lehet, hogy ez a környezet `
+      + 'beszéde volt, NEM az owner kérése. ⛔ NEM dobtam el: ha valódi kérés, szólj és cselekszem.');
   }
 
   if (flags.mishearings.length > 0) {

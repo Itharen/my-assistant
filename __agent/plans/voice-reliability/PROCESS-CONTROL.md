@@ -43,6 +43,8 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **15** | ✍️ **POSZT-PISZKOZAT PANEL** *(lista + másolható szövegdoboz)* | 1️⃣3️⃣ 18:05 | ✅ **KÉSZ** — nav-linkkel; CLI 1176 · szerver 115 · kliens 159; `dc rev` 2397→2397 | 2026-09-11 18:30 |
 | **16** | 😴 **ÉBRENLÉT-DÖNTÉS mérésből** *(MP-5, a fix órarend cserélve)* | 1️⃣4️⃣ 00:10 | ✅ **KÉSZ** — 5 698 mintán mérve: a tipp **35-44%-ban** tévedett; CLI 1192 · szerver 119 | 2026-09-12 00:30 |
 | **17** | 🎤 **BULI-ZAJ szűrés + nyitott-mikrofon szignál** | 1️⃣5️⃣ 03:05 | ✅ **KÉSZ** — 427 mintán visszamérve **0** magyar kiesés; CLI 1219 · `dc rev` 2404→2404 | 2026-09-12 03:50 |
+| **18** | ⚠️ **ÉRTELMESSÉG-JELÖLÉS** — magyarnak HANGZÓ halandzsa *(jelöl, ⛔ nem dob el)* | 1️⃣8️⃣ 04:15 | ✅ **KÉSZ** — 279 átiraton **0** hamis jelölés; ⚠️ recall **2/6** kimondva; 🙋 2 owner-döntés | 2026-09-12 05:40 |
+| **19** | ⏳ **A KISZŰRT ZAJ NEM NYÚJTJA A KÖTEG-ABLAKOT** | 1️⃣9️⃣ 04:32 | ✅ **KÉSZ** — mérve: a kapu **90,0 percig** zárva volt *(43%)*, ebből 90% puszta észlelésből; CLI 1231 · `dc rev` 2404→2404 | 2026-09-12 05:45 |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -579,11 +581,13 @@ szerver-újraindításkor** lép életbe; ⛔ nem indítom újra magamtól *(a s
 
 ## ➡️ A KÖVETKEZŐ KONKRÉT LÉPÉS
 
-⭐ **Minden nyitott tétel rajtam kívüli kapun áll:**
+⭐ **Minden nyitott tétel rajtam kívüli kapun áll** *(állapot: 2026-09-12 05:45)*:
 
 | Tétel | Mire vár | Mi oldaná fel |
 |---|---|---|
-| **17** *(zaj-szűrés)* | a **listener újraindulására** | a következő LDP-ciklus — ⛔ nem indítom el magamtól |
+| **19** *(köteg-kapu zaj-immunitás)* | a **listener újraindulására** | a következő LDP-ciklus — ⛔ nem indítom el magamtól |
+| **18** *(értelmesség-jelölés)* | ugyanarra + 🙋 **két owner-döntésre** *(l. lentebb)* | ugyanaz a ciklus |
+| **17** *(zaj-szűrés)* | a **listener újraindulására** | ugyanaz a ciklus |
 | **17b** *(retry = reply)* | 🙋 **owner-kapu**: élő üzenet-küldés kell az igazoláshoz | a hétvége után egy próba-üzenet |
 | **16** *(ébrenlét)* | a **szerver indulására** | ugyanaz a ciklus |
 | **15** *(poszt-panel)* | **poszt-piszkozatra** *(az asszisztens írja)* | egy `.body.txt` a `current/linkedin/post-drafts/`-ba |
@@ -592,6 +596,83 @@ szerver-újraindításkor** lép életbe; ⛔ nem indítom újra magamtól *(a s
 | **12** *(„mindenféle hiba")* | a **konkrét hibaszövegre** | ⛔ nem javítok olyat, amit nem reprodukáltam |
 
 ⇒ A hurok lezárása: jelentés az `AGENT_BUS.md`-ben, ⛔ új ébredés NEM.
+
+### ⏳ A 19. TÉTEL — A KISZŰRT ZAJ NEM NYÚJTJA A KÖTEG-ABLAKOT (2026-09-12 05:30) ✅
+
+#### 🔬 A MÉRÉS — és amit a SAJÁT első feltevésemből megcáfolt
+
+A napi akció-naplóból *(01:22–04:52)*:
+
+| Mit mértem | Érték |
+|---|---|
+| `speaking start` jel *(ez tölti a kaput)* | **757** |
+| felvétel-kimenetel *(ez üríti)* | **295** ⇒ 🔴 **462 LEZÁRATLAN**, mindegyik 180 mp-ig zár |
+| a köteg-kapu **zárva** volt | **90,0 perc** *(az ablak 43%-a)* |
+| ebből **valódi feldolgozás** alatt | **9,4 perc** ⇒ a zárás **90%-a** puszta észlelésből jött |
+| 03:17 *(owner 1. kérdése)* | a kapu **9,0 perce** zárva |
+| 04:22 *(owner 2. kérdése)* | a kapu **4,8 perce** zárva |
+
+⚠️ **A handoff mechanizmus-leírását pontosítottam:** az *„elcsendesedési ablak újraindul"* hatás
+**valós, de kicsi** — mérve a leghosszabb megszakítás nélküli lánc **60 másodpercig** nyújtotta az
+ablakot *(72 tétel, medián köz 30,0 mp)*. A 9-38 perces zárást a **megszólalás-kapu** adta.
+⇒ Ezért a javítás **ott** történt, ahol a mérés mutatta.
+
+#### ✅ A szabály — ⛔ NEM rövidítés
+
+```
+(1) valódi FELVÉTEL feldolgozása alatt zárva   — mérve: median 2,0 mp, p90 4,0 mp, max 11,0 mp
+(2) ZAJ-ÖZÖN alatt a puszta ÉSZLELÉS nem zár   — küszöb: a MÉRT 12 zaj / 10 perc (SSOT)
+(3) egyébként minden változatlan               — a 2026-09-11-es „ÉPP BESZÉL" viselkedés
+```
+
+📊 **A teszt, amit az owner kért:** „1 valódi + 50 zaj 10 percen át" ⇒ a köteg **+144 mp**-nél
+kimegy, a **12.** zaj-tétel után *(amikor az özön MÉRHETŐ)* — ⛔ nem a 15 perces szelepből.
+🔴 **Pozitív kontrollal** igazolva: zaj-jelölés nélkül ugyanez **bent ragad**.
+
+⚠️ **Ami megmarad, kimondva:** a zaj **saját feldolgozása** *(2-11 mp)* alatt a kapu zárva —
+ez elvileg sem kerülhető meg, mert a zaj-jelölés csak a felismerés UTÁN létezik. És a
+`sttInFlight` *(újrapróbálási sor)* továbbra is zár; ezt ⛔ **nem mértem meg**, mert a naplóban
+nincs „retry-próba indult" esemény — 🙋 ha kell, előbb mérőpontot teszünk rá.
+
+📌 Doksi: `__documentations/dev/VOICE_BATCH_GATE.md` · `SKILLS.md`.
+
+### ⚠️ A 18. TÉTEL — A ZAJ-SZŰRŐ VAK FOLTJA (2026-09-12 05:40) ✅ *(részleges recall, kimondva)*
+
+#### ⛔ HÁROM JELET MEGMÉRTEM ÉS ELVETETTEM
+
+| Jel | Az eredmény |
+|---|---|
+| **a felismerő bizonytalansága** *(a handoff szerint „a legolcsóbb és legmegbízhatóbb")* | 🔴 **NEM LÉTEZIK** — élőben mérve a `/api/recognition` válaszában ⛔ nincs `confidence`/logprob; az OpenAI-kompatibilis végpont API-kulcsot kér, ami nálunk nincs |
+| **`a`/`az` egyeztetés** | 🔴 **MEGCÁFOLVA** — a valódi üzenetek 8-11%-a is „sérti" *(az `az` mutató névmás is)*, a halandzsa meg alig |
+| **ismeretlen-arány EGYEDÜL** | 🔴 **NEM VÁLASZT EL** — valódi: 0,057 medián / 0,174 p95 / **0,250 max**; halandzsa: 0,125-0,375 ⇒ átfedés |
+
+#### ✅ Ami maradt — két feltétel EGYÜTT, és CSAK beszédre
+
+```
+ÉRTELMESSÉG-GYANÚ ⇐ ≥ 8 tartalmi szó ÉS ismeretlen-arány ≥ 0,22 ÉS ≥ 3 ismeretlen szó
+```
+
+🔴 A **3-as ismeretlen-küszöb adja a nulla hamis jelölést**: az egyetlen valódi átirat, ami átlépi
+az arány-küszöböt *(0,250)*, mindössze **2** ismeretlen szót tartalmaz.
+📚 A szótár **generált, git-trackelt** artefakt *(`cli/data/hu-lexicon.txt`, 15 953 szó)* — a repó
+markdown-jaiból, gyakoriság ≥ 2, ⛔ **nem** az átiratokból *(azok legitimálnák a halandzsát)*.
+
+📊 **Visszamérve az ÉLES kódon, 279 beszéd-átiraton:** ⭐ **0** hamis jelölés a valódi magyarokon
+*(a ma éjjeliekre is 0)* · ⚠️ **2 / 6** halandzsa elkapva *(köztük az owner első példája)* ·
+⭐ **ráadás:** a hosszú, idegen nyelvű zajból **5** tételt is megjelöl — pont azt a sávot, amit a
+17. tétel szűrője szándékosan átenged.
+
+#### 🙋 KÉT OWNER-DÖNTÉS VÁR — mindkettőhöz megvan a szám
+
+1. **Tágítsuk a szabályt?** *(arány ≥ 0,22 **VAGY** ismétlődő ismeretlen szó)* ⇒ **3/6** elkapva,
+   de **4 valódi** átirat is jelölést kapna. ⛔ Én a szűkebbet választottam, mert „egy sem"-et kértél.
+2. **Kapcsoljuk be a felismerő SAJÁT akusztikus osztályozóját?** Mérve: a `skip_classification=1`
+   elhagyásával a szolgáltatás `{category:"noise", confidence:0.8, is_speech:false}`-t ad, és a
+   zajt a **felismerés ELŐTT** kiszűrné *(kapacitás-nyereség)*. ⚠️ **DE** ilyenkor **átirat nélkül**
+   válaszol, és a rövid mintára azt írta: *„Audio too short for reliable classification"* ⇒ egy
+   rövid, **valódi** megszólalás néma eldobássá válhatna. ⛔ Működő utat érint ⇒ owner-döntés.
+
+📌 Doksi: `__documentations/dev/VOICE_MEANINGFULNESS_MARK.md` · `SKILLS.md`.
 
 ### 🎤 A 17. TÉTEL — A NYITOTT MIKROFON ZAJA (2026-09-12 03:50)
 
