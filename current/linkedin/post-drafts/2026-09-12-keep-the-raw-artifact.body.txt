@@ -1,0 +1,15 @@
+A metric told us we were losing 23 voice inputs.
+
+It was true. It was also meaningless.
+
+We had just shipped raw-audio preservation for our voice pipeline: every utterance kept, alongside the transcript. It felt like overhead at the time.
+
+Then the funnel reported 23 utterances lost after recognition, and the obvious move was to go fix that path.
+
+Instead we opened the audio. All 23 were fragments of 0.3 to 2.3 seconds — breathing, sentence tails — into which the recogniser had hallucinated a polite "Thank you." Not one lost sentence. The real defect was somewhere else entirely: a 30-second window silently truncating long recordings.
+
+Without the raw audio, "23 lost inputs" would have been unfalsifiable. We would have hardened the wrong path, watched the number stay flat, and concluded the problem was hard.
+
+A counter tells you how many. It never tells you what.
+
+If you run agent systems in production, keep the artifact, not just the metric. Storage is cheap. Debugging a number you cannot open is not.
