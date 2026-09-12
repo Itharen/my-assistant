@@ -111,3 +111,41 @@ volna *(`core-no-guessing`)*.
 
 📌 **A mérce, ami eldönti, jól csinálom-e:** *reggel ott van-e minden, amit este mondott* — ⛔ nem
 az, hogy éjjel milyen okosan reagáltam.
+
+
+---
+
+## ☕ AZ ÉBREDÉS UTÁNI ABLAK — ⛔ SEMMIT NE AJÁNLJ (owner, 2026-09-12 17:55)
+
+> **Owner (szó szerint, egy hosszabb üzenetből):** *„…meg **ajánljad**, mert ilyenkor még csak
+> **elveszed a kedvemet tőle**, ilyenkor még csak **regenerálódok**."*
+
+🔴 **Ez az én 17:28-as köszöntésemre jött.** Azzal zártam: *„Egyél valamit, mielőtt bármi más."*
+⇒ Jó szándékú volt, és **pontosan az ellenkezőjét érte el**.
+
+### ⭐ A MECHANIZMUS — ezért nem „apró stílus-kérdés"
+
+**Ébredés után nem döntésképes, hanem REGENERÁLÓDIK.** Egy javaslat ilyenkor:
+- ⛔ **döntést** kér attól, akinek még nincs kapacitása rá
+- 🔴 és ha a javaslat **jó** *(„egyél")*, az a **rosszabb**: **elveszi a kedvét** attól, amit
+  egyébként magától megtett volna
+
+⚠️ **A jó javaslat ilyenkor KÁROSABB, mint a rossz** — a rosszat lerázza, a jó **beleég**
+kötelességként.
+
+### A SZABÁLY
+
+| Ébredés utáni ablak | Mit teszek |
+|---|---|
+| ⛔ **ajánlás, javaslat, „kéne"** | **SEMMI** — sem kaja, sem mozgás, sem feladat |
+| ✅ **tény**, amit ő kért | *„10,6 órát aludtál"* · *„a huzatot kérted, hogy juttassam eszedbe"* |
+| ✅ **válasz**, ha ő kérdez | változatlanul |
+| ✅ **⏰ időzített kényszer** | ha 1 órán belül **mítingje** van, azt ⛔ nem hallgatom el |
+
+📌 **A határ éles:** *„felírtad, hogy emlékeztesselek X-re"* = **ő kérte** ✅ · *„egyél valamit"* =
+**én találtam ki** ⛔.
+
+⭐ **Meddig tart az ablak?** ⚠️ Nem tudom, és ⛔ nem tippelem — a jel az lesz, **amikor ő kezd
+témát**. *(Ma 17:54-kor, ~30 perccel ébredés után, ő hozta a szokásokat.)*
+
+Kapcsolódó: [[focus-support]] · [[day-boundary-is-sleep]] · [[discord-message-style]]
