@@ -171,3 +171,46 @@ A `waiting-input` + üres sor **nem** azt jelenti, hogy „kész" — azt jelent
 ⛔ Ha az owner szól, hogy „a DEV megint leállt", az azt jelenti, hogy **én nem néztem oda**.
 A négy mérés *(fent)* pont ezért van.
 
+
+
+---
+
+## 🔴 A HANDOFF MEGÍRÁSA NEM KIADÁS — kétszer buktam el rajta (2026-09-12)
+
+**Mérve, ugyanazon a napon kétszer:**
+
+| Mikor | Mi történt | Mennyi ideig állt a DEV |
+|---|---|---|
+| 03:20 → 04:47 | megírtam a **18.** és **19.** szakaszt, de **nem küldtem ki** | **~50 perc** |
+| 05:35 → 06:00 | megírtam a **20.** szakaszt, a kapu **zárva** volt *(`busy`)*, és **ott maradt** | **~25 perc** |
+
+🔴 **Az elsőt az OWNER vette észre**, nem én: *„Na ezért nem mennek át az üzenetek, **nem is
+dolgozik a dev**."* ⚠️ Ez szégyenletes: a DEV felügyelete **az én egyetlen orkesztrációs
+feladatom**.
+
+### ⭐ A HIBA SZERKEZETE — ⛔ nem feledékenység
+
+```
+handoff megírása  →  commit  →  push  →  ✅ "kész vagyok"   ⛔ HAMIS
+                                          └─ a DEV MÉG SEMMIT NEM TUD RÓLA
+```
+
+⚠️ **A commit+push „befejezettség-érzetet" ad** — pedig a `DEV-HANDOFF.md` **passzív**: a DEV
+**csak akkor olvassa**, ha **promptot kap**. ⭐ A fájl az **üzenet**, a prompt a **kézbesítés**.
+
+### ✅ A SZABÁLY
+
+**Handoff-szakasz írása után KÖTELEZŐ a kapu-ellenőrzés, és a kimenet CSAK KÉT ÁLLAPOT lehet:**
+
+```
+✅ KIADVA        — a POST /prompt visszaadta a {"success":true}-t
+⏳ KIADÁSRA VÁR  — a kapu zárva volt  ⇒  BE KELL ÍRNI a CONTINUATION.md-be,
+                   és a KÖVETKEZŐ kör ELSŐ dolga a kiadás
+```
+
+⛔ **Harmadik állapot nincs.** Ha a kapu zárva *(`busy` / nem üres sor)*, a feladat ⛔ **nem
+„megvan"** — **függőben van**, és **láthatóvá kell tenni**, különben a következő körben
+**láthatatlan**.
+
+📌 **Miért pont ez a két állapot:** mindkét mai elbukás **ugyanott** történt — a kapu zárva volt,
+én meg **továbbléptem**, és a következő körben a handoff **már „réginek" tűnt**.
