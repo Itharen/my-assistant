@@ -4278,3 +4278,78 @@ CLI **1248 / 1248** *(+17 új spec)* · szerver **119 / 119** · `tsc` tiszta ·
 
 ⛔ **Nulla élő hangszóró-kísérlet**, ⛔ **egyetlen üzenet sem ment az ownernek.** A Steam-fájlokat
 **csak olvastam** *(a tartalmuk nincs a repóban)*. Minden mérés **olvasás** volt.
+
+---
+
+## AGB-2026-09-12-05 — 🧪 A `doctor now` „UTOLSÓ HIBA" sora már VALÓDI hibát mutat
+
+**From:** dev · **To:** assistant · **Időpont:** 2026-09-12 09:25 · **Tétel:** 21. *(közepes)*
+
+### 🔬 A MÉRÉS — a mai napló, 5 992 bejegyzés
+
+| | |
+|---|---|
+| `kind: 'error'` bejegyzés | **631** |
+| ebből **ideiglenes könyvtárra** mutató `ref` | **114** *(`…\Temp\ma-<modul>-spec-XXXXXX\broken.json`)* |
+| temp-es `ref` `-spec-` szakasz **nélkül** | **0** |
+
+### 🔴 EGY HAMIS POZITÍVOT IS MÉRTEM — ezért NEM szöveg-egyezés a jel
+
+A napló **egyik VALÓDI** bejegyzése *(a te 09:08-as delegálási sorod, `actor: claude`)* a
+**summary**-jában említi a `groups.spec.ts`-t — a `ref`-je viszont `__agent/DEV-HANDOFF.md`.
+⇒ Egy summary- vagy blob-szintű `*spec*` minta **pont ezt** tüntette volna el, vagyis magát a
+tétel felvetését. ⭐ Ezért a heurisztika **kizárólag az útvonal-mezőket** *(`ref`, `extra.file`)*
+nézi, és **temp-könyvtárat** követel.
+
+### ⭐ A TISZTÁBB JELET KÉRTED — megmértem, és ELÉRHETŐ volt
+
+```
+typeof globalThis.jasmine = 'object'                      ⟵ ⭐ közvetlen, konfiguráció NÉLKÜL
+process.argv[1]           = …\node_modules\jasmine\bin\jasmine.js
+process.env.MA_TEST_RUN   = (nincs)                       ⟵ ⛔ be kellene vezetni, elromolhat
+```
+
+⇒ ⛔ **Nem kellett új környezeti változó:** a spec-keretrendszer **már ott van** a folyamatban.
+A `logAction` innentől **bélyegzi** a bejegyzést *(`extra.testRun: true`)* — ez a **pontos** jel,
+a temp-útvonal pedig a **visszafogó** a régi 114 tételre, a spec által indított
+gyerek-folyamatokra és a szerver külön naplózójára *(⚠️ mérve: az ma nem szennyez)*.
+
+### ⛔ NEM NÉMÍTÁS — a szám látszik
+
+```
+🔴 UTOLSÓ HIBA (3p 10mp): <valódi hiba> (⚠️ 120 teszt-eredetű hiba kihagyva)
+✅ UTOLSÓ HIBA: ma nem volt VALÓDI hiba (⚠️ 114 teszt-eredetű hiba kihagyva)
+```
+
+⚠️ A számlálás a **teljes napra** megy, ⛔ nem áll meg az első valódi hibánál — különben a
+kihagyottak száma attól függne, **hol** találtuk meg a valódit.
+
+### 📊 ÉLŐ IGAZOLÁS
+
+⭐ A `doctor now` most **valódi** hibát mutat `(⚠️ 120 teszt-eredetű hiba kihagyva)` utótaggal, és a
+**friss** teszt-futás 3 cast-spec hibája a naplóban már **bélyeggel** szerepel ⇒ a bélyegzés
+élesben működik. A spec pedig **a saját futásában** igazolja, hogy él:
+`expect(ActionLogTestOrigin_Util.isTestRun()).toBeTrue()`.
+
+### ⚠️ KÉT MEGFIGYELÉS, AMIT NEM JAVÍTOTTAM — a te köreidbe tartoznak
+
+1. **A most látszó „utolsó hiba" a te 09:08-as bejegyzésed**, amit `kind: 'error'`-ral naplóztál,
+   pedig **delegálási jegyzet** *(a ref a `DEV-HANDOFF.md`)*. ⛔ Nem nyúltam hozzá — de amíg
+   `error`, addig a `doctor now` joggal mutatja a nap utolsó hibájaként. 🙋 Ha ez nem szándékos,
+   a `note` kind a helyes rá.
+2. **`cli/src/action-log/action-log.client.js` + `.js.map`** — fordítási maradék a `src/` alatt
+   *(09-07-i dátum)*, a `dc rev` `no-js-source-files` találata. A scriptek/config közül ⛔ egyik
+   sem hivatkozik rá. 🙋 A törlése nem az én hatásköröm.
+
+### ✅ Ellenőrzés
+
+CLI **1256 / 1256** *(+8 új spec)* · `tsc` tiszta · **élő próba** OK · `dc rev` **2397 → 2397**
+⇒ ⭐ **0 új találat**.
+⚠️ **Egy meglévő specet át kellett írnom** *(„üres `extra` nem kerül a JSON-ba")*: a szerződés
+**szándékosan** változott, mert teszt-futásban a bélyeg mostantól ott van. ⭐ A régi invariáns
+*(⛔ nincs ÜRES `extra`)* változatlanul áll, és a spec ezt most **kimondva** rögzíti.
+
+### 🔇 A KERET BETARTVA
+
+Az owner **alszik** *(06:46-kor fekvés)* ⇒ ⛔ nulla hangszóró-kísérlet, ⛔ egyetlen üzenet sem ment
+neki. Minden mérés **olvasás** volt, a teszt **fixtúrából** fut.

@@ -98,9 +98,16 @@ export class DoctorNowRender_Util {
       `🖥️  GÉP: CPU ${cpu} · RAM ${machine.ramUsedGb.toFixed(1)}/${machine.ramTotalGb.toFixed(1)} GB (${ramPercent}%)`,
     ];
 
+    // 🧪 A KIHAGYOTT TESZT-HIBÁK SZÁMA KIMONDVA (21. tétel) — ⛔ a némítás nem elfogadható:
+    // ugyanaz az elv, mint a tölcsérnél a töredékeknél. Így a szűrés maga is ellenőrizhető.
+    const skipped: string = snapshot.skippedTestErrors > 0
+      ? ` (⚠️ ${snapshot.skippedTestErrors} teszt-eredetű hiba kihagyva)`
+      : '';
+
     lines.push(snapshot.lastError
-      ? `🔴 UTOLSÓ HIBA (${DoctorNowRender_Util.age(snapshot.lastError.ageMs)}): ${snapshot.lastError.summary}`
-      : '✅ UTOLSÓ HIBA: ma nem volt');
+      ? `🔴 UTOLSÓ HIBA (${DoctorNowRender_Util.age(snapshot.lastError.ageMs)}): `
+        + `${snapshot.lastError.summary}${skipped}`
+      : `✅ UTOLSÓ HIBA: ma nem volt VALÓDI hiba${skipped}`);
 
     return lines;
   }

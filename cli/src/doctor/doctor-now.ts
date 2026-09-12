@@ -55,7 +55,7 @@ export class DoctorNow_Util {
     readListener: () => Promise<HeartbeatStatus>;
     readRetry: () => Promise<{ pendingCount: number; nextDueMs: number | null }>;
     readMachine: () => Promise<{ cpuPercent: number | null; ramUsedGb: number; ramTotalGb: number }>;
-    readLastError: () => Promise<{ summary: string; ageMs: number } | null>;
+    readErrors: () => Promise<{ last: { summary: string; ageMs: number } | null; skippedTestErrors: number }>;
   }): Promise<DoctorNowSnapshot> {
     const takenAt: Date = sources.now ?? new Date();
     const gaps: string[] = [];
@@ -102,9 +102,9 @@ export class DoctorNow_Util {
       gaps,
       'a gép terhelése nem volt mérhető',
     );
-    const lastError = await DoctorNow_Util.safely(
-      sources.readLastError,
-      null,
+    const errors = await DoctorNow_Util.safely(
+      sources.readErrors,
+      { last: null, skippedTestErrors: 0 },
       gaps,
       'a napi akció-napló nem volt olvasható',
     );
@@ -119,7 +119,8 @@ export class DoctorNow_Util {
       listener: listener,
       retry: retry,
       machine: machine,
-      lastError: lastError,
+      lastError: errors.last,
+      skippedTestErrors: errors.skippedTestErrors,
       gaps: gaps,
     };
   }

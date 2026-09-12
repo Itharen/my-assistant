@@ -30,8 +30,21 @@ export interface DoctorNowSnapshot {
   retry: { pendingCount: number; nextDueMs: number | null };
   /** 🖥️ A gép terhelése — az owner 03:12-kor külön kérte *(„hogyan pörög a gép")*. */
   machine: { cpuPercent: number | null; ramUsedGb: number; ramTotalGb: number };
-  /** 🔴 Az utolsó hiba a napi akció-naplóból — `null`, ha ma nem volt. */
+  /**
+   * 🔴 Az utolsó **VALÓDI** hiba a napi akció-naplóból — `null`, ha ma nem volt.
+   *
+   * ⚠️ A teszt-eredetű bejegyzések ⛔ **nem** számítanak ide *(21. tétel)*: a teszteket naponta
+   * sokszor futtatjuk, így az „utolsó hiba" szinte mindig egy szándékosan hibás fixtúra lenne
+   * ⇒ vagy hamis riasztás, vagy megtanuljuk figyelmen kívül hagyni a mezőt. ⛔ Mindkettő rossz.
+   */
   lastError: { summary: string; ageMs: number } | null;
+  /**
+   * 🧪 Hány teszt-eredetű hiba lett **kihagyva** — ⛔ a némítás NEM elfogadható.
+   *
+   * ⭐ Ugyanaz az elv, mint a tölcsérnél a töredékeknél: amit kiszűrünk, arról a **száma**
+   * megjelenik. Így a szűrés maga is **ellenőrizhető**, és ⛔ nem fedhet el valódi hibát.
+   */
+  skippedTestErrors: number;
   /** ⚠️ Ami a pillanatképből NEM derült ki — ⛔ a hiány sosem néma. */
   gaps: string[];
 }

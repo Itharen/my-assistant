@@ -46,6 +46,7 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **18** | ⚠️ **ÉRTELMESSÉG-JELÖLÉS** — magyarnak HANGZÓ halandzsa *(jelöl, ⛔ nem dob el)* | 1️⃣8️⃣ 04:15 | ✅ **KÉSZ** — 279 átiraton **0** hamis jelölés; ⚠️ recall **2/6** kimondva; 🙋 2 owner-döntés | 2026-09-12 05:40 |
 | **19** | ⏳ **A KISZŰRT ZAJ NEM NYÚJTJA A KÖTEG-ABLAKOT** | 1️⃣9️⃣ 04:32 | ✅ **KÉSZ** — mérve: a kapu **90,0 percig** zárva volt *(43%)*, ebből 90% puszta észlelésből; CLI 1231 · `dc rev` 2404→2404 | 2026-09-12 05:45 |
 | **20** | 🔴 **A zajra is kiment a „VÉGLEG nem sikerült" riasztás** + ⚠️ **az értelmesség-őr hamis pozitívja** + ⏱️ **`ma doctor now`** | 2️⃣0️⃣ 05:35 | ✅ **KÉSZ** — a 169 riasztásból 43 zaj elmarad; a játék-üzenet 0,311→0,156; élő próba OK; CLI 1248 · `dc rev` 2404→**2397** | 2026-09-12 06:35 |
+| **21** | 🧪 **A `doctor now` „utolsó hiba" sora TESZT-szemetet mutatott** | 2️⃣1️⃣ 09:05 | ✅ **KÉSZ** — mérve: 631 hibából 114 spec-fixtúra; bélyeg (`extra.testRun`) + temp-útvonal, a kihagyottak SZÁMA látszik; élő próba OK; CLI 1256 · `dc rev` 2397→2397 | 2026-09-12 09:20 |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -582,10 +583,11 @@ szerver-újraindításkor** lép életbe; ⛔ nem indítom újra magamtól *(a s
 
 ## ➡️ A KÖVETKEZŐ KONKRÉT LÉPÉS
 
-⭐ **A 17-20. tétel ÉLESBEN FUT; a maradék rajtam kívüli kapun áll** *(állapot: 2026-09-12 06:35)*:
+⭐ **A 17-21. tétel ÉLESBEN FUT; a maradék rajtam kívüli kapun áll** *(állapot: 2026-09-12 09:20)*:
 
 | Tétel | Mire vár | Mi oldaná fel |
 |---|---|---|
+| **21** *(teszt-szemét az „utolsó hiba" sorban)* | ⭐ **KÉSZ, élő próbán igazolva** | — |
 | **20** *(riasztás-szűrés · tulajdonnév · `doctor now`)* | ⭐ **KÉSZ, élő próbán igazolva** | — |
 | **19** *(köteg-kapu zaj-immunitás)* | ⭐ **ÉLESBEN FUT** — a `ma doctor now` 06:26-kor a VALÓDI kapu-állapotot mutatta | — |
 | **18** *(értelmesség-jelölés)* | ⭐ **ÉLESBEN FUT** *(05:31-kor jelölt is)* + 🙋 **három owner-döntés** *(lentebb)* | owner-válasz |
@@ -605,6 +607,49 @@ szerver-újraindításkor** lép életbe; ⛔ nem indítom újra magamtól *(a s
    viszont **valódi** veszteség-jelzések *(napi összevont jelentés lehetne helyettük)*.
 
 ⇒ A hurok lezárása: jelentés az `AGENT_BUS.md`-ben, ⛔ új ébredés NEM.
+
+### 🧪 A 21. TÉTEL — AZ „UTOLSÓ HIBA" SORA TESZT-SZEMETET MUTATOTT (2026-09-12 09:20) ✅
+
+🔬 **MÉRVE** *(a mai napló, 5 992 bejegyzés)*: **631** `kind: 'error'` sorból **114** ideiglenes
+könyvtárra mutat *(`…\Temp\ma-<modul>-spec-XXXXXX\broken.json`)*, és **0** olyan temp-es `ref` van,
+ami ⛔ nem spec-fixtúrából jött. ⇒ A szándékosan hibás fixtúrák a **közös** naplóba írnak, és a
+diagnosztika rendszer-hibaként mutatta őket.
+
+🔴 **EGY HAMIS POZITÍVOT IS MÉRTEM:** a napló **egyik VALÓDI** bejegyzése *(`actor: claude`, 09:08)*
+a **summary**-jában említi a `groups.spec.ts`-t, a `ref`-je viszont `__agent/DEV-HANDOFF.md`.
+⇒ Egy summary/blob-szintű `*spec*` minta **pont a tétel felvetését** tüntette volna el.
+⭐ Ezért a heurisztika **kizárólag az útvonal-mezőket** nézi, és **temp-könyvtárat** követel.
+
+⭐ **A TISZTÁBB JEL, amit a handoff felvetett — megmértem, és ELÉRHETŐ:**
+`typeof globalThis.jasmine === 'object'` a spec-folyamatban ⇒ ⛔ **nem kellett új env-változó**.
+A `logAction` innentől **bélyegzi** a bejegyzést *(`extra.testRun: true`)*.
+
+✅ **A javítás két rétegű** *(mindkettő mérésre épül)*: a **bélyeg** a mostantól keletkező
+bejegyzéseket fogja meg pontosan; a **temp-útvonal** a már meglévő 114-et, a spec által indított
+gyerek-folyamatokat és a szerver külön naplózóját *(⚠️ mérve: az ma nem szennyez)*.
+
+⛔ **NEM NÉMÍTÁS:** a sor **kimondja** a kihagyottak számát — `… (⚠️ 120 teszt-eredetű hiba
+kihagyva)`, illetve `✅ ma nem volt VALÓDI hiba (⚠️ 114 … kihagyva)`. ⚠️ A számlálás a **teljes
+napra** megy, ⛔ nem áll meg az első valódi hibánál *(különben a szám attól függne, hol találtuk meg)*.
+
+📊 **ÉLŐ IGAZOLÁS:** a `doctor now` most **valódi** hibát mutat, `(⚠️ 120 teszt-eredetű hiba
+kihagyva)` utótaggal; és a friss teszt-futás **3** cast-spec hibája a naplóban már **bélyeggel**
+szerepel. ⭐ A spec **a saját futásában** igazolja, hogy a bélyeg él.
+
+⚠️ **EGY MEGFIGYELÉS, AMIT NEM JAVÍTOTTAM** *(⛔ nem az én fájlom, ⛔ nincs benne a tételben)*: a
+`cli/src/action-log/action-log.client.js` + `.js.map` **fordítási maradék a `src/` alatt**
+*(09-07-i dátum)* — a `dc rev` `no-js-source-files` találata. A scriptek/config közül ⛔ **egyik sem
+hivatkozik rá**. 🙋 Törlése owner- vagy tulajdonos-session döntése.
+
+#### ✅ Igazolás
+
+CLI **1256/1256** *(+8 új spec)* · `tsc` tiszta · **élő próba** lefuttatva ·
+`dc rev` **2397 → 2397** ⇒ ⭐ **0 új találat**.
+⚠️ **Egy meglévő specet át kellett írnom** *(`logAction` — „üres `extra` nem kerül a JSON-ba")*: a
+szerződés **szándékosan** változott, mert teszt-futásban a bélyeg mostantól ott van. ⭐ A régi
+invariáns *(⛔ nincs ÜRES `extra`)* **változatlanul** áll, és a spec ezt most **kimondva** rögzíti.
+
+📌 Doksi: `__documentations/dev/DOCTOR_NOW.md` *(21. szakasz)* · `SKILLS.md`.
 
 ### 🔴 A 20. TÉTEL — KÉT FRISS DEFEKT + AZ ÖN-DIAGNOSZTIKA (2026-09-12 06:35) ✅
 

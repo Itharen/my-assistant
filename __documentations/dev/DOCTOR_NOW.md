@@ -106,3 +106,80 @@ bekerül a `gaps` listába, ami a jelentés alján **külön blokkban** látszik
 | `tsc --noEmit` | tiszta |
 | **élő próba** | `node cli/dist/cli/src/main.js doctor now` ⇒ ⭐ helyes kimenet, és **talált egy valódi hibát** |
 | `dc rev` | **2404 → 2397** *(−7: az életjel-olvasó tisztítása 9 találatot vitt el; +2 a parancs-minta ára)* |
+
+---
+
+## 🧪 A 21. TÉTEL — AZ „UTOLSÓ HIBA" SORA TESZT-SZEMETET MUTATOTT (2026-09-12 09:05)
+
+> **Owner, 09:05:** *„Megmértem: a bejegyzés ref-je `…\Temp\ma-groups-spec-KSBgEB\broken.json` — a
+> `groups.spec.ts` SZÁNDÉKOSAN hibás fixtúrája… Mivel a teszteket naponta sokszor futtatjuk, az
+> »utolsó hiba« szinte MINDIG teszt-eredetű lesz. ⇒ vagy hamis riasztás, vagy megtanuljuk figyelmen
+> kívül hagyni — és **a második a rosszabb**, mert akkor a valódi hibát se vesszük észre."*
+
+### 🔬 A MÉRÉS *(a mai napló, 5 992 bejegyzés)*
+
+| | |
+|---|---|
+| `kind: 'error'` bejegyzés | **631** |
+| ebből **ideiglenes könyvtárra** mutató `ref` | **114** |
+| a minta | `…\AppData\Local\Temp\ma-<modul>-spec-XXXXXX\broken.json` |
+| temp-es `ref` `-spec-` szakasz **nélkül** | **0** |
+
+### 🔴 ÉS EGY HAMIS POZITÍVOT IS MÉRTEM — ezért NEM szöveg-egyezés a jel
+
+A napló **egyik VALÓDI** bejegyzése *(`actor: claude`, 09:08)* a **summary**-jában említi a
+`groups.spec.ts`-t, a `ref`-je viszont `__agent/DEV-HANDOFF.md`. ⇒ Egy **summary- vagy blob-szintű**
+`*spec*` minta **pont a tétel felvetését** tüntette volna el.
+⭐ Ezért a heurisztika **kizárólag az útvonal-mezőket** nézi *(`ref`, `extra.file`)*, és
+**ideiglenes könyvtárat** követel.
+
+### ⭐ A TISZTÁBB JEL — mérve, ⛔ nem tippelve
+
+A handoff felvetette, hogy a **teszt-futás explicit megjelölése az emitnél** tisztább lenne.
+**Megmértem, mi látszik egy spec-folyamatban:**
+
+```
+typeof globalThis.jasmine = 'object'                      ⟵ ⭐ közvetlen, konfiguráció NÉLKÜL
+process.argv[1]           = …\node_modules\jasmine\bin\jasmine.js
+process.env.MA_TEST_RUN   = (nincs)                       ⟵ ⛔ be kellene vezetni, elromolhat
+```
+
+⇒ ⛔ **Nem kellett új környezeti változó** *(ami minden futtatási módban máshogy romlik el)*: a
+spec-keretrendszer **már ott van** a folyamatban. A `logAction` innentől **bélyegzi** a bejegyzést:
+`extra.testRun: true`.
+
+### 🔴 MIÉRT KELL MINDKÉT JEL — a bélyeg NEM elég
+
+| Eset | Mi fogja meg |
+|---|---|
+| mostantól keletkező spec-bejegyzés | ⭐ a **bélyeg** *(pontos, nem heurisztika)* |
+| a **már meglévő** 114 tétel *(és minden régi nap)* | a **temp-útvonal** |
+| spec által **indított gyerek-folyamat** *(ott nincs `jasmine` globális)* | a **temp-útvonal** |
+| a szerver **saját** naplózója *(külön funkció ír)* | a **temp-útvonal**, ha egyszer szennyezne |
+
+⚠️ **Mérve:** a szerver egyetlen spec-je sem importálja a saját naplózóját ⇒ ma **nem** szennyez.
+⛔ Ezért oda **nem** tettem bélyeget — a visszafogó ott is él.
+
+### ⛔ NEM NÉMÍTÁS — a kihagyottak SZÁMA látszik
+
+```
+🔴 UTOLSÓ HIBA (3p 10mp): <a valódi hiba> (⚠️ 120 teszt-eredetű hiba kihagyva)
+✅ UTOLSÓ HIBA: ma nem volt VALÓDI hiba (⚠️ 114 teszt-eredetű hiba kihagyva)
+```
+
+⭐ Ugyanaz az elv, mint a tölcsérnél a töredékeknél: amit kiszűrünk, arról a **száma** megjelenik —
+így a szűrés maga is **ellenőrizhető**, és ⛔ nem fedhet el valódi hibát.
+⚠️ A számlálás a **teljes napra** megy, ⛔ nem áll meg az első valódi hibánál: különben a kihagyottak
+száma attól függne, **hol** találtuk meg a valódit.
+
+### 📊 ÉLŐ IGAZOLÁS
+
+```
+🔴 UTOLSÓ HIBA (3p 10mp): A friss 'ma doctor now' UTOLSO HIBA sora teszt-szemetet mutat…
+   (⚠️ 120 teszt-eredetű hiba kihagyva)
+```
+
+⭐ A friss teszt-futás **3** cast-spec hibája a naplóban már **bélyeggel** szerepel
+*(`extra.testRun: true`)* — a bélyegzés tehát élesben is működik, ⛔ nem csak fixtúrában.
+📌 A spec *(`action-log.test-origin.spec.ts`)* **a saját futásában** igazolja, hogy a bélyeg él:
+`expect(ActionLogTestOrigin_Util.isTestRun()).toBeTrue()`.

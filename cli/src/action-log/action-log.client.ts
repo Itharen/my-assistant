@@ -9,6 +9,8 @@ import * as path from 'node:path';
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
+import { ActionLogTestOrigin_Util } from './action-log.test-origin.js';
+
 export type ActionLogKind =
   | 'external-action'
   | 'error'
@@ -106,7 +108,18 @@ export async function logAction(entry: ActionLogEntry): Promise<LogActionResult>
     };
     if (entry.ref) out.ref = entry.ref;
     if (entry.session) out.session = entry.session;
-    if (entry.extra && Object.keys(entry.extra).length > 0) out.extra = entry.extra;
+    // 🧪 TESZT-BELYEG (21. tetel): ha spec-futasban vagyunk, a bejegyzes MEGJELOLVE kerul a
+    // KOZOS naploba. ⭐ Igy a `ma doctor now` „utolso hiba" sora nem teszt-szemetet mutat —
+    // ⛔ de nem is nemitjuk el: a kihagyott tetelek SZAMA latszik. A jel MERT, l.
+    // `action-log.test-origin.ts`.
+    const extra: Record<string, unknown> = {
+      ...(entry.extra ?? {}),
+      ...(ActionLogTestOrigin_Util.isTestRun()
+        ? { [ActionLogTestOrigin_Util.MARKER_FIELD]: true }
+        : {}),
+    };
+
+    if (Object.keys(extra).length > 0) out.extra = extra;
     await fs.appendFile(path.join(root, `${day}.jsonl`), JSON.stringify(out) + '\n', { encoding: 'utf8' });
     return { ok: true };
   } catch (err) {

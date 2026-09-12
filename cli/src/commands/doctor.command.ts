@@ -44,8 +44,8 @@ export async function runDoctorCommand(subcommand: string, args: string[]): Prom
     readListener: async (): Promise<HeartbeatStatus> => listener,
     readRetry: (): ReturnType<typeof DoctorNowSources_Util.readRetry> => DoctorNowSources_Util.readRetry(),
     readMachine: (): ReturnType<typeof DoctorNowSources_Util.readMachine> => DoctorNowSources_Util.readMachine(),
-    readLastError: (): ReturnType<typeof DoctorNowSources_Util.readLastError> =>
-      DoctorNowSources_Util.readLastError(),
+    readErrors: (): ReturnType<typeof DoctorNowSources_Util.readErrors> =>
+      DoctorNowSources_Util.readErrors(),
   });
 
   if (parsed.values.json) {

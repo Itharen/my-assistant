@@ -711,6 +711,13 @@ visszatart. ⚠️ Ha a blokk hiányzik, a jelentés **kimondja** *(„régi kó
 ⭐ Az első éles futás **azonnal talált** egy valódi hibát *(`MA-DISCORD-LISTENER-CRASH` — a saját
 `dist`-újraépítés alatti újraindulás, azaz **dist-race**)*.
 
+🧪 **A teszt-szemét ki van szűrve az „utolsó hiba" sorból** *(2026-09-12)*: a `logAction`
+**bélyegzi** a spec-futásban keletkező bejegyzést *(`extra.testRun: true`; a jel a
+`globalThis.jasmine` — **mérve**, nem új env-változó)*, a `doctor now` pedig kihagyja **és
+megszámolja** őket: `… (⚠️ 120 teszt-eredetű hiba kihagyva)`. ⛔ Némítás nincs.
+⚠️ A régi bejegyzéseknél a **temp-útvonal** a visszafogó jel — ⛔ szöveg-egyezés NEM, mert egy
+**valódi** bejegyzés is említhet egy `*.spec.ts`-t *(mérve: pontosan ez fordult elő)*.
+
 📌 A teljes leírás: `__documentations/dev/DOCTOR_NOW.md`.
 
 ### 🔇 A ZAJRA NINCS „VÉGLEG nem sikerült" RIASZTÁS (2026-09-12)

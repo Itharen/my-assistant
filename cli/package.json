@@ -1,6 +1,6 @@
 {
   "name": "@my-assistant/cli",
-  "version": "0.1.694",
+  "version": "0.1.695",
   "private": true,
   "description": "my-assistant CLI — TTS push to Google Home / Nest speakers, Spotify resume, volume orchestration. Self-built, FOSS-only.",
   "type": "module",

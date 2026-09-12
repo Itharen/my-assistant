@@ -17,7 +17,17 @@ import { SttRetryQueue, type SttRetryEntry } from '../stt/stt.retry-queue.js';
 import { resolveActionLogPath } from '../voice/voice-funnel-report.js';
 import { resolveProjectRoot } from '../utils/project-root.js';
 import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
+import { ActionLogTestOrigin_Util } from '../action-log/action-log.test-origin.js';
 import type { DiscordFlushDecision, DiscordInboundMessage } from '../discord/discord.models.js';
+
+/** Egy beolvasott napló-sor — ⚠️ minden mező `unknown`, mert a fájl alakja ⛔ nem garantált. */
+interface ParsedLogLine {
+  kind?: unknown;
+  summary?: unknown;
+  ts?: unknown;
+  ref?: unknown;
+  extra?: Record<string, unknown>;
+}
 
 /** A pillanatkép valódi olvasói. */
 export class DoctorNowSources_Util {
@@ -116,11 +126,18 @@ export class DoctorNowSources_Util {
   }
 
   /**
-   * 🔴 AZ UTOLSÓ HIBA a napi akció-naplóból — `null`, ha ma nem volt.
+   * 🔴 AZ UTOLSÓ **VALÓDI** HIBA a napi akció-naplóból + a kihagyott teszt-hibák SZÁMA.
    *
    * ⚠️ A naplót **visszafelé** olvassuk: az utolsó hiba érdekes, ⛔ nem az első.
+   *
+   * 🧪 **A TESZT-EREDETŰ BEJEGYZÉSEKET KIHAGYJUK — de MEGSZÁMOLJUK** *(21. tétel)*. Mérve: egy
+   * nap **631** hiba-bejegyzéséből **114** szándékosan hibás spec-fixtúrából jött ⇒ az „utolsó
+   * hiba" szinte mindig teszt-szemét volt. ⛔ Némítás nincs: a szám a jelentésben **látszik**.
+   *
+   * ⚠️ A számlálás a **teljes napra** megy, ⛔ nem áll meg az első valódi hibánál: különben a
+   * kihagyottak száma attól függne, hol találtuk meg a valódit — ⇒ félrevezető szám.
    */
-  static async readLastError(now: Date = new Date()): Promise<{ summary: string; ageMs: number } | null> {
+  static async readErrors(now: Date = new Date()): Promise<{ last: { summary: string; ageMs: number } | null; skippedTestErrors: number }> {
     const day: string = new Intl.DateTimeFormat('en-CA', {
       timeZone: 'Europe/Budapest',
       year: 'numeric',
@@ -130,24 +147,38 @@ export class DoctorNowSources_Util {
     const path: string = resolveActionLogPath(resolveProjectRoot(), day);
     const lines: string[] = (await readFile(path, 'utf8')).split('\n');
 
+    let last: { summary: string; ageMs: number } | null = null;
+    let skippedTestErrors: number = 0;
+
     for (let index: number = lines.length - 1; index >= 0; index -= 1) {
       const line: string = lines[index]?.trim() ?? '';
 
       if (!line) continue;
 
-      const parsed: { kind?: unknown; summary?: unknown; ts?: unknown } = DoctorNowSources_Util.parseLine(line);
+      const parsed = DoctorNowSources_Util.parseLine(line);
 
       if (parsed.kind !== 'error') continue;
 
+      if (ActionLogTestOrigin_Util.isTestEntry({
+        ...(parsed.extra ? { extra: parsed.extra } : {}),
+        ...(typeof parsed.ref === 'string' ? { ref: parsed.ref } : {}),
+      })) {
+        skippedTestErrors += 1;
+
+        continue;
+      }
+
+      if (last) continue;
+
       const stamp: number = typeof parsed.ts === 'string' ? Date.parse(parsed.ts) : Number.NaN;
 
-      return {
+      last = {
         summary: typeof parsed.summary === 'string' ? parsed.summary : '(nincs leírás)',
         ageMs: Number.isNaN(stamp) ? 0 : now.getTime() - stamp,
       };
     }
 
-    return null;
+    return { last: last, skippedTestErrors: skippedTestErrors };
   }
 
   /**
@@ -156,7 +187,7 @@ export class DoctorNowSources_Util {
    * ⚠️ A bukás ⛔ NEM néma: a napló sérülése önmagában is diagnózis *(egy fél sor azt jelenti,
    * hogy egy írás félbeszakadt)*, ezért jelentjük — de a keresést ⛔ nem állítjuk meg vele.
    */
-  private static parseLine(line: string): { kind?: unknown; summary?: unknown; ts?: unknown } {
+  private static parseLine(line: string): ParsedLogLine {
     try {
       const parsed: unknown = JSON.parse(line);
 

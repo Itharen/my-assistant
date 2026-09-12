@@ -50,8 +50,8 @@ function workingSources(overrides: Partial<Parameters<typeof DoctorNow_Util.coll
       ({ pendingCount: 1, nextDueMs: 120_000 }),
     readMachine: async (): Promise<{ cpuPercent: number | null; ramUsedGb: number; ramTotalGb: number }> =>
       ({ cpuPercent: 25, ramUsedGb: 103.1, ramTotalGb: 127.1 }),
-    readLastError: async (): Promise<{ summary: string; ageMs: number } | null> =>
-      ({ summary: '[MA-DISCORD-LISTENER-CRASH] 1s után kilépett.', ageMs: 29_000 }),
+    readErrors: async (): Promise<{ last: { summary: string; ageMs: number } | null; skippedTestErrors: number }> =>
+      ({ last: { summary: '[MA-DISCORD-LISTENER-CRASH] 1s után kilépett.', ageMs: 29_000 }, skippedTestErrors: 0 }),
     ...overrides,
   };
 }
@@ -143,5 +143,38 @@ describe('DoctorNowRender_Util — a pillanatkép EGY képernyőn', () => {
     }));
 
     expect(DoctorNowRender_Util.render(snapshot)).toContain('ZAJ-ÖZÖN');
+  });
+});
+
+describe('🧪 A TESZT-SZEMÉT KISZŰRÉSE az „utolsó hiba" sorból (21. tétel)', () => {
+
+  it('🔴 A TESZT-EREDETŰ HIBA NEM jelenik meg fő hibaként — de a SZÁMA látszik', async () => {
+    // > Owner: „⛔ NE némítsd el: ha volt kihagyott tétel, a sor mondja ki."
+    const snapshot: DoctorNowSnapshot = await DoctorNow_Util.collect(workingSources({
+      readErrors: async (): Promise<{ last: { summary: string; ageMs: number } | null; skippedTestErrors: number }> =>
+        ({ last: null, skippedTestErrors: 3 }),
+    }));
+    const rendered: string = DoctorNowRender_Util.render(snapshot);
+
+    expect(snapshot.lastError).toBeNull();
+    expect(rendered).toContain('ma nem volt VALÓDI hiba');
+    expect(rendered).toContain('3 teszt-eredetű hiba kihagyva');
+  });
+
+  it('⭐ VALÓDI hiba MELLETT is kimondja a kihagyottak számát', async () => {
+    const snapshot: DoctorNowSnapshot = await DoctorNow_Util.collect(workingSources({
+      readErrors: async (): Promise<{ last: { summary: string; ageMs: number } | null; skippedTestErrors: number }> =>
+        ({ last: { summary: '[MA-DISCORD-LISTENER-CRASH] 1s után kilépett.', ageMs: 29_000 }, skippedTestErrors: 114 }),
+    }));
+    const rendered: string = DoctorNowRender_Util.render(snapshot);
+
+    expect(rendered).toContain('MA-DISCORD-LISTENER-CRASH');
+    expect(rendered).toContain('114 teszt-eredetű hiba kihagyva');
+  });
+
+  it('⛔ HA NEM VOLT KIHAGYOTT TÉTEL, a sor NEM zajos — nincs „(0 kihagyva)"', async () => {
+    const rendered: string = DoctorNowRender_Util.render(await DoctorNow_Util.collect(workingSources()));
+
+    expect(rendered).not.toContain('kihagyva');
   });
 });

@@ -135,12 +135,20 @@ describe('| logAction', () => {
     expect(extra.stack).toBe('fake-stack');
   });
 
-  it('| extra üres object esetén NEM kerül az output JSON-ba (Object.keys length > 0 guard)', async () => {
+  it('| üres extra + TESZT-FUTÁS ⇒ az `extra` CSAK a teszt-bélyeget tartalmazza (21. tétel)', async () => {
+    // 🔴 A SZERZŐDÉS 2026-09-12-én MEGVÁLTOZOTT, és ez a spec ezt rögzíti:
+    // teszt-futásban a bejegyzés `extra.testRun: true`-t kap, hogy a `ma doctor now`
+    // „utolsó hiba" sora NE teszt-szemetet mutasson. ⭐ A RÉGI invariáns viszont ÉL:
+    // ⛔ nem írunk ÜRES `extra` objektumot — itt épp a bélyeg az egyetlen tartalma.
+    // ⚠️ Ez a spec MAGA is teszt-futás, tehát a bélyeg itt szükségszerűen jelen van.
     await logAction({ kind: 'note', summary: 'empty extra', extra: {} });
     const files = await fs.readdir(tmpRoot);
     const content = await fs.readFile(path.join(tmpRoot, files[0]!), 'utf8');
     const entry = JSON.parse(content.trim()) as Record<string, unknown>;
-    expect('extra' in entry).toBe(false);
+    const extra = entry.extra as Record<string, unknown>;
+
+    expect(Object.keys(extra)).toEqual(['testRun']);
+    expect(extra.testRun).toBe(true);
   });
 
   it('| default ts ISO 8601-szerű, offset-tel végződik (nowIsoBudapest)', async () => {
