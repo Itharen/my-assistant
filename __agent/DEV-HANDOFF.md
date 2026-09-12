@@ -2223,3 +2223,45 @@ harmadik feltétel **nem teljesül**.
 
 📌 **Prioritás: közepes.** ⛔ Nem sürgős — én **nem cselekszem** értelmetlen üzenetre *(ma éjjel
 sem tettem)*. De **hétköznap**, amikor kevés üzenet jön, egy ilyen **félreérthető** lenne.
+
+---
+
+## 1️⃣9️⃣ 2026-09-12 04:32 — ⏳ A KISZŰRT ZAJ NE NYÚJTSA A KÖTEG-ABLAKOT
+
+> **Owner, 04:22:** *„Most miért nem kerülnek elküldésre az üzeneteim, még **türelmi időben**
+> vagyunk?"* — ⚠️ **másodszor** kérdezi ma *(előbb 03:17-kor)*.
+
+### A MECHANIZMUS — és miért pont ma fájt
+
+A köteg akkor megy ki, ha a session szabad **ÉS elcsendesedett** *(a **legújabb** üzenet óta
+letelt a gyűjtő-ablak)*. ⇒ **Minden új megszólalás ÚJRAINDÍTJA a várakozást.**
+
+🔴 **Nyitott mikrofon mellett ez sosem csendesedik el:** a buli-zaj **percenként** újraindította
+az ablakot, ezért az owner **valódi** üzenetei is bent ragadtak — ⭐ **ez az, amit ő „nem mennek
+át"-ként él meg.**
+
+📌 Ma este ez **mérhetően** így volt: 722 érzékelés, és a valódi input **16**.
+
+### A FELADAT — ⭐ egy mondatban
+
+**A zajnak szűrtként NEM szabad megnyújtania a köteg-ablakot.**
+
+```
+köteg-ablak újraindítása  ⇐  CSAK valódi (nem zajnak jelölt) megszólalásra
+```
+
+⚠️ **Sorrend-függőség:** ez **a 15. szakasz zaj-szűrőjére ÉPÜL** *(ami már él)*. ⇒ Ott, ahol a
+zaj-jelölés megszületik, **onnan** kell a köteg-ablakot is tájékoztatni.
+
+⛔ **NE** old meg úgy, hogy egyszerűen **rövidíted** az ablakot — az a **kötegelés** értelmét
+rontaná el *(„minél több infó egy promptba")*. A cél **nem gyorsabb**, hanem **zaj-immunis**.
+
+### KÉSZ, HA
+
+- [ ] zajnak jelölt megszólalás **nem** indítja újra az ablakot
+- [ ] valódi megszólalás **változatlanul** újraindítja
+- [ ] teszt: *„1 valódi üzenet + 50 zaj 10 percen át"* ⇒ a köteg **kimegy** a valódi üzenet után
+- [ ] `npm test` zöld · `dc rev` 0 új találat
+
+📌 **Prioritás: MAGAS** — az owner **kétszer** kérdezte ma ugyanezt, és ez az **utolsó** darabja
+a „nem mennek át az üzeneteim" panasznak.
