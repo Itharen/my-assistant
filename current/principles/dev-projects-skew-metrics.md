@@ -1,0 +1,53 @@
+# 📊 AMIT FEJLESZT, AZT A MÉRŐSZÁM HASZNÁLATNAK OLVASSA
+
+> **Owner, 2026-09-12 04:52 (szó szerint):** *„A **Warbots playtest** amúgy az egy **fals adat**,
+> mert a Warbots-ot **fejlesztem**, és azt is **játékidőnek** mutatja."*
+
+---
+
+## A TORZÍTÁS
+
+🔴 A Steam **játékidőként** könyvelte azt, ami valójában **munka** volt:
+
+| Tétel | „Játékidő" | Valójában |
+|---|---|---|
+| **Warbots Playtest** | **2 959 óra** | ⛔ fejlesztés/tesztelés |
+| **WarBots** | **104 óra** | ⛔ ugyanaz |
+
+⚠️ **És ez nem apró zaj:** a Playtest **egymaga 2,3-szor annyi**, mint a valódi listavezető
+*(Total War: WARHAMMER II, 1 302 óra)*. ⇒ **Kizárás nélkül minden rangsor hamis.**
+
+---
+
+## ⭐ AZ ÁLTALÁNOS SZABÁLY — ⛔ nem Steam-specifikus
+
+```
+Ha az owner FEJLESZT valamit, a hozzá tartozó "használati" mérőszám
+NEM az ő fogyasztói viselkedését méri.
+```
+
+**Hol jelentkezik még ugyanez** *(⚠️ előre gondolva, ⛔ nem mind mérve)*:
+- 🎮 **Steam** — játékidő *(mérve, ez az eset)*
+- 🌐 **böngésző-előzmény** — a saját rendszereink oldalai *(Overseer, organizer, LinkedIn-panel)*
+- ⏱️ **képernyőidő / app-használat** — a fejlesztői eszközök
+- 🎵 **zene/média** — ha teszteléshez játszik le valamit
+
+📌 **A teendő:** minden ilyen elemzés előtt **ki kell zárni a saját projekteket** — és a
+kizárást **láthatóvá tenni**, ⛔ nem csendben elhagyni *(a `voice-funnel` mintája: a töredéket
+**megnevezzük**, nem kivonjuk)*.
+
+---
+
+## A KARBANTARTANDÓ LISTA
+
+A **fejlesztői projektek** listája **változik** ⇒ ⛔ nem elég egyszer beégetni.
+
+| Projekt | Hol jelenik meg mérőszámként | Felvéve |
+|---|---|---|
+| **WarBots** *(+ Playtest)* | Steam játékidő | 2026-09-12 |
+
+⭐ **Amikor új projektről hallok** *(pl. „ezen dolgozom")*, **ide is fel kell venni** — különben
+hónapokkal később egy elemzés **észrevétlenül** hazudik.
+
+Kapcsolódó: [[post-development-verification]] *(a számláló nem jelentés)* ·
+`C:/Users/User/.config/my-assistant/steam/owned-played-games.md`
