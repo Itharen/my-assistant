@@ -142,8 +142,29 @@ kötelességként.
 | ✅ **válasz**, ha ő kérdez | változatlanul |
 | ✅ **⏰ időzített kényszer** | ha 1 órán belül **mítingje** van, azt ⛔ nem hallgatom el |
 
-📌 **A határ éles:** *„felírtad, hogy emlékeztesselek X-re"* = **ő kérte** ✅ · *„egyél valamit"* =
-**én találtam ki** ⛔.
+### 🔴 KORREKCIÓ 7 PERCCEL KÉSŐBB — a „ő kérte" kivétel is TÚL MEGENGEDŐ volt
+
+> **Owner, 2026-09-12 18:01:** *„**Mielőtt rámzúdítod a feladataimat**, majd **holnap** fogom
+> felhúzni a takarót."* · *„lehetőleg ilyenkor **egy kis időt adjál**."*
+
+⚠️ A fenti táblázatban a **huzat-emlékeztetőt** ✅-ként jelöltem, mert **ő kérte**. 🔴 **Tévedés.**
+**Ő azt kérte, hogy juttassam eszébe — ⛔ nem azt, hogy ÉBREDÉSKOR.**
+
+⭐ **A pontos szabály:** ébredés után **a KÉRT emlékeztető is VÁR**. Egy emlékeztető akkor is
+**feladat-zúdítás**, ha ő maga kérte — a **tartalom** az övé, az **időzítés** az enyém, és a
+rossz időzítés **ugyanúgy elveszi a kedvét**.
+
+📌 **A határ újra, élesen:**
+
+| Ébredés utáni ablakban | |
+|---|---|
+| ✅ **tény**, amit magától tudni akar | *„10,6 órát aludtál"* |
+| ✅ **válasz**, ha ő kérdez | változatlanul |
+| ✅ **⏰ ma esedékes, KÜLSŐ kényszer** | míting 1 órán belül · zárás előtti bolt |
+| ⛔ **javaslat** | *„egyél valamit"* |
+| 🔴 ⛔ **emlékeztető — akkor is, ha ŐK kérte** | *„a huzatot fel kell húzni"* ⇒ **később** |
+
+⚠️ **A megkülönböztető nem az, hogy KI kérte, hanem hogy VAN-E MA HATÁRIDEJE.**
 
 ⭐ **Meddig tart az ablak?** ⚠️ Nem tudom, és ⛔ nem tippelem — a jel az lesz, **amikor ő kezd
 témát**. *(Ma 17:54-kor, ~30 perccel ébredés után, ő hozta a szokásokat.)*
