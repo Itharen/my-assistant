@@ -75,3 +75,56 @@ hiányzik, az a **jelen állapot**.
 Kapcsolódó: [[focus-includes-life]] · [[focus-support]] · [[recurring-tasks]] ·
 [[sleep-system]] · [[health-system]] · [[fit-system]] · [[working-style]] ·
 `current/events/2026-09-14-szabadsag-szulinapi-het.md`
+
+
+---
+
+## 📊 ÚJRA-ALAPVONAL — MÉRVE 2026-09-12 15:05
+
+Végigfésültem **az összes** action-logot *(2026-05 → 2026-09)*, és megnéztem, **mire van egyáltalán
+nyom**. Az eredmény élesebb, mint a „a napló elavult" megállapítás.
+
+| Ismétlődő tétel | Bejegyzés | Utolsó nyom | Van rá **eszköz**? |
+|---|---|---|---|
+| 🍱 **Interfood / kaja** | **1 013** | **2026-09-12** | ✅ CLI + flow |
+| 🛒 **Tesco / bevásárlás** | **119** | **2026-09-10** | ✅ CLI + lista |
+| 🧹 takarítás | 11 | ⚠️ **2026-05-20** *(az újabbak az **én** jegyzeteim, ⛔ nem elvégzés)* | ⬜ nincs |
+| ⛰️ hegy / edzés | 12 | **2026-05-23** | ⬜ nincs |
+| 🚶 séta | 7 | **2026-05-17** | ⬜ nincs |
+| 🧼 arc-mosás | 5 | **2026-05-14** | ⬜ nincs |
+| 🧺 mosás | 4 | **2026-05-14** | ⬜ nincs |
+| 🛁 fürdés | 4 | **2026-05-17** | ⬜ nincs |
+
+---
+
+## 🔴 A DIAGNÓZIS — ⛔ NEM fegyelem-kérdés
+
+```
+amihez ESZKÖZT építettünk      →  1 132 bejegyzés,  friss
+amit KÉZI naplózásra bíztunk   →     43 bejegyzés,  4 hónapja halott
+```
+
+⭐ **A határvonal nem a tétel fontossága, hanem hogy VAN-E MÖGÖTTE ESZKÖZ.** A kaja-rendelés nem
+azért követett, mert fegyelmezettebb vele — hanem mert **a rendelés maga generálja a nyomot**.
+
+⚠️ **Ezért lett volna hiba „jobb szokásokat" tervezni a héten.** A kézi naplózás **négy hónap
+alatt, kivétel nélkül, minden tételnél** elhalt. ⇒ Egy ötödik nekifutás **ugyanide** vezetne.
+
+### ⇒ A HÉT KÉRDÉSE ÁTFOGALMAZÓDIK
+
+| ⛔ Amit NEM kérdezünk | ✅ Amit kérdezünk |
+|---|---|
+| *„hogyan tartsuk be jobban?"* | *„melyik tételnél éri meg **eszközt** építeni, és melyiket engedjük el?"* |
+
+📌 **És a második kérdés komoly:** lehet, hogy a heti 1× takarítás **nem is cél**, csak egy
+2026 áprilisában leírt szám. ⭐ **A négy hónapnyi csend maga is adat** — ⛔ nem kudarc.
+
+### Amit ebből a héten javaslok — ⭐ EGY tétel, ⛔ nem hat
+
+**Válasszunk KI EGYET**, amelyik tényleg számít neki, és ahhoz **eszközt** csinálunk *(nyom
+keletkezik magától, vagy egy gombnyomás)*. A másik ötöt **tudatosan elengedjük** — ⛔ nem
+„majd később", hanem **kimondva**.
+
+⚠️ Hogy melyik legyen az EGY: **az ő döntése**. Az adatból csak annyi látszik, hogy az
+**egészség-jellegű** tételek *(séta, hegy, arc-mosás)* haltak el **leghamarabb** — ⚠️ de hogy ez
+prioritás-kérdés vagy a **rögzítés súrlódása**, azt ⛔ **nem tudom**, és **nem is tippelem**.
