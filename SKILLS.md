@@ -742,6 +742,27 @@ az 5. próba után **riasztott**.
 🕓 **És a riasztás kiírja a felvétel idejét** *(a fájlnév ISO-bélyegéből; hangüzenetnél a sorba
 kerülés ideje, kimondva)* — különben az owner **most**-ra érti egy órákkal korábbi felvételt.
 
+### 📨 A KÉZBESÍTÉSI NYUGTA ŐSZINTE (2026-09-12, 23. tétel)
+
+🔴 **MÉRT FÉLREVEZETÉS:** az *„Átment N üzeneted"* **2-5 mp**-cel a **kézbesítés** után ment ki, de
+**190-650 mp**-cel az owner **beszéde** után ⇒ ő **szállítási** visszaigazolásnak olvasta. Az owner
+**egy nap négyszer** hitte emiatt, hogy áll a rendszer *(03:17 · 04:22 · 04:40 · 22:02)* — és
+**egyszer sem állt**.
+
+⛔ **A késleltetés MARAD** *(a kötegelés szándékos)* — ⭐ a **szöveg** lett őszinte:
+
+```
+📨 3 üzeneted megérkezett hozzám (4p 12mp várakozás után).
+📨 3 üzeneted megérkezett hozzám (⚠️ 14p várakozás után — addig gyűjtött a köteg).
+📨 4 üzeneted megérkezett hozzám.            ⟵ ha a várakozás NEM mérhető (a 0 hazudna)
+```
+
+⚠️ A várakozás a **LEGRÉGEBBI** üzenet korából jön *(a legújabb kora a gyűjtő-ablak hossza lenne)*,
+és **10 perc** fölött kiemelve *(horgony: 30 mp ablak / 15 perc szelep ⇒ ott már kivételes kapunál
+járunk)*.
+
+📌 A teljes mérés: `__documentations/dev/DELIVERY_RECEIPT.md`.
+
 ### ⏳ A KÖTEG-KAPU ZAJ-IMMUNITÁSA (2026-09-12) — „miért nem mennek át az üzeneteim?"
 
 🔴 **MÉRT PROBLÉMA:** a köteg-kaput a Discord **`speaking start`** jele töltötte *(757 / éjszaka)*,

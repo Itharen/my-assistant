@@ -325,6 +325,10 @@ export class DiscordBridge {
 
     return {
       deliveredCount: batch.length,
+      // ⏳ A LEGRÉGEBBI uzenet kora A KEZBESITES pillanataban (23. tetel). ⚠️ A `batch[0]` a
+      // legregebbi: a tar idorendben fuzi. ⛔ NEM a legujabbet mérjük — az a gyujto-ablak
+      // hossza lenne, nem a turelem-ido, amit az owner megvart.
+      oldestWaitMs: measureOldestWait(batch[0], now),
       queued: result.queued,
       promptPreview: prompt.slice(0, 400),
       ...(result.queued
@@ -336,6 +340,22 @@ export class DiscordBridge {
         : {}),
     };
   }
+}
+
+/**
+ * ⏳ A LEGRÉGEBBI üzenet kora — vagy a **kimondott** „nem tudom" *(23. tétel)*.
+ *
+ * ⚠️ MIÉRT `null` ÉS ⛔ NEM 0: egy hibás időbélyeg mellett a 0 azt **állítaná**, hogy az üzenet
+ * nem is várt — ami pont a félrevezetés, amit ez a tétel javít. ⇒ Inkább ne írjunk ki számot.
+ */
+function measureOldestWait(oldest: DiscordInboundMessage | undefined, now: Date): number | null {
+  if (!oldest) return null;
+
+  const parsed: number = new Date(oldest.receivedAt).getTime();
+
+  if (Number.isNaN(parsed)) return null;
+
+  return Math.max(0, now.getTime() - parsed);
 }
 
 function timestampOf(message: DiscordInboundMessage | undefined, fallbackMs: number): number {

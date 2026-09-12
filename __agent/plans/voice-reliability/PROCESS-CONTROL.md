@@ -48,6 +48,7 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **20** | 🔴 **A zajra is kiment a „VÉGLEG nem sikerült" riasztás** + ⚠️ **az értelmesség-őr hamis pozitívja** + ⏱️ **`ma doctor now`** | 2️⃣0️⃣ 05:35 | ✅ **KÉSZ** — a 169 riasztásból 43 zaj elmarad; a játék-üzenet 0,311→0,156; élő próba OK; CLI 1248 · `dc rev` 2404→**2397** | 2026-09-12 06:35 |
 | **21** | 🧪 **A `doctor now` „utolsó hiba" sora TESZT-szemetet mutatott** | 2️⃣1️⃣ 09:05 | ✅ **KÉSZ** — mérve: 631 hibából 114 spec-fixtúra; bélyeg (`extra.testRun`) + temp-útvonal, a kihagyottak SZÁMA látszik; élő próba OK; CLI 1256 · `dc rev` 2397→2397 | 2026-09-12 09:20 |
 | **22** | 📖 **Önreferencia** *(a saját krónikám lett az „utolsó hiba")* + 🔴 **a nyelt `parseLine` hiba** | 2️⃣2️⃣ 17:30 | ✅ **KÉSZ** — mérve: 4 131 hibából 146 krónika *(`claude`+`codex`)*, és a fordított szűrő 33 VALÓDI hibát vitt volna; a vak folt **1 sor / 119 869** (0,001%); CLI 1265 · `dc rev` 2397→2397 | 2026-09-12 17:55 |
+| **23** | 📨 **Az „Átment N üzeneted" nyugta FÉLREVEZETETT** *(a szöveg, ⛔ nem az időzítés)* | 2️⃣3️⃣ 22:10 | ✅ **KÉSZ** — „megérkezett hozzám (N várakozás után)", a **legrégebbi** üzenet korából; 10 perc fölött kiemelve; CLI 1273 · `dc rev` 2397→2397 | 2026-09-12 22:40 |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -584,10 +585,11 @@ szerver-újraindításkor** lép életbe; ⛔ nem indítom újra magamtól *(a s
 
 ## ➡️ A KÖVETKEZŐ KONKRÉT LÉPÉS
 
-⭐ **A 17-22. tétel ÉLESBEN FUT; a maradék rajtam kívüli kapun áll** *(állapot: 2026-09-12 17:55)*:
+⭐ **A 17-23. tétel KÉSZ; a maradék rajtam kívüli kapun áll** *(állapot: 2026-09-12 22:40)*:
 
 | Tétel | Mire vár | Mi oldaná fel |
 |---|---|---|
+| **23** *(a nyugta őszintesége)* | ⭐ **KÉSZ** — fixtúrás előnézettel igazolva | — |
 | **22** *(önreferencia + a napló vak foltja)* | ⭐ **KÉSZ, élő próbán igazolva** | — |
 | **21** *(teszt-szemét az „utolsó hiba" sorban)* | ⭐ **KÉSZ, élő próbán igazolva** | — |
 | **20** *(riasztás-szűrés · tulajdonnév · `doctor now`)* | ⭐ **KÉSZ, élő próbán igazolva** | — |
@@ -609,6 +611,43 @@ szerver-újraindításkor** lép életbe; ⛔ nem indítom újra magamtól *(a s
    viszont **valódi** veszteség-jelzések *(napi összevont jelentés lehetne helyettük)*.
 
 ⇒ A hurok lezárása: jelentés az `AGENT_BUS.md`-ben, ⛔ új ébredés NEM.
+
+### 📨 A 23. TÉTEL — AZ „ÁTMENT N ÜZENETED" NYUGTA FÉLREVEZETETT (2026-09-12 22:40) ✅
+
+🔬 **Az owner mérése** *(⛔ nem mértem újra — a handoff kikötése)*: a nyugta **2-5 mp**-cel a
+**kézbesítés** után megy ki, de **190-650 mp**-cel az owner **beszéde** után. ⇒ A szám **pontos**
+volt, csak ⛔ **nem azt mérte, amit ő hitt**: az *„Átment"* neki **szállítási** visszaigazolás.
+
+⛔ **A késleltetést NEM szüntettem meg** *(a kötegelés szándékos, ő kérte)* — ⭐ a **szöveget**
+javítottam:
+
+```
+📨 3 üzeneted megérkezett hozzám (4p 12mp várakozás után).
+📨 3 üzeneted megérkezett hozzám (⚠️ 14p várakozás után — addig gyűjtött a köteg).
+📨 4 üzeneted megérkezett hozzám.                      ⟵ ha a várakozás ⛔ NEM mérhető
+```
+
+| Döntés | Indok |
+|---|---|
+| **„megérkezett hozzám"** | ⛔ nem „átment" — a saját átvételemről szól |
+| a **legRÉGEBBI** üzenet kora | ⭐ ezt várta ténylegesen; a legújabb kora a gyűjtő-ablak hossza lenne |
+| ⚠️ **10 perc** fölött kiemelés | 🔬 horgony: a gyűjtő-ablak **30 mp**, a szelep **15 perc** ⇒ 10 perc fölött már **kivételes** kapunál járunk |
+| az **OKA** is kimondva | *„addig gyűjtött a köteg"* — a késés ⛔ nem hiba |
+| ⛔ nem mérhető ⇒ **nincs szám** | a `0` azt **állítaná**, hogy nem is várt ⇒ `null` |
+
+🔴 **MIÉRT TÖBB KOZMETIKÁNÁL:** az owner **ma négyszer** hitte, hogy áll a rendszer
+*(03:17 · 04:22 · 04:40 · 22:02)*, és **egyszer sem állt**. Egy őszinte nyugta mind a négy
+félreértést megelőzte volna. ⚠️ Nem a szolgáltatás hibás, hanem a **bizalom** sérül.
+
+#### ✅ Igazolás
+
+CLI **1273/1273** *(+8 új spec)* · `tsc` tiszta · szöveg-előnézet **fixtúrából** *(7 változat)* ·
+`dc rev` **2397 → 2397** ⇒ ⭐ **0 új találat**.
+⚠️ **Két review-csapdát kerültem meg érdemben, ⛔ nem kikapcsolással:** a bridge-spec **536 sorra**
+nőtt volna *(max 500)* ⇒ a blokk **külön fájlba** került; és az `as never` hamisítás helyett
+**öröklés** *(`override`)* lett — így egy felület-változás **fordítási hiba**, ⛔ nem néma.
+
+📌 Doksi: `__documentations/dev/DELIVERY_RECEIPT.md` · `SKILLS.md`.
 
 ### 📖 A 22. TÉTEL — ÖNREFERENCIA + A VAK FOLT MEGMÉRVE (2026-09-12 17:55) ✅
 

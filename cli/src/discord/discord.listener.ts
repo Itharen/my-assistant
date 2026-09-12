@@ -1703,18 +1703,23 @@ export class DiscordListener {
    * > 2 szavas valaszt, hogy na most ment el neked x uzenet"*
    *
    * ⭐ Ez az EGYETLEN pillanat, amirol a „gepel…" jelzes NEM tud beszelni: hogy a koteg
-   * **atment**. A varakozasrol nem szolunk kulon — azt a typing lefedi.
+   * megerkezett **hozzam**.
+   *
+   * 🔴 MASODIK KORREKCIO (2026-09-12, 23. tetel): a varakozast MOSTANTOL KIMONDJUK. A korabbi
+   * indok („azt a typing lefedi") MERT modon hibas volt: az owner MA NEGYSZER hitte, hogy all
+   * a rendszer (03:17 · 04:22 · 04:40 · 22:02), es egyszer sem allt. A typing csak azt mutatja,
+   * hogy „valami tortenik" — azt ⛔ nem, hogy az elso uzenete OTA mennyi telt el.
    *
    * Hibat SOHA nem dob: egy ertesito elmaradasa nem befolyasolhatja a kikuldest, ami
    * ekkorra mar sikeresen megtortent.
    */
-  private async notifyDelivered(deliveredCount: number): Promise<void> {
+  private async notifyDelivered(deliveredCount: number, oldestWaitMs: number | null): Promise<void> {
     // 🔴 A HALLGATÁS AZ ALAPÉRTELMEZÉS — egyetlen üzenetre NEM nyugtázunk.
     // Mérve 2026-09-08: 17 ilyen nyugta ment ki egy nap alatt. Owner: „össze lett spam-elve".
     if (!shouldSendDeliveryNotice(deliveredCount)) return;
 
     try {
-      const sent = await sendDiscordMessage(composeDeliveryNotice(deliveredCount), 'ack');
+      const sent = await sendDiscordMessage(composeDeliveryNotice(deliveredCount, oldestWaitMs), 'ack');
 
       if (!sent.sent) {
         await this.safeLog({
@@ -2423,7 +2428,7 @@ ${spoken}`
       this.lastFlushErrorLoggedAt = 0;
 
       // ⭐ Az owner ERROL ker rovid jelzest — a varakozasrol nem.
-      await this.notifyDelivered(result.deliveredCount);
+      await this.notifyDelivered(result.deliveredCount, result.oldestWaitMs);
 
       await this.safeLog({
         kind: 'note',

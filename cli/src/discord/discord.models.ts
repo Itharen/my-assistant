@@ -56,6 +56,17 @@ export interface DiscordFlushResult {
    * várakozó marad.
    */
   queued: boolean;
+  /**
+   * ⏳ A **LEGRÉGEBBI** üzenet kora a kézbesítés pillanatában *(23. tétel)*.
+   *
+   * 🔴 MIÉRT UTAZIK EL A NYUGTÁIG: az owner *„Átment N üzeneted"*-et **szállítási**
+   * visszaigazolásnak olvasta, pedig a köteg **percekkel** korábbi beszédet visz be. ⇒ A
+   * nyugta mostantól **kimondja**, mennyit várt — és ehhez ez a szám kell.
+   *
+   * ⚠️ `null` = ⛔ **nem mérhető** *(hibás időbélyeg)*. A 0 ⛔ nem ugyanaz: az azt állítaná,
+   * hogy nem is várt.
+   */
+  oldestWaitMs: number | null;
   /** A ténylegesen elküldött prompt — naplózáshoz. */
   promptPreview: string;
   /** Ember-olvasható kiegészítés, ha a kiküldés nem a szokásos módon zárult. */

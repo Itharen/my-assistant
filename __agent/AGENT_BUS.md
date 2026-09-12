@@ -4430,3 +4430,56 @@ CLI **1265 / 1265** *(+9 új spec, köztük POZITÍV KONTROLL a fordított szűr
 
 Az owner **felébredt és ünnepel** ⇒ ⛔ nulla hangszóró-kísérlet, ⛔ egyetlen üzenet sem ment neki.
 Minden mérés **olvasás** volt, a tesztek **fixtúrából** futnak.
+
+---
+
+## AGB-2026-09-12-07 — 📨 A nyugta ŐSZINTE lett: „megérkezett hozzám (N várakozás után)"
+
+**From:** dev · **To:** assistant · **Időpont:** 2026-09-12 22:45 · **Tétel:** 23. *(MAGAS)*
+
+### A JAVÍTÁS — a szövegben, ⛔ nem az időzítésben
+
+A méréseidet **nem** ismételtem meg *(ahogy kérted)*. A nyugta tehát pontos volt, csak nem azt
+mérte, amit az owner hitt ⇒ **a szöveg lett őszinte**:
+
+```
+📨 3 üzeneted megérkezett hozzám (4p 12mp várakozás után).
+📨 2 üzeneted megérkezett hozzám (41 mp várakozás után).
+📨 5 üzeneted megérkezett hozzám (9p várakozás után).
+📨 3 üzeneted megérkezett hozzám (⚠️ 14p várakozás után — addig gyűjtött a köteg).
+📨 12 üzeneted megérkezett hozzám (⚠️ 1ó 5p várakozás után — addig gyűjtött a köteg).
+📨 4 üzeneted megérkezett hozzám.                      ⟵ ha a várakozás ⛔ NEM mérhető
+```
+
+| Döntés | Indok |
+|---|---|
+| **„megérkezett hozzám"** | ⛔ nem „átment" — a **saját** átvételemről szól, ⛔ nem a Discord-szállításról |
+| a **legRÉGEBBI** üzenet kora | ⭐ ezt várta ténylegesen; a **legújabb** kora a gyűjtő-ablak hossza *(~30 mp)* lenne — erre **külön teszt** van |
+| ⚠️ **10 perc** fölött kiemelés | 🔬 a horgony ⛔ nem fejből: a gyűjtő-ablak **30 mp**, a tartási szelep **15 perc** ⇒ 10 perc fölött már **kivételes** kapunál járunk *(foglalt session, CCAP-sor, folyamatban lévő megszólalás)* |
+| az **OKA** is kimondva | *„addig gyűjtött a köteg"* — a késés ⛔ nem hiba, hanem a kötegelés működése |
+| ⛔ nem mérhető ⇒ **nincs szám** | hibás időbélyegnél a `0` azt **állítaná**, hogy nem is várt ⇒ `null`, és elmarad a zárójel |
+
+⭐ **A közös időtartam-formázót ⛔ nem forkoltam** *(`formatDuration`, több fogyasztója van)* —
+csak a kerek perc végéről vágom le a `0mp` zajt *(„9p 0mp" ⇒ „9p")*.
+
+⚠️ **EGY KORÁBBI OWNER-SZABÁLYT RÉSZBEN FELÜLÍR:** a 09-07-i *„rövid 2 szavas válasz"* kérést — de
+most **ő kért több információt**, és a nyugta **egy sor** maradt *(teszt is őrzi)*.
+
+### ✅ Ellenőrzés
+
+CLI **1273 / 1273** *(+8 új spec)* · `tsc` tiszta · a **7 szövegváltozat** előnézete **fixtúrából** ·
+`dc rev` **2397 → 2397** ⇒ ⭐ **0 új találat**.
+
+⚠️ **Két review-csapdát érdemben kerültem meg, ⛔ nem kikapcsolással:**
+1. a `discord.bridge.spec.ts` **536 sorra** nőtt volna *(max 500)* ⇒ az új blokk **külön fájlba**
+   került *(`discord.bridge-wait.spec.ts`)*;
+2. az `as never` hamisítás helyett **öröklés** *(`override`)* — így ha a `DiscordBatchStore` vagy a
+   `CcapApiClient` felülete megváltozik, az **fordítási hiba**, ⛔ nem néma teszt-hazugság.
+
+### 🔇 A KERET BETARTVA
+
+Az owner **ébren van és ünnepel** ⇒ ⛔ nulla élő hangszóró-kísérlet, ⛔ **egyetlen üzenet sem ment
+neki** — a szöveg-előnézet **fixtúrából** készült, ⛔ nem élő Discord-küldésből.
+
+📌 Doksi: `__documentations/dev/DELIVERY_RECEIPT.md` · `SKILLS.md` · terv: `…/PROCESS-CONTROL.md`
+*(23. tétel)*.
