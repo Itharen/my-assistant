@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-12 12:05
+**Utoljára frissítve:** 2026-09-12 21:05
 
 ---
 
@@ -211,6 +211,51 @@ megmutatta, hogy mind **0,3-2,3 mp töredék**, és a valódi hiba egy **30 mp-e
 | kép | ⭐ **jár** *(erős poszt)* — prompt kód-blokkban, `no readable text / no logos` |
 
 🙋 **Owner-kapu:** kimehet-e így · kell-e a kép · ⚠️ a sorrend szerint a **profil** előbb van.
+
+### 🎂 SZOMBAT ESTE — az owner ÉBREN, ünnepel · a hétvégi keret VÁLTOZATLAN
+
+**Ébredés:** 17:23 *(10,6 óra alvás)*. ⛔ Nem tolok eléd munkát; ha nincs valódi teendő: **egy emoji**.
+
+### 🔴 KÉT ÚJ SZABÁLY — MINDKETTŐ AZ ÉN HIBÁMBÓL
+
+| Szabály | Mi váltotta ki |
+|---|---|
+| ☕ **`focus-includes-life` — ébredés utáni ablak** | a köszöntésem *„Egyél valamit"*-tel zárt ⇒ *„elveszed a kedvemet tőle… még csak regenerálódok"* |
+| 🔴 **és a korrekciója 7 perccel később** | a **kért** emlékeztető *(huzat)* is **VÁR**. ⭐ A határ nem az, hogy **KI kérte**, hanem hogy **van-e MA határideje** |
+| ❓ **`ask-back-on-garbled.md`** *(ÚJ fájl)* | *„ha valami nem teljesen értelmezhető… nyugodtan kérdezzél vissza"* ⇒ **viselkedés-váltás**: eddig némán elengedtem |
+
+⭐ **A visszakérdezés AZONNAL bevált:** a zavaros üzenetére visszakérdeztem, és **teljesen
+kifejtette**. Néma elengedéssel az a tartalom **elveszett volna** — ahogy a **szokás-listája**
+elveszett, amikor a felismerő hurokba esett.
+
+### 📋 A JÖVŐ HÉT — az owner MAGA kérte, hogy készüljünk *(„ma-holnap")*
+
+**Három munka-irány** *(az ő szavai)*: 🤖 sales-agent *(„korlátozott")* · 💰 **mikromunkák**
+*(gyors pénz)* · 🚀 **rendszer-kiadás** *(Master Prompter · Adventor · flotta — „rengeteg munka")*.
+📌 Mind **pénz** felé mutat *(`mvp-focus`)*.
+
+🙋 **AZ ELSŐ KÉRDÉS A HÉT TERVEZÉSEKOR — ⛔ nem „melyikkel kezdjünk":**
+> **melyik kettőt hagyjuk ÁLLNI?** *(három párhuzamos irány = garantált csapongás)*
+
+⚠️ **ÉS EGY ÜTKÖZÉS, ami ezt eldönti:** 09-11: *„jövő héten **szabadságon** vagyok"* ⇄ 09-12:
+*„jövő héten **pénteken céges nagy találkozó**"* `org:task:6aa57bc8766c802935c42413`.
+⇒ **Ez adja meg, mennyi valódi munkaidő van.** ⛔ Nem találgatom.
+
+### 📌 KÉSZ, AMI RÁ VÁR
+
+| | |
+|---|---|
+| ✍️ **poszt-piszkozat** | `keep-the-raw-artifact` — panel: 1 016 kar, 0 túllépés |
+| 🧑 **profil-szöveg** | `LinkedIn → Profil` — 2 mező, 0 túllépés |
+| 🗓️ **naptár** | `ma email auth --account default` ⇒ utána látom a mítingjeit |
+| 🔋 **FR** | telefon-töltöttség — ⭐ az **ébresztő-lánc hallgatólagos feltétele** |
+| 🛏️ **huzat** | **holnapra** téve *(ő kérte)* |
+
+### ⚠️ FAM — az MCP-link MA HARMADSZOR halt meg
+
+Minden alkalommal: MCP `CONNECT_TIMEOUT` ⇄ REST **`ready: true`**. ⇒ ⛔ **nem várakozási
+probléma**, a **kliens-link** hal meg ismétlődően. **Fallback: REST**, ugyanazon a porton.
+📌 Ha negyedszer is, **jelenteni kell** — ⚠️ de ⛔ nem a hétvégén.
 
 ### ⏰ MA (2026-09-11)
 
