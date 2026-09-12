@@ -58,3 +58,38 @@ játékok között. ⇒ **A megoldás is ugyanaz: szűkítés, ⛔ nem gazdagít
 
 Kapcsolódó: [[focus-support]] · [[focus-includes-life]] · [[dev-projects-skew-metrics]]
 *(a WarBots-torzítás miatt a rangsor csak kizárás után érvényes)*
+
+
+---
+
+## 🎯 A PREFERENCIA KIÉLESEDETT — három kör alatt (2026-09-12 05:22 → 06:23)
+
+⭐ **Nem egy kérdéssel derült ki, hanem egy RÖVID VISSZACSATOLÁSI HURKKAL** — és ez maga a
+módszer, amit meg kell tartani.
+
+| Kör | Amit mondott | Amit tanultam |
+|---|---|---|
+| **05:22** | *„építkezős… **minimális akció**, csak építek és nézem, ahogy megy"* | a műfaj nem elég — a **cselekvés-igény** a tengely |
+| **05:31** | *„Timberborn: **megépítettem 100 hódbázist**, meguntam" · „Dyson Sphere: **elszédülök**"* | ⛔ az „érintetlen" adat **hamis**, és a **kamera-mozgás** is szempont |
+| **06:22** | *„**shapez 2 steril** volt hosszú távon" · „Mini/Stellar Settlers **jó ötlet**"* | ⛔ a tiszta absztrakció **kiég** — kell **világ** hozzá |
+| **06:23** | *„**idle-esebb**, kicsit **sci-fi**, **aktívabb kolónia**, a népek **pakolásznak maguktól**, nekem **kevesebbet kell csinálnom**"* | ⭐ **a teljes képlet** |
+
+### ⭐ A KÉPLET, AHOGY MOST ÁLL
+
+```
+sci-fi világ  +  autonóm lakók (maguktól élnek)  +  én rendszert rakok, nem mikromenedzselek
+⛔ NEM: steril absztrakció (shapez) · pörgő kamera (Dyson Sphere) · már kiélvezett cím (Timberborn)
+```
+
+**A javaslat ez alapján** *(mind a saját könyvtárából)*: **Surviving Mars** · **Space Haven** ·
+**Stranded: Alien Dawn**; a „még kevesebbet csinálok" végén: **The Colonists** ·
+**Unnamed Space Idle**.
+
+### 📌 A MÓDSZERTANI TANULSÁG — ⛔ ez a fontosabb a listánál
+
+🔴 **Az első javaslatom rossz volt** *(multiplayer, kiégett címek)* — **és pont ez vitte előre**.
+⭐ **Egy rossz, de KONKRÉT javaslat többet ér, mint egy óvatos kérdés**, mert **könnyű
+elutasítani**, és az elutasítás **információt hordoz**.
+
+⇒ Választási bénultságnál: **3 konkrét cím → elutasítás → élesebb szűrő → 3 újabb**.
+⛔ A „mondd el, mit szeretsz" kérdés **ugyanazt a bénultságot** produkálja, csak szavakban.
