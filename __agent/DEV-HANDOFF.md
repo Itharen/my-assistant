@@ -2265,3 +2265,72 @@ rontaná el *(„minél több infó egy promptba")*. A cél **nem gyorsabb**, ha
 
 📌 **Prioritás: MAGAS** — az owner **kétszer** kérdezte ma ugyanezt, és ez az **utolsó** darabja
 a „nem mennek át az üzeneteim" panasznak.
+
+---
+
+## 2️⃣0️⃣ 2026-09-12 05:35 — HÁROM DOLOG EGY KÖTEGBŐL: két friss defekt + egy új igény
+
+### 1️⃣ 🔴 A ZAJRA IS KIMEGY a „VÉGLEG nem sikerült felismerni" riasztás
+
+> **Owner, 05:30:** *„sok »végleges nem sikerült felismerni« üzenet érkezik a Discordon…
+> azt írja, **buli zaj**, de hát a bulinak **már régen vége**."*
+
+**MÉRVE** — `outbound-log.jsonl`, 05:27-05:31 *(helyi)*:
+```
+🔴 Egy hangüzenetedet VÉGLEG nem sikerült felismernem.
+   5 próbálkozás 3.6 óra alatt — utoljára: BULI-ZAJ: rövid (9 karakter)…
+```
+⇒ **Öt** ilyen ment ki **percek alatt**, mind **3,6 órás** felvételre, és a szöveg **maga mondja
+ki**, hogy `BULI-ZAJ`.
+
+🔴 **Két hiba egyszerre:**
+- **(a)** amit a szűrő **zajnak minősített**, arra ⛔ **nem szabad „nem értettem" riasztást**
+  küldeni. ⭐ Az owner ezt **02:45-kor már jelezte**: *„az nem is egy valid találat."*
+- **(b)** a szöveg **nem mondja meg, MIKOR** volt a felvétel — csak azt, hogy „3,6 óra alatt".
+  ⇒ Az owner **most** kapja, ezért **most**-ra érti. **Írd ki a felvétel időpontját.**
+
+**Kész, ha:** zajnak jelölt felvételre ⛔ nincs végleges-hiba riasztás · a riasztás **tartalmazza
+a felvétel idejét** · teszt mindkettőre.
+
+---
+
+### 2️⃣ ⚠️ AZ ÉRTELMESSÉG-ŐR ELSŐ ÉLES TALÁLATA — **hamis pozitív**, de JÓL viselkedett
+
+A 18. tétel **él**, és rögtön megjelölt egy **valódi** owner-üzenetet:
+```
+⚠️ ÉRTELMESSÉG-GYANÚ — 14 ismeretlen szó a 45 tartalmi szóból (31%, küszöb: 22%):
+   timberborn-ban, dyson, sphere-ben, settlers, dyson
+```
+⇒ A „ismeretlen szavak" **mind JÁTÉKCÍMEK** — az üzenet **teljesen valódi** volt.
+
+⭐ **AMIT JÓL CSINÁLTÁL, és így is kell maradnia:** **megjelölted, ⛔ nem dobtad el**, és a
+jelölés **kimondta**, hogy „ha valódi kérés, szólj". ⇒ **A védelem működött.**
+
+**A javítás — ⛔ NE a küszöböt emeld:**
+- ⭐ **Tulajdonnév-mentesség:** a **nagybetűs**, illetve a **ismert entitás**-nevek ne számítsanak
+  „ismeretlen szónak".
+- ⭐ **Ingyen kapható szótár:** `C:/Users/User/.config/my-assistant/steam/appdetails-cache.json`
+  *(120 játéknév)* + a `steamapps` manifestek **360 neve**. ⚠️ **Ez a fájl gitignorált, személyes**
+  — ⛔ a tartalmát ne másold a repóba, csak **olvasd**, ha létezik.
+- 📌 Általánosabban: a **saját doménünk szavai** *(termék-, projekt-, eszköznevek)* se számítsanak.
+
+---
+
+### 3️⃣ 🆕 ÖN-DIAGNOSZTIKA — az owner új igénye
+
+> **Owner, 05:33:** *„Majd mindenféle **diagnosztikálási eszköz** fog kelleni neked a My Assistant
+> rendszereihez. **Tudjad magadat diagnosztizálni**, hogy ilyenkor **mi a fene történik például
+> most**?"*
+
+⚠️ **Ez TÁG kérés** ⇒ `uncertain-requests`: ⛔ **ne építs „diagnosztikai keretrendszert".**
+⭐ **EGY funkció**, ami a **most** kérdésére válaszol:
+
+```
+ma doctor now      →  mi történik ÉPPEN MOST, egy képernyőn
+```
+Javasolt tartalom *(mind **mért**, ⛔ nem becsült)*: hány üzenet vár a sorban és **mióta** ·
+fut-e felismerés és **min** · a listener/szerver **életjele** · a gép terhelése *(⭐ az owner
+03:12-kor külön kérte: „hogyan pörög a gép")* · az utolsó hiba.
+
+📌 **A `comm doctor` a KÉSZENLÉTET méri** *(„be van-e kötve")* — ez a **PILLANATOT** *(„mi megy
+most")*. **Két különböző kérdés**, ⛔ ne olvaszd össze őket.
