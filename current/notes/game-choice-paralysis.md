@@ -93,3 +93,30 @@ elutasítani**, és az elutasítás **információt hordoz**.
 
 ⇒ Választási bénultságnál: **3 konkrét cím → elutasítás → élesebb szűrő → 3 újabb**.
 ⛔ A „mondd el, mit szeretsz" kérdés **ugyanazt a bénultságot** produkálja, csak szavakban.
+
+
+---
+
+## ✅ LEZÁRVA — 06:24-kor döntés született
+
+> **Owner:** *„Valamelyik este amúgy a **Surviving Mars**-ot játszottam, és azt kéne folytassam,
+> az amúgy **jó volt**."*
+
+⭐ **A hurok bezárult:** a 4. javaslat-körben megnevezett cím **találat** lett — és nem azért, mert
+„eltaláltam", hanem mert **az ő elutasításai** vezettek oda.
+
+### A LEZÁRÁS SZABÁLYA — ⛔ ne adjak el tovább
+
+🔴 **Amint döntés van, ⛔ NINCS több javaslat.** *(„A Surviving Mars mellé még jó lehet a…" —
+⛔ TILOS.)* Az extra opció itt **visszaviszi a bénultságba** azt, akit épp kihoztunk belőle.
+
+📌 A válaszom ezért **egy mondat** volt: *„akkor ez megvan — folytasd. Nem ajánlok többet."*
+
+### ⚠️ NEGYEDIK MEGERŐSÍTÉS: az adat megint 0-t mondott
+
+A Surviving Mars a nyilvántartásban **0 óra** — ő meg *„valamelyik este"* játszott vele.
+⇒ **Ugyanaz a hiány**, mint a Timberbornnál és a Dyson Sphere-nél.
+
+🔴 **Ezért a Steam-játékidő mostantól:** ✅ **szűrésre** *(„mutass építkezős címeket")* ·
+⛔ **állításra SOHA** *(„ezt még nem játszottad")*.
+Kanonikus: [[dev-projects-skew-metrics]].
