@@ -433,3 +433,16 @@ bérletek, tanúsítványok, előfizetés-hitelesítések. **Felismerési jel:**
 📌 Ez **FR-jelölt** az organizernek: *„completion-anchored renewal, negatív eltolással"*.
 
 🔗 `org:task:6aa40936766c802935c3e758` *(Domino, következő: 2027-08-11)*
+
+---
+
+## 🍔 ÜNNEPLÉS-MINTA: a „szar kaja" is a program része (owner, 2026-09-12 03:25)
+
+> **Owner (szó szerint):** *„Mondtam már, hogy a **szar kaja is része az ünneplésemnek**."*
+
+⇒ **Buli-hétvégén ⛔ nincs kaja-optimalizálás, nincs egészséges-alternatíva javaslat.** A
+gyorskaja **nem kisiklás**, hanem **a program része** — a felajánlott „jobb" opció itt
+**nem segítség, hanem kioktatás**.
+
+📌 **Mikor él:** a `current/events/`-ben jelölt ünneplés-ablakokban *(most: 09-11 este → 09-13)*.
+⭐ Utána a `health-system` / `fit-system` **változatlanul** visszatér — ⛔ nem kell „bepótolni".

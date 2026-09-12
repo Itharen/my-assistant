@@ -55,3 +55,35 @@ Melyik folyamat nyitotta meg az ablakot, és mikor?
 
 Kapcsolódó: [[uncertain-requests]] · [[private-topics-and-audience]] ·
 `current/principles/ldp-default-runtime.md`
+
+
+---
+
+## 📊 ELSŐ MÉRÉS — 2026-09-12 03:42
+
+**Amit megnéztem:** az összes eddigi **péntek** az `__agent/log/actions/*.jsonl`-ben, olyan
+bejegyzésre szűrve, ami dokumentum-/ablak-nyitásra utal *(`start-process`, `megnyit`, `explorer`,
+`.pdf`, `.docx`, `.xlsx`, `notepad`)*.
+
+**Eredmény:** ⬜ **NINCS TALÁLAT.**
+
+### ⚠️ ÉS EZ MÉG NEM ZÁRJA KI AZ 1. HIPOTÉZIST
+
+🔴 **„Nincs nyom az én naplómban" ≠ „nem történt meg".** Amit ez a mérés **nem** fed le:
+
+| Nem fedi | Miért |
+|---|---|
+| a **CCAP-agent** a VMware-ben | ⛔ **más gépen/VM-ben** fut, ⛔ nem ebbe a naplóba ír *(owner, 03:13)* |
+| a **DEV-session** műveletei | a saját CC-naplójába ír, ⛔ nem feltétlenül ide |
+| minden, ami **nem hook-olt** tool-on át történt | a napló a **wired** eszközöket rögzíti |
+
+⇒ **Helyes megfogalmazás:** *az **én** action-logom szerint **én** nem nyitottam dokumentumot
+pénteken.* ⛔ Ennél többet **nem** állíthatok.
+
+*(Pont az a hibafajta, amit ma háromszor elkövettem: az adat igaz, a hatóköre szűkebb, mint
+amire következtetni csábít — `post-development-verification`.)*
+
+### A KÖVETKEZŐ MÉRÉS — ha ő ad egy konkrét példát
+
+Egy **konkrét fájlnév + hozzávetőleges időpont** elég ahhoz, hogy a **Windows** oldalán nézzünk
+utána *(utolsó megnyitás, melyik folyamat)*. ⛔ Enélkül a keresés **iránytalan**.
