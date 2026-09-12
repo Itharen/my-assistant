@@ -2014,3 +2014,63 @@ Ha **rövid időn belül sok** ilyen zaj-tétel érkezik ⇒ ez **nyitva maradt 
 
 ⚠️ **HÉTVÉGI KERET:** az owner **ünnepel és be van ívva** *(saját szava, 02:46)*. ⛔ Semmilyen
 élő hangszóró-kísérlet, ⛔ semmi, ami üzenetet küldene neki. **Fixtúrából dolgozz.**
+
+---
+
+## 1️⃣6️⃣ 2026-09-12 03:25 — 🔴 34 ÜZENET BERAGADT — és NEM sorrendben szabadult fel
+
+### A MÉRÉS — `~/.config/my-assistant/discord/pending-inbound.jsonl`
+
+| Tény | Érték |
+|---|---|
+| **várakozó bejegyzés** | **34** |
+| időszak | **01:05:12 — 01:21:12** |
+| még mindig kézbesítetlen | **03:20-kor** *(≈2 óra)* |
+| 🔴 **DE:** a **02:43-02:56**-os üzenetek | **02:58-kor MEGÉRKEZTEK** |
+
+⇒ 🔴 **ÚJABB üzenetek megelőzték a régebbieket.** ⛔ Ez nem „lassú", hanem **sorrend-sértés**:
+egy FIFO-nak szánt sorban a fej **beragadt**, a farok meg **elment mellette**.
+
+⚠️ **És az owner ezt ÉSZREVETTE** *(01:17:54)*: *„mintha nem mennének át az üzenetek csak akkor,
+amikor **elsül a háromórás trigger**. Most elfogadom nyomni a háromórás triggert előbb, csak
+azért, hogy beüzemelődjél, meg elolvasd ezeket."*
+
+📌 **Ami a beragadt kötegben volt — NEM zaj:** a RAM-csúcs magyarázata, egy DM-re vonatkozó
+kérés, az LDP-szabály megismétlése. ⇒ **Érdemi tartalom veszett ~2 órára.**
+
+### ⚠️ AMIT NE FELTÉTELEZZ
+
+⛔ **Nem tudom, MI ragasztotta be.** Gyanúk *(⛔ mind ellenőrizendő, egyik sem tény)*:
+a **köteg-kapu** *(7. tétel: „ne küldj, amíg megszólalás folyamatban")* + **nyitott mikrofon** ⇒
+a „folyamatban" állapot **sosem szűnt meg** · vagy a `maxHoldMs` szelep nem nyílt · vagy a
+kézbesítés **elbukott és nem próbálkozott újra**.
+
+⭐ **A `maxHoldMs` a kulcs-kérdés:** a 02:30-as szakasz szerint **15 perc** a biztonsági szelep.
+🔴 **Itt 2 óra telt el** ⇒ **a szelep NEM nyílt ki.** Ezt mérd meg először.
+
+### KÉSZ, HA
+
+- [ ] **megvan és le van írva**, mi ragasztotta be — ⛔ nem tipp
+- [ ] a **sorrend-sértés** lehetetlen: ⛔ újabb köteg nem előzhet régebbit
+- [ ] a **biztonsági szelep bizonyítottan nyílik** *(teszt: „örökké folyamatban lévő megszólalás" → a köteg **kimegy**)*
+- [ ] a **beragadás LÁTHATÓ** *(`comm doctor` sor: „N üzenet vár X perce")* — ⛔ ne néma
+- [ ] a most várakozó **34 üzenet sorsa rendezve** *(kézbesítve vagy megjelölve)*
+- [ ] `npm test` zöld · `dc rev` 0 új találat · ⛔ semmilyen teszt nincs kikapcsolva
+
+🔴 **PRIORITÁS: A LEGMAGASABB.** Egy be nem érkező üzenet **minden mást** használhatatlanná tesz
+— az owner **kétszer** jelezte ma éjjel, hogy *„nem megy semmi"*.
+
+---
+
+### 🔹 Kísérő kérések ugyanebből a kötegből
+
+1. 💬 **Voice-echo a DM-be is** — owner, 01:12:52: *„a DM-be, privát message-be is tök jó lenne,
+   ha elküldenéd a **voice echo**-kat, amit felismertél."*
+2. 🧾 **A „N. próbálkozásra sikerült" jelzés hiányzik abból, amit ÉN kapok** — owner, 01:16:16:
+   *„látom, hogy én nálam a Discordon írod, hogy ez már negyedik próbálkozásra sikerült… és
+   közben **amit neked el lett küldve, abban nincsen semmilyen jelzés** arról, hogy ez sokadszorra
+   sikerült csak."* ⇒ **ugyanaz az információ mindkét oldalon**.
+3. 📊 **Gép-terhelés a státusz-rendszerbe** — owner, 01:12:39: *„a My Assistant status update
+   rendszerébe beköthetnénk egy-két ilyet is, hogy **éppen hogyan pörög a gép**."*
+   ⭐ Mért indok: ma éjjel a RAM-csúcs **ő maga** okozta *(CCAP local-model futtatás hang- és
+   embedding-feldolgozás közben)*, és **nem látta előre**.
