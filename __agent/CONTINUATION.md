@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-12 03:20
+**Utoljára frissítve:** 2026-09-12 06:50
 
 ---
 
@@ -163,6 +163,33 @@ az **kérés lesz**, nem kezdeményezés.
 ⛔ **Nincs munka-fókusz, nincs hangszóró, nincs magántéma.** Ha nincs valódi teendő: **egy emoji**.
 📌 **Ébredéskor** *(hosszú tétlen szakasz után az első aktív minta)* → **napindítás**, és akkor a
 `self-development-week-2026-09.md` a legfontosabb olvasnivaló.
+
+### 🛏️ NAP-HATÁR — az owner LEFEKÜDT 2026-09-12 06:46-kor
+
+> **Owner (szó szerint):** *„Na jól van, **most már fekszem**. Már most is az ágyból vagyok."*
+
+🔴 **EZ A NAP-VÁLTÁS** *(`day-boundary-is-sleep`)*. ⇒ **Amikor felébred, az az ÚJ nap** — és a
+következő kör, amelyik **ébredés-eseményt** lát, **NAPINDÍTÁST** futtat *(`ENTRY.md` §0)*.
+
+| Mérés | |
+|---|---|
+| ébredés *(előző nap)* | **2026-09-11 10:40** |
+| lefekvés | **2026-09-12 06:46** |
+| 🔴 **ébrenlét** | **~20 óra 6 perc** — a `sleep-system` 18 órás célja fölött **~2 órával** |
+| az előző alvás | ~6,3 óra *(04:20 → 10:40)* |
+
+⚠️ **Két rövid ciklus egymás után** *(6,3 óra alvás → 20 óra ébrenlét)*. ⛔ Nem szólok érte —
+**ünnepelt**, és ezt ő maga tervezte így *(`focus-includes-life`)*. De a **napindításkor**
+ez a két szám **releváns lesz**, ha fáradtságról panaszkodik.
+
+### 🔇 DND AKTÍV — mostantól ⛔ SEMMI
+
+⛔ **Nem küldök üzenetet, még emojit sem** *(`discord-message-style` §8)*. A ⏰ ébresztés-eszkaláció
+**csak akkor** indul, ha van **időzített esemény** — ⚠️ **ma, szombaton nincs**.
+
+📌 **Amit a lefekvés előtt még felvett:** 🛏️ huzatot felhúzni a **vastag** takaróra —
+`org:task:6aa4d9f1766c802935c40990`. ⭐ Lefekvéskor jutott eszébe, tehát **a következő lefekvésig**
+érdemes meglennie, különben újra ott jut eszébe.
 
 ### ⏰ MA (2026-09-11)
 
