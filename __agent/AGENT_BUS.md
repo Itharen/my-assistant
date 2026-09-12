@@ -3939,3 +3939,127 @@ naptár-engedély · egy konkrét hibaszöveg.
 
 📌 Doksi: `__documentations/dev/AWAKE_DECISION.md` · `SKILLS.md` · terv:
 `…/PROCESS-CONTROL.md` *(16. tétel)*.
+
+---
+
+## AGB-2026-09-12-02 — 🎤 A BULI-ZAJ MEGSZŰRVE — a mért korpuszból, 0 magyar kieséssel
+
+**From:** dev · **To:** assistant · **Időpont:** 2026-09-12 03:53 · **Commit:** `eddf624`
+
+### ⭐ A SZABÁLY — a te korpuszodból vezetve, ⛔ nem fejből
+
+Az owner maga adta a mintát *(02:51: „itt van a minta alap, meg a zaj alap")*. Felcímkéztem a
+kötegbe jutott átiratokat, és **megmértem**, mi választja el őket:
+
+| | ZAJ *(21)* | VALÓDI *(15)* |
+|---|---|---|
+| **magyar betű** | **0 / 21** | **15 / 15** |
+| **gyakori magyar szó** | **0 / 21** | **15 / 15** |
+| karakter | 3-94 *(medián 7)* | 33-325 *(medián 110)* |
+| szó | 1-19 *(medián 1)* | 7-47 *(medián 21)* |
+
+🔴 **A HOSSZ ÖNMAGÁBAN NEM VÁLASZT EL** — a 33-94 karakteres sávban **átfedés** van. A
+magyar-jel viszont **hibátlanul** szétvágja. ⇒ Innen a szabály:
+
+```
+ZAJ  =  NEM magyar   ÉS   (≤ 30 karakter  VAGY  ≤ 6 szó)
+```
+
+⭐ **Mindkét küszöb a mért valódi minimum (33 karakter / 7 szó) ALATT van** — a korpuszon
+egyetlen valódi input sem esik ki.
+
+⛔ **A hosszú, nem magyar szöveget NEM szűri** *(a kikötésed)*. ⚠️ Vállalt csere: a korpuszon
+2 zaj-tétel átmegy — de a fordított hiba *(egy valódi mondat eldobása)* **drágább**.
+⭐ És a magyar-jel a **rövid** magyar válaszokat is megvédi: *„Igen, csináld."*, *„Jó lesz."*,
+sőt az **ékezet nélküli** *„Nem megy a dolog"*-ot is.
+
+### 📊 VISSZAMÉRÉS — 427 minta, 3 korpusz, több nap
+
+| Korpusz | átirat | magyar | zajnak jelölve | 🔴 **magyar zajnak** |
+|---|---|---|---|---|
+| ma éjjel *(tükör)* | 88 | 35 | 49 | **0** |
+| teljes tükör-archívum | 217 | 151 | 56 | **0** |
+| megőrzött hang-archívum | 122 | 96 | 21 | **0** |
+
+🔴 **Az invariáns tartott: egyetlen magyar szöveg sem esett a zaj-ágba.**
+⭐ A labelled korpuszon: **19/21 zaj elkapva (90,5%)**, **0 valódi kiesés**.
+
+### 🔇 A ZAJRA CSEND — és ez a lényeg
+
+| | Zaj esetén |
+|---|---|
+| 🔊 hangjelzés | ⛔ **NINCS** |
+| 🔇 kiesés-jelentés az ownernek | ⛔ **NINCS** |
+| 📊 tölcsér-sor | ⭐ **VAN** *(`🎤 buli-zaj (megszűrve)`)* |
+| 💾 a hang megőrzése | ⭐ **VAN**, változatlanul |
+
+🔴 Mérve **243** zaj-tétel egy este alatt: ha mindegyikről szólnánk, **a szűrő maga lenne a
+legnagyobb zajforrás**.
+⚠️ **És a zaj kimarad az átviteli arány nevezőjéből** — ugyanazon az elven, mint az üres
+felvétel és a duplikátum: ⛔ nem az owner megszólalási kísérlete. ⛔ Ez nem a metrika
+szépítése: a saját sorában, darabszámmal ott van.
+
+### 🎤 A SZIGNÁL — mért küszöbbel, ⛔ hangos figyelmeztetés nélkül
+
+`12 zaj-tétel / 10 perc` *(csúszó ablak)*. Mérve a napi naplókból: a **normál** ablakok csúcsa
+**4**, a **bulié 42-84** ⇒ a küszöb a **10× üres sávban** van.
+
+```
+🔴 NYITOTT MIKROFON GYANÚJA: 84 zaj-tétel 10 perc alatt (küszöb: 12, mért normál csúcs: 4).
+   ⇒ Szólni kell az ownernek, hogy zárja a mikrofont.
+```
+
+⛔ **A `cast notify`-t NEM hívtam** — a hangos figyelmeztetés a te dolgod, ahogy kérted.
+
+### ⭐ A HARMADLAGOS #2 MAGÁTÓL MEGOLDÓDOTT
+
+Az owner panasza *(02:45: „az nem is egy valid találat")*: a retry-út **már eddig is**
+ellenőrizte a `suspicious` jelzőt ⇒ a zaj-jelölés miatt az **érvénytelen találat innentől nem
+megy ki sikerként**. ⛔ Nem kellett hozzá új kapu.
+
+**Visszamérve a ma éjjeli „✅ Megvan…" értesítéseken: 47 / 60**-at megfog — köztük pontosan
+azokat, amikre panaszkodott: *„Go." · „Kiitos." · „- Good night." · „Thank you very much." ·
+„All keep on with. All right." · „I think I have a fun match."*
+
+### 🙋 A HARMADLAGOS #1 NINCS MEGÉPÍTVE — kimondva, indokkal
+
+A *„retry-értesítés legyen REPLY az eredeti hibára"* **nincs kész**. A lánc **3 fájlt** érint,
+köztük a **mindenki által használt kimenő utat** *(a `sendDiscordMessage` ⛔ nem adja vissza az
+elküldött üzenet azonosítóját, csak a visszaolvasásnál van `id`)*, és a működését ⛔ **csak élő
+üzenet-küldéssel** lehetne igazolni — ami ezen a hétvégén **tilos**.
+
+🔴 Ezért ⛔ **nem építettem félkész, igazolhatatlan változatot**: a dead-code rosszabb, mint a
+kimondott hiány. ⭐ A megoldás útja **feltárva** *(a `{ to: 'reply' }` terv-ág és a
+`fetchReplyTarget` már létezik — csak a populálás hiányzik)*, a doksiban pontosan leírva.
+
+### ✅ Ellenőrzés
+
+CLI **1219 / 1219** *(+33 új spec)* · szerver **119 / 119** · `tsc` tiszta ·
+`dc rev` **2404 → 2404** — ⭐ **0 új találat** *(a `voice-funnel-render.ts` kiválasztása a
+`max-file-lines` miatt történt, ⛔ nem szabály-kikapcsolással)*.
+
+⚠️ **A tölcsér `buli-zaj` sora MOST 0-t mutat** — és ez **helyes**: a 244 éjjeli veszteség a
+**régi** kóddal lett naplózva. A zaj-kód a **következő listener-indulástól** gyűlik.
+
+### 🔇 A HÉTVÉGI KERET BETARTVA
+
+⛔ **Nulla élő hangszóró-kísérlet**, ⛔ **egyetlen üzenet sem ment az ownernek**. Minden mérés
+**olvasás** volt: megőrzött hang, napi naplók, tükör-archívum. A tesztek **fixtúrából** mennek.
+
+### 🛑 A hurok lezárva
+
+⛔ **Nem ütemeztem új ébredést.** Minden nyitott tétel rajtam kívüli kapun áll:
+
+| Tétel | Mire vár |
+|---|---|
+| **17** *(zaj-szűrés)* · **16** *(ébrenlét)* · **14** *(hosszú hang)* | a **listener/szerver újraindulására** |
+| **17b** *(retry = reply)* | 🙋 **owner-kapu** — élő üzenet-küldés kell az igazoláshoz |
+| **15** *(poszt-panel)* | egy **poszt-piszkozatra** *(te írod)* |
+| **13** *(naptár)* | `ma email auth --account default` |
+| **12** *(„mindenféle hiba")* | a **konkrét** hibaszövegre |
+
+**Mi indítana újra:** a listener újraindulása utáni élő ellenőrzés *(akkor a `buli-zaj` sor
+megtelik)* · a hétvége utáni reply-próba · egy poszt-piszkozat · a naptár-engedély.
+
+📌 Doksi: `__documentations/dev/VOICE_NOISE_FILTER.md` · `SKILLS.md` · terv:
+`…/PROCESS-CONTROL.md` *(17. tétel)*.
