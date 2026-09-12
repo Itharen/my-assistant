@@ -942,3 +942,28 @@ az eredeti aggályom ott **nem is releváns**.
 
 📌 A döntés után **szabállyá** kell tenni *(`private-topics-and-audience` kiterjesztése:
 „titok-mezők soha a felolvasó útra")*.
+
+### Q-2026-09-12-01 — Steam API-kulcs a hiányzó játék-nevekhez? *(project, `l`)*
+
+**Státusz:** `open` · **Felvéve:** 2026-09-12 04:55
+
+Az owner kérte a **megvett** játékok listáját *(nem csak a telepítettet)*. **Lokálisan, kulcs
+nélkül** megvan a nyers adat: `1 169` app-bejegyzés, ebből **281 játszott** — de **csak 151-nél**
+tudom a **nevet** *(a telepített manifestekből)*, **130-nál csak az appid**.
+
+⚠️ **Miért nincs meg a többi:** a nevek feloldásához a Steam **nyilvános** app-listája kellene
+*(kulcs NEM kell hozzá)*, de **a kifelé menő hálózat most nem működött** — mind a három végpont
+**404**, és a GitHub-push is timeoutolt egyszer ma éjjel. ⇒ ⚠️ **Ez lehet átmeneti** — érdemes
+újrapróbálni, mielőtt kulcsot kérnénk.
+
+**A három út, sorrendben:**
+
+1. ⭐ **Újrapróbálni a nyilvános app-listát** *(`ISteamApps/GetAppList`)* — ⛔ **nem igényel semmit
+   tőle**, csak működő netet. **Ezzel kell kezdeni.**
+2. 🔑 **Steam API-kulcs** *(ingyenes, `steamcommunity.com/dev/apikey`)* → `GetOwnedGames` a
+   **teljes** birtokolt listát adja, játékidővel. ⇒ ⚠️ **titok** ⇒ gitignorált helyi tár.
+3. 🌐 **SteamDB-kalkulátor** *(az owner „speckó DB oldal"-a)* — ⚠️ **publikus profilt** igényel,
+   és böngészőt. ⛔ Csak ha az első kettő nem megy.
+
+📌 A nyers adat **megvan és nem vész el** — a kérdés csak a **nevek** feloldása.
+*(`C:/Users/User/.config/my-assistant/steam/owned-played-games.md` — gitignorált, mert személyes.)*
