@@ -2384,3 +2384,51 @@ kihagyva)`)* — ugyanaz az elv, mint a tölcsérnél a töredékeknél.
 
 📌 **Prioritás: közepes.** ⛔ Nem éles üzemzavar — de a **diagnosztika hitelessége** múlik rajta,
 és egy eszköz, aminek nem hiszünk, **rosszabb, mint ha nem lenne**.
+
+---
+
+## 2️⃣2️⃣ 2026-09-12 17:30 — A teszt-szűrő MŰKÖDIK, de két új dolog jött elő
+
+⭐ **Először a jó hír — igazolva élesben:** a `doctor now` most **kiírja**, hogy
+`⚠️ 126 teszt-eredetű hiba kihagyva`. **Pontosan** úgy, ahogy kértem: szűr, de **nem némán**.
+
+### 1️⃣ 🔴 Most az ÉN saját jegyzetem jelenik meg „utolsó hibaként"
+
+```
+🔴 UTOLSÓ HIBA (8ó 20p): A friss 'ma doctor now' UTOLSO HIBA sora teszt-szemetet mutat…
+```
+
+⚠️ **Ez nem rendszer-hiba, hanem az én RETROSPEKTÍV jegyzetem** — arról a hibáról, amit épp
+javítottál. ⇒ **Önreferencia:** a hiba leírása maga lett „a legutóbbi hiba".
+
+🔴 **Az ok szerkezeti:** a `CLAUDE.md` **előírja**, hogy szemantikus tanulságot `kind: "error"`
+bejegyzésként írjak *(„hiba, aminek tanulsága van")*. ⇒ **Ugyanabban a naplóban** van:
+- a **gép** hibája *(amit a `doctor now` keres)*
+- és az **én utólagos elemzésem** *(amit ⛔ nem keres)*
+
+⭐ **Megkülönböztető jel, ami MÁR ott van:** az `actor` mező. A futásidejű hibáknál `cli` /
+`server` / `cast-notifier`; az enyémeknél **`claude`**.
+⇒ **A `doctor now` ⛔ ne vegye figyelembe az `actor: "claude"` bejegyzéseket** — azok
+**krónika**, nem üzemállapot. ⚠️ De a **számuk** itt is látszódjon, ahogy a teszteknél.
+
+### 2️⃣ ⚠️ Új nyelt hiba a saját eszközödben
+
+```
+[doctor-now.parseLine] MA-CLI-SWALLOWED-FAILURE:
+SyntaxError: Bad escaped character in JSON at position 248 (line 1 column 249)
+```
+⇒ Van a naplóban olyan sor, amit a `doctor now` **nem tud értelmezni** *(valószínűleg az én
+bejegyzéseim egyike — idézőjelek/escape-ek)*. ⛔ Most **elnyeli**.
+
+**Kérdés, amit mérj meg:** **hány** sort nem tud beolvasni, és **melyik napokon**? ⚠️ Ha ez sok,
+akkor a `doctor now` **vak** a napló egy részére — és pont az utolsó hibát ronthatja el.
+
+### KÉSZ, HA
+
+- [ ] az `actor: "claude"` bejegyzések **nem** számítanak rendszer-hibának, de a **számuk látszik**
+- [ ] a `parseLine` hiba **oka megvan** *(hány sor, miért)*, és vagy **javítva**, vagy **kimondva**
+- [ ] a `doctor now` „utolsó hiba" sora **valódi üzemállapotot** mutat
+- [ ] `npm test` zöld · `dc rev` 0 új találat
+
+📌 **Prioritás: közepes.** ⚠️ Az owner **felébredt** *(17:23)* és hétvégén ünnepel ⇒ ⛔ semmilyen
+élő hangszóró-kísérlet, ⛔ semmi, ami üzenetet küldene neki.
