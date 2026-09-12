@@ -2334,3 +2334,53 @@ fut-e felismerés és **min** · a listener/szerver **életjele** · a gép terh
 
 📌 **A `comm doctor` a KÉSZENLÉTET méri** *(„be van-e kötve")* — ez a **PILLANATOT** *(„mi megy
 most")*. **Két különböző kérdés**, ⛔ ne olvaszd össze őket.
+
+---
+
+## 2️⃣1️⃣ 2026-09-12 09:05 — 🔴 A `ma doctor now` „UTOLSÓ HIBA" sora TESZT-SZEMETET mutat
+
+⭐ **Előbb a lényeg: a `ma doctor now` MŰKÖDIK, és pont azt adja, amit az owner kért.**
+Első éles használat *(09:00)*, és a kimenet jó: köteg-állapot · figyelő · felismerés · köteg-kapu ·
+gép-terhelés. ⇒ **Ezt ne bántsd.**
+
+### 🔴 DE az utolsó sora félrevezet
+
+```
+🔴 UTOLSÓ HIBA (2ó 18p): [cast/groups] MA-CAST-GROUPS-PARSE-FAIL:
+   Expected property name or '}' in JSON at position 2
+```
+
+**Megmértem, mi ez valójában** — az action-log bejegyzés `ref` mezője:
+```
+C:\Users\User\AppData\Local\Temp\ma-groups-spec-KSBgEB\broken.json
+```
+⇒ **A `groups.spec.ts` SZÁNDÉKOSAN hibás fixtúrája.** A teszt **helyesen** viselkedik *(a rossz
+configra strukturált hibát naplóz)* — csak ez a hiba **a közös action-logba** kerül, és a
+diagnosztika **rendszer-hibaként** mutatja.
+
+⚠️ **Miért nem kozmetika:** a teszteket **naponta sokszor** futtatjuk ⇒ az „utolsó hiba" szinte
+**mindig** teszt-eredetű lesz. ⇒ A mező **vagy hamis riasztást ad, vagy megtanuljuk figyelmen
+kívül hagyni** — ⭐ **és a második a rosszabb**, mert akkor a **valódi** hibát se vesszük észre.
+
+*(Mellesleg ez bizonyítja, hogy jól választottad a naplózást: **enélkül nem derült volna ki**.)*
+
+### A FELADAT
+
+**A `doctor now` „utolsó hiba" sora ⛔ ne vegyen figyelembe teszt-eredetű bejegyzést.**
+
+⭐ **Felismerési jel — mérd ki, ne tippeld:** a `ref` / `extra.file` **ideiglenes könyvtárra**
+mutat *(`…\Temp\…`)*, illetve a minta `*-spec-*`. ⚠️ **Lehet jobb jel is** *(pl. a teszt-futás
+explicit megjelölése az emitnél)* — ⭐ **az a tisztább**, ha olcsón megoldható.
+
+⛔ **NE némítsd el:** ha volt kihagyott tétel, a sor **mondja ki** *(`… (3 teszt-eredetű hiba
+kihagyva)`)* — ugyanaz az elv, mint a tölcsérnél a töredékeknél.
+
+### KÉSZ, HA
+
+- [ ] a `doctor now` **valódi** utolsó hibát mutat, vagy **kimondja**, hogy nincs
+- [ ] a kihagyott teszt-hibák **száma látszik**, ⛔ nem tűnnek el némán
+- [ ] teszt: teszt-eredetű hiba a logban ⇒ ⛔ nem jelenik meg fő hibaként
+- [ ] `npm test` zöld · `dc rev` 0 új találat
+
+📌 **Prioritás: közepes.** ⛔ Nem éles üzemzavar — de a **diagnosztika hitelessége** múlik rajta,
+és egy eszköz, aminek nem hiszünk, **rosszabb, mint ha nem lenne**.
