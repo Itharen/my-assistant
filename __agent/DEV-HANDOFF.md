@@ -1947,3 +1947,70 @@ Ma **kétszer** derült ki, hogy a fix órarend **hamis**:
 
 📌 **Hétvégi keret:** az owner **09-13-ig ünnepel**, tehát ⛔ **semmilyen élő kísérlet a
 hangszóróval**. A tesztelés **fixtúrából** menjen.
+
+---
+
+## 1️⃣5️⃣ 2026-09-12 03:05 — 🎤 A NYITOTT MIKROFON MEGFOJTOTTA A LÁNCOT — mérve
+
+> **Owner, 02:43:** *„Na mi a fék van? **Semmi nem megy** most már, teljesen nem működik."*
+> **Owner, 02:51:** *„most elkezdte nekem itt feldolgozni a My Assistant rendszere az **összes
+> a buliból származó zajt**."* · **02:53:** *„minden ami **angol és nem magyar**, az mind zaj."*
+
+### 🔴 A MÉRÉS — `ma comm voice-funnel --day 2026-09-12`
+
+| Mutató | Érték | Összevetés: **09-11 egész nap** |
+|---|---|---|
+| 🎙️ megszólalás érzékelve | **722** | 123 |
+| 📼 felvétel a feldolgozásig | **259** | 9 |
+| ✅ kötegbe került | **16** | 96 |
+| ❌ felismerés után elveszett | **243** | 23 |
+
+⇒ **Egy este alatt 6× annyi érzékelés és ~29× annyi felvétel**, mint egy teljes normál napon —
+és ebből **16** volt valódi input. ⛔ **Ez nem szűrési szépséghiba, hanem KAPACITÁS-probléma.**
+
+🔴 **És ez MÉRHETŐEN kihatott a gépre:** ugyanebben az ablakban a `ma comm doctor` és a
+`voice-funnel` **120 s fölé** nyúlt *(reggel: másodpercek)*, és a memória **100,5/127 GB**-on állt
+**17 GB Memory Compression**-nel. ⇒ Az owner *„semmi nem megy"* élménye **valós**.
+
+### ELSŐDLEGES FELADAT — ZAJ-FELISMERÉS a felismerés UTÁN
+
+**A minta** *(az owner szava + a mért köteg alapján)* — ⚠️ **mindhárom jel EGYÜTT**:
+
+```
+rövid  +  önálló (nem folytat semmit)  +  NEM magyar     ⇒  ZAJ
+```
+
+**Mért példák ma éjjel:** *„It's fine" · „There I go" · „Yes" · „Okay" · „Merci" · „Right" ·
+„Go" · „Simple" · „I think very good" · „Tämä on varmasti päivä"*
+
+⛔ **NE alkalmazd túl:** az owner **használ angol szakszavakat**, és egy **hosszabb** angol mondat
+lehet valódi. A hossz-küszöböt **a mért mintából** vezesd le, ⛔ ne fejből.
+
+⭐ **A mai éjszaka LABELLED KORPUSZ** — az owner maga mondta *(02:51)*: *„itt van a minta alap,
+meg a zaj alap, na ebből aztán fogsz tudni tanulni."* A megőrzött hang + átirat **megvan**.
+
+### MÁSODLAGOS — a NYITOTT MIKROFON jelzése
+
+Ha **rövid időn belül sok** ilyen zaj-tétel érkezik ⇒ ez **nyitva maradt mikrofon**.
+⇒ **Jelzés kell** *(a hangos figyelmeztetést én küldöm — `private-topics-and-audience`)*.
+📌 Te a **szignált** add meg *(„zaj-burst észlelve")*, ⛔ a `cast notify`-t ne te hívd.
+
+### HARMADLAGOS — két értesítés-higiéniai javítás
+
+1. 🧵 **Az utólagos felismerés-értesítés legyen VÁLASZ az eredeti hibára** — owner, 02:50
+   *(gépelve)*: *„ezek a »Megvan, amit a hang-csatornában mondtál…« üzenetek is **reply kéne
+   legyen az első hibára**."*
+2. ⛔ **Ne jelentsd sikerként az érvénytelen találatot** — owner, 02:45: a 4. próbálkozásra
+   „sikerült" felismerés **egy rövid angol töredék** volt: *„az nem is egy valid találat."*
+   ⇒ A zaj-szűrő eredménye **a retry-útra is** vonatkozik.
+
+### KÉSZ, HA
+
+- [ ] a zaj **megjelölve kiesik** — ⛔ nem némán; a tölcsérben **külön sorban** látszik
+- [ ] a **valódi** magyar input **egy sem** esik ki *(a mai korpuszon visszamérve)*
+- [ ] zaj-burst esetén **szignál** keletkezik
+- [ ] a retry-értesítés **reply**, és érvénytelen találatra **nem megy ki**
+- [ ] `npm test` zöld · `dc rev` 0 új találat · ⛔ semmilyen teszt nincs kikapcsolva
+
+⚠️ **HÉTVÉGI KERET:** az owner **ünnepel és be van ívva** *(saját szava, 02:46)*. ⛔ Semmilyen
+élő hangszóró-kísérlet, ⛔ semmi, ami üzenetet küldene neki. **Fixtúrából dolgozz.**
