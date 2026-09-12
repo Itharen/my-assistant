@@ -2432,3 +2432,59 @@ akkor a `doctor now` **vak** a napló egy részére — és pont az utolsó hib�
 
 📌 **Prioritás: közepes.** ⚠️ Az owner **felébredt** *(17:23)* és hétvégén ünnepel ⇒ ⛔ semmilyen
 élő hangszóró-kísérlet, ⛔ semmi, ami üzenetet küldene neki.
+
+---
+
+## 2️⃣3️⃣ 2026-09-12 22:10 — 📨 Az „Átment N üzeneted" nyugta FÉLREVEZET
+
+> **Owner, 22:02 (gépelve):** *„Úgy látom, hogy **X üzenet elküldve** üzenetet **nem akkor kapom,
+> amikor elküldötté válik** tényleg, hanem nem tudom mikor később."*
+
+### 🔬 MEGMÉRTEM — igaza van, és a szám pontos
+
+Összevetettem a `delivered-inbound.jsonl` és az `outbound-log.jsonl` bejegyzéseit *(utolsó 5 nyugta)*:
+
+| Nyugta | Az első megszólalása óta | **A kézbesítés óta** |
+|---|---|---|
+| 04:49:21 | **201 mp** | **2 mp** |
+| 16:05:40 | **650 mp** | 3 mp |
+| 16:19:48 | **330 mp** | 5 mp |
+| 16:27:26 | **190 mp** | 3 mp |
+
+🔴 **A nyugta PONTOS — csak nem azt méri, amit az owner hisz.**
+⇒ **2-5 másodperccel** azután megy ki, hogy a köteg **hozzám került** — de **3-11 perccel** azután,
+hogy **ő beszélt**.
+
+### ⇒ A HIBA A SZÖVEGBEN VAN, ⛔ NEM AZ IDŐZÍTÉSBEN
+
+*„Átment N üzeneted"* ⇒ az owner **szállítási visszaigazolásnak** olvassa *(„megérkezett a
+Discordra")*. ⚠️ Valójában azt jelenti: **„a köteg megérkezett az agenthez"** — ami a
+gyűjtő-ablak + a session-szabadság után történik.
+
+⛔ **A késleltetést NE szüntesd meg** — a kötegelés **szándékos** *(az owner kérte: „minél több
+infó egy promptba")*.
+
+### A FELADAT — ⭐ tedd a nyugtát ŐSZINTÉVÉ
+
+```
+📨 3 üzeneted megérkezett hozzám (4 perc várakozás után).
+```
+
+- ✅ **mondja ki, hogy HOZZÁM érkezett meg** — ⛔ ne „átment"
+- ⭐ **írja ki a várakozást** *(a legrégebbi üzenet kora a kézbesítéskor)*
+- ⚠️ **Ha a várakozás szokatlanul hosszú** *(pl. > 10 perc)*, az **önmagában információ** —
+  ⭐ érdemes kiemelni, mert eddig **ebből** gondolta többször, hogy „nem megy semmi"
+
+📌 **Miért fontos ez a kozmetikánál jobban:** az owner **ma négyszer** hitte azt, hogy a rendszer
+áll *(03:17 · 04:22 · 04:40 · 22:02)*. **Egyszer sem állt.** ⇒ **Egy őszinte nyugta mind a négy
+félreértést megelőzte volna.**
+
+### KÉSZ, HA
+
+- [ ] a nyugta szövege **a valóságot** mondja *(hozzám érkezett + mennyit várt)*
+- [ ] a mérés **a legrégebbi** üzenet korából jön, ⛔ nem a legújabbéból
+- [ ] teszt a szövegre és a várakozás-számításra
+- [ ] `npm test` zöld · `dc rev` 0 új találat
+
+⚠️ **Prioritás: MAGAS** — ⛔ nem a szolgáltatás hibás, hanem a **bizalom** sérül, és azt nehezebb
+visszaépíteni, mint egy funkciót.
