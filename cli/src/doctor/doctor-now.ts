@@ -34,6 +34,16 @@ import type { DoctorNowSnapshot } from './doctor-now.models.js';
 import type { HeartbeatStatus } from '../discord/discord.heartbeat.js';
 
 /**
+ * A napló-olvasás négy mezője — ⭐ a **pillanatképből származtatva** *(`Pick`)*, hogy az olvasó
+ * és a jelentés alakja ⛔ ne tudjon széttartani. ⚠️ Szándékosan **nem exportált**: a szerződés
+ * egyetlen forrása a `DoctorNowSnapshot`.
+ */
+type DoctorNowErrorReading = Pick<
+  DoctorNowSnapshot,
+  'lastError' | 'skippedTestErrors' | 'skippedChronicleErrors' | 'unparsedLines'
+>;
+
+/**
  * A pillanatkép ÖSSZEÁLLÍTÁSA — minden forrás **injektált**.
  *
  * ⭐ MIÉRT ÍGY: hat különböző forrásból mérünk *(köteg-tár, életjel, sor, gép, napló, CCAP)*.
@@ -55,7 +65,11 @@ export class DoctorNow_Util {
     readListener: () => Promise<HeartbeatStatus>;
     readRetry: () => Promise<{ pendingCount: number; nextDueMs: number | null }>;
     readMachine: () => Promise<{ cpuPercent: number | null; ramUsedGb: number; ramTotalGb: number }>;
-    readErrors: () => Promise<{ last: { summary: string; ageMs: number } | null; skippedTestErrors: number }>;
+    /**
+     * ⭐ A NÉGY MEZŐ A PILLANATKÉPBŐL VAN SZÁRMAZTATVA *(`Pick`)*, ⛔ nincs külön típus:
+     * így a napló-olvasó és a jelentés alakja **nem tud széttartani**.
+     */
+    readErrors: () => Promise<DoctorNowErrorReading>;
   }): Promise<DoctorNowSnapshot> {
     const takenAt: Date = sources.now ?? new Date();
     const gaps: string[] = [];
@@ -102,12 +116,20 @@ export class DoctorNow_Util {
       gaps,
       'a gép terhelése nem volt mérhető',
     );
-    const errors = await DoctorNow_Util.safely(
+    const errors: DoctorNowErrorReading = await DoctorNow_Util.safely(
       sources.readErrors,
-      { last: null, skippedTestErrors: 0 },
+      { lastError: null, skippedTestErrors: 0, skippedChronicleErrors: 0, unparsedLines: 0 },
       gaps,
       'a napi akció-napló nem volt olvasható',
     );
+
+    if (errors.unparsedLines > 0) {
+      // 🔴 A VAK FOLT KIMONDVA (22. tétel): egy elnyelt JSON-hiba azt jelenti, hogy az „utolsó
+      // hiba" akár egy NEM LÁTOTT sorban lehet. ⚠️ Mérve 2026-09-12: 52 nap / 119 869 sorból
+      // **1** ilyen volt (0,001%) ⇒ a vakság MÉRT módon kicsi, de ⛔ nem néma.
+      gaps.push(`${errors.unparsedLines} napló-sor NEM volt JSON-ként értelmezhető — `
+        + 'ennyire vak a napló-olvasás (az „utolsó hiba" ezekben a sorokban nem látszik)');
+    }
 
     return {
       takenAt: takenAt,
@@ -119,8 +141,10 @@ export class DoctorNow_Util {
       listener: listener,
       retry: retry,
       machine: machine,
-      lastError: errors.last,
+      lastError: errors.lastError,
       skippedTestErrors: errors.skippedTestErrors,
+      skippedChronicleErrors: errors.skippedChronicleErrors,
+      unparsedLines: errors.unparsedLines,
       gaps: gaps,
     };
   }

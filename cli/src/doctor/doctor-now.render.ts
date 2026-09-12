@@ -98,11 +98,18 @@ export class DoctorNowRender_Util {
       `🖥️  GÉP: CPU ${cpu} · RAM ${machine.ramUsedGb.toFixed(1)}/${machine.ramTotalGb.toFixed(1)} GB (${ramPercent}%)`,
     ];
 
-    // 🧪 A KIHAGYOTT TESZT-HIBÁK SZÁMA KIMONDVA (21. tétel) — ⛔ a némítás nem elfogadható:
+    // 🧪📖 A KIHAGYOTTAK SZÁMA KIMONDVA (21. + 22. tétel) — ⛔ a némítás nem elfogadható:
     // ugyanaz az elv, mint a tölcsérnél a töredékeknél. Így a szűrés maga is ellenőrizhető.
-    const skipped: string = snapshot.skippedTestErrors > 0
-      ? ` (⚠️ ${snapshot.skippedTestErrors} teszt-eredetű hiba kihagyva)`
-      : '';
+    //
+    // ⭐ A KETTŐ KÜLÖN SZÁM, mert MÁS jelenség: a teszt-szemét a **gép** zaja, a krónika a
+    // **saját utólagos elemzésünk**. Sok krónika azt jelenti, hogy sokat tanultunk — ⛔ nem azt,
+    // hogy sok baj volt.
+    const reasons: string[] = [];
+
+    if (snapshot.skippedTestErrors > 0) reasons.push(`${snapshot.skippedTestErrors} teszt-eredetű`);
+    if (snapshot.skippedChronicleErrors > 0) reasons.push(`${snapshot.skippedChronicleErrors} krónika`);
+
+    const skipped: string = reasons.length ? ` (⚠️ ${reasons.join(' + ')} bejegyzés kihagyva)` : '';
 
     lines.push(snapshot.lastError
       ? `🔴 UTOLSÓ HIBA (${DoctorNowRender_Util.age(snapshot.lastError.ageMs)}): `

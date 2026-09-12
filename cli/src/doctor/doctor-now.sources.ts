@@ -17,8 +17,19 @@ import { SttRetryQueue, type SttRetryEntry } from '../stt/stt.retry-queue.js';
 import { resolveActionLogPath } from '../voice/voice-funnel-report.js';
 import { resolveProjectRoot } from '../utils/project-root.js';
 import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
-import { ActionLogTestOrigin_Util } from '../action-log/action-log.test-origin.js';
+import { DoctorNowErrorSource_Util } from './doctor-now.error-source.js';
 import type { DiscordFlushDecision, DiscordInboundMessage } from '../discord/discord.models.js';
+import type { DoctorNowSnapshot } from './doctor-now.models.js';
+
+/**
+ * A napló-olvasás négy mezője — ⭐ a **pillanatképből származtatva** *(`Pick`)*, hogy az olvasó
+ * és a jelentés alakja ⛔ ne tudjon széttartani. ⚠️ Szándékosan **nem exportált**: a szerződés
+ * egyetlen forrása a `DoctorNowSnapshot`.
+ */
+type DoctorNowErrorReading = Pick<
+  DoctorNowSnapshot,
+  'lastError' | 'skippedTestErrors' | 'skippedChronicleErrors' | 'unparsedLines'
+>;
 
 /** Egy beolvasott napló-sor — ⚠️ minden mező `unknown`, mert a fájl alakja ⛔ nem garantált. */
 interface ParsedLogLine {
@@ -26,7 +37,10 @@ interface ParsedLogLine {
   summary?: unknown;
   ts?: unknown;
   ref?: unknown;
+  actor?: unknown;
   extra?: Record<string, unknown>;
+  /** 🔴 Igaz, ha a sor ⛔ NEM volt JSON — a diagnosztika vak foltja, amit MEGSZÁMOLUNK. */
+  unparsed?: boolean;
 }
 
 /** A pillanatkép valódi olvasói. */
@@ -137,7 +151,7 @@ export class DoctorNowSources_Util {
    * ⚠️ A számlálás a **teljes napra** megy, ⛔ nem áll meg az első valódi hibánál: különben a
    * kihagyottak száma attól függne, hol találtuk meg a valódit — ⇒ félrevezető szám.
    */
-  static async readErrors(now: Date = new Date()): Promise<{ last: { summary: string; ageMs: number } | null; skippedTestErrors: number }> {
+  static async readErrors(now: Date = new Date()): Promise<DoctorNowErrorReading> {
     const day: string = new Intl.DateTimeFormat('en-CA', {
       timeZone: 'Europe/Budapest',
       year: 'numeric',
@@ -147,38 +161,62 @@ export class DoctorNowSources_Util {
     const path: string = resolveActionLogPath(resolveProjectRoot(), day);
     const lines: string[] = (await readFile(path, 'utf8')).split('\n');
 
-    let last: { summary: string; ageMs: number } | null = null;
+    let lastError: { summary: string; ageMs: number } | null = null;
     let skippedTestErrors: number = 0;
+    let skippedChronicleErrors: number = 0;
+    let unparsedLines: number = 0;
 
     for (let index: number = lines.length - 1; index >= 0; index -= 1) {
       const line: string = lines[index]?.trim() ?? '';
 
       if (!line) continue;
 
-      const parsed = DoctorNowSources_Util.parseLine(line);
+      const parsed: ParsedLogLine = DoctorNowSources_Util.parseLine(line);
+
+      // 🔴 A VAK FOLT SZÁMLÁLÁSA (22. tétel): egy értelmezhetetlen sor ⛔ nem lehet néma —
+      // ⚠️ akár EBBEN lehetne az utolsó hiba. Mérve: 52 nap / 119 869 sorból 1 ilyen.
+      if (parsed.unparsed) {
+        unparsedLines += 1;
+
+        continue;
+      }
 
       if (parsed.kind !== 'error') continue;
 
-      if (ActionLogTestOrigin_Util.isTestEntry({
+      const source = DoctorNowErrorSource_Util.classify({
+        ...(parsed.actor === undefined ? {} : { actor: parsed.actor }),
         ...(parsed.extra ? { extra: parsed.extra } : {}),
         ...(typeof parsed.ref === 'string' ? { ref: parsed.ref } : {}),
-      })) {
+      });
+
+      if (source.isTestOrigin) {
         skippedTestErrors += 1;
 
         continue;
       }
 
-      if (last) continue;
+      if (source.isChronicle) {
+        skippedChronicleErrors += 1;
+
+        continue;
+      }
+
+      if (lastError) continue;
 
       const stamp: number = typeof parsed.ts === 'string' ? Date.parse(parsed.ts) : Number.NaN;
 
-      last = {
+      lastError = {
         summary: typeof parsed.summary === 'string' ? parsed.summary : '(nincs leírás)',
         ageMs: Number.isNaN(stamp) ? 0 : now.getTime() - stamp,
       };
     }
 
-    return { last: last, skippedTestErrors: skippedTestErrors };
+    return {
+      lastError: lastError,
+      skippedTestErrors: skippedTestErrors,
+      skippedChronicleErrors: skippedChronicleErrors,
+      unparsedLines: unparsedLines,
+    };
   }
 
   /**
@@ -193,9 +231,11 @@ export class DoctorNowSources_Util {
 
       return typeof parsed === 'object' && parsed !== null ? { ...parsed } : {};
     } catch (error: unknown) {
+      // ⚠️ A `stderr`-jelzés MEGMARAD (a sérült sor javítható nyom), ⭐ DE a hívó mostantól
+      // a `unparsed` jelzőből SZÁMOT is épít belőle — l. a 22. tételt.
       SwallowedFailure_Util.report('doctor-now.parseLine', error);
 
-      return {};
+      return { unparsed: true };
     }
   }
 

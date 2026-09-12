@@ -15,6 +15,12 @@ import type { HeartbeatStatus } from '../discord/discord.heartbeat.js';
 
 const NOW: Date = new Date('2026-09-12T06:23:54+02:00');
 
+/** A napló-olvasás négy mezője — a pillanatképből származtatva *(l. a forrás-modult)*. */
+type ErrorReading = Pick<
+  DoctorNowSnapshot,
+  'lastError' | 'skippedTestErrors' | 'skippedChronicleErrors' | 'unparsedLines'
+>;
+
 /** Egy „minden rendben" életjel — a PILLANAT-blokkal együtt. */
 function aliveListener(overrides: { isGateClosed?: boolean; isNoiseFlooded?: boolean } = {}): HeartbeatStatus {
   return {
@@ -50,8 +56,12 @@ function workingSources(overrides: Partial<Parameters<typeof DoctorNow_Util.coll
       ({ pendingCount: 1, nextDueMs: 120_000 }),
     readMachine: async (): Promise<{ cpuPercent: number | null; ramUsedGb: number; ramTotalGb: number }> =>
       ({ cpuPercent: 25, ramUsedGb: 103.1, ramTotalGb: 127.1 }),
-    readErrors: async (): Promise<{ last: { summary: string; ageMs: number } | null; skippedTestErrors: number }> =>
-      ({ last: { summary: '[MA-DISCORD-LISTENER-CRASH] 1s után kilépett.', ageMs: 29_000 }, skippedTestErrors: 0 }),
+    readErrors: async (): Promise<ErrorReading> => ({
+      lastError: { summary: '[MA-DISCORD-LISTENER-CRASH] 1s után kilépett.', ageMs: 29_000 },
+      skippedTestErrors: 0,
+      skippedChronicleErrors: 0,
+      unparsedLines: 0,
+    }),
     ...overrides,
   };
 }
@@ -151,30 +161,73 @@ describe('🧪 A TESZT-SZEMÉT KISZŰRÉSE az „utolsó hiba" sorból (21. tét
   it('🔴 A TESZT-EREDETŰ HIBA NEM jelenik meg fő hibaként — de a SZÁMA látszik', async () => {
     // > Owner: „⛔ NE némítsd el: ha volt kihagyott tétel, a sor mondja ki."
     const snapshot: DoctorNowSnapshot = await DoctorNow_Util.collect(workingSources({
-      readErrors: async (): Promise<{ last: { summary: string; ageMs: number } | null; skippedTestErrors: number }> =>
-        ({ last: null, skippedTestErrors: 3 }),
+      readErrors: async (): Promise<ErrorReading> =>
+        ({ lastError: null, skippedTestErrors: 3, skippedChronicleErrors: 0, unparsedLines: 0 }),
     }));
     const rendered: string = DoctorNowRender_Util.render(snapshot);
 
     expect(snapshot.lastError).toBeNull();
     expect(rendered).toContain('ma nem volt VALÓDI hiba');
-    expect(rendered).toContain('3 teszt-eredetű hiba kihagyva');
+    expect(rendered).toContain('3 teszt-eredetű bejegyzés kihagyva');
   });
 
   it('⭐ VALÓDI hiba MELLETT is kimondja a kihagyottak számát', async () => {
     const snapshot: DoctorNowSnapshot = await DoctorNow_Util.collect(workingSources({
-      readErrors: async (): Promise<{ last: { summary: string; ageMs: number } | null; skippedTestErrors: number }> =>
-        ({ last: { summary: '[MA-DISCORD-LISTENER-CRASH] 1s után kilépett.', ageMs: 29_000 }, skippedTestErrors: 114 }),
+      readErrors: async (): Promise<ErrorReading> => ({
+        lastError: { summary: '[MA-DISCORD-LISTENER-CRASH] 1s után kilépett.', ageMs: 29_000 },
+        skippedTestErrors: 114,
+        skippedChronicleErrors: 0,
+        unparsedLines: 0,
+      }),
     }));
     const rendered: string = DoctorNowRender_Util.render(snapshot);
 
     expect(rendered).toContain('MA-DISCORD-LISTENER-CRASH');
-    expect(rendered).toContain('114 teszt-eredetű hiba kihagyva');
+    expect(rendered).toContain('114 teszt-eredetű bejegyzés kihagyva');
   });
 
   it('⛔ HA NEM VOLT KIHAGYOTT TÉTEL, a sor NEM zajos — nincs „(0 kihagyva)"', async () => {
     const rendered: string = DoctorNowRender_Util.render(await DoctorNow_Util.collect(workingSources()));
 
     expect(rendered).not.toContain('kihagyva');
+  });
+});
+
+describe('📖 A KRÓNIKA és a VAK FOLT szétválasztása (22. tétel)', () => {
+
+  it('📖 A KRÓNIKA-BEJEGYZÉS nem rendszer-hiba — de a száma KÜLÖN látszik', async () => {
+    // > Owner: „az én RETROSPEKTÍV jegyzetem… nem rendszer-hiba, hanem krónika… De a számuk
+    // > itt is látszódjon, ahogy a teszteknél."
+    const snapshot: DoctorNowSnapshot = await DoctorNow_Util.collect(workingSources({
+      readErrors: async (): Promise<ErrorReading> =>
+        ({ lastError: null, skippedTestErrors: 126, skippedChronicleErrors: 11, unparsedLines: 0 }),
+    }));
+    const rendered: string = DoctorNowRender_Util.render(snapshot);
+
+    expect(snapshot.lastError).toBeNull();
+    // ⭐ A KÉT SZÁM KÜLÖN: a teszt-szemét a gép zaja, a krónika a saját elemzésünk.
+    expect(rendered).toContain('126 teszt-eredetű + 11 krónika bejegyzés kihagyva');
+  });
+
+  it('🔴 AZ ÉRTELMEZHETETLEN SOR A VAK FOLT — kimondva a `gaps`-ben, ⛔ nem elnyelve', async () => {
+    // 🔬 Mérve 2026-09-12: 52 nap / 119 869 sorból 1 ilyen (egy kézzel írt JSONL-sorban
+    // escape-eletlen `F:\Steam` útvonal). ⚠️ Kicsi, de ⛔ nem lehet néma: akár EBBEN a sorban
+    // lehetne az utolsó hiba.
+    const snapshot: DoctorNowSnapshot = await DoctorNow_Util.collect(workingSources({
+      readErrors: async (): Promise<ErrorReading> =>
+        ({ lastError: null, skippedTestErrors: 0, skippedChronicleErrors: 0, unparsedLines: 2 }),
+    }));
+    const rendered: string = DoctorNowRender_Util.render(snapshot);
+
+    expect(snapshot.unparsedLines).toBe(2);
+    expect(snapshot.gaps.join(' ')).toContain('2 napló-sor NEM volt JSON-ként értelmezhető');
+    expect(rendered).toContain('AMIT NEM SIKERÜLT MEGMÉRNI');
+  });
+
+  it('⛔ HA NINCS VAK FOLT, nincs róla sor — a jelentés nem zajos', async () => {
+    const snapshot: DoctorNowSnapshot = await DoctorNow_Util.collect(workingSources());
+
+    expect(snapshot.unparsedLines).toBe(0);
+    expect(snapshot.gaps.join(' ')).not.toContain('értelmezhető');
   });
 });

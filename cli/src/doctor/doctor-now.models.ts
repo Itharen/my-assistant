@@ -45,6 +45,22 @@ export interface DoctorNowSnapshot {
    * megjelenik. Így a szűrés maga is **ellenőrizhető**, és ⛔ nem fedhet el valódi hibát.
    */
   skippedTestErrors: number;
+  /**
+   * 📖 Hány **KRÓNIKA**-bejegyzés lett kihagyva *(agent-session prózája — 22. tétel)*.
+   *
+   * 🔴 MIÉRT KÜLÖN SZÁM a teszt-hibáktól: a kettő **más jelenség**. A teszt-szemét a *gép* zaja,
+   * a krónika a *saját utólagos elemzésünk* — és ha egy nap sok krónika-bejegyzés van, az azt
+   * jelenti, hogy **sokat tanultunk**, ⛔ nem azt, hogy sok baj volt.
+   */
+  skippedChronicleErrors: number;
+  /**
+   * 🔴 Hány napló-sort ⛔ NEM sikerült JSON-ként értelmezni — a diagnosztika **vak foltja**.
+   *
+   * ⚠️ MIÉRT VAN ITT: egy elnyelt értelmezési hiba azt jelenti, hogy az „utolsó hiba" akár egy
+   * **nem látott** sorban lehet. ⇒ A szám a jelentésben **megjelenik** *(a `gaps` blokkban)*,
+   * ⛔ nem csak a `stderr`-en.
+   */
+  unparsedLines: number;
   /** ⚠️ Ami a pillanatképből NEM derült ki — ⛔ a hiány sosem néma. */
   gaps: string[];
 }

@@ -718,6 +718,15 @@ megszámolja** őket: `… (⚠️ 120 teszt-eredetű hiba kihagyva)`. ⛔ Ném�
 ⚠️ A régi bejegyzéseknél a **temp-útvonal** a visszafogó jel — ⛔ szöveg-egyezés NEM, mert egy
 **valódi** bejegyzés is említhet egy `*.spec.ts`-t *(mérve: pontosan ez fordult elő)*.
 
+📖 **A KRÓNIKA sem rendszer-hiba** *(22. tétel)*: az `actor: claude` / `codex` bejegyzések a
+**saját utólagos elemzéseink** *(a `CLAUDE.md` `kind: 'error'`-ként íratja őket)* ⇒ a `doctor now`
+kihagyja, de **külön számmal**: `(⚠️ 132 teszt-eredetű + 11 krónika bejegyzés kihagyva)`.
+⚠️ ⛔ **NEM** a „minden, ami nem `cli`/`server`" szabály lett: mérve **33 VALÓDI** gépi hiba van
+`agent` / `agent-dispatcher` / `assistant-agent-cron` actor alatt.
+🔴 **És a napló vak foltja is látszik:** ha egy sor nem JSON, a `gaps` blokk **kimondja**
+*(mérve: 52 nap / 119 869 sorból **1** — egy kézzel írt sorban escape-eletlen `F:\Steam` útvonal;
+a `ma action-log emit` helyesen escape-el, tehát a kanonikus úton ez nem fordul elő)*.
+
 📌 A teljes leírás: `__documentations/dev/DOCTOR_NOW.md`.
 
 ### 🔇 A ZAJRA NINCS „VÉGLEG nem sikerült" RIASZTÁS (2026-09-12)

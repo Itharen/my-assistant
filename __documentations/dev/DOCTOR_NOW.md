@@ -183,3 +183,94 @@ száma attól függne, **hol** találtuk meg a valódit.
 *(`extra.testRun: true`)* — a bélyegzés tehát élesben is működik, ⛔ nem csak fixtúrában.
 📌 A spec *(`action-log.test-origin.spec.ts`)* **a saját futásában** igazolja, hogy a bélyeg él:
 `expect(ActionLogTestOrigin_Util.isTestRun()).toBeTrue()`.
+
+---
+
+## 📖 A 22. TÉTEL — ÖNREFERENCIA + A VAK FOLT MEGMÉRVE (2026-09-12 17:30)
+
+> **Owner, 17:30:** *„Most az ÉN saját retrospektív jegyzetem jelenik meg »utolsó hibaként« — az a
+> bejegyzés, amiben LEÍRTAM a teszt-szemét problémát. Nem rendszer-hiba, hanem **krónika**… A
+> megkülönböztető jel MÁR OTT VAN: az `actor` mező."*
+
+### 1️⃣ 📖 KRÓNIKA vs. ÜZEMÁLLAPOT — a mérés döntötte el, KIT hagyunk ki
+
+🔴 **Az ok szerkezeti:** a `CLAUDE.md` **előírja**, hogy a szemantikus tanulságot `kind: 'error'`
+bejegyzésként írjuk *(„hiba, aminek tanulsága van")* ⇒ **ugyanabban a naplóban** van a **gép**
+hibája és az **utólagos elemzés** róla. Az önreferencia elkerülhetetlen: a hiba **leírása** lett „a
+legutóbbi hiba". ⇒ ⛔ Nem a naplózást változtattuk meg, hanem az **olvasót** tanítottuk meg.
+
+**MÉRVE — 52 nap, 4 131 `kind: 'error'` bejegyzés, `actor` szerint:**
+
+| actor | db | Mi ez valójában |
+|---|---|---|
+| `cli` | 3 156 | ⚙️ **futásidejű** |
+| `server` | 796 | ⚙️ **futásidejű** |
+| `claude` | 100 | 📖 **krónika** *(az owner ezt kérte kihagyni)* |
+| `codex` | 46 | 📖 **krónika** — mérve ugyanaz az osztály *(„Organizer shopping-item write blocked…")* |
+| `agent` | 23 | ⚙️ **futásidejű** — `[notify-discord] POST failed … fetch failed` |
+| `agent-dispatcher` | 6 | ⚙️ **futásidejű** — `dispatch: JSON parse error …` |
+| `development-agent` | 3 | ⚠️ **VEGYES** *(„Build fail: client …" vs. prózai tanulság)* |
+| `assistant-agent-cron` | 1 | ⚙️ **futásidejű** — `fo tasks.list AUTH-fail` |
+
+🔴 **EZÉRT NEM a „minden, ami nem `cli`/`server`" szabály lett:** az `agent`, `agent-dispatcher`,
+`assistant-agent-cron` és `development-agent` bejegyzések **mért módon GÉPI hibák** ⇒ egy fordított
+logikájú szűrő **33 valódi hibát** tüntetett volna el. ⇒ **Nevesített, szűk lista** *(`claude`,
+`codex`)*, ⛔ nem tagadás. ⚠️ A `development-agent` **szándékosan benne marad** *(vegyes tartalom)*:
+a bizonytalan bejegyzést inkább **megmutatjuk**.
+
+🙋 **A `codex` hozzávétele az én kiterjesztésem** *(az owner `claude`-ot kért)*: 46 mért, prózai
+bejegyzés ugyanabból az osztályból. ⛔ Ha nem kell, egy szó és kiveszem.
+
+### 2️⃣ 🔴 A NYELT `parseLine` HIBA — megmértem, és NEM vagyunk vakok
+
+⚠️ A mérést **ugyanazzal a parserrel** kellett végezni, amit az eszköz használ *(Node `JSON.parse`
+— a Python `json` máshol húzza a határt)*:
+
+| Mit mértem | Érték |
+|---|---|
+| napló-fájl | **52 nap** |
+| összes sor | **119 869** |
+| 🔴 **értelmezhetetlen sor** | **1** *(0,001%)* |
+| melyik napon | **csak 2026-09-12** |
+| a sor `kind`-ja | ⭐ **`ship`** ⇒ „utolsó hibaként" ⛔ sosem jelenhetett volna meg |
+
+**A konkrét ok** *(a sor 248. karakterénél)*:
+
+```
+…"summary":"… A Steam-utvonal a regisztrybol (F:\Steam)" …
+                                                 ↑ escape-eletlen backslash ⇒ JSON-ban érvénytelen
+```
+
+⇒ Egy **kézzel írt** JSONL-sor *(direkt append, ⛔ nem a `logAction`-ön át)*. A kanonikus úton
+*(`ma action-log emit` → `JSON.stringify`)* ez ⛔ nem fordulhat elő.
+
+⭐ **AMIT TETTEM:** a `doctor now` **megszámolja** az értelmezhetetlen sorokat, és a `gaps`
+blokkban **kimondja** — ⛔ nem csak a `stderr`-en:
+
+```
+⚠️ AMIT NEM SIKERÜLT MEGMÉRNI:
+    · 1 napló-sor NEM volt JSON-ként értelmezhető — ennyire vak a napló-olvasás
+      (az „utolsó hiba" ezekben a sorokban nem látszik)
+```
+
+⛔ **AMIT SZÁNDÉKOSAN NEM TETTEM:** ⛔ nem építettem „JSON-javító" tartalék-parsert *(0,001%-ért
+egy olyan mechanizmus, ami **félre is olvashat** — pont az a magabiztos tévedés, amit kerülünk)*, és
+⛔ **nem írtam át a sérült sort**: a napló **append-only**, a javítás nem az én döntésem.
+🙋 A megelőzés a **kézi JSONL-append** elhagyása lenne *(a `ma action-log emit` helyesen escape-el)*.
+
+### ⛔ NEM NÉMÍTÁS — a két szám KÜLÖN látszik
+
+```
+🔴 UTOLSÓ HIBA (11ó 13p): [MA-DISCORD-LISTENER-CRASH] Discord-figyelő 1s után kilépett …
+   (⚠️ 132 teszt-eredetű + 11 krónika bejegyzés kihagyva)
+```
+
+⭐ **MIÉRT KÜLÖN a kettő:** a teszt-szemét a **gép** zaja, a krónika a **saját utólagos
+elemzésünk** — ha egy nap sok krónika-bejegyzés van, az azt jelenti, hogy **sokat tanultunk**,
+⛔ nem azt, hogy sok baj volt.
+
+### 📊 ÉLŐ IGAZOLÁS
+
+⭐ Az „utolsó hiba" most **valódi üzemállapot**: a 06:23-as `MA-DISCORD-LISTENER-CRASH`
+*(a dist-race)*, **11 órával** korábbról — ⇒ azóta **nem történt gépi hiba**, és ez most **látszik**
+is, nem elveszik a krónika és a teszt-szemét között.

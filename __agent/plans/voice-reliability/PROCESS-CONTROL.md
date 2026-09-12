@@ -47,6 +47,7 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **19** | ⏳ **A KISZŰRT ZAJ NEM NYÚJTJA A KÖTEG-ABLAKOT** | 1️⃣9️⃣ 04:32 | ✅ **KÉSZ** — mérve: a kapu **90,0 percig** zárva volt *(43%)*, ebből 90% puszta észlelésből; CLI 1231 · `dc rev` 2404→2404 | 2026-09-12 05:45 |
 | **20** | 🔴 **A zajra is kiment a „VÉGLEG nem sikerült" riasztás** + ⚠️ **az értelmesség-őr hamis pozitívja** + ⏱️ **`ma doctor now`** | 2️⃣0️⃣ 05:35 | ✅ **KÉSZ** — a 169 riasztásból 43 zaj elmarad; a játék-üzenet 0,311→0,156; élő próba OK; CLI 1248 · `dc rev` 2404→**2397** | 2026-09-12 06:35 |
 | **21** | 🧪 **A `doctor now` „utolsó hiba" sora TESZT-szemetet mutatott** | 2️⃣1️⃣ 09:05 | ✅ **KÉSZ** — mérve: 631 hibából 114 spec-fixtúra; bélyeg (`extra.testRun`) + temp-útvonal, a kihagyottak SZÁMA látszik; élő próba OK; CLI 1256 · `dc rev` 2397→2397 | 2026-09-12 09:20 |
+| **22** | 📖 **Önreferencia** *(a saját krónikám lett az „utolsó hiba")* + 🔴 **a nyelt `parseLine` hiba** | 2️⃣2️⃣ 17:30 | ✅ **KÉSZ** — mérve: 4 131 hibából 146 krónika *(`claude`+`codex`)*, és a fordított szűrő 33 VALÓDI hibát vitt volna; a vak folt **1 sor / 119 869** (0,001%); CLI 1265 · `dc rev` 2397→2397 | 2026-09-12 17:55 |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -583,10 +584,11 @@ szerver-újraindításkor** lép életbe; ⛔ nem indítom újra magamtól *(a s
 
 ## ➡️ A KÖVETKEZŐ KONKRÉT LÉPÉS
 
-⭐ **A 17-21. tétel ÉLESBEN FUT; a maradék rajtam kívüli kapun áll** *(állapot: 2026-09-12 09:20)*:
+⭐ **A 17-22. tétel ÉLESBEN FUT; a maradék rajtam kívüli kapun áll** *(állapot: 2026-09-12 17:55)*:
 
 | Tétel | Mire vár | Mi oldaná fel |
 |---|---|---|
+| **22** *(önreferencia + a napló vak foltja)* | ⭐ **KÉSZ, élő próbán igazolva** | — |
 | **21** *(teszt-szemét az „utolsó hiba" sorban)* | ⭐ **KÉSZ, élő próbán igazolva** | — |
 | **20** *(riasztás-szűrés · tulajdonnév · `doctor now`)* | ⭐ **KÉSZ, élő próbán igazolva** | — |
 | **19** *(köteg-kapu zaj-immunitás)* | ⭐ **ÉLESBEN FUT** — a `ma doctor now` 06:26-kor a VALÓDI kapu-állapotot mutatta | — |
@@ -607,6 +609,61 @@ szerver-újraindításkor** lép életbe; ⛔ nem indítom újra magamtól *(a s
    viszont **valódi** veszteség-jelzések *(napi összevont jelentés lehetne helyettük)*.
 
 ⇒ A hurok lezárása: jelentés az `AGENT_BUS.md`-ben, ⛔ új ébredés NEM.
+
+### 📖 A 22. TÉTEL — ÖNREFERENCIA + A VAK FOLT MEGMÉRVE (2026-09-12 17:55) ✅
+
+#### 1️⃣ Krónika vs. üzemállapot — a MÉRÉS döntötte el, kit hagyunk ki
+
+🔴 **Az ok szerkezeti:** a `CLAUDE.md` előírja, hogy a szemantikus tanulság `kind: 'error'`
+bejegyzés legyen ⇒ **ugyanabban a naplóban** van a gép hibája és az arról írt elemzés. Az
+önreferencia elkerülhetetlen — ⇒ ⛔ nem a naplózást, hanem az **olvasót** javítottam.
+
+**MÉRVE — 52 nap, 4 131 hiba-bejegyzés, actor szerint:** `cli` 3 156 · `server` 796 ·
+**`claude` 100** · **`codex` 46** · `agent` 23 · `agent-dispatcher` 6 · `development-agent` 3 ·
+`assistant-agent-cron` 1.
+
+🔴 **A „minden, ami nem cli/server" szabály 33 VALÓDI gépi hibát tüntetett volna el** *(az `agent`
+= `[notify-discord] POST failed`, az `agent-dispatcher` = `dispatch: JSON parse error`, a cron =
+`fo tasks.list AUTH-fail`)*. ⇒ **Nevesített, szűk lista** *(`claude`, `codex`)*, ⛔ nem tagadás.
+⚠️ A `development-agent` **szándékosan benne marad** *(vegyes tartalom — a bizonytalant megmutatjuk)*.
+
+🙋 **A `codex` hozzávétele az én kiterjesztésem** *(te `claude`-ot kértél)*: 46 mért, prózai
+bejegyzés ugyanabból az osztályból. ⛔ Ha nem kell, egy szó és kiveszem.
+
+#### 2️⃣ A nyelt `parseLine` hiba — megmérve: NEM vagyunk vakok
+
+⚠️ A mérés **ugyanazzal a parserrel** ment, amit az eszköz használ *(Node `JSON.parse` — a Python
+`json` máshol húzza a határt)*:
+
+| | |
+|---|---|
+| napló-fájl / összes sor | **52 nap / 119 869 sor** |
+| 🔴 értelmezhetetlen | **1** *(0,001%)*, csak 09-12-n |
+| a sor `kind`-ja | ⭐ **`ship`** ⇒ „utolsó hibaként" ⛔ sosem jelenhetett volna meg |
+| az ok | egy **kézzel írt** JSONL-sorban escape-eletlen backslash *(`F:\Steam`)* |
+
+⭐ **A javítás:** a `doctor now` **megszámolja** és a `gaps` blokkban **kimondja** a vak foltot.
+⛔ **Amit szándékosan NEM tettem:** ⛔ nincs „JSON-javító" tartalék-parser *(0,001%-ért egy olyan
+mechanizmus, ami félre is olvashat)*, és ⛔ **nem írtam át a sérült sort** *(a napló append-only)*.
+🙋 A megelőzés a kézi JSONL-append elhagyása — a `ma action-log emit` helyesen escape-el.
+
+#### 📊 ÉLŐ IGAZOLÁS
+
+```
+🔴 UTOLSÓ HIBA (11ó 13p): [MA-DISCORD-LISTENER-CRASH] … (⚠️ 132 teszt-eredetű + 11 krónika kihagyva)
+⚠️ AMIT NEM SIKERÜLT MEGMÉRNI: · 1 napló-sor NEM volt JSON-ként értelmezhető
+```
+
+⇒ Az „utolsó hiba" most **valódi üzemállapot** *(a 06:23-as dist-race)*, és látszik, hogy **azóta
+nem volt gépi hiba** — ez az információ eddig elveszett a krónika és a teszt-szemét között.
+
+#### ✅ Igazolás
+
+CLI **1265/1265** *(+9 új spec)* · `tsc` tiszta · **élő próba** OK · `dc rev` **2397 → 2397**
+⇒ ⭐ **0 új találat** *(a `Pick<…>` típus két sort 150 karakter fölé vitt ⇒ helyi, ⛔ nem exportált
+típus-alias lett belőle — a szerződés továbbra is a `DoctorNowSnapshot`-ból származik)*.
+
+📌 Doksi: `__documentations/dev/DOCTOR_NOW.md` *(22. szakasz)* · `SKILLS.md`.
 
 ### 🧪 A 21. TÉTEL — AZ „UTOLSÓ HIBA" SORA TESZT-SZEMETET MUTATOTT (2026-09-12 09:20) ✅
 

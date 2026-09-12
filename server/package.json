@@ -1,6 +1,6 @@
 {
   "name": "@my-assistant/server",
-  "version": "0.1.695",
+  "version": "0.1.696",
   "private": true,
   "description": "my-assistant server — DyNTS + FDP framework, MongoDB-backed.",
   "type": "module",
