@@ -4167,3 +4167,114 @@ kell *(a szerver a gazda — ⛔ nem indítom el magamtól)*; a maradék minden 
 
 📌 Doksi: `__documentations/dev/VOICE_BATCH_GATE.md` · `.../VOICE_MEANINGFULNESS_MARK.md` ·
 `SKILLS.md` · terv: `…/PROCESS-CONTROL.md` *(18. és 19. tétel)*.
+
+---
+
+## AGB-2026-09-12-04 — 🔇 A zaj-riasztás elhallgattatva · 🎮 a hamis pozitív javítva · ⏱️ `ma doctor now`
+
+**From:** dev · **To:** assistant · **Időpont:** 2026-09-12 06:40 · **Tétel:** 20. *(három pont)*
+
+### 1️⃣ A ZAJRA IS KIMENT a „VÉGLEG nem sikerült" riasztás — ✅ JAVÍTVA
+
+🔬 **MÉRVE** *(`outbound-log.jsonl`)*: **169** ilyen riasztás **egy éjszaka alatt**, ebből
+**43 BULI-ZAJ** · 71 arány-gyanú · 22 CUDA-hiba · 33 egyéb · 1 időtúllépés. A csúcs **4 / perc**, és
+05:47-kor **még mindig** ömlött — órákkal a buli után.
+
+🔴 **A MECHANIZMUS, amit a mérés kihozott:** a zaj-felvétel **technikai** hibával *(HTTP 500 /
+CUDA)* került az újrapróbálási sorra; ott egy későbbi próba **sikeresen** felismerte — de **zajt**.
+A régi kód ezt „még mindig nem sikerült"-ként kezelte ⇒ **újra ütemezte**, és az **5. próba után
+riasztott**. ⇒ Minden zaj-felvétel **4 fölösleges felismerést** és **1 hamis riasztást** ért.
+
+✅ **(a)** a zaj mostantól **LEZÁRÁS**, ⛔ nem bukás: kiesik a sorból, riasztás **nélkül**
+*(`MA-VOICE-SPEECH-NOISE` napló-sor marad utána)*. ⚠️ A döntés **tesztelt** függvényben áll, és a
+**sorrend kritikus**: a zaj-jelölés **erősebb** a `suspicious`-nál *(a zaj annak részhalmaza)* —
+ha fordítva lenne, minden a régi hibába futna. **Pozitív kontroll** van rá.
+
+✅ **(b)** a riasztás **kiírja a felvétel idejét**:
+```
+🔴 Egy hangüzenetedet VÉGLEG nem sikerült felismernem.
+🕓 A felvétel ideje: 2026-09-12 03:47:05 (Europe/Budapest)
+```
+⭐ A pontos idő a **fájlnévben** van. ⚠️ Hangüzenetnél a fájlnév `voice-message.ogg` ⇒ ott a **sorba
+kerülés** ideje megy ki, és a szöveg **kimondja**, hogy az mi — ⛔ nem adjuk el pontos felvételi
+időnek, amit nem mértünk.
+
+📊 **A hatás a ma éjjeli adaton: 43 riasztás elmaradna.** ⚠️ A megmaradó **126** viszont **valódi**
+veszteség-jelzés *(arány-gyanú, CUDA-hiba)* — ⛔ azokat nem hallgattam el.
+
+### 2️⃣ AZ ÉRTELMESSÉG-ŐR HAMIS POZITÍVJA — ✅ JAVÍTVA, ⛔ a küszöb VÁLTOZATLAN
+
+Köszönöm a visszajelzést — a **viselkedés** tehát jó volt *(jelölt, nem dobott el)*, csak a jelölés
+volt fölösleges. A javítás **tulajdonnév-mentesség**, **két** jellel:
+
+**(1) a mondat KÖZBEN nagybetűs szó tulajdonnév** ⇒ nem „ismeretlen".
+⚠️ A mondat **első** szava ⛔ **nem** az: ott a nagybetű kötelező, tehát semmit nem bizonyít — ha azt
+is felmentenénk, **minden mondat-kezdő halandzsa** ingyen átmenne *(erre teszt van)*.
+
+**(2) a személyes név-szótár** *(Steam: **539 név / 446 egyedi ⇒ 609 szó-töredék**; a lexikon
+15 953 → 16 423 szó)*. ⚠️ A fájlok **gitignoráltak és személyesek** ⇒ csak **olvasom**, a tartalom
+⛔ **nem** kerül a repóba, és ha nincsenek, ⛔ **nem hiba** *(a nagybetűs szabály akkor is él)*.
+⭐ A `steamapps` könyvtárakat ⛔ nem kell keresni: a **360** telepített név **már benne van** az
+`installed-games.md` táblájában *(amit te állítasz elő)* ⇒ gép-független út.
+
+📊 **MÉRVE** *(211 valódi beszéd-átirat + a 2 felcímkézett halandzsa)*:
+
+| | a játék-üzeneted | halandzsa | hamis jelölés |
+|---|---|---|---|
+| előtte *(éles)* | 🔴 megjelölve *(0,311)* | 2/2 | **1** |
+| ⭐ most | nincs jelölés *(**0,156**)* | 2/2 | **0** |
+
+### 3️⃣ ⏱️ `ma doctor now` — AZ ÖN-DIAGNOSZTIKA MEGVAN
+
+⚠️ **Tág kérés volt** ⇒ ⛔ **nem** épült keretrendszer: **EGY** parancs, ami a **pillanatot** mutatja.
+⛔ A `comm doctor`-tól **elhatárolva**: az a **készenlétet**, ez a **pillanatot** méri.
+
+```
+📨 KÖTEG: 1 üzenet vár · a legrégebbi: 2p 5mp
+    ⏸️ VÁR — ÉPP BESZÉL — folyamatban van egy megszólalás…
+✅ FIGYELŐ: alive (4 mp régi) · 🔊 bent (honnie-place) · 4 megszólalás-jel
+    🎙️ felismerés ÉPP: nem fut · nyitott megszólalás-jel 3
+    ⏳ köteg-kapu: 🔴 ZÁRVA · zaj az ablakban: 0
+🖥️ GÉP: CPU 52% · RAM 106.0/127.1 GB (83%)
+🔴 UTOLSÓ HIBA (6 mp): …
+```
+
+🔬 **A NEHÉZ RÉSZ:** a köteg-kapu és a futó felismerés a figyelő **memóriájában** élnek ⇒ egy külön
+folyamat ⛔ nem látja őket *(kívülről ugyanúgy néznek ki, mint a semmi)*. ⭐ Ezért a figyelő az
+**életjelbe** írja őket, és a `doctor now` a **kiküldési döntésbe is beteszi** a valódi
+kapu-állapotot. ⚠️ Ha a blokk hiányzik, a jelentés **kimondja** *(„régi kódot futtat")* — ⛔ nem
+nullákat mutat.
+
+⭐ **AZ ELSŐ ÉLES FUTÁS AZONNAL TALÁLT EGY VALÓDI HIBÁT:** `MA-DISCORD-LISTENER-CRASH` 29
+másodperccel korábban ⇒ kiderült, hogy a **saját `dist`-újraépítésem** *(rimraf)* alatt indította
+újra a felügyelő a figyelőt — **dist-race**, ⛔ nem kód-hiba *(mérve: ma pontosan **1** ilyen, a
+build pillanatában)*.
+
+### ⭐ ÉLŐ IGAZOLÁS: a 17-20. tétel MÁR FUT
+
+A `ma doctor now` kimenete **bizonyítja**, hogy a figyelő a **friss** kódot futtatja *(a `moment`
+blokk ott van)*: 06:26-kor a **valódi** kapu-állapotot mutatta *(3 nyitott megszólalás-jel, zárva,
+0 zaj az ablakban)*. ⇒ A 17. *(zaj-szűrés)*, 18. *(értelmesség-jelölés)*, 19. *(zaj-immun
+köteg-ablak)* és 20. tétel **élesben van**.
+
+### 🙋 HÁROM OWNER-DÖNTÉS VÁR — mindegyikhez megvan a szám
+
+1. **Tágítsuk a halandzsa-szabályt?** 3/6 elkapás, de **4 valódi** átirat is jelölést kapna.
+2. **Bekapcsoljuk a felismerő saját akusztikus osztályozóját?** A zajt a **felismerés előtt**
+   szűrné *(kapacitás-nyereség)*, ⚠️ **de** átirat nélkül válaszol, és rövid mintára *„too short for
+   reliable classification"* ⇒ egy rövid **valódi** megszólalás néma eldobássá válhatna.
+3. **Ritkítsuk a végleges-hiba riasztásokat?** A zaj-ág után is **126** maradt egy éjszakára — ezek
+   viszont **valódi** veszteség-jelzések. Lehetne helyettük **napi összevont** jelentés.
+
+### ✅ Ellenőrzés
+
+CLI **1248 / 1248** *(+17 új spec)* · szerver **119 / 119** · `tsc` tiszta · **élő próba** lefuttatva ·
+`dc rev` **2404 → 2397** ⇒ ⭐ **−7**. ⚠️ **Kimondva:** a **+2** új találat a **parancs-minta** ára
+*(minden `ma` parancs lusta `import()`-et és `export async function runXCommand`-ot használ)* —
+⛔ ettől nem tértem el egy számláló miatt; a **−9** az életjel-olvasó tisztításából jött
+*(6 bracket-hozzáférés és 3 `as` átcímkézés eltűnt)*.
+
+### 🔇 A HÉTVÉGI KERET BETARTVA
+
+⛔ **Nulla élő hangszóró-kísérlet**, ⛔ **egyetlen üzenet sem ment az ownernek.** A Steam-fájlokat
+**csak olvastam** *(a tartalmuk nincs a repóban)*. Minden mérés **olvasás** volt.

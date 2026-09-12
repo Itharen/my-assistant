@@ -158,6 +158,10 @@ async function runVoiceSubcommand(command: string, args: string[]): Promise<void
   return (await import('./commands/voice.command.js')).runVoiceCommand(command, args);
 }
 
+async function runDoctorSubcommand(command: string, args: string[]): Promise<void> {
+  return (await import('./commands/doctor.command.js')).runDoctorCommand(command, args);
+}
+
 async function runCalendarSubcommand(command: string, args: string[]): Promise<void> {
   return (await import('./commands/calendar.command.js')).runCalendarCommand(command, args);
 }
@@ -220,6 +224,13 @@ const COMMAND_TREE: Record<string, Record<string, CommandHandler>> = {
   },
   tick: {
     plan: (args: string[]) => runTickSubcommand('plan', args),
+  },
+  // ⏱️ AZ ON-DIAGNOSZTIKA (owner, 2026-09-12 05:33: „tudjad magadat diagnosztizalni, hogy
+  // ilyenkor mi a fene tortenik peldaul most?").
+  // ⚠️ UGYANAZ A CSAPDA, mint a `voice-funnel`-nel es a `calendar`-nal: e nelkul a sor nelkul
+  // a parancs FUTASIDOBEN NEM LETEZIK, akkor is, ha a `tsc` es minden teszt zold.
+  doctor: {
+    now: (args: string[]) => runDoctorSubcommand('now', args),
   },
   // 🔊 A HANG-CSATORNA hangereje (owner, 2026-09-10: „nekem allithatonak kell lennie").
   // ⛔ NEM a `volume` parancs: az a Cast-hangszoro a lakasban.
@@ -709,6 +720,34 @@ function printGroupHelp(group: string): void {
         'Examples:',
         '  ma calendar today',
         '  ma calendar today --day 2026-09-12 --json --pretty',
+        '',
+      ].join('\n'),
+    );
+    return;
+  }
+  if (group === 'doctor') {
+    process.stdout.write(
+      [
+        '',
+        'ma doctor — MI TORTENIK EPPEN MOST (a pillanat, egy kepernyon)',
+        '',
+        'Subcommands:',
+        '  now   Hany uzenet var es miota, fut-e felismeres, a figyelo eletjele,',
+        '        a gep terhelese, az utolso hiba',
+        '',
+        'Flags:',
+        '  --json   Gepi envelope',
+        '',
+        'A `ma comm doctor` a KESZENLETET meri („be van-e kotve"), ez a PILLANATOT („mi megy',
+        'most"). A ketto KET KULONBOZO kerdes — egyszerre is lehet „minden zold" es „most epp',
+        'semmi nem megy at".',
+        '',
+        'Amit egy kulon folyamat nem lat (koteg-kapu, futo felismeres), azt a figyelo az',
+        'ELETJELBE irja. Ha az a blokk hianyzik, a jelentes KIMONDJA — nem nullakat mutat.',
+        '',
+        'Examples:',
+        '  ma doctor now',
+        '  ma doctor now --json',
         '',
       ].join('\n'),
     );

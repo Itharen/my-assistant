@@ -23,6 +23,7 @@ import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
+import { DISPLAY_TIME_ZONE, localStamp } from '../utils/local-time.js';
 
 /**
  * A várakozási lépcsők — az n. újrapróbálás ennyivel a bukás UTÁN esedékes.
@@ -304,8 +305,56 @@ export function composeGiveUpMessage(entry: SttRetryEntry): string {
   const waited: string = describeWait(entry);
 
   return '🔴 **Egy hangüzenetedet VÉGLEG nem sikerült felismernem.**\n'
+    + `🕓 A felvétel ideje: **${describeRecordedAt(entry)}**\n`
     + `${MAX_ATTEMPTS} próbálkozás ${waited} alatt — utoljára: ${entry.lastFailure}\n\n`
     + '📌 **Nem tudom, mit mondtál benne.** Kérlek küldd újra, vagy írd le.';
+}
+
+/**
+ * 🕓 MIKOR VOLT A FELVÉTEL — a 20. tétel (1b) pontja.
+ *
+ * > **Owner, 2026-09-12 05:30:** *„azt írja, buli zaj, de hát a bulinak **már régen vége**."*
+ *
+ * 🔴 **A MÉRT HIBA:** a riasztás csak annyit mondott, hogy *„5 próbálkozás **3,9 óra** alatt"* —
+ * a felvétel **időpontját** nem. Az owner **most** kapja az üzenetet, ezért **most**-ra érti, és
+ * egy órákkal korábbi felvételről azt hiszi, hogy épp az imént beszélt.
+ *
+ * ⭐ **A PONTOS IDŐ A FÁJLNÉVBEN VAN** *(hang-csatorna)*: a felvevő
+ * `recording-<userId>-2026-09-08T22-16-17-375Z.wav` alakban nevez.
+ * ⚠️ A **hangüzenet**-úton a fájlnév `voice-message.ogg` ⇒ ott a `queuedAt` a legjobb **mért**
+ * közelítés *(a letöltés pillanata, másodperceken belül a küldéshez)* — és ezt **ki is írjuk**.
+ * ⛔ Nem találgatunk: ha egyik sem értelmezhető, azt is **kimondjuk**.
+ */
+function describeRecordedAt(entry: SttRetryEntry): string {
+  const fromName: Date | null = parseRecordingStamp(entry.filename);
+
+  if (fromName) return `${localStamp(fromName)} (${DISPLAY_TIME_ZONE})`;
+
+  const queued: number = Date.parse(entry.queuedAt);
+
+  if (!Number.isNaN(queued)) {
+    return `${localStamp(new Date(queued))} (${DISPLAY_TIME_ZONE}, a sorba kerülés ideje)`;
+  }
+
+  return 'ismeretlen — sem a fájlnévből, sem a sor-bejegyzésből nem derül ki';
+}
+
+/**
+ * A felvétel ideje a **fájlnévből** — `null`, ha nincs benne.
+ *
+ * ⚠️ A felvevő `-` jelekkel írja az idő elválasztóit *(fájlnévben a `:` tilos)*, ezért vissza
+ * kell alakítani ISO-ra. ⛔ Ha bármi nem stimmel, `null` — a hívó ilyenkor a `queuedAt`-ra esik
+ * vissza, és **kimondja**, hogy az mit jelent.
+ */
+function parseRecordingStamp(filename: string): Date | null {
+  const match: RegExpMatchArray | null = filename
+    .match(/(\d{4}-\d{2}-\d{2})T(\d{2})-(\d{2})-(\d{2})-(\d{3})Z/u);
+
+  if (!match) return null;
+
+  const when: Date = new Date(`${match[1]}T${match[2]}:${match[3]}:${match[4]}.${match[5]}Z`);
+
+  return Number.isNaN(when.getTime()) ? null : when;
 }
 
 /** Mennyit várakozott a tétel — ember-olvasható alakban. */

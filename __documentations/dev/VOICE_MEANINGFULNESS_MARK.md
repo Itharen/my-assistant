@@ -159,3 +159,64 @@ kimondja.
 🔇 **A HÉTVÉGI KIKÖTÉS BETARTVA:** ⛔ nulla élő hangszóró-kísérlet, ⛔ egyetlen üzenet sem ment az
 ownernek. Az FDP AI-t **csak használtam** *(két archív felvétel felismerése)* — ⛔ nem indítottam
 újra, nem állítottam le, modellt nem töltöttem be.
+
+---
+
+## 🎮 A 20. TÉTEL (2) — AZ ELSŐ ÉLES TALÁLAT HAMIS POZITÍV VOLT (2026-09-12 05:31)
+
+Az értelmesség-őr **élesbe állt**, és rögtön megjelölt egy **valódi** owner-üzenetet:
+
+```
+⚠️ ÉRTELMESSÉG-GYANÚ — 14 ismeretlen szó a 45 tartalmi szóból (31%, küszöb: 22%):
+   timberborn-ban, dyson, sphere-ben, settlers, dyson
+```
+
+⇒ Az „ismeretlen szavak" **mind JÁTÉKCÍMEK**; az üzenet *(„a Timberborn-ban, a Dyson Sphere-ben, a
+Mini Settlers…")* teljesen valódi volt.
+
+> **Owner:** *„NAGYON JÓL csináltad, hogy **MEGJELÖLTED és NEM dobtad el** — ez maradjon is így.
+> A javítás **NE a küszöb emelése** legyen, hanem **tulajdonnév-mentesség**."*
+
+### ✅ A JAVÍTÁS — KÉT jel, ⛔ a küszöb VÁLTOZATLAN *(0,22)*
+
+```
+(1) MONDAT KÖZBEN nagybetűs szó  ⇒  tulajdonnév, NEM „ismeretlen"     — gép-független
+(2) a SZEMÉLYES név-szótár       ⇒  játék- és termék-nevek ismertek   — bő ráhagyást ad
+```
+
+⚠️ **A MONDAT ELSŐ SZAVA ⛔ NEM tulajdonnév:** ott a nagybetű kötelező, tehát semmit nem mond a szó
+fajtájáról. Ha azt is felmentenénk, **minden mondat-kezdő halandzsa** ingyen átmenne — erre teszt van.
+
+### 🔬 A MÉRÉS — 211 valódi beszéd-átirat + a 2 felcímkézett halandzsa
+
+| Változat | az owner játék-üzenete | halandzsa elkapva | hamis jelölés |
+|---|---|---|---|
+| **előtte** *(éles)* | 🔴 **MEGJELÖLVE** *(0,311)* | 2/2 | **1** |
+| + nagybetűs szabály | ⭐ nincs jelölés *(0,200)* | 2/2 | **0** |
+| + személyes név-szótár | ⭐ nincs jelölés *(0,156)* | 2/2 | **0** |
+
+⭐ **MINDKETTŐ BENNE VAN, és ez szándékos:** a nagybetűs szabály **mindig** működik, de csak
+0,200-ra viszi le az arányt — **vékony** ráhagyás a 0,22-es küszöbhöz. A név-szótár 0,156-ra viszi
+*(bő ráhagyás)*, ⚠️ de **személyes fájlokra** épül, amik ⛔ nem biztos, hogy léteznek.
+
+### 🎮 A SZEMÉLYES NÉV-SZÓTÁR — csak OLVASVA, ⛔ a repóba SOHA
+
+| Fájl | Mit ad |
+|---|---|
+| `~/.config/my-assistant/steam/appdetails-cache.json` | **120** játéknév |
+| `~/.config/my-assistant/steam/installed-games.md` | a **360** telepített játék neve |
+| `~/.config/my-assistant/steam/owned-played-games.md` | a játszott játékok |
+
+⇒ **539 név / 446 egyedi ⇒ 609 szó-töredék**, és a lexikon **15 953 → 16 423** szóra nőtt.
+⚠️ **A HÁROM FÁJL SZEMÉLYES ÉS GITIGNORÁLT** *(az owner kikötése)*: ⛔ a tartalmuk **nem** kerül a
+repóba, csak **olvassuk** — és ha nincsenek, ⛔ **nem hiba** *(a nagybetűs szabály akkor is él)*.
+⭐ A `steamapps` könyvtárakat ⛔ **nem** keressük: a 360 név **már benne van** az `installed-games.md`
+táblájában *(amit az asszisztens-oldal állít elő)* ⇒ gép-független út.
+
+### 📊 VISSZAMÉRÉS az ÉLES kódon — 282 egyedi beszéd-átirat
+
+| | |
+|---|---|
+| 🔴 hamis jelölés a valódi **magyar** átiratokon | ⭐ **0** *(a játék-üzenet ⛔ nincs többé megjelölve)* |
+| elkapott halandzsa | **2 / 6** *(változatlan — ⛔ a mentesség nem gyengítette)* |
+| ⭐ ráadás: hosszú, **idegen nyelvű** zaj | **5** tétel megjelölve *(változatlan)* |

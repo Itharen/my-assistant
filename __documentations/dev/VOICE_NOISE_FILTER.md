@@ -184,3 +184,70 @@ az ownernek. Minden mérés **olvasás** volt *(megőrzött hang, napló, tükö
 🔴 Ezért ⛔ **nem építettem félkész, igazolhatatlan változatot**: a dead-code rosszabb, mint a
 kimondott hiány. *(A `{ to: 'reply' }` terv-ág és a `fetchReplyTarget` már létezik — a
 populálás hiányzik.)*
+
+---
+
+## 🔴 A 20. TÉTEL (1) — A ZAJRA IS KIMENT a „VÉGLEG nem sikerült" riasztás (2026-09-12 05:30)
+
+> **Owner, 05:30:** *„sok »végleges nem sikerült felismerni« üzenet érkezik a Discordon… azt írja,
+> **buli zaj**, de hát a bulinak **már régen vége**."*
+> **02:45-kor már jelezte:** *„az nem is egy **valid találat**."*
+
+### 🔬 A MÉRÉS — `discord/outbound-log.jsonl`
+
+| | |
+|---|---|
+| „VÉGLEG nem sikerült felismernem" riasztás **egy éjszaka alatt** | **169** |
+| ebből 🎤 **BULI-ZAJ** | **43** |
+| a többi | 71 arány-gyanú · 22 CUDA-hiba · 33 egyéb · 1 időtúllépés |
+| a csúcs | **4 riasztás / perc**, és 05:25-05:47 között **még mindig** ömlött |
+
+🔴 **A MECHANIZMUS:** a zaj-felvétel **technikai** hibával *(HTTP 500 / CUDA)* került a sorra; ott
+egy későbbi próba **sikeresen** felismerte — de az eredmény **zaj** volt. A régi kód a zajt „még
+mindig nem sikerült"-ként kezelte ⇒ **újra ütemezte**, és az **5. próba után riasztott**.
+⇒ Egy zaj-felvétel **4 fölösleges felismerést** és **egy hamis riasztást** ért.
+
+### ✅ A JAVÍTÁS — (a) a zaj LEZÁRÁS, ⛔ nem bukás
+
+```
+zajnak jelölt kimenetel  ⇒  kiesik a sorból, riasztás NÉLKÜL  (MA-VOICE-SPEECH-NOISE napló-sor)
+bármi más bukás/gyanú    ⇒  újrapróbálás, változatlanul
+sikeres, tiszta átirat   ⇒  kézbesítés
+```
+
+⭐ **MIÉRT EZ A HELYES:** a felismerés **sikerült** — épp azt mondta meg, hogy amit felvettünk, az a
+**környezet beszéde**. Erre ⛔ nem igaz a *„nem tudom, mit mondtál"*: tudjuk, hogy **nem ő** mondta.
+⚠️ A **hang** attól megmarad *(az archívum külön úton menti)*, és a tölcsér a saját sorában számolja.
+
+📌 A döntés tesztelt, tiszta függvényben áll: `SttRetryOutcome_Util.decide()` —
+⚠️ **a sorrend kritikus**: a zaj-jelölés **erősebb**, mint a `suspicious` *(a zaj annak
+részhalmaza)*. Ha a `suspicious` döntene előbb, minden a régi hibába futna — erre **pozitív
+kontroll** van.
+
+### ✅ A JAVÍTÁS — (b) a riasztás KIÍRJA a felvétel idejét
+
+🔴 A régi szöveg csak annyit mondott: *„5 próbálkozás **3,9 óra** alatt"* — a felvétel
+**időpontját** nem. Az owner **most** kapta, ezért **most**-ra értette.
+
+```
+🔴 Egy hangüzenetedet VÉGLEG nem sikerült felismernem.
+🕓 A felvétel ideje: **2026-09-12 03:47:05 (Europe/Budapest)**
+5 próbálkozás 3.9 óra alatt — utoljára: …
+```
+
+⭐ A pontos idő a **fájlnévben** van *(a felvevő `recording-<userId>-<ISO>.wav` alakban nevez)*.
+⚠️ A hangüzenet-úton a fájlnév `voice-message.ogg` ⇒ ott a **sorba kerülés** ideje megy ki, és a
+szöveg **kimondja**, hogy az mi. ⛔ Nem adjuk el pontos felvételi időnek, amit nem mértünk.
+
+### 📊 A HATÁS — mérve a ma éjjeli adaton
+
+| | |
+|---|---|
+| a 169 riasztásból **elmaradna** | **43** *(a BULI-ZAJ ág)* |
+| megmaradó riasztás | **126** — ⚠️ ez **valódi** veszteség-jelzés *(arány-gyanú, CUDA-hiba)*, ⛔ nem zaj |
+| megspórolt felismerés | ~**4 / zaj-tétel** *(a sor nem ütemezi újra)* |
+
+🙋 **AMIT KIMONDOK, DE NEM DÖNTÖK EL:** a maradék **126** riasztás is sok egy éjszakára. Ezek
+viszont **nem** zajok — a 71 arány-gyanú *(„14 mp hangból 19 karakter")* és a 22 CUDA-hiba **valódi
+tartalom-veszteséget** jelez. A ritkítás *(összevont napi jelentés a tételenkénti riasztás helyett)*
+**owner-döntés** lenne.

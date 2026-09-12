@@ -187,5 +187,40 @@ describe('stt.retry-queue', () => {
       expect(text).toContain('Nem tudom, mit mondtál');
       expect(text).toContain('5 perc');
     });
+
+    it('🕓 KIÍRJA A FELVÉTEL IDEJÉT a fájlnévből — az owner különben MOST-ra érti (20. tétel)', () => {
+      // 🔴 A MÉRT HIBA: a riasztás csak annyit mondott, hogy „5 próbálkozás 3,9 óra alatt", és
+      // az owner ezt 05:30-kor kapta egy 01:47-es felvételről ⇒ azt hitte, épp most beszélt.
+      const entry: SttRetryEntry = {
+        messageId: 'recording-939031005178761278-2026-09-12T01-47-05-123Z.wav',
+        channelId: '222',
+        authorId: '333',
+        authorName: 'itharen',
+        filename: 'recording-939031005178761278-2026-09-12T01-47-05-123Z.wav',
+        attempts: 5,
+        nextAttemptAt: new Date().toISOString(),
+        queuedAt: new Date().toISOString(),
+        lastFailure: 'BULI-ZAJ: rövid (9 karakter, 2 szó) és NEM magyar.',
+        source: 'voice-channel',
+      };
+
+      const text = composeGiveUpMessage(entry);
+
+      // ⭐ A fájlnév UTC-ben van, a kiírás Europe/Budapest szerint (+2) ⇒ 03:47.
+      expect(text).toContain('A felvétel ideje');
+      expect(text).toContain('2026-09-12 03:47:05');
+      expect(text).toContain('Europe/Budapest');
+    });
+
+    it('⚠️ HANGÜZENETNÉL a sorba kerülés idejét írja ki — és KIMONDJA, hogy az az', async () => {
+      // A `voice-message.ogg` fájlnévben ⛔ nincs időbélyeg ⇒ a `queuedAt` a legjobb MÉRT
+      // közelítés. ⭐ De nem adjuk el pontos felvételi időnek: a szöveg megmondja, mi ez.
+      const entry = await enqueueSample();
+
+      const text = composeGiveUpMessage(entry!);
+
+      expect(text).toContain('A felvétel ideje');
+      expect(text).toContain('a sorba kerülés ideje');
+    });
   });
 });

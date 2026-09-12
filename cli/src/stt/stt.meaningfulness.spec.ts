@@ -8,7 +8,7 @@
 // szótárral a teszt a saját fikcióját igazolná, ⛔ nem a leszállított viselkedést. ⇒ Ha a
 // `cli/data/hu-lexicon.txt` eltűnik vagy megcsonkul, ezek a tesztek **elbuknak**.
 
-import { mkdtemp } from 'node:fs/promises';
+import { mkdir, mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -134,5 +134,95 @@ describe('SttMeaningfulness_Util — az értelmesség-jelölés', () => {
     expect(rendered).toContain('🎙️ gépi átirat');
     expect(rendered).toContain('ÉRTELMESSÉG-GYANÚ');
     expect(rendered).toContain('NEM dobtam el');
+  });
+});
+
+describe('🎮 TULAJDONNÉV-MENTESSÉG — az első ÉLES hamis pozitív javítása (20. tétel, 2)', () => {
+
+  /**
+   * 🔴 A VALÓDI owner-üzenet, amit az értelmesség-őr 2026-09-12 05:31-kor MEGJELÖLT.
+   *
+   * A jelölés: *„14 ismeretlen szó a 45 tartalmi szóból (31%, küszöb: 22%): timberborn-ban,
+   * dyson, sphere-ben, settlers, dyson"* ⇒ **mind játékcím**, az üzenet teljesen valódi.
+   */
+  const REAL_GAME_MESSAGE: string = 'Azt mondod, hogy a Timberborn-ban, a Dyson Sphere-ben, a '
+    + 'Mini Settlers az lehet, hogy abban tényleg nincs időm, de a másik kettőben biztos, hogy '
+    + 'van. Dyson Sphere-re az a baj, hogy amikor a bolygó fázisban éppen mindig elszédülök, '
+    + 'ahogy rakködök körbe a bolygón. Timberborn-nal meg már annyit játsztottam, hogy már '
+    + 'megépítettem 100 hódbázist, mert kicsit meguntam.';
+
+  afterEach(() => {
+    delete process.env[PROJECT_ROOT_ENV];
+    SttMeaningfulness_Util.resetLexicon();
+  });
+
+  it('🔴 AZ ÉLES HAMIS POZITÍV MEGSZŰNT — ⛔ a küszöb emelése NÉLKÜL', () => {
+    // ⭐ Ez a teszt a repó-lexikonnal fut, tehát a JÁTÉKNEVEKET a nagybetűs szabály menti meg
+    // (a személyes név-szótár csak ráteszi a bő ráhagyást). ⇒ Gép-független állítás.
+    const verdict = SttMeaningfulness_Util.inspect({ text: REAL_GAME_MESSAGE });
+
+    expect(verdict.doubtful).toBeFalse();
+    expect(SttMeaningfulness_Util.UNKNOWN_RATIO_THRESHOLD).toBe(0.22);
+    expect(verdict.unknownWords).not.toContain('timberborn-ban');
+  });
+
+  it('🔴 POZITÍV KONTROLL: ha a játéknevek KISBETŰSEK lennének, továbbra is megjelölné', () => {
+    // ⚠️ Enélkül a fenti teszt „zöld lenne" akkor is, ha a mentesség semmit nem tesz: ez mutatja
+    // meg, hogy TÉNYLEG a nagybetű dönt — és hogy a mérés (0,311) reprodukálható.
+    const verdict = SttMeaningfulness_Util.inspect({
+      text: REAL_GAME_MESSAGE.toLowerCase(),
+      // ⛔ Szótár nélkül: csak a nagybetűs szabály védhetne, de kisbetűs szövegben az sem.
+      isKnownWord: (word: string): boolean => word === 'hogy' || word === 'azt',
+    });
+
+    expect(verdict.doubtful).toBeTrue();
+  });
+
+  it('⭐ A MONDAT ELSŐ SZAVA NEM tulajdonnév — ott a nagybetű kötelező, semmit nem bizonyít', () => {
+    // 🔴 Ha a mondat-kezdőt is felmentenénk, minden mondat-kezdő halandzsa ingyen átmenne.
+    const nothingKnown = (): boolean => false;
+    const atStart = SttMeaningfulness_Util.inspect({
+      text: 'Fysisz lagraban szovalo ertik kapadok mulcerol lehabb szipotekig.',
+      isKnownWord: nothingKnown,
+    });
+    const midSentence = SttMeaningfulness_Util.inspect({
+      text: 'Ez a Fysisz Lagraban Szovalo Ertik Kapadok Mulcerol Lehabb Szipotekig.',
+      isKnownWord: nothingKnown,
+    });
+
+    // A mondat elején álló `Fysisz` BENNE van az ismeretlenek között…
+    expect(atStart.unknownWords).toContain('fysisz');
+    // …a mondat KÖZEPÉN álló nagybetűs szavak viszont tulajdonnévnek számítanak.
+    expect(midSentence.unknownWords).not.toContain('fysisz');
+  });
+
+  it('🎮 A SZEMÉLYES NÉV-SZÓTÁR beolvasódik, ha létezik — ⛔ és ha nem, az sem hiba', async () => {
+    // ⚠️ A valódi fájl SZEMÉLYES és gitignorált ⇒ a teszt a SAJÁT, ideiglenes példányát adja
+    // (`USERPROFILE`), így gép-független. ⛔ A valódi fájl tartalmát nem másoljuk a repóba.
+    const home: string = await mkdtemp(join(tmpdir(), 'ma-steam-'));
+    const steam: string = join(home, '.config', 'my-assistant', 'steam');
+    const originalProfile: string | undefined = process.env['USERPROFILE'];
+
+    await mkdir(steam, { recursive: true });
+    await writeFile(
+      join(steam, 'appdetails-cache.json'),
+      JSON.stringify({ '594570': { name: 'Kvirkaton Zsomborka' } }),
+      'utf-8',
+    );
+
+    process.env['USERPROFILE'] = home;
+    SttMeaningfulness_Util.resetLexicon();
+
+    try {
+      expect(SttMeaningfulness_Util.isKnownWord('kvirkaton')).toBeTrue();
+      expect(SttMeaningfulness_Util.isKnownWord('zsomborka')).toBeTrue();
+      // ⭐ És egy olyan szó, ami SEM a repó-lexikonban, SEM a név-szótárban nincs:
+      expect(SttMeaningfulness_Util.isKnownWord('fysisz')).toBeFalse();
+    } finally {
+      if (originalProfile === undefined) delete process.env['USERPROFILE'];
+      else process.env['USERPROFILE'] = originalProfile;
+
+      SttMeaningfulness_Util.resetLexicon();
+    }
   });
 });

@@ -692,6 +692,40 @@ rendszer csak a **szignált** adja.
 
 📌 A teljes mérés + ami szándékosan kimaradt: `__documentations/dev/VOICE_NOISE_FILTER.md`.
 
+### ⏱️ `ma doctor now` — MI TÖRTÉNIK ÉPPEN MOST (2026-09-12)
+
+```bash
+ma doctor now            # egy képernyő: köteg + miért nem megy ki · felismerés · figyelő · gép · utolsó hiba
+ma doctor now --json     # gépi envelope
+```
+
+🔴 **NE keverd a `comm doctor`-ral:** az a **KÉSZENLÉTET** méri *(„be van-e kötve")*, ez a
+**PILLANATOT** *(„mi megy most")*. Egyszerre is lehet „minden zöld" és „most épp semmi nem megy át".
+
+⭐ **Amit egy külön folyamat NEM lát** *(köteg-kapu, futó felismerés — a figyelő memóriájában
+élnek)*, azt a figyelő az **életjelbe** írja *(`moment` blokk)*, és a `doctor now` onnan olvassa —
+sőt a **kiküldési döntésbe is beteszi**, különben „elcsendesedett"-et írna, miközben a figyelő
+visszatart. ⚠️ Ha a blokk hiányzik, a jelentés **kimondja** *(„régi kódot futtat")* — ⛔ nem nullát mutat.
+
+⚠️ A CPU-t **két mintából** számoljuk: a `loadavg()` Windowson mindig **0** ⇒ hamis nyugalom.
+⭐ Az első éles futás **azonnal talált** egy valódi hibát *(`MA-DISCORD-LISTENER-CRASH` — a saját
+`dist`-újraépítés alatti újraindulás, azaz **dist-race**)*.
+
+📌 A teljes leírás: `__documentations/dev/DOCTOR_NOW.md`.
+
+### 🔇 A ZAJRA NINCS „VÉGLEG nem sikerült" RIASZTÁS (2026-09-12)
+
+🔬 **MÉRVE:** **169** ilyen riasztás egy éjszaka alatt, ebből **43 BULI-ZAJ**, a csúcs **4 / perc**.
+🔴 **Ok:** a zaj-felvétel technikai hibával került az újrapróbálási sorra; ott egy későbbi próba
+**felismerte**, de zajt adott ⇒ a régi kód ezt „még mindig nem sikerült"-ként **újra ütemezte**, és
+az 5. próba után **riasztott**.
+
+⭐ **Mostantól:** zajnak jelölt kimenetel ⇒ **kiesik a sorból, riasztás nélkül**
+*(`MA-VOICE-SPEECH-NOISE` napló-sor)*. ⚠️ A sorrend kritikus: a zaj-jelölés **erősebb** a
+`suspicious`-nál — erre pozitív kontroll van.
+🕓 **És a riasztás kiírja a felvétel idejét** *(a fájlnév ISO-bélyegéből; hangüzenetnél a sorba
+kerülés ideje, kimondva)* — különben az owner **most**-ra érti egy órákkal korábbi felvételt.
+
 ### ⏳ A KÖTEG-KAPU ZAJ-IMMUNITÁSA (2026-09-12) — „miért nem mennek át az üzeneteim?"
 
 🔴 **MÉRT PROBLÉMA:** a köteg-kaput a Discord **`speaking start`** jele töltötte *(757 / éjszaka)*,

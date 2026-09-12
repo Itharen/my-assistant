@@ -55,3 +55,65 @@ export function planRetryDelivery(entry: Pick<SttRetryEntry, 'source' | 'channel
     mirror: { to: 'reply' },
   };
 }
+
+/**
+ * 🔴 MI LEGYEN EGY ÚJRAPRÓBÁLÁS KIMENETELÉVEL — a 20. tétel (1) pontja.
+ *
+ * > **Owner, 2026-09-12 05:30:** *„sok »végleges nem sikerült felismerni« üzenet érkezik a
+ * > Discordon… azt írja, **buli zaj**, de hát a bulinak **már régen vége**."* ·
+ * > **02:45-kor már jelezte:** *„az nem is egy **valid találat**."*
+ *
+ * ## 🔬 A MÉRÉS (`discord/outbound-log.jsonl`, 2026-09-12)
+ *
+ * **169** „VÉGLEG nem sikerült felismernem" riasztás ment ki EGY éjszaka alatt, ebből
+ * **43 BULI-ZAJ** *(a többi: 71 arány-gyanú, 22 CUDA-hiba, 33 egyéb, 1 időtúllépés)*. A csúcs
+ * **4 riasztás / perc**, és 05:25-05:47 között **még mindig** ömlött — órákkal a buli után.
+ *
+ * 🔴 **A MECHANIZMUS:** a zaj-felvétel **technikai** hibával *(HTTP 500 / CUDA)* került a sorra,
+ * ott egy későbbi próba **sikeresen** felismerte — de az eredmény **zaj** volt. A régi kód a
+ * zajt „még mindig nem sikerült"-ként kezelte ⇒ **újra ütemezte**, és az **5. próba után
+ * riasztott**. ⇒ Egy zaj-felvétel **4 fölösleges felismerést** és **egy hamis riasztást** ért.
+ *
+ * ## ✅ A DÖNTÉS
+ *
+ * | Kimenetel | Teendő | Miért |
+ * |---|---|---|
+ * | sikeres, nem gyanús átirat | `deliver` | ez a cél |
+ * | ⭐ **zajnak jelölt** | **`drop-as-noise`** | ⛔ NEM hiba — l. a tábla alatti bekezdést |
+ * | bármi más bukás/gyanú | `retry` | ez valódi bizonytalanság — a hang megmarad, később újra |
+ *
+ * ⭐ **MIÉRT NEM HIBA A ZAJ:** a felismerés **sikerült** — épp azt mondta meg, hogy amit
+ * felvettünk, az a **környezet beszéde**. ⇒ Se riasztás, se további próba.
+ *
+ * ⚠️ **A `drop-as-noise` ⛔ NEM az átirat eldobása**: a **hang** megmarad az archívumban, és a
+ * tölcsér-jelentés a saját sorában számolja. Csak a **riasztás** marad el — mert nem igaz, hogy
+ * *„nem tudom, mit mondtál"*: tudjuk, hogy **nem ő** mondta.
+ */
+export class SttRetryOutcome_Util {
+
+  /**
+   * Mit tegyünk ezzel a felismerés-eredménnyel?
+   *
+   * @param result a felismerés lényege — ⭐ **szűk** bemenet, hogy a döntés az egész
+   *   `SttResult`-tól független és triviálisan tesztelhető legyen.
+   */
+  static decide(result: { ok: boolean; suspicious?: boolean; isNoise?: boolean }): RetryOutcomeAction {
+    // ⚠️ A SORREND SZÁNDÉKOS: a zaj-jelölés **erősebb**, mint a „gyanús" — a `suspicious` ugyanis
+    // a zajra IS igaz (a zaj annak egy részhalmaza). Ha a `suspicious` előbb döntene, a zaj
+    // visszakerülne a sorba, és minden a régi hibába futna.
+    if (result.isNoise) return RetryOutcomeAction.dropAsNoise;
+    if (!result.ok || result.suspicious) return RetryOutcomeAction.retry;
+
+    return RetryOutcomeAction.deliver;
+  }
+}
+
+/** Amit egy újrapróbálás kimenetelével tehetünk. */
+export enum RetryOutcomeAction {
+  /** ✅ A szöveg megvan, mehet a kötegbe. */
+  deliver = 'deliver',
+  /** 🎤 Zaj volt — kiesik a sorból, riasztás NÉLKÜL. */
+  dropAsNoise = 'drop-as-noise',
+  /** ⏳ Valódi bizonytalanság — a hang megmarad, később újra. */
+  retry = 'retry',
+}

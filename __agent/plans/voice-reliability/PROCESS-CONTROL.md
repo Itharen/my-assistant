@@ -45,6 +45,7 @@ van automata teszt, és a `dc rev` **0 új találattal** fut a nyúlt fájlokon.
 | **17** | 🎤 **BULI-ZAJ szűrés + nyitott-mikrofon szignál** | 1️⃣5️⃣ 03:05 | ✅ **KÉSZ** — 427 mintán visszamérve **0** magyar kiesés; CLI 1219 · `dc rev` 2404→2404 | 2026-09-12 03:50 |
 | **18** | ⚠️ **ÉRTELMESSÉG-JELÖLÉS** — magyarnak HANGZÓ halandzsa *(jelöl, ⛔ nem dob el)* | 1️⃣8️⃣ 04:15 | ✅ **KÉSZ** — 279 átiraton **0** hamis jelölés; ⚠️ recall **2/6** kimondva; 🙋 2 owner-döntés | 2026-09-12 05:40 |
 | **19** | ⏳ **A KISZŰRT ZAJ NEM NYÚJTJA A KÖTEG-ABLAKOT** | 1️⃣9️⃣ 04:32 | ✅ **KÉSZ** — mérve: a kapu **90,0 percig** zárva volt *(43%)*, ebből 90% puszta észlelésből; CLI 1231 · `dc rev` 2404→2404 | 2026-09-12 05:45 |
+| **20** | 🔴 **A zajra is kiment a „VÉGLEG nem sikerült" riasztás** + ⚠️ **az értelmesség-őr hamis pozitívja** + ⏱️ **`ma doctor now`** | 2️⃣0️⃣ 05:35 | ✅ **KÉSZ** — a 169 riasztásból 43 zaj elmarad; a játék-üzenet 0,311→0,156; élő próba OK; CLI 1248 · `dc rev` 2404→**2397** | 2026-09-12 06:35 |
 
 ### Miért EZ a sorrend — ⛔ nem önkényes
 
@@ -581,21 +582,93 @@ szerver-újraindításkor** lép életbe; ⛔ nem indítom újra magamtól *(a s
 
 ## ➡️ A KÖVETKEZŐ KONKRÉT LÉPÉS
 
-⭐ **Minden nyitott tétel rajtam kívüli kapun áll** *(állapot: 2026-09-12 05:45)*:
+⭐ **A 17-20. tétel ÉLESBEN FUT; a maradék rajtam kívüli kapun áll** *(állapot: 2026-09-12 06:35)*:
 
 | Tétel | Mire vár | Mi oldaná fel |
 |---|---|---|
-| **19** *(köteg-kapu zaj-immunitás)* | a **listener újraindulására** | a következő LDP-ciklus — ⛔ nem indítom el magamtól |
-| **18** *(értelmesség-jelölés)* | ugyanarra + 🙋 **két owner-döntésre** *(l. lentebb)* | ugyanaz a ciklus |
-| **17** *(zaj-szűrés)* | a **listener újraindulására** | ugyanaz a ciklus |
+| **20** *(riasztás-szűrés · tulajdonnév · `doctor now`)* | ⭐ **KÉSZ, élő próbán igazolva** | — |
+| **19** *(köteg-kapu zaj-immunitás)* | ⭐ **ÉLESBEN FUT** — a `ma doctor now` 06:26-kor a VALÓDI kapu-állapotot mutatta | — |
+| **18** *(értelmesség-jelölés)* | ⭐ **ÉLESBEN FUT** *(05:31-kor jelölt is)* + 🙋 **három owner-döntés** *(lentebb)* | owner-válasz |
+| **17** *(zaj-szűrés)* | ⭐ **ÉLESBEN FUT** *(05:30-kor naplózta a zaj-kódot)* | — |
 | **17b** *(retry = reply)* | 🙋 **owner-kapu**: élő üzenet-küldés kell az igazoláshoz | a hétvége után egy próba-üzenet |
 | **16** *(ébrenlét)* | a **szerver indulására** | ugyanaz a ciklus |
 | **15** *(poszt-panel)* | **poszt-piszkozatra** *(az asszisztens írja)* | egy `.body.txt` a `current/linkedin/post-drafts/`-ba |
-| **14** *(hosszú hang)* | a **listener újraindulására** | ugyanaz a ciklus |
+| **14** *(hosszú hang)* | ⭐ **ÉLESBEN FUT** | — |
 | **13** *(naptár)* | a **naptár-engedély** kiadására | `ma email auth --account default` |
 | **12** *(„mindenféle hiba")* | a **konkrét hibaszövegre** | ⛔ nem javítok olyat, amit nem reprodukáltam |
 
+🙋 **A HÁROM NYITOTT OWNER-DÖNTÉS** *(mindegyikhez megvan a mérés)*:
+1. **tágítsuk a halandzsa-szabályt?** 3/6 elkapás, de 4 valódi átirat is jelölést kapna;
+2. **bekapcsoljuk a felismerő saját akusztikus osztályozóját?** *(zaj-szűrés a felismerés ELŐTT —
+   de rövid, valódi megszólalás néma eldobássá válhatna)*;
+3. **ritkítsuk a végleges-hiba riasztásokat?** a zaj-ág után is **126** maradt egy éjszakára — ezek
+   viszont **valódi** veszteség-jelzések *(napi összevont jelentés lehetne helyettük)*.
+
 ⇒ A hurok lezárása: jelentés az `AGENT_BUS.md`-ben, ⛔ új ébredés NEM.
+
+### 🔴 A 20. TÉTEL — KÉT FRISS DEFEKT + AZ ÖN-DIAGNOSZTIKA (2026-09-12 06:35) ✅
+
+#### 1️⃣ A ZAJRA IS KIMENT a „VÉGLEG nem sikerült" riasztás — MAGAS
+
+🔬 **MÉRVE** *(`outbound-log.jsonl`)*: **169** ilyen riasztás **egy éjszaka** alatt, ebből
+**43 BULI-ZAJ** *(a többi: 71 arány-gyanú · 22 CUDA-hiba · 33 egyéb · 1 időtúllépés)*; a csúcs
+**4 riasztás / perc**, és 05:47-kor **még mindig** ömlött — órákkal a buli után.
+
+🔴 **A MECHANIZMUS:** a zaj-felvétel **technikai** hibával került a sorra, ott egy későbbi próba
+**sikeresen** felismerte — de zajt. A régi kód ezt „még mindig nem sikerült"-ként kezelte ⇒
+újra ütemezte, és az 5. próba után **riasztott**. ⇒ **4 fölösleges felismerés + 1 hamis riasztás**
+minden zaj-felvételre.
+
+✅ **(a)** a zaj mostantól **LEZÁRÁS**: kiesik a sorból, riasztás **nélkül** *(tesztelt döntés:
+`SttRetryOutcome_Util`; ⚠️ a sorrend kritikus — a zaj-jelölés **erősebb** a `suspicious`-nál, erre
+**pozitív kontroll** van)*.
+✅ **(b)** a riasztás **kiírja a felvétel idejét** *(a fájlnév ISO-bélyegéből; hangüzenetnél a sorba
+kerülés ideje, és a szöveg **kimondja**, hogy az mi)*.
+
+📊 A hatás a ma éjjeli adaton: **43 riasztás elmaradna**; a megmaradó **126** viszont **valódi**
+veszteség-jelzés. 🙋 A ritkításuk *(napi összevont jelentés)* **owner-döntés** lenne.
+
+#### 2️⃣ AZ ÉRTELMESSÉG-ŐR ELSŐ ÉLES TALÁLATA HAMIS POZITÍV VOLT — KÖZEPES
+
+A 18. tétel élesbe állt, és megjelölt egy **valódi** üzenetet *(31%, küszöb 22%)*, mert a
+**játékcímek** *(timberborn, dyson, sphere, settlers)* „ismeretlen szónak" számítottak.
+⭐ Az owner szerint a **viselkedés jó volt** *(megjelölte, ⛔ nem dobta el)* — csak a jelölés
+fölösleges.
+
+✅ **A javítás ⛔ NEM a küszöb emelése**, hanem **tulajdonnév-mentesség**, két jellel:
+**(1)** a **mondat közben** nagybetűs szó tulajdonnév *(⚠️ a mondat ELSŐ szava ⛔ nem — ott a
+nagybetű kötelező)*; **(2)** a **személyes** név-szótár *(Steam: 539 név ⇒ 609 szó-töredék;
+⛔ gitignorált, csak **olvassuk**, a repóba **nem** kerül; ha nincs, ⛔ nem hiba)*.
+
+📊 **MÉRVE** *(211 valódi átirat + 2 halandzsa)*: a játék-üzenet **0,311 → 0,156**, a halandzsa
+**2/2 elkapva**, hamis jelölés **1 → 0**. A küszöb **változatlan (0,22)**.
+
+#### 3️⃣ ÖN-DIAGNOSZTIKA: `ma doctor now` — ÚJ IGÉNY
+
+⚠️ **Tág kérés** ⇒ ⛔ nem keretrendszer: **EGY** parancs, ami a **pillanatot** mutatja *(köteg +
+mióta · miért nem megy ki · fut-e felismerés · a figyelő életjele · a gép terhelése · az utolsó
+hiba)*. ⛔ A `comm doctor`-tól **elhatárolva**: az a **készenlétet** méri, ez a **pillanatot**.
+
+🔬 **A NEHÉZ RÉSZ:** a köteg-kapu és a futó felismerés a figyelő **memóriájában** élnek ⇒ egy külön
+folyamat ⛔ nem látja. ⭐ Megoldás: a figyelő az **életjelbe** írja *(`moment` blokk)*, és a
+`doctor now` a **kiküldési döntésbe is beteszi** a valódi kapu-állapotot. ⚠️ Ha a blokk hiányzik,
+azt **kimondjuk** *(„régi kódot futtat")* — ⛔ nem nullákat mutatunk.
+
+⭐ **AZ ELSŐ ÉLES FUTÁS AZONNAL TALÁLT EGY VALÓDI HIBÁT:** `MA-DISCORD-LISTENER-CRASH` 29
+másodperccel korábban ⇒ kiderült, hogy a **saját `dist` újraépítésem** *(rimraf)* alatt indította
+újra a felügyelő a figyelőt *(mérve: ma pontosan **1** ilyen, 06:23:27-kor)*. ⇒ **dist-race**,
+⛔ nem kód-hiba.
+
+#### ✅ Igazolás
+
+CLI **1248/1248** · szerver **119/119** · `tsc` tiszta · **élő próba** lefuttatva
+*(`node cli/dist/cli/src/main.js doctor now`)* · `dc rev` **2404 → 2397** ⇒ ⭐ **−7**
+*(az életjel-olvasó tisztítása 9 találatot vitt el; **+2** a parancs-minta ára: minden `ma`
+parancs lusta `import()`-et és `export async function runXCommand`-ot használ — ⛔ ettől nem
+térek el egy számláló miatt)*.
+
+📌 Doksi: `__documentations/dev/DOCTOR_NOW.md` · `VOICE_NOISE_FILTER.md` *(20/1 szakasz)* ·
+`VOICE_MEANINGFULNESS_MARK.md` *(20/2 szakasz)* · `SKILLS.md`.
 
 ### ⏳ A 19. TÉTEL — A KISZŰRT ZAJ NEM NYÚJTJA A KÖTEG-ABLAKOT (2026-09-12 05:30) ✅
 

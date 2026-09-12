@@ -72,7 +72,12 @@ import {
   type SpeechAttemptStats,
 } from '../voice/voice-recording-outcome.js';
 import { composeVoiceChannelEntry } from '../voice/voice-channel-bridge.js';
-import { planRetryDelivery, type RetryDeliveryPlan } from '../stt/stt.retry-delivery.js';
+import {
+  planRetryDelivery,
+  RetryOutcomeAction,
+  SttRetryOutcome_Util,
+  type RetryDeliveryPlan,
+} from '../stt/stt.retry-delivery.js';
 import type {
   VoiceDropObservation,
   VoiceDropProbe,
@@ -1882,7 +1887,19 @@ export class DiscordListener {
         this.sttInFlight = false;
       }
 
-      if (!result.ok || result.suspicious) {
+      // 🎤 A 20. TETEL (1a): a ZAJ NEM BUKAS. Merve az outbound-logban: 169 „VEGLEG nem
+      // sikerult felismernem" riasztas EGY ejszaka alatt, ebbol 43 BULI-ZAJ — es a szoveg
+      // MAGA mondta ki, hogy zaj. Az owner ezt 02:45-kor mar jelezte: „az nem is egy valid
+      // talalat". A dontes tesztelt fuggvenyben all (`SttRetryOutcome_Util`).
+      const action: RetryOutcomeAction = SttRetryOutcome_Util.decide(result);
+
+      if (action === RetryOutcomeAction.dropAsNoise) {
+        await this.resolveRetryAsNoise(entry, result.suspicionReason ?? result.detail);
+
+        return;
+      }
+
+      if (action === RetryOutcomeAction.retry) {
         await this.handleRetryFailure(entry, result.suspicionReason ?? result.detail);
 
         return;
@@ -1917,6 +1934,31 @@ export class DiscordListener {
         extra: { code: 'MA-STT-LEDGER-WRITE-FAILED', messageId: input.messageId },
       });
     }
+  }
+
+  /**
+   * 🎤 AZ ÚJRAPRÓBÁLÁS ZAJT TALÁLT — ez **LEZÁRÁS**, ⛔ nem bukás (20. tétel, 1a).
+   *
+   * 🔴 MIÉRT EZ A HELYES: a felismerés **sikerült**, csak azt mondta meg, hogy amit felvettünk,
+   * az a **környezet beszéde** volt. Erre ⛔ nem igaz a *„nem tudom, mit mondtál"* riasztás —
+   * tudjuk, hogy **nem ő** mondta. ⇒ A tétel kiesik a sorból, riasztás **nincs**.
+   *
+   * ⭐ AMI MEGMARAD: a **hang** *(a megőrző archívum külön úton menti)*, és a **napló-sor** —
+   * így a döntés ⛔ nem néma, és a tölcsér-jelentés is látja.
+   */
+  private async resolveRetryAsNoise(entry: SttRetryEntry, reason: string): Promise<void> {
+    await this.retryQueue.remove(entry.messageId);
+    await this.safeLog({
+      kind: 'note',
+      summary: `[discord/listener] ${VOICE_LOG_CODES.noise}: az újrapróbálás ZAJT ismert fel `
+        + `(${entry.attempts}. próba) — a tétel kiesik a sorból, riasztás NEM megy. ${reason}`,
+      extra: {
+        code: VOICE_LOG_CODES.noise,
+        messageId: entry.messageId,
+        attempts: entry.attempts,
+        source: entry.source ?? 'voice-message',
+      },
+    });
   }
 
   /** Egy újrapróbálás bukása: vagy továbblépünk a következő lépcsőre, vagy SZÓLUNK. */
@@ -2455,6 +2497,9 @@ ${spoken}`
     // *(jogos csend)*, a `joined: false` pedig azt: „be van állítva, de NINCS BENT" *(hiba)*.
     const funnel: VoiceFunnelStats | undefined = this.dropProbe?.funnel;
     const presence = this.voicePresenceState;
+    // ⏱️ A kapu állapota INDOKLÁSSAL — ugyanaz a forrás, amit a döntés is használ (⛔ nem
+    // párhuzamos számítás, ami elcsúszhatna tőle).
+    const gate = this.speechInFlight.diagnose();
 
     await writeHeartbeat({
       updatedAt: new Date().toISOString(),
@@ -2474,6 +2519,19 @@ ${spoken}`
           },
         }
         : {}),
+      // ⏱️ A PILLANAT (20. tétel, 3) — amit egy KÜLÖN folyamat (`ma doctor now`) ⛔ nem látna:
+      // a köteg-kapu és a futó felismerés a MEMÓRIÁBAN élnek. Kívülről ugyanúgy néznek ki,
+      // mint a semmi ⇒ kiírjuk. ⭐ Mindig ott van, hang-csatorna nélkül is: a hangüzenet-úton
+      // futó felismerés ugyanúgy „történik most".
+      moment: {
+        isRecognizing: this.sttInFlight,
+        isGateClosed: gate.inProgress || this.sttInFlight,
+        isNoiseFlooded: gate.suppressedByNoise,
+        openDetections: gate.detectedCount,
+        processingRecordings: gate.processingCount,
+        noiseInWindow: gate.noiseCount,
+        gateReason: gate.reason,
+      },
     });
   }
 

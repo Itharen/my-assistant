@@ -51,6 +51,41 @@ export interface DiscordHeartbeat {
    * ugyanaz, és a pulzus is másképp mutatja.
    */
   voice?: DiscordHeartbeatVoice;
+  /**
+   * ⏱️ A PILLANAT — amit KIZÁRÓLAG a figyelő folyamat tud *(20. tétel, 3)*.
+   *
+   * > **Owner, 2026-09-12 05:33:** *„**Tudjad magadat diagnosztizálni**, hogy ilyenkor mi a fene
+   * > történik például most?"*
+   *
+   * 🔴 MIÉRT KELL IDE: a `ma doctor now` egy **külön folyamat**. A köteg-kaput és a futó
+   * felismerést ⛔ **nem látja** — azok memóriában élnek a figyelőben. Kívülről ugyanúgy
+   * néznek ki, mint a semmi. ⇒ A figyelő **kiírja** őket, a diagnosztika pedig **olvassa**.
+   *
+   * ⭐ MIÉRT EZEN A CSATORNÁN: az életjel **már** utazik a figyelőtől a diagnosztikáig, és a
+   * frissesség-ellenőrzés ingyen jön vele. Egy új mechanizmus csak új hibalehetőség lenne.
+   *
+   * ⚠️ Opcionális: ha **hiányzik**, az azt jelenti, hogy a figyelő még a **régi kódot** futtatja
+   * — ⛔ nem azt, hogy „minden nyugodt". A diagnosztika ezt ki is mondja.
+   */
+  moment?: DiscordHeartbeatMoment;
+}
+
+/** ⏱️ A figyelő PILLANATNYI belső állapota — a `ma doctor now` bemenete. */
+export interface DiscordHeartbeatMoment {
+  /** 🔴 Fut-e ÉPP felismerés *(hangüzenet-út vagy újrapróbálás)*. */
+  isRecognizing: boolean;
+  /** ⏳ Zárva van-e a köteg-kapu *(ez tartja vissza a csomagot)*. */
+  isGateClosed: boolean;
+  /** 🎤 Zaj-özön miatt engedtük-e el a puszta észleléseket *(19. tétel)*. */
+  isNoiseFlooded: boolean;
+  /** Hány lezáratlan megszólalás-jel van. */
+  openDetections: number;
+  /** Hány felvétel van ÉPP feldolgozás alatt. */
+  processingRecordings: number;
+  /** Hány zaj-tétel gyűlt a mérési ablakban. */
+  noiseInWindow: number;
+  /** ⭐ A kapu állapotának ember-olvasható indoklása. */
+  gateReason: string;
 }
 
 /** A hang-tölcsér számai, ahogy az élő szonda látja. */
@@ -91,19 +126,72 @@ export interface DiscordHeartbeatVoice {
 function parseVoice(raw: unknown): DiscordHeartbeatVoice | undefined {
   if (typeof raw !== 'object' || raw === null) return undefined;
 
-  const record = raw as Record<string, unknown>;
-  const numberOr = (key: string): number =>
-    typeof record[key] === 'number' ? record[key] as number : 0;
+  const bool = (key: string): boolean | undefined => {
+    const value: unknown = field(raw, key);
+
+    return typeof value === 'boolean' ? value : undefined;
+  };
+  const joined: boolean | undefined = bool('joined');
+  const channelName: string = text(raw, 'channelName');
 
   return {
-    ...(typeof record['joined'] === 'boolean' ? { joined: record['joined'] } : {}),
-    ...(typeof record['channelName'] === 'string' ? { channelName: record['channelName'] } : {}),
-    speechStarts: numberOr('speechStarts'),
-    filesOpened: numberOr('filesOpened'),
-    filesDelivered: numberOr('filesDelivered'),
-    filesDropped: numberOr('filesDropped'),
-    lostAudioSeconds: numberOr('lostAudioSeconds'),
+    ...(joined === undefined ? {} : { joined: joined }),
+    ...(channelName ? { channelName: channelName } : {}),
+    speechStarts: count(raw, 'speechStarts'),
+    filesOpened: count(raw, 'filesOpened'),
+    filesDelivered: count(raw, 'filesDelivered'),
+    filesDropped: count(raw, 'filesDropped'),
+    lostAudioSeconds: count(raw, 'lostAudioSeconds'),
   };
+}
+
+/**
+ * ⏱️ A `moment` blokk óvatos beolvasása.
+ *
+ * ⚠️ A HIÁNY JELENTÉSE: *„a figyelő régi kódot futtat"*, ⛔ nem *„nincs semmi folyamatban"*.
+ * Ezért `undefined`-et adunk vissza, és a hívó ezt **kimondja** — nem nullákat mutat.
+ */
+function parseMoment(raw: unknown): DiscordHeartbeatMoment | undefined {
+  if (typeof raw !== 'object' || raw === null) return undefined;
+
+  return {
+    isRecognizing: field(raw, 'isRecognizing') === true,
+    isGateClosed: field(raw, 'isGateClosed') === true,
+    isNoiseFlooded: field(raw, 'isNoiseFlooded') === true,
+    openDetections: count(raw, 'openDetections'),
+    processingRecordings: count(raw, 'processingRecordings'),
+    noiseInWindow: count(raw, 'noiseInWindow'),
+    gateReason: text(raw, 'gateReason'),
+  };
+}
+
+/**
+ * Egy mező kiolvasása egy MÉG NEM ELLENŐRZÖTT objektumból.
+ *
+ * ⭐ MIÉRT EGY HELYEN: a JSON-ból jövő adat alakja **nem garantált**, tehát minden olvasásnál
+ * ellenőrizni kell. Ha ez minden hívási helyen kézzel történne, a fájl tele lenne
+ * `record[key]`-jel és `as` átcímkézéssel — most **egy** pont van, ami ezt a kockázatot viseli.
+ */
+function field(raw: unknown, key: string): unknown {
+  if (typeof raw !== 'object' || raw === null) return undefined;
+
+  const record: Record<string, unknown> = { ...raw };
+
+  return record[key];
+}
+
+/** Egy szám-mező — a hiány/hibás típus **0**, mert ezek számlálók. */
+function count(raw: unknown, key: string): number {
+  const value: unknown = field(raw, key);
+
+  return typeof value === 'number' ? value : 0;
+}
+
+/** Egy szöveg-mező — a hiány üres sztring, ⛔ nem `undefined` *(a hívók így egyszerűbbek)*. */
+function text(raw: unknown, key: string): string {
+  const value: unknown = field(raw, key);
+
+  return typeof value === 'string' ? value : '';
 }
 
 export function resolveHeartbeatPath(userHome: string = homedir()): string {
@@ -145,8 +233,7 @@ export async function readHeartbeat(
 
     if (typeof parsed !== 'object' || parsed === null) return { state: 'absent' };
 
-    const record = parsed as Record<string, unknown>;
-    const updatedAt: unknown = record['updatedAt'];
+    const updatedAt: unknown = field(parsed, 'updatedAt');
 
     if (typeof updatedAt !== 'string') return { state: 'absent' };
 
@@ -158,12 +245,18 @@ export async function readHeartbeat(
     // ⚠️ A `voice` mezőt ÁT KELL VINNI. Enélkül a diagnosztika mindig „nincs beállítva"-t
     // látna — vagyis pont azt a néma félrejelentést csinálná, ami ellen készült.
     // ⭐ EGYSZER olvassuk ki: két hívás felesleges, és eltérhetne egymástól.
-    const voice: DiscordHeartbeatVoice | undefined = parseVoice(record['voice']);
+    const voice: DiscordHeartbeatVoice | undefined = parseVoice(field(parsed, 'voice'));
+    // ⏱️ UGYANÍGY a PILLANAT: a `ma doctor now` ebből tudja, hogy fut-e felismerés és
+    // zárva van-e a köteg-kapu. ⚠️ A hiánya „régi figyelő"-t jelent, ⛔ nem nyugalmat.
+    const moment: DiscordHeartbeatMoment | undefined = parseMoment(field(parsed, 'moment'));
+    const pid: unknown = field(parsed, 'pid');
     const heartbeat: DiscordHeartbeat = {
       updatedAt,
-      botTag: typeof record['botTag'] === 'string' ? record['botTag'] : '',
-      processedCount: typeof record['processedCount'] === 'number' ? record['processedCount'] : 0,
+      botTag: text(parsed, 'botTag'),
+      processedCount: count(parsed, 'processedCount'),
+      ...(typeof pid === 'number' ? { pid: pid } : {}),
       ...(voice ? { voice: voice } : {}),
+      ...(moment ? { moment: moment } : {}),
     };
 
     return { state: ageMs <= HEARTBEAT_STALE_MS ? 'alive' : 'stale', ageMs, heartbeat };
