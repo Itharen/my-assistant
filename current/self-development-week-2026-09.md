@@ -128,3 +128,46 @@ keletkezik magától, vagy egy gombnyomás)*. A másik ötöt **tudatosan elenge
 ⚠️ Hogy melyik legyen az EGY: **az ő döntése**. Az adatból csak annyi látszik, hogy az
 **egészség-jellegű** tételek *(séta, hegy, arc-mosás)* haltak el **leghamarabb** — ⚠️ de hogy ez
 prioritás-kérdés vagy a **rögzítés súrlódása**, azt ⛔ **nem tudom**, és **nem is tippelem**.
+
+
+---
+
+## 🔄 A SZOKÁSOK — ⭐ Ő HOZTA FEL, magától (2026-09-12 17:54-17:56)
+
+> *„vannak **szokásaim, amit igyekszem levetkőzni**, meg vannak **jó szokások, amiket igyekszek
+> beépíteni**. És ez hogy jött ide? Már nem is tudom."*
+
+⭐ **Ez PONTOSAN a hét témája** — és ⭐ **nem én hoztam elő**. ⚠️ A gondolat **félbemaradt**
+*(egy STT-hurok elnyelte a közepét, lásd lent)*, tehát a **lista hiányzik** — ⛔ nem találgatom ki.
+
+### Ami a négy üzenetből KIOLVASHATÓ — ⚠️ mind az ő szava, ⛔ nincs hozzátéve
+
+| Téma | Amit mondott |
+|---|---|
+| 🍳 **reggeli** | *„nem tudok egy jó rántottát csinálni"* · *„nem vagyok egy nagy reggelizős"* |
+| ⏰ **étkezés IDŐZÍTÉSE** | ⭐ *„**át kéne szokjak arra, hogy inkább reggeliznem kéne, mint lefekvéssel azt kajálni**"* |
+| ☕ **kávé** | *„igyekszem minél kevesebbet"* · *„általában csak **hétköznap**"* |
+
+🔴 **A második a legérdekesebb**, és ő maga jelölte meg váltandóként: **lefekvés előtti evés →
+reggeli**. ⚠️ Ez **közvetlenül** összefügg az alvás-ciklusával *(`sleep-system`)*.
+
+### ⛔ AMIT NEM CSINÁLOK
+
+- ⛔ **Nem javaslok** semmit *(ébredés utáni ablak — lásd `focus-includes-life`)*
+- ⛔ **Nem egészítem ki** a hiányzó listát
+- ⛔ **Nem teszek fel kérdést** most — ⭐ a hét **erre való**
+
+📌 **A héten ez lesz az egyik zóna-kérdés**, az ő szavaival feltéve: *melyik szokást akarod
+levetkőzni, és melyiket beépíteni?* ⇒ **És ehhez az „eszközt vagy elengedés" szűrő is alkalmazandó**
+*(lásd az újra-alapvonalat)*: ⛔ nem fogadalom, hanem **nyom keletkezzen magától**.
+
+---
+
+## ⚠️ EGY MÉRT STT-HIBA UGYANEBBŐL A KÖTEGBŐL
+
+A 17:55-ös üzenet átirata **~50-szer** megismételte: *„amit készítették"*. ⇒ A felismerő
+**hurokba esett**, és **elnyelte a mondat közepét** — pont azt, ahol a **szokás-lista** lett volna.
+
+📌 **Felismerési jel:** ugyanaz a rövid szókapcsolat **sokszor egymás után**. ⚠️ Ez **más**, mint a
+buli-zaj *(az rövid és idegen nyelvű)* és más, mint az ál-magyar halandzsa *(az változatos)*.
+⇒ **Harmadik zaj-osztály**, és ez **valódi tartalmat nyel el** — ⛔ nem csak zajt.
