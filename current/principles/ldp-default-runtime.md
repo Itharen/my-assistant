@@ -158,3 +158,38 @@ diagnosztika, ami ilyenkor megszólal — a felfedezés **kizárólag a követke
 A valódi megoldás **automatikus indítás boot után** *(feladat-ütemező vagy szolgáltatás)* —
 ⛔ ez **owner-döntés**, mert a gépén futó autostartot nem én állítok be. Addig a **0a lépés**
 a kompenzáló kontroll: **felfedezi**, de nem **előzi meg**.
+
+---
+
+## 🔴 „AZ ÖRÖK HIBA" — az owner megismételte (2026-09-12 01:18)
+
+> **Owner (szó szerint):** *„Lehet, hogy nem az LDP-vel van elindítva a My Assistant? **Az örök
+> hiba.** Az **mindig** az LDP-vel kell elindítva legyen, és **külön ablakban mindig, mindig,
+> mindig, by default**, és igazából ez már **dynamo szinten** így kéne legyen, hogy by default
+> külön ablakban indul el az LDP, és **az LDP a default indítás**."*
+
+⚠️ **Azért kerül ide újra, mert ez a MÁSODIK megfogalmazás** — és most **erősebb**: nemcsak
+a my-assistant szabálya, hanem **Dynamo-szintű elvárás**. ⇒ Ez **FR-jelölt a `cli-dynamo`-nak**:
+*„az LDP legyen a default indítás, külön ablakban."*
+
+### ⭐ MIÉRT NEVEZI ÖRÖK HIBÁNAK — a mechanizmus
+
+Ha nem LDP-vel indul, akkor a szerver **gazdátlan**, és **alatta nem élnek a figyelők** — de ez
+**⛔ nem hibaüzenettel** jelentkezik, hanem azzal, hogy *„valami nem megy"*. ⇒ **A tünet
+diffúz, az ok pontszerű** — ezért ismétlődik.
+
+### 📌 MÉRT ELLENPÉLDA UGYANEBBŐL AZ ÉJSZAKÁBÓL — ⛔ ne ugorjunk a következtetésre
+
+2026-09-12 03:20-kor a `ma` CLI **egyáltalán nem indult**:
+`Cannot find module '…/cli/dist/cli/src/main.js'`. ⚠️ **Ez NEM az „örök hiba" volt:**
+
+| Mit mértem | Mit jelent |
+|---|---|
+| `logs/live-dev-pipeline/status.json` → `phase: "tsc-cli"`, `pipelineComplete: false` | ⭐ **éppen FUTOTT egy build** |
+| `cli/dist` hiányzik | a `rimraf ./dist` lefutott, a `tsc` még nem végzett |
+| a szerver `/api/version` **válaszol**, a listener heartbeat **friss** | ⇒ a szolgáltatás **él** |
+
+⇒ **Átmeneti build-ablak**, nem indítási hiba. ⭐ **A tanulság:** „a CLI nem indul" ⛔ önmagában
+nem bizonyíték az „örök hibára" — előbb a **LDP-fázist** kell megnézni.
+*(Kapcsolódó mért kockázat: a `npm test` `rimraf ./dist`-je **a futó rendszer alól** viszi el a
+`dist`-et — `current/principles/shared-file-collision.md`.)*
