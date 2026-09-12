@@ -2125,3 +2125,47 @@ Ez a **harmadik** eset ma, amikor **igaz adatból hamis következtetést** vonta
 *„mintha nem mennének át az üzenetek csak akkor, amikor **elsül a háromórás trigger**."*
 ⇒ **Ezt érdemes megmérni** — de ⛔ **incidens-feltételezés nélkül**: lehet, hogy a köteg-ablak
 normálisan működik, és csak **a várakozási idő érzete** hosszú.
+
+---
+
+## 1️⃣7️⃣ 2026-09-12 03:23 — 🖥️ A TERMINÁLOK: nem látszanak a logok, és rossz a nevük
+
+> **Owner (szó szerint):** *„Tudom már, mi zavar: az zavar meg, hogy **nem látom a logokat**,
+> meg nem látom, hogy a **Terminálnak az lenne a neve, hogy My Assistant**, hanem mindenféle
+> más a neve, meg valahogy **nem jönnek át a logok**, még valami **nem kóser a Terminálokkal**."*
+
+⭐ **Ez ugyanannak a gyökérnek a másik ága, mint az „örök hiba"**
+*(`current/principles/ldp-default-runtime.md`)*: az LDP-nek **saját, felismerhető ablakban** kell
+futnia — és ha nem az, az owner **nem látja, mi történik**.
+
+### A FELADAT — két, mérhető rész
+
+**1️⃣ ABLAK-NÉV.** Az LDP-terminál címe legyen **`My Assistant`** *(és a fázis, ha fér:
+`My Assistant — server-runtime`)*. ⛔ Ne „mindenféle más".
+📌 Windows-on a konzol címe programból állítható; ⚠️ **mérd meg**, hogy a használt indítási út
+*(`dc ldp`)* melyik ablakot birtokolja — ⛔ ne tippelj.
+
+**2️⃣ A LOGOK ÁTJÖNNEK-E.** Az owner szerint *„nem jönnek át a logok"*.
+⛔ **Nem tudom, mit jelent pontosan** — ⚠️ **ez FELTÁRANDÓ** *(`uncertain-requests`)*:
+a szerver logja nem jelenik meg a konzolon? · a gyerek-folyamatoké nem? · vagy csak
+**elgörgethetetlen / elveszik**?
+⇒ **Először mérd meg**, mi látszik ma és mi nem, és **azt írd le** — utána javíts.
+
+### KÉSZ, HA
+
+- [ ] a terminál neve **ránézésre azonosítja** a folyamatot
+- [ ] le van írva, **mely logok jelennek meg** a konzolon és **melyek nem** *(mérés, ⛔ nem becslés)*
+- [ ] ami hiányzott, az **megjelenik** — vagy **kimondva** szerepel, hogy miért nem lehet
+- [ ] `npm test` zöld · `dc rev` 0 új találat
+
+⚠️ **HÉTVÉGI KERET VÁLTOZATLAN:** ⛔ semmilyen élő hangszóró-kísérlet, ⛔ semmi, ami üzenetet
+küldene neki. ⭐ **De ez a tétel jól jár a hétvégén**: az owner **látja** a terminált, tehát
+a javulás **azonnal észrevehető** lesz neki.
+
+### 📌 EGY KÖRNYEZETI TÉNY, AMIT MOST TUDTAM MEG — ⛔ NE nyúlj hozzá
+
+> **Owner, 03:13:** *„FYI, a **VMware-ben a CCAP fejlesztése folyik** egy virtual machine-en,
+> **egy másik agent folyamatosan dolgozik rajta**."*
+
+⇒ A **VMware 17 GB-ja nem szemét**, hanem **aktív munka**. ⛔ Nem ajánljuk a bezárását
+*(én ma este pont ezt tanácsoltam — **hibásan**, már korrigáltam neki)*.
