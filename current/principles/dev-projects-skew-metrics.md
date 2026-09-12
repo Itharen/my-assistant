@@ -51,3 +51,37 @@ hónapokkal később egy elemzés **észrevétlenül** hazudik.
 
 Kapcsolódó: [[post-development-verification]] *(a számláló nem jelentés)* ·
 `C:/Users/User/.config/my-assistant/steam/owned-played-games.md`
+
+
+---
+
+## 🔴 MÁSODIK TORZÍTÁS UGYANEBBEN AZ ADATBAN: **nem mind az övé** (2026-09-12 05:20)
+
+> **Owner (szó szerint):** *„a Warhammer, azt meg szerintem a **legtöbbjét nem is én tettem bele,
+> hanem még a bátyám**."*
+
+⚠️ **Ugyanaz a fiók, MÁS ember.** ⇒ A játékidő **nem** az ő preferenciáját méri — a lista
+**legtetején** álló tétel *(Total War: WARHAMMER II, 1 302 óra)* **nagyrészt nem tőle van**.
+
+### ⇒ A KÉT TORZÍTÁS EGYÜTT KIÜTI A RANGSORT
+
+| Torzítás | Példa | Hatás |
+|---|---|---|
+| 🛠️ **fejlesztés játékidőként** | WarBots Playtest — 2 959 ó | az **1.** hely hamis |
+| 👥 **más ember ugyanazon a fiókon** | Total War: WARHAMMER II — 1 302 ó | a **2.** hely is hamis |
+
+🔴 **Következtetés:** a **puszta óraszám-rangsor használhatatlan** az ő ízlésének mérésére.
+⛔ **Nem javítgatom** — **más jelre** kell váltani.
+
+### ✅ AMI HELYETTE MŰKÖDIK — mérve ugyanezen a napon
+
+Amikor **megkérdeztem** és ő **kimondta** a preferenciát — *„építkezős játékok… minimális akció,
+csak valamit építek, és nézem, ahogy megy"* — abból **azonnal** használható lista lett:
+**36 érintetlen építkezős játék** a saját könyvtárából.
+
+⭐ **A tanulság:** egy **kimondott preferencia** többet ért, mint **1 169 adatpont**.
+⇒ Adat-vezérelt ajánlásnál **először kérdezz**, és a számot **csak szűrésre** használd,
+⛔ ne rangsorolásra.
+
+📌 **A „nem mind az övé" gyanú általánosítható:** közös fiók, családtag, régi kor — bármely
+**hosszú előzményű** adatsornál felmerülhet *(böngésző, média, vásárlások)*.
