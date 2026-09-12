@@ -4,7 +4,7 @@
 > A **feladat + szabályok**: `__agent/plans/discord-two-way-hyperplan/hyperplan.plan.md`
 > (a tetején a progress-blokk). Itt **csak az állapot** van — a terv tartalma nem másolódik ide.
 
-**Utoljára frissítve:** 2026-09-12 06:50
+**Utoljára frissítve:** 2026-09-12 12:05
 
 ---
 
@@ -190,6 +190,27 @@ ez a két szám **releváns lesz**, ha fáradtságról panaszkodik.
 📌 **Amit a lefekvés előtt még felvett:** 🛏️ huzatot felhúzni a **vastag** takaróra —
 `org:task:6aa4d9f1766c802935c40990`. ⭐ Lefekvéskor jutott eszébe, tehát **a következő lefekvésig**
 érdemes meglennie, különben újra ott jut eszébe.
+
+### 🛌 SZOMBAT — az owner ALSZIK (06:46 óta), DND
+
+| Kör | Mit tettem |
+|---|---|
+| **09:00** | `ma doctor now` **kipróbálva** ⇒ 🔴 az „utolsó hiba" sora **teszt-szemetet** mutatott *(`groups.spec.ts` fixtúra)* — delegálva, ✅ **KIADVA** |
+| **12:00** | ✍️ **Az ELSŐ poszt-piszkozat megírva** — a panel eddig **üres** volt, mert a szöveg **az én dolgom** |
+
+### ✍️ A POSZT-PISZKOZAT — `2026-09-12-keep-the-raw-artifact`
+
+**Téma:** a hétvégén **mért** eset — a tölcsér **23** „elveszett" tételt jelzett; a megőrzött hang
+megmutatta, hogy mind **0,3-2,3 mp töredék**, és a valódi hiba egy **30 mp-es ablak** volt.
+**Tanulság:** agent-rendszernél az **artefaktumot** kell megőrizni, ⛔ nem csak a metrikát.
+
+| | |
+|---|---|
+| igazolás | panel: `draftCount 1` · **1 016** karakter · **0** limit-túllépés |
+| szabály-ellenőrzés | tételesen a `.md`-ben *(9 pont)* |
+| kép | ⭐ **jár** *(erős poszt)* — prompt kód-blokkban, `no readable text / no logos` |
+
+🙋 **Owner-kapu:** kimehet-e így · kell-e a kép · ⚠️ a sorrend szerint a **profil** előbb van.
 
 ### ⏰ MA (2026-09-11)
 
