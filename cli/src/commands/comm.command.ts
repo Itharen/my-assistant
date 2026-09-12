@@ -25,10 +25,10 @@ import { formatCommHistory, readCommHistory } from '../comm/comm.history.js';
 import { AUDIT_LIMIT, auditDiscordChannel, formatChannelAudit } from '../comm/comm.channel-audit.js';
 import {
   buildVoiceFunnelReport,
-  renderVoiceFunnel,
   MAX_WINDOW_HOURS,
   type VoiceFunnelReport,
 } from '../voice/voice-funnel-report.js';
+import { renderVoiceFunnel } from '../voice/voice-funnel-render.js';
 import { resolveProjectRoot } from '../utils/project-root.js';
 import { CcapError } from '../ccap/ccap.error.js';
 import {

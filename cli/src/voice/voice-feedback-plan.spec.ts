@@ -128,3 +128,42 @@ describe('planFeedbackForDrop — a némán eldobott felvétel', () => {
     expect(plan.missed?.seconds).toBe(0);
   });
 });
+
+describe('| planFeedbackForOutcome — 🎤 BULI-ZAJRA TELJES CSEND', () => {
+
+  // 🔴 MÉRT INDOK (2026-09-12): a nyitott mikrofon EGY este alatt 243 ilyen tételt termelt.
+  // Ha mindegyikről jelentés vagy hangjelzés menne, a zaj-szűrő MAGA lenne a legnagyobb
+  // zajforrás — éjjel, vendégek mellett.
+
+  /** Egy zaj-kimenetel. */
+  function noiseOutcome(): RecordingHandled {
+    return {
+      fromOwner: true,
+      transcribed: true,
+      queued: false,
+      detail: 'BULI-ZAJ',
+      missed: 'not-understood',
+      heard: 'There I go.',
+      isNoise: true,
+    };
+  }
+
+  it('🔴 ⛔ NINCS hangjelzés — éjjel, vendégek mellett ez a szobába szólna', () => {
+    expect(planFeedbackForOutcome(noiseOutcome()).cue).toBeNull();
+  });
+
+  it('🔴 ⛔ NINCS kiesés-jelentés — 243 jelentés maga lenne az elviselhetetlen zaj', () => {
+    expect(planFeedbackForOutcome(noiseOutcome()).missed).toBeNull();
+  });
+
+  it('⚠️ a zaj-jelző NÉLKÜL viszont JELENT — a valódi „nem értettem" nem tűnhet el', () => {
+    const outcome: RecordingHandled = { ...noiseOutcome() };
+
+    delete outcome.isNoise;
+
+    const plan = planFeedbackForOutcome(outcome);
+
+    expect(plan.missed).not.toBeNull();
+    expect(plan.cue).toBe('unsure');
+  });
+});

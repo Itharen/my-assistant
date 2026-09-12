@@ -22,6 +22,16 @@ export const VOICE_LOG_CODES = {
   dropped: 'MA-VOICE-SPEECH-DROPPED',
   /** ⚪ Duplikátum vagy idegen beszélő — se siker, se veszteség. */
   skipped: 'MA-VOICE-SPEECH-SKIPPED',
+  /**
+   * 🎤 BULI-ZAJ: rövid, nem magyar átirat — nyitott mikrofonnál a környezet beszéde.
+   *
+   * ⭐ MIÉRT SAJÁT KÓD, és ⛔ miért nem `DROPPED`: a nyitott mikrofon **kapacitás-problémát**
+   * okoz *(mérve 2026-09-12: 722 érzékelés / 259 felvétel egy este alatt, szemben egy normál
+   * nap 123/9-ével)*. Ha a zaj beleolvad a „felismerés után elveszett" sorba, a tölcsér
+   * **veszteségnek** mutatja azt, ami valójában **szűrés** — és a valódi veszteség eltűnik
+   * benne. ⇒ Külön kód, külön sor.
+   */
+  noise: 'MA-VOICE-SPEECH-NOISE',
   /** 🎚️ A felvevő némán eldobta a kész felvételt. */
   droppedSilently: 'MA-VOICE-SPEECH-DROPPED-SILENTLY',
   /** ⚠️ A szonda saját hibája (pl. olvashatatlan könyvtár). */

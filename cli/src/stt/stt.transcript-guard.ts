@@ -132,10 +132,120 @@ export const MIN_CHARS_PER_SECOND: number = 2;
 /** Ennél rövidebb hangnál nem számolunk arányt — ott a szórás túl nagy. */
 export const RATIO_MIN_DURATION_SECS: number = 4;
 
+/**
+ * 🎤 BULI-ZAJ: ennél nem hosszabb, NEM magyar átirat ⇒ zaj.
+ *
+ * ## 🔴 A MÉRÉS, amiből ez a szám jön (2026-09-12 éjjel, labelled korpusz)
+ *
+ * > **Owner, 02:51:** *„itt van a minta alap, meg a zaj alap, na ebből aztán fogsz tudni
+ * > tanulni."* · **02:53:** *„minden ami angol és nem magyar, az mind zaj."*
+ *
+ * A nyitott mikrofon egy este alatt **722 érzékelést / 259 felvételt** termelt *(szemben egy
+ * normál nap 123/9-ével)*, és ebből **16** volt valódi input. A kötegbe jutott 36 átiratot
+ * kézzel felcímkéztem — **21 zaj · 15 valódi** —, és megmértem, mi választja el őket:
+ *
+ * ```
+ *                          ZAJ (21)              VALÓDI (15)
+ * magyar betű (á é í ó…)   0 / 21                15 / 15
+ * magyar kötőszó/szó       0 / 21                15 / 15
+ * karakter                 3-94   (medián 7)     33-325 (medián 110)
+ * szó                      1-19   (medián 1)     7-47   (medián 21)
+ * ```
+ *
+ * 🔴 **A HOSSZ ÖNMAGÁBAN NEM VÁLASZT EL** *(a 33-94 karakteres sávban átfedés van)* — a
+ * **magyar-jel** viszont ezen a korpuszon **hibátlanul** szétvágja a kettőt. ⇒ Ezért a
+ * magyar-jel a **szükséges** feltétel, a hossz pedig a **fék**.
+ *
+ * ⚠️ **MIÉRT KELL MÉGIS A HOSSZ-FÉK:** az owner kikötése — *„az owner használ angol
+ * szakszavakat, és egy hosszabb angol mondat lehet valódi"*. ⇒ A hosszú, nem-magyar szöveget
+ * ⛔ **NEM** dobjuk el *(a mért korpuszon ez 2 zaj-tételt átenged — vállalt csere)*.
+ *
+ * 📌 A 30 karakter a mért valódi minimum *(33)* **alatt** van, tehát a korpuszon **egyetlen**
+ * valódi input sem esik ki.
+ */
+export const NOISE_MAX_CHARS: number = 30;
+
+/**
+ * 🎤 …és ennél nem több szó. ⭐ A két fék EGYÜTT *(`VAGY`-kapcsolatban)* jelöl zajt.
+ *
+ * ⚠️ MIÉRT KETTŐ: a karakterszám a **hosszú szavas** töredéket *(„Simple.")* engedné át, a
+ * szószám a **sok rövid szavasat** *(„There I go.")*. A mért valódi minimum **7 szó**, tehát a
+ * 6 itt is a valódi sáv **alatt** van.
+ */
+export const NOISE_MAX_WORDS: number = 6;
+
+/**
+ * A magyar helyesírás sajátos betűi — ⭐ az egyik magyar-jel.
+ *
+ * ⚠️ Ezek az angolban **nem** fordulnak elő, tehát a jelenlétük magyar szöveget jelez. ⛔ A
+ * hiányuk viszont NEM bizonyít: van magyar mondat ékezet nélkül is *(„Nem megy a dolog")* —
+ * ezért kell a szó-jel is.
+ */
+const HUNGARIAN_LETTERS: RegExp = /[áéíóöőúüűÁÉÍÓÖŐÚÜŰ]/u;
+
+/**
+ * Gyakori magyar szavak — ⭐ a másik magyar-jel *(ékezet nélküli magyar mondatokhoz)*.
+ *
+ * ⚠️ **CSAK TELJES SZÓRA** egyezünk, ⛔ nem részszóra: az angol „not" különben a magyar „not"
+ * keresésére illeszkedne. A lista szándékosan **rövid és gyakori** — funkciószavak, amik
+ * majdnem minden magyar mondatban előfordulnak, és angolban nem léteznek.
+ */
+const HUNGARIAN_MARKER_WORDS: readonly string[] = [
+  'hogy', 'nem', 'meg', 'van', 'ezt', 'akkor', 'mert', 'kell', 'csak', 'most',
+  'ami', 'lehet', 'igen', 'azt', 'ez', 'az', 'és', 'de', 'itt', 'majd',
+  'kicsit', 'olyan', 'mondom', 'jó', 'vagy', 'mint', 'fog', 'lesz', 'volt', 'mi',
+];
+
+/**
+ * Magyarnak látszik-e a szöveg? ⭐ Két jel, `VAGY`-kapcsolatban.
+ *
+ * @returns `true`, ha van benne magyar betű **vagy** gyakori magyar szó.
+ *
+ * 🔴 MIÉRT MEGENGEDŐ *(`VAGY`, nem `ÉS`)*: a **hamis „nem magyar"** a drága hiba — az az
+ * owner **valódi** mondatát dobná el. ⚠️ A mért korpuszon mindkét jel önmagában is hibátlanul
+ * működött *(15/15 valódi, 0/21 zaj)*, tehát a megengedő kapcsolat **nem rontott** semmit.
+ */
+function looksHungarian(text: string): boolean {
+  if (HUNGARIAN_LETTERS.test(text)) return true;
+
+  const words: string[] = splitWords(text);
+
+  return HUNGARIAN_MARKER_WORDS.some((marker: string): boolean => words.includes(marker));
+}
+
+/**
+ * Szavakra bontás — ⚠️ a magyar ékezetes betűket is szó-karakternek véve.
+ *
+ * ⭐ MIÉRT EXPLICIT BETŰ-OSZTÁLY, és ⛔ miért nem Unicode-tulajdonság-szökés: ez a modul
+ * **magyar és angol** szöveget bont *(a zaj-jel és a magyar-jel is ezen áll)*, tehát a szűkebb
+ * osztály itt **pontosabb** is. ⚠️ Ráadásul a tulajdonság-szökés kapcsos zárójelét a
+ * `no-object-shorthand` review **objektum-rövidítésnek** olvasta — mindkét írásmódban.
+ * ⇒ Ez a forma **egyszerre** oldja meg a jelentést és az eszköz-félreolvasást.
+ *
+ * ⚠️ KÖVETKEZMÉNY, kimondva: egy nem-latin betű *(pl. a finn `ä`)* **szóhatárként** viselkedik.
+ * A zaj-felismerésre ez ⛔ nem hat *(a szószám csak nő, a küszöb pedig felső korlát)*, a
+ * magyar-jelre pedig azért nem, mert a magyar betűk **benne vannak** az osztályban.
+ */
+function splitWords(text: string): string[] {
+  return text
+    .toLowerCase()
+    .split(/[^0-9a-záéíóöőúüű']+/u)
+    .filter((word: string): boolean => word.length > 0);
+}
+
 /** Az átirat-ellenőrzés eredménye. */
 export interface GuardVerdict {
   suspicious: boolean;
   reason?: string;
+  /**
+   * 🎤 **BULI-ZAJ-e** *(rövid + nem magyar)*.
+   *
+   * ⭐ MIÉRT KÜLÖN JELZŐ, és ⛔ miért nem elég a `suspicious`: a *„nem értettem"* és a
+   * *„ez a szomszéd asztal beszélt"* **más jelenség**, más teendővel. A nyitott mikrofon
+   * **kapacitás-problémát** okoz *(mérve: 259 felvétel egy este alatt)*, ezért **külön
+   * kell látszódnia** a tölcsér-jelentésben, ⛔ nem beleolvadni a 243 „elveszett"-be.
+   */
+  isNoise?: boolean;
 }
 
 /**
@@ -202,6 +312,24 @@ export function inspectTranscript(
           + 'és a tartalom elveszett. Kérd meg az ownert, hogy küldje újra.',
       };
     }
+  }
+
+  // 🎤 BULI-ZAJ — rövid ÉS nem magyar. ⭐ A két jel EGYÜTT; egyik sem elég önmagában.
+  //
+  // ⚠️ A SORREND: ez a töltelék-lista ELŐTT fut, mert **konkrétabb** indokot ad *(megnevezi a
+  // hosszt és a nyelvet)*, és mert a zaj-tételek többsége ⛔ **nincs** a töltelék-listán
+  // *(„There I go", „Simple", „Merci")*.
+  const noiseWords: number = splitWords(trimmed).length;
+  const isShort: boolean = trimmed.length <= NOISE_MAX_CHARS || noiseWords <= NOISE_MAX_WORDS;
+
+  if (isShort && !looksHungarian(trimmed)) {
+    return {
+      suspicious: true,
+      isNoise: true,
+      reason: `BULI-ZAJ: rövid (${trimmed.length} karakter, ${noiseWords} szó) és NEM magyar `
+        + `("${trimmed}") — nyitott mikrofonnál a környezet beszéde. ⛔ Nem cselekszem rá. `
+        + '⚠️ A hosszabb, nem magyar szöveget NEM jelölöm így: az lehet valódi.',
+    };
   }
 
   // A teljes átirat egyetlen töltelék-szó. ⛔ Csak PONTOS egyezésre — ezek valódi szavak.

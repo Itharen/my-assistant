@@ -36,6 +36,7 @@ import { join } from 'node:path';
 import { SwallowedFailure_Util } from '../utils/swallowed-failure.js';
 
 import { VOICE_LOG_CODES } from './voice-log-codes.js';
+import { VoiceNoiseBurst_Util } from './voice-noise-burst.js';
 
 /** Egy időszak hang-tölcsére. */
 export interface VoiceFunnelReport {
@@ -64,6 +65,25 @@ export interface VoiceFunnelReport {
   droppedAfterTranscribe: number;
   /** ⚪ Duplikátum vagy idegen beszélő — se siker, se veszteség. */
   skipped: number;
+  /**
+   * 🎤 BULI-ZAJ: rövid, nem magyar átirat — **megszűrve**.
+   *
+   * 🔴 MIÉRT KÜLÖN SOR, és ⛔ miért nem a veszteségben: mérve **2026-09-12 éjjel** a nyitott
+   * mikrofon **722 érzékelést / 259 felvételt** termelt *(egy normál nap: 123/9)*, és ebből
+   * **16** volt valódi input. ⚠️ Ha ez a „felismerés után elveszett" sorba esne, a tölcsér
+   * **több száz veszteséget** mutatna ott, ahol több száz **sikeres szűrés** történt — és a
+   * **valódi** veszteség eltűnne benne.
+   *
+   * ⇒ Ez a sor ⛔ **nem hiba-szám**: azt mutatja, hogy a szűrő **dolgozik**.
+   */
+  noise: number;
+  /**
+   * 🎤 **NYITOTT MIKROFON GYANÚJA** — a zaj-özön szignálja, indoklással.
+   *
+   * ⛔ **NEM hangos figyelmeztetés**: ez csak a **jel**. A megszólalás az asszisztens dolga
+   * *(a handoff kikötése)*, és a hétvégén ⛔ semmilyen élő hangszóró-kísérlet nincs.
+   */
+  noiseBurst: ReturnType<typeof VoiceNoiseBurst_Util.evaluate>;
   /** Az eldobott felvételekben lévő hang összesen. */
   lostAudioSeconds: number;
   /**
@@ -184,6 +204,8 @@ export async function buildVoiceFunnelReport(params: {
   const cutoffMs: number = rolling ? now.getTime() - hours * 3_600_000 : Number.NEGATIVE_INFINITY;
   const days: string[] = rolling ? daysSpanned(cutoffMs, now) : [params.day as string];
 
+  // 🎤 A zaj-tetelek idobelyegei — ebbol szamol a nyitott-mikrofon gyanu a vegen.
+  const noiseTimestamps: Date[] = [];
   const report: VoiceFunnelReport = {
     day: days[days.length - 1] ?? budapestDay(now),
     windowLabel: rolling ? `az elmúlt ${hours} óra` : `${params.day as string} (naptári nap)`,
@@ -195,6 +217,9 @@ export async function buildVoiceFunnelReport(params: {
     emptyFiles: 0,
     droppedAfterTranscribe: 0,
     skipped: 0,
+    noise: 0,
+    // ⚠️ Az üres kiértékelés a helyes kezdőérték: „nincs zaj-tétel ⇒ nincs gyanú".
+    noiseBurst: VoiceNoiseBurst_Util.evaluate({ timestamps: [] }),
     lostAudioSeconds: 0,
     segmentedUtterances: 0,
     segmentsFailed: 0,
@@ -238,18 +263,25 @@ export async function buildVoiceFunnelReport(params: {
       // **BENT marad**: egy hiányzó `ts` miatt nem dobunk el mérési adatot.
       if (isBeforeCutoff(entry.ts, cutoffMs)) continue;
 
-      applyEntry(report, entry);
+      applyEntry(report, entry, noiseTimestamps);
     }
   }
 
   report.lostAudioSeconds = round1(report.lostAudioSeconds);
   report.attempts = countAttempts(report);
   report.transferRatePct = computeTransferRate(report);
+  // 🎤 A ZAJ-ÖZÖN KIÉRTÉKELÉSE a végén: ⚠️ a sűrűség csak az ÖSSZES időbélyeg ismeretében
+  // számolható — soronként ⛔ nem dönthető el.
+  report.noiseBurst = VoiceNoiseBurst_Util.evaluate({ timestamps: noiseTimestamps });
 
   return report;
 }
 
-function applyEntry(report: VoiceFunnelReport, entry: ActionLogLine): void {
+function applyEntry(
+  report: VoiceFunnelReport,
+  entry: ActionLogLine,
+  noiseTimestamps: Date[],
+): void {
   const code: string | undefined = entry.extra?.code;
 
   if (!code) return;
@@ -299,6 +331,16 @@ function applyEntry(report: VoiceFunnelReport, entry: ActionLogLine): void {
 
       return;
 
+    case VOICE_LOG_CODES.noise:
+      report.noise += 1;
+      // 🎤 AZ IDŐBÉLYEG KELL A SŰRŰSÉGHEZ: a puszta darabszám ⛔ nem mondja meg, hogy
+      // **egyszerre** jöttek-e. Egy egész napra szórt 20 zaj szokásos; 20 tíz perc alatt
+      // nyitott mikrofon.
+      noiseTimestamps.push(new Date(entry.ts ?? ''));
+      applyDelivered(report, entry);
+
+      return;
+
     default:
       return;
   }
@@ -344,6 +386,12 @@ function applySegmentation(report: VoiceFunnelReport, entry: ActionLogLine): voi
 }
 
 function countAttempts(report: VoiceFunnelReport): number {
+  // 🎤 A ZAJ SZÁNDÉKOSAN NINCS A NEVEZŐBEN — ugyanazon az elven, mint az üres felvétel és a
+  // duplikátum: ⛔ **nem az owner megszólalási kísérlete**, hanem a környezet beszéde.
+  //
+  // ⚠️ ÉS EZ NEM A METRIKA SZÉPÍTÉSE: a zaj a **saját sorában** látszik, darabszámmal. Ha
+  // beszámítanánk, egy bulis este 6%-os „átviteli arányt" adna — ami ⛔ nem arról szólna,
+  // hogy mennyi jutott át az ownertől, hanem arról, hogy mennyit beszéltek a szobában.
   return report.queued + report.droppedByRecorder + report.droppedAfterTranscribe;
 }
 
@@ -353,61 +401,8 @@ function computeTransferRate(report: VoiceFunnelReport): number | null {
   return Math.round((report.queued / report.attempts) * 1000) / 10;
 }
 
-/** Ember-olvasható tábla. */
-export function renderVoiceFunnel(report: VoiceFunnelReport, now: Date = new Date()): string {
-  if (!report.hasData) {
-    return `\n📊 Hang-tölcsér — ${report.windowLabel}\n  ${localTimeHeader(now)}\n\n`
-      + '  ⚪ Nincs napló erre az időszakra — nem futott semmi, vagy más időszakot kell nézni.\n\n';
-  }
 
-  const weak: boolean = report.attempts > 0 && report.attempts < WEAK_SAMPLE_THRESHOLD;
-  const rate: string = report.transferRatePct === null
-    ? '❓ nem mérhető (nem hangzott el megszólalás)'
-    : `${report.transferRatePct}%  (${report.attempts} megszólalásból)`;
-
-  // 🔴 KEVES MINTA = NINCS KOVETKEZTETES. Egyetlen sikeres felvetel „100%"-ot ad — es epp ez
-  // a tulallitas volt az, amit az owner 22:08-kor kijavitott: „egy mondat ≠ mukodik".
-  const icon: string = report.transferRatePct === null || weak
-    ? '⚪'
-    : report.transferRatePct >= 80 ? '✅' : report.transferRatePct >= 50 ? '🟡' : '🔴';
-
-  return [
-    '',
-    `📊 Hang-tölcsér — ${report.windowLabel}`,
-    `  ${localTimeHeader(now)}`,
-    '',
-    `  ${icon} ÁTVITELI ARÁNY: ${rate}`,
-    ...(weak
-      ? [`  ⚠️  KEVÉS MINTA (< ${WEAK_SAMPLE_THRESHOLD}) — ebből MÉG NEM lehet következtetni.`]
-      : []),
-    '',
-    `  🎙️  megszólalás érzékelve ......... ${report.speechDetected}`,
-    `  📼  felvétel a feldolgozásig ...... ${report.delivered}`,
-    `  ✅  kötegbe került ................ ${report.queued}`,
-    `  🎚️  a felvevő eldobta ............. ${report.droppedByRecorder}`,
-    `  ❌  felismerés után elveszett ..... ${report.droppedAfterTranscribe}`
-      + (report.droppedTinyFragments
-        // ⏱️ Mérve 2026-09-11: aznap MIND a 23 ilyen 0,3-2,3 mp-es töredék volt (légzés,
-        // mondat-farok) — ⛔ egyik sem elveszett mondat. A tábla ezt mondja ki.
-        ? `  ⏱️ ebből ${report.droppedTinyFragments} a másodperc alatti töredék (nem mondat)`
-        : ''),
-    `  ⚪  kihagyva (duplikátum/idegen) .. ${report.skipped}`,
-    `  ⬜  üres felvétel (nem veszteség) . ${report.emptyFiles}`,
-    // 🧩 A HOSSZU MEGSZOLALAS — 2026-09-11 óta LATHATO. Korábban ez a veszteség a
-    // ✅ sikerek közt bújt meg: a 30 mp-en túli beszéd átirata csonkult, de bekerült.
-    `  🧩  darabolva ismerve (>30 mp) .... ${report.segmentedUtterances}`
-      + (report.segmentsFailed
-        ? `  🔴 ebből ${report.segmentsFailed} részlet ELBUKOTT — HIÁNYOS szöveg`
-        : ''),
-    '',
-    `  🔊 ELVESZETT HANG: ${report.lostAudioSeconds} másodperc`,
-    '',
-    '  ⚠️ A „megszólalás érzékelve" és a „felvétel" különbsége NEM veszteség —',
-    '     a megszólalás beleolvadhatott egy már futó felvételbe.',
-    '',
-  ].join('\n');
-}
-
+/** Egy tizedesre kerekítés — az elveszett hang másodperceihez. */
 function round1(value: number): number {
   return Math.round(value * 10) / 10;
 }

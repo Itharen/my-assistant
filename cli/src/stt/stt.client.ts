@@ -227,6 +227,8 @@ function finish(input: {
     // darab utáni „minden oké" pont a néma veszteség lenne.
     suspicious: verdict.suspicious || failed.length > 0,
     ...(reason ? { suspicionReason: reason } : {}),
+    // 🎤 A ZAJ-JELZŐ ÁTMEGY — a hívó ebből tudja, hogy ⛔ NEM kell jelenteni az ownernek.
+    ...(verdict.isNoise ? { isNoise: true } : {}),
     ...(input.parts.length > 1
       ? { segmentation: describeSegmentation(input.parts.length, failed.length, input.midSpeechCuts) }
       : {}),

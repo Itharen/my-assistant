@@ -366,6 +366,24 @@ describe('classifyRecordingOutcome — három kimenetel, három kód', () => {
       fromOwner: false, transcribed: false, queued: false, detail: 'Nem az owner beszélt.',
     })).toBe('MA-VOICE-SPEECH-SKIPPED');
   });
+
+  it('🎤 a BULI-ZAJ saját kódot kap — ⛔ NEM veszteségként naplózódik', () => {
+    // 🔴 MÉRT INDOK (2026-09-12): a nyitott mikrofon 243 ilyen tételt termelt egy este alatt.
+    // Ha a DROPPED sorba esnének, a tölcsér 243 VESZTESÉGET mutatna ott, ahol 243 sikeres
+    // SZŰRÉS történt — és a valódi veszteség eltűnne benne.
+    expect(VoiceRecordingOutcome_Util.classify({
+      fromOwner: true, transcribed: true, queued: false, detail: 'BULI-ZAJ',
+      missed: 'not-understood', isNoise: true,
+    })).toBe('MA-VOICE-SPEECH-NOISE');
+  });
+
+  it('🎤 a zaj-jelző ELŐZI a veszteség-kódot — a sorrend szándékos', () => {
+    // ⚠️ Ugyanaz a kimenetel `isNoise` nélkül VESZTESÉG. A két eset csak ebben az EGY
+    // mezőben tér el — ezért kell rá teszt.
+    expect(VoiceRecordingOutcome_Util.classify({
+      fromOwner: true, transcribed: true, queued: false, detail: 'x', missed: 'not-understood',
+    })).toBe('MA-VOICE-SPEECH-DROPPED');
+  });
 });
 
 describe('onProcessingStart — 🔊 a „dolgozom rajta" jelzés PILLANATA (owner, 2026-09-10)', () => {

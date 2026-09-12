@@ -40,6 +40,15 @@ export interface SpeechAttemptStats {
 /** Egy elkészült felvétel feldolgozásának kimenetele — a naplózáshoz és a teszthez. */
 export interface RecordingHandled {
   /**
+   * 🎤 BULI-ZAJ volt-e *(rövid + nem magyar átirat)*.
+   *
+   * 🔴 KÉT KÖVETKEZMÉNYE VAN, és mindkettő fontos:
+   *   1. **saját napló-kód** ⇒ a tölcsérben **külön sorban** látszik, ⛔ nem veszteségként;
+   *   2. ⛔ **NINCS owner-jelentés** róla — mérve 2026-09-12: egy este **243** ilyen tétel
+   *      keletkezett. Ha mindegyikről szólnánk, az **maga lenne** az elviselhetetlen zaj.
+   */
+  isNoise?: boolean;
+  /**
    * ⏱️ A felvétel hossza másodpercben — a MÉRÉSHEZ, ⛔ nem a döntéshez.
    *
    * 🔴 MÉRT INDOK (2026-09-11): a „felismerés után elveszett" **23 megszólalás** mindegyike
@@ -107,7 +116,9 @@ export type RecordingOutcomeCode =
   /** 🔴 VESZTESÉG: az owner beszélt, de nem lett belőle semmi. */
   | typeof VOICE_LOG_CODES.dropped
   /** ⚪ Se nem siker, se nem veszteség: duplikátum, vagy nem az owner beszélt. */
-  | typeof VOICE_LOG_CODES.skipped;
+  | typeof VOICE_LOG_CODES.skipped
+  /** 🎤 BULI-ZAJ: megszűrve — ⛔ se nem veszteség, se nem siker. */
+  | typeof VOICE_LOG_CODES.noise;
 
 /** A kimenetel osztályozása. */
 export class VoiceRecordingOutcome_Util {
@@ -119,6 +130,12 @@ export class VoiceRecordingOutcome_Util {
    */
   static classify(outcome: RecordingHandled): RecordingOutcomeCode {
     if (outcome.queued) return VOICE_LOG_CODES.queued;
+
+    // 🎤 A ZAJ ELŐBB DŐL EL, mint a „veszteség": a nyitott mikrofon zaja ⛔ NEM az owner
+    // elveszett mondata. ⚠️ Ha a `DROPPED` sorba esne, a tölcsér 243 veszteséget mutatna
+    // ott, ahol 243 SIKERES szűrés történt — és a **valódi** veszteség eltűnne benne.
+    if (outcome.isNoise) return VOICE_LOG_CODES.noise;
+
     if (outcome.missed !== undefined) return VOICE_LOG_CODES.dropped;
 
     return VOICE_LOG_CODES.skipped;

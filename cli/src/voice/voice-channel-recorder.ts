@@ -253,6 +253,9 @@ export async function handleFinishedRecording(params: {
       // hallucináció-őr változatlan: gyanús átiratra **továbbra sem cselekszünk**.
       ...(result.text.trim() ? { heard: result.text.trim() } : {}),
       ...(result.suspicionReason ? { reason: result.suspicionReason } : {}),
+      // 🎤 A ZAJ-JELZŐ ÁTMEGY: ebből lesz a saját napló-kód, és ebből tudja a
+      // visszajelzés-terv, hogy ⛔ NEM szólunk róla az ownernek.
+      ...(result.isNoise ? { isNoise: true } : {}),
       audioKept: audioKept,
       filename: params.filename,
       ...(audioSecs === null ? {} : { audioSecs: audioSecs }),

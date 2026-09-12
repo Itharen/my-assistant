@@ -45,6 +45,14 @@ export interface SttResult {
   /** Miért gyanús. */
   suspicionReason?: string;
   /**
+   * 🎤 BULI-ZAJ-e *(rövid + nem magyar)* — ⚠️ a `suspicious` egy RÉSZHALMAZA.
+   *
+   * ⭐ MIÉRT KÜLÖN: a *„nem értettem"* és a *„ez a környezet beszélt"* **más jelenség**, más
+   * teendővel — és a nyitott mikrofonnál **kapacitás-probléma**. A hívó ezért ⛔ nem
+   * jelent róla az ownernek, de a mérésben **külön sorban** látszik.
+   */
+  isNoise?: boolean;
+  /**
    * 🧩 Darabolva ismertük fel? *(Csak akkor van itt érték, ha TÖBB részlet volt.)*
    *
    * ⚠️ A hiánya azt jelenti: **egy** hívás, ⛔ nem azt, hogy „biztosan teljes".

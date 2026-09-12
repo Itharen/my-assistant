@@ -654,6 +654,44 @@ jutna el az asszisztenshez.
 
 📌 Tárolás: `~/.config/my-assistant/stt-ledger/` — ⛔ nem a repóban *(nyers felhasználói tartalom)*.
 
+### 🎤 BULI-ZAJ szűrés — a nyitott mikrofon (2026-09-12)
+
+🔴 **MÉRT PROBLÉMA:** a nyitott mikrofon **EGY este alatt 722 érzékelést / 259 felvételt**
+termelt *(normál nap: 123/9)*, és ebből **16** volt valódi input. A gép is megérezte: a
+`comm doctor` 120 s fölé nyúlt, a memória 100,5/127 GB-on állt. ⇒ **Kapacitás-probléma.**
+
+⭐ **A SZABÁLY — a mért, labelled korpuszból:**
+
+```
+ZAJ  =  NEM magyar   ÉS   (≤ 30 karakter  VAGY  ≤ 6 szó)
+```
+
+| Jel | Mért alap |
+|---|---|
+| **magyar-jel** *(magyar betű VAGY gyakori magyar szó)* | zaj **0/21** · valódi **15/15** ⇒ hibátlanul szétvág |
+| **≤ 30 karakter / ≤ 6 szó** | a valódi **minimum 33 karakter / 7 szó** volt ⇒ a küszöb alatta |
+
+⛔ **A HOSSZÚ, nem magyar szöveget NEM szűri** — az owner kikötése: *„használ angol
+szakszavakat, és egy hosszabb angol mondat lehet valódi."*
+⭐ A magyar-jel a **rövid** magyar válaszokat *(„Igen, csináld.")* is megvédi.
+
+📊 **Visszamérve 427 mintán** *(3 korpusz, több nap)*: **0** magyar szöveg esett a zaj-ágba.
+
+🔇 **A ZAJRA CSEND:** ⛔ nincs hangjelzés és ⛔ nincs kiesés-jelentés *(243 jelentés maga lenne
+a zaj)*. ⭐ A tölcsérben viszont **külön sorban** látszik, és **kimarad az átviteli arány
+nevezőjéből** *(nem az owner megszólalási kísérlete)*:
+
+```
+🎤  buli-zaj (megszűrve) ......... 12
+🔴 NYITOTT MIKROFON GYANÚJA: 84 zaj-tétel 10 perc alatt (küszöb: 12, mért normál csúcs: 4)
+```
+
+⚠️ A **12 / 10 perc** küszöb is mért: a normál ablakok csúcsa **4**, a bulié **42-84** — a
+küszöb a köztes üres sávban van. ⛔ A hangos figyelmeztetést az **asszisztens** küldi, a
+rendszer csak a **szignált** adja.
+
+📌 A teljes mérés + ami szándékosan kimaradt: `__documentations/dev/VOICE_NOISE_FILTER.md`.
+
 ### 😴 Az ÉBRENLÉT-DÖNTÉS — mérésből, ⛔ nem órarendből (2026-09-12)
 
 🔴 **MÉRT PROBLÉMA:** a `/api/sleep-state` **fix órarendből** tippelt *(`02:00-10:00 = alvás`)*.

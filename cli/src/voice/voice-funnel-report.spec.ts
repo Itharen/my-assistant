@@ -2,10 +2,10 @@ import { basename } from 'node:path';
 
 import {
   buildVoiceFunnelReport,
-  renderVoiceFunnel,
   resolveActionLogPath,
   type VoiceFunnelReport,
 } from './voice-funnel-report.js';
+import { renderVoiceFunnel } from './voice-funnel-render.js';
 
 /** Sortörés nevesítve — a shell-heredoc kétszer is megette az inline escape-et. */
 const NEWLINE: string = '\n';
@@ -413,5 +413,46 @@ describe('buildVoiceFunnelReport — ⏱️ a MÁSODPERC ALATTI töredék megnev
     const report = await build([line('MA-VOICE-SPEECH-DROPPED', { audioSecs: 9 })]);
 
     expect(renderVoiceFunnel(report)).not.toContain('töredék');
+  });
+});
+
+describe('buildVoiceFunnelReport — 🎤 a BULI-ZAJ külön sorban', () => {
+
+  it('🔴 a zaj a SAJÁT sorába kerül — ⛔ nem a veszteségbe', async (): Promise<void> => {
+    // ⚠️ MÉRT INDOK (2026-09-12): a nyitott mikrofon 243 ilyen tételt termelt. Ha a
+    // „felismerés után elveszett" sorba esnének, a tölcsér 243 VESZTESÉGET mutatna ott, ahol
+    // 243 sikeres SZŰRÉS történt.
+    const report = await build([
+      line('MA-VOICE-SPEECH-QUEUED'),
+      line('MA-VOICE-SPEECH-NOISE'),
+      line('MA-VOICE-SPEECH-NOISE'),
+      line('MA-VOICE-SPEECH-DROPPED'),
+    ]);
+
+    expect(report.noise).toBe(2);
+    expect(report.droppedAfterTranscribe).toBe(1);
+    // 🔴 ÉS A NEVEZŐBEN SINCS BENNE: a zaj ⛔ nem az owner megszólalási kísérlete.
+    expect(report.attempts).toBe(2);
+  });
+
+  it('a tábla KIÍRJA a zaj-sort', async (): Promise<void> => {
+    const report = await build([line('MA-VOICE-SPEECH-NOISE')]);
+
+    expect(renderVoiceFunnel(report)).toContain('buli-zaj');
+  });
+
+  it('⛔ zaj nélkül a nyitott-mikrofon gyanú HAMIS', async (): Promise<void> => {
+    const report = await build([line('MA-VOICE-SPEECH-QUEUED')]);
+
+    expect(report.noiseBurst.isBurst).toBeFalse();
+    expect(renderVoiceFunnel(report)).not.toContain('NYITOTT MIKROFON');
+  });
+
+  it('🔴 SŰRŰ zajnál a gyanú megjelenik a táblában is', async (): Promise<void> => {
+    // 12 tétel ugyanabban a percben — jóval a mért normál csúcs (4 / 10 perc) felett.
+    const report = await build(Array.from({ length: 12 }, (): string => line('MA-VOICE-SPEECH-NOISE')));
+
+    expect(report.noiseBurst.isBurst).toBeTrue();
+    expect(renderVoiceFunnel(report)).toContain('NYITOTT MIKROFON');
   });
 });

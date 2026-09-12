@@ -49,6 +49,17 @@ export interface VoiceFeedbackPlan {
 export function planFeedbackForOutcome(outcome: RecordingHandled): VoiceFeedbackPlan {
   if (outcome.queued) return { cue: 'understood', missed: null };
 
+  // 🎤 BULI-ZAJ ⇒ TELJES CSEND: ⛔ se hang, ⛔ se jelentés.
+  //
+  // 🔴 EZ A LEGFONTOSABB ÁG EBBEN A FÜGGVÉNYBEN, és MÉRT (2026-09-12): a nyitott mikrofon
+  // **243** ilyen tételt termelt EGY este alatt. Ha mindegyik `not-understood`-ként jelentődne,
+  // az owner **243 kiesés-jelentést** kapna a hang-csatornába — ⚠️ vagyis a zaj-szűrő maga
+  // lenne a legnagyobb zajforrás.
+  //
+  // ⚠️ ÉS A HANG SEM SZÓLHAT: az `unsure` jelzés minden zaj-tételnél megszólalna — éjjel,
+  // vendégek mellett. ⛔ A szűrt zaj a mérésben látszik (saját napló-kód), ⛔ nem a szobában.
+  if (outcome.isNoise) return { cue: null, missed: null };
+
   if (outcome.missed === 'not-understood') {
     return {
       cue: 'unsure',
